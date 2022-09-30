@@ -22,7 +22,7 @@ def account(ctx):
 @handle_api_error
 def create_user(controller, permission, id):
     """Create a new user in the account"""
-    token = controller.create_user(permission=Permission[permission.upper()].value, id=id if id else uuid.uuid4())
+    token = controller.create_user(permission=Permission[permission.upper()].value, id=id if id else str(uuid.uuid4()))
     click.secho(f'Created new [{permission}] account [{id}]. Token: {token}', fg=Colors.GREEN.value)
 
 
