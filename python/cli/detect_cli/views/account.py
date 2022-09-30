@@ -28,13 +28,13 @@ def create_user(controller, permission, label):
 
 
 @account.command('delete-user')
-@click.argument('token')
+@click.argument('label')
 @click.pass_obj
 @handle_api_error
-def delete_user(controller, token):
+def delete_user(controller, label):
     """Delete a user from the account"""
-    if controller.delete_user(token=token):
-        click.secho(f'Deleted user token {token}', fg=Colors.GREEN.value)
+    if controller.delete_user(label=label):
+        click.secho(f'Deleted user {label}', fg=Colors.GREEN.value)
 
 
 @account.command('describe-account')
