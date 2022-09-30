@@ -17,14 +17,14 @@ def account(ctx):
 @account.command('create-user')
 @click.option('--permission', help='provide a permission level', default=[p.name for p in Permission][-1],
               type=click.Choice([p.name for p in Permission], case_sensitive=False), show_default=True)
-@click.option('--id', help='provide a unique identifier')
+@click.option('--label', help='provide a unique identifier')
 @click.pass_obj
 @handle_api_error
 def create_user(controller, permission, label):
     """Create a new user in the account"""
     label = label if label else str(uuid.uuid4())
     token = controller.create_user(label=label, permission=Permission[permission.upper()].value)
-    click.secho(f'Created new [{permission}] account [{id}]. Token: {token}', fg=Colors.GREEN.value)
+    click.secho(f'Created new [{permission}] account [{label}]. Token: {token}', fg=Colors.GREEN.value)
 
 
 @account.command('delete-user')
