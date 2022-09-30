@@ -1,4 +1,5 @@
 import click
+import uuid
 from rich import print_json
 
 from detect_sdk.controllers.account_controller import AccountController
@@ -16,12 +17,13 @@ def account(ctx):
 @account.command('create-user')
 @click.option('--permission', help='provide a permission level', default=[p.name for p in Permission][-1],
               type=click.Choice([p.name for p in Permission], case_sensitive=False), show_default=True)
+@click.option('--id', help='provide a unique identifier')
 @click.pass_obj
 @handle_api_error
-def create_user(controller, permission):
+def create_user(controller, permission, id):
     """Create a new user in the account"""
-    token = controller.create_user(permission=Permission[permission.upper()].value)
-    click.secho(f'Created new {permission} account token: {token}', fg=Colors.GREEN.value)
+    token = controller.create_user(permission=Permission[permission.upper()].value, id=id if id else uuid.uuid4())
+    click.secho(f'Created new [{permission}] account [{id}]. Token: {token}', fg=Colors.GREEN.value)
 
 
 @account.command('delete-user')
