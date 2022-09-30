@@ -9,12 +9,8 @@ class AccountController:
         self.account = account
 
     @verify_credentials
-    def create_user(self, permission, label):
-        res = requests.post(
-            url='%s/account/user' % self.account.hq,
-            json=dict(permission=permission, label=label),
-            headers=self.account.headers
-        )
+    def create_user(self, permission, id):
+        res = requests.post('%s/account/user' % self.account.hq, json=dict(permission=permission, id=id), headers=self.account.headers)
         if res.status_code == 200:
             return res.json()
         raise Exception('Failed to create user (reason:%s)' % res.status_code)

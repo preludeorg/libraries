@@ -20,10 +20,9 @@ def account(ctx):
 @click.option('--id', help='provide a unique identifier')
 @click.pass_obj
 @handle_api_error
-def create_user(controller, permission, label):
+def create_user(controller, permission, id):
     """Create a new user in the account"""
-    label = label if label else str(uuid.uuid4())
-    token = controller.create_user(label=label, permission=Permission[permission.upper()].value)
+    token = controller.create_user(permission=Permission[permission.upper()].value, id=id if id else str(uuid.uuid4()))
     click.secho(f'Created new [{permission}] account [{id}]. Token: {token}', fg=Colors.GREEN.value)
 
 
