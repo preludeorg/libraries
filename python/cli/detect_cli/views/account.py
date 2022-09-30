@@ -1,5 +1,4 @@
 import click
-import uuid
 from rich import print_json
 
 from detect_sdk.controllers.account_controller import AccountController
@@ -17,24 +16,23 @@ def account(ctx):
 @account.command('create-user')
 @click.option('--permission', help='provide a permission level', default=[p.name for p in Permission][-1],
               type=click.Choice([p.name for p in Permission], case_sensitive=False), show_default=True)
-@click.option('--label', help='provide a unique identifier')
+@click.option('--email', help='provide a unique identifier')
 @click.pass_obj
 @handle_api_error
-def create_user(controller, permission, label):
+def create_user(controller, permission, email):
     """Create a new user in the account"""
-    label = label if label else str(uuid.uuid4())
-    token = controller.create_user(label=label, permission=Permission[permission.upper()].value)
-    click.secho(f'Created new [{permission}] account [{label}]. Token: {token}', fg=Colors.GREEN.value)
+    token = controller.create_user(email=email, permission=Permission[permission.upper()].value)
+    click.secho(f'Created new [{permission}] account [{email}]. Token: {token}', fg=Colors.GREEN.value)
 
 
 @account.command('delete-user')
-@click.argument('label')
+@click.argument('email')
 @click.pass_obj
 @handle_api_error
-def delete_user(controller, label):
+def delete_user(controller, email):
     """Delete a user from the account"""
-    if controller.delete_user(label=label):
-        click.secho(f'Deleted user {label}', fg=Colors.GREEN.value)
+    if controller.delete_user(email=email):
+        click.secho(f'Deleted user {email}', fg=Colors.GREEN.value)
 
 
 @account.command('describe-account')

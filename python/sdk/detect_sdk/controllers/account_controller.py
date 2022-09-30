@@ -9,10 +9,10 @@ class AccountController:
         self.account = account
 
     @verify_credentials
-    def create_user(self, permission, label):
+    def create_user(self, permission, email):
         res = requests.post(
             url='%s/account/user' % self.account.hq,
-            json=dict(permission=permission, label=label),
+            json=dict(permission=permission, email=email),
             headers=self.account.headers
         )
         if res.status_code == 200:
@@ -20,8 +20,8 @@ class AccountController:
         raise Exception('Failed to create user (reason:%s)' % res.status_code)
 
     @verify_credentials
-    def delete_user(self, label):
-        res = requests.delete('%s/account/user' % self.account.hq, json=dict(label=label), headers=self.account.headers)
+    def delete_user(self, email):
+        res = requests.delete('%s/account/user' % self.account.hq, json=dict(email=email), headers=self.account.headers)
         if res.status_code == 200:
             return True
         raise Exception('Failed to delete user (reason:%s)' % res.status_code)
