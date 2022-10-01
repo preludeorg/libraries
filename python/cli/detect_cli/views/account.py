@@ -14,9 +14,9 @@ def account(ctx):
 
 
 @account.command('create-user')
+@click.argument('email')
 @click.option('--permission', help='provide a permission level', default=[p.name for p in Permission][-1],
               type=click.Choice([p.name for p in Permission], case_sensitive=False), show_default=True)
-@click.option('--email', help='provide a unique identifier')
 @click.pass_obj
 @handle_api_error
 def create_user(controller, permission, email):
