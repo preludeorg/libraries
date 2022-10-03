@@ -3,7 +3,7 @@ package hades
 import (
 	"encoding/hex"
 	"fmt"
-	"github.com/preludorg/detect-clients/go/probe/internal/util"
+	"github.com/preludeorg/detect-clients/go/probe/internal/util"
 	"os"
 	"os/exec"
 	"runtime"

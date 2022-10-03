@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/preludorg/detect-clients/go/probe/internal/hades"
+	"github.com/preludeorg/detect-clients/go/probe/internal/hades"
 	"os"
 )
 

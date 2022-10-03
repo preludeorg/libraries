@@ -3,8 +3,8 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/preludorg/detect-clients/go/probe/internal/hades"
-	"github.com/preludorg/detect-clients/go/probe/internal/util"
+	"github.com/preludeorg/detect-clients/go/probe/internal/hades"
+	"github.com/preludeorg/detect-clients/go/probe/internal/util"
 	"os"
 )
 
