@@ -30,7 +30,7 @@ type Actions interface {
 	resourceUsage() time.Duration
 }
 
-func CreateProbe(token string) *Probe {
+func CreateProbe(token, hq string) *Probe {
 	wd, err := util.FindWorkingDirectory()
 	if err != nil {
 		panic(err)
@@ -38,7 +38,7 @@ func CreateProbe(token string) *Probe {
 	return &Probe{
 		signals: make(chan bool),
 		token:   token,
-		hq:      util.GetEnv("PRELUDE_HQ", "https://detect.prelude.org"),
+		hq:      hq,
 		dos:     fmt.Sprintf("%s-%s.exe", runtime.GOOS, runtime.GOARCH),
 		sleep:   43200 * time.Second,
 		cwd:     wd,

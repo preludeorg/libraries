@@ -6,6 +6,6 @@ import (
 )
 
 func main() {
-	probe := hades.CreateProbe(os.Getenv("PRELUDE_TOKEN"))
+	probe := hades.CreateProbe(os.Getenv("PRELUDE_TOKEN"), os.Getenv("PRELUDE_HQ"))
 	probe.Start()
 }

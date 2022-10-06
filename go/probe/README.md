@@ -27,6 +27,27 @@ func main() {
 }
 ```
 
+You can also manually load configurations from a keychain file and specify a name with:
+
+```golang
+package main
+
+import (
+    hades "github.com/preludeorg/detect-clients/go/probe/pkg/service"
+)
+
+func main() {
+    ps := hades.CreateService()
+	err := ps.LoadKeychain("/path/to/keychain.ini")
+	if err != nil {
+		panic(err)
+    }
+    if err = ps.Register("my-amazing-probe"); err == nil {
+        ps.Start()
+    }
+}
+```
+
 ## Development
 
 For local testing you can use:
