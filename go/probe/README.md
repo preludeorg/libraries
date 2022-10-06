@@ -29,8 +29,6 @@ func main() {
 
 You can also manually load configurations from a keychain file and specify a name with:
 
-Include Hades in a project with:
-
 ```golang
 package main
 
