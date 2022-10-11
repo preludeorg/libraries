@@ -41,7 +41,9 @@ func (ps *ProbeService) Start() {
 }
 
 func (ps *ProbeService) Stop() {
-	ps.proc.Stop()
+	if ps.proc != nil {
+		ps.proc.Stop()
+	}
 }
 
 func (ps *ProbeService) Register(name ...string) error {
