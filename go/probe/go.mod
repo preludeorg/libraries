@@ -1,3 +1,3 @@
-module github.com/preludorg/detect-clients/go/probe
+module github.com/preludeorg/detect-clients/go/probe
 
-go 1.19
+go 1.16

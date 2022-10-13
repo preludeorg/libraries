@@ -7,7 +7,7 @@
 Install with:
 
 ```bash
-go get github.com/preludorg/detect-clients/go/probe
+go get github.com/preludeorg/detect-clients/go/probe
 ```
 
 Include Hades in a project with:
@@ -16,12 +16,33 @@ Include Hades in a project with:
 package main
 
 import (
-    hades "github.com/preludorg/detect-clients/go/probe/pkg/service"
+    hades "github.com/preludeorg/detect-clients/go/probe/pkg/service"
 )
 
 func main() {
     ps := hades.CreateService()
     if err := ps.Register(); err == nil {
+        ps.Start()
+    }
+}
+```
+
+You can also manually load configurations from a keychain file and specify a name with:
+
+```golang
+package main
+
+import (
+    hades "github.com/preludeorg/detect-clients/go/probe/pkg/service"
+)
+
+func main() {
+    ps := hades.CreateService()
+	err := ps.LoadKeychain("/path/to/keychain.ini")
+	if err != nil {
+		panic(err)
+    }
+    if err = ps.Register("my-amazing-probe"); err == nil {
         ps.Start()
     }
 }

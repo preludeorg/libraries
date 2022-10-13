@@ -3,7 +3,7 @@ package hades
 import (
 	"encoding/hex"
 	"fmt"
-	"github.com/preludorg/detect-clients/go/probe/internal/util"
+	"github.com/preludeorg/detect-clients/go/probe/internal/util"
 	"os"
 	"os/exec"
 	"runtime"
@@ -30,7 +30,7 @@ type Actions interface {
 	resourceUsage() time.Duration
 }
 
-func CreateProbe(token string) *Probe {
+func CreateProbe(token, hq string) *Probe {
 	wd, err := util.FindWorkingDirectory()
 	if err != nil {
 		panic(err)
@@ -38,7 +38,7 @@ func CreateProbe(token string) *Probe {
 	return &Probe{
 		signals: make(chan bool),
 		token:   token,
-		hq:      util.GetEnv("PRELUDE_HQ", "https://detect.prelude.org"),
+		hq:      hq,
 		dos:     fmt.Sprintf("%s-%s.exe", runtime.GOOS, runtime.GOARCH),
 		sleep:   43200 * time.Second,
 		cwd:     wd,

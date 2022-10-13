@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/preludorg/detect-clients/go/probe/internal/hades"
+	"github.com/preludeorg/detect-clients/go/probe/internal/hades"
 	"os"
 )
 
 func main() {
-	probe := hades.CreateProbe(os.Getenv("PRELUDE_TOKEN"))
+	probe := hades.CreateProbe(os.Getenv("PRELUDE_TOKEN"), os.Getenv("PRELUDE_HQ"))
 	probe.Start()
 }
