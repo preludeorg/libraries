@@ -29,8 +29,8 @@ class Probe:
             fp = tempfile.NamedTemporaryFile(dir=os.getcwd())
             fp.write(pack[1])
             os.chmod(fp.name, os.stat(fp.name).st_mode | stat.S_IEXEC)
-            test = subprocess.run([fp.name, 'test'])
-            clean = subprocess.run([fp.name, 'test'])
+            test = subprocess.run([fp.name, 'test'], timeout=2)
+            clean = subprocess.run([fp.name, 'test'], timeout=2)
             fp.close()
             return f'{DOS}:{pack[0]}:{max(test.returncode, clean.returncode)}'
         if pack:
