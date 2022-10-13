@@ -42,4 +42,4 @@ class Probe:
                 asyncio.create_task(self.run(next(self.hq(DOS), None)))
             except Exception as e:
                 print('[-] %s' % e)
-            await asyncio.sleep(60)
+            await asyncio.sleep(43200)
