@@ -16,5 +16,5 @@ def manifest(ctx):
 @click.pass_obj
 @handle_api_error
 def print_manifest(controller):
-    """ View full TTP manifest """
+    """ View TTP manifest """
     print_json(data=controller.print_manifest())
