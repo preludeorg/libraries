@@ -6,7 +6,7 @@ from detect_sdk.models.codes import Colors
 @click.command()
 @click.pass_obj
 def configure(account):
-    """ Configure your local keychain """
+    """Configure your Detect credentials"""
     profile = click.prompt('Enter the profile name', default=account.profile, show_default=True)
     hq = click.prompt('Enter the Detect URL', default=account.hq, show_default=True)
     account_id = click.prompt('Enter your account ID')

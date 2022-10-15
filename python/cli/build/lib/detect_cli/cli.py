@@ -1,10 +1,12 @@
 import click
+import pyfiglet
+
+from detect_sdk.models.account import Account
 from detect_cli.views.account import account
 from detect_cli.views.configure import configure
 from detect_cli.views.endpoints import endpoints
 from detect_cli.views.manifest import manifest
 from detect_cli.views.schedule import schedule
-from detect_sdk.models.account import Account
 
 
 @click.group()
@@ -22,4 +24,5 @@ cli.add_command(manifest)
 
 
 if __name__ == '__main__':
+    print(pyfiglet.figlet_format('OpCli'))
     cli()
