@@ -4,5 +4,5 @@
 **.egg-info**
 *.css
 *.map
-**build/**
+**/build/**
 .idea
