@@ -1,7 +1,7 @@
 import click
 from rich import print_json
 
-from detect_sdk.models.codes import Colors
+from detect_sdk.models.codes import Colors, RunCode
 from detect_cli.views.shared import handle_api_error
 from detect_sdk.controllers.detect_controller import DetectController
 
@@ -30,7 +30,7 @@ def register_endpoint(controller, name, tag):
 @click.pass_obj
 @handle_api_error
 def describe_activity(controller, endpoint_id, days):
-    """ Get a results for a specific endpoint """
+    """ Get report for an endpoint """
     activity = controller.describe_activity(days=days, endpoint_id=endpoint_id)
     print_json(data=activity)
 
@@ -45,7 +45,7 @@ def describe_activity(controller, endpoint_id, days):
 @click.pass_obj
 @handle_api_error
 def activate_ttp(controller, ttp, run_code):
-    """ Add TTP to active queue """
+    """ Add TTP to your queue """
     controller.activate_ttp(ttp=ttp, run_code=RunCode[run_code.upper()].value)
     click.secho('Activated %s' % ttp, fg=Colors.GREEN.value)
 
@@ -56,6 +56,6 @@ def activate_ttp(controller, ttp, run_code):
 @click.pass_obj
 @handle_api_error
 def deactivate_ttp(controller, ttp):
-    """ Remove TTP from active queue """
+    """ Remove TTP from your queue """
     controller.deactivate_ttp(ttp=ttp)
     click.secho('Deactivated %s' % ttp, fg=Colors.GREEN.value)
