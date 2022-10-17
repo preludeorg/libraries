@@ -11,7 +11,7 @@ from detect_cli.views.shared import handle_api_error
 @click.group()
 @click.pass_context
 def account(ctx):
-    """ Manage your account """
+    """ Administer your account """
     ctx.obj = AccountController(account=ctx.obj)
 
 
