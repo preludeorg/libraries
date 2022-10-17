@@ -12,7 +12,7 @@ from rich import print_json
 @click.group()
 @click.pass_context
 def database(ctx):
-    """ Manage your TTP database """
+    """ Maintain your TTP database """
     ctx.obj = DatabaseController(account=ctx.obj)
 
 
