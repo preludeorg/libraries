@@ -37,7 +37,7 @@ eval "$(_DETECT_COMPLETE=zsh_source detect)"
 
 ## Quick start
 
-Start by registering a new Prelude account. You can skip this step if you already have one. 
+Start by registering a new Prelude account. Skip this step if you already have one. 
 ```zsh
 detect account register
 ```
