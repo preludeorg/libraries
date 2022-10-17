@@ -3,7 +3,7 @@ import requests
 from detect_sdk.models.account import verify_credentials
 
 
-class EndpointsController:
+class EndpointController:
 
     def __init__(self, account):
         self.account = account
