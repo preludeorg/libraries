@@ -1,8 +1,8 @@
-# Detect CLI
+# Prelude CLI
 
 Want to standardize how you write, compile, validate and deploy security tests (TTPs)?
 
-Prelude's detect-cli utility allows you to:
+The prelude-cli utility allows you to:
 
 * Write security tests (TTPs) in any language
 * Store tests in a cloud account for quick access and easy sharing
@@ -10,56 +10,56 @@ Prelude's detect-cli utility allows you to:
 * Add your tests to a continuous testing pipeline to track their efficacy
 * Generate a download link for any test in your collection
 
-> This library wraps around the detect-sdk utility, which can be used standalone to interact with the Prelude API.
+> This library wraps around the prelude-sdk utility, which can be used standalone to interact with the Prelude API.
 
 Each security test uses an exit status to provide an objective analysis of its efficacy.
 
 ## Install
 
 ```bash
-pip install detect-cli
-detect --help
+pip install prelude-cli
+prelude --help
 ```
 
 ### Auto-complete
 
-To add auto-completion to the detect CLI, add this line to your appropriate config:
+To add auto-completion to the Prelude CLI, add this line to your appropriate config:
 
 ~/.bashrc
 ```zsh
-eval "$(_DETECT_COMPLETE=bash_source detect)"
+eval "$(_DETECT_COMPLETE=bash_source prelude)"
 ```
 
 ~/.zshrc
 ```zsh
-eval "$(_DETECT_COMPLETE=zsh_source detect)"
+eval "$(_DETECT_COMPLETE=zsh_source prelude)"
 ```
 
 ## Quick start
 
 Start by registering a new Prelude account and configuring your local keychain. Skip this step if you've done it before.
 ```zsh
-detect account register
-detect configure
+prelude account register
+prelude configure
 ```
 
 Every new account is provisioned with Prelude's collection of open-source TTPs, known as your initial manifest.
 It helps to [understand how Prelude stores security tests](#security-tests).
 You can view your manifest, then clone all associated code files locally, using the following commands:
 ```zsh
-detect database view
-detect database clone
+prelude database view
+prelude database clone
 ```
 
 Add or remove TTPs from your account using:
 ```zsh
-detect database create '<TTP NAME>'
-detect database delete <TTP IDENTIFIER>
+prelude database create '<TTP NAME>'
+prelude database delete <TTP IDENTIFIER>
 ```
 
 Upload new code files:
 ```zsh
-detect database upload <PATH>
+prelude database upload <PATH>
 ```
 
 ## Security tests

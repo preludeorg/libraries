@@ -1,22 +1,21 @@
-# Probe SDK
+# Prelude SDK
 
 Use this utility if you want direct access to the Prelude API.
 
-> The detect-cli utility wraps around this SDK to provide a rich command line experience.
+> The prelude-cli utility wraps around this SDK to provide a rich command line experience.
 
 ## Modules
 
 This SDK allows you to interact with several Prelude modules:
 
 * Accounts (AccountController)
-* Endpoints (EndpointController)
 * Database (DatabaseController)
-* Schedule (ScheduleController)
+* Detect (DetectController)
 
 ## Install
 
 ```bash
-pip install detect-sdk
+pip install prelude-sdk
 ```
 
 ## Quick start
