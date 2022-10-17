@@ -65,3 +65,13 @@ def describe_activity(controller, days):
     """ Get a summary of Account activity """
     activity = controller.describe_activity(days=days)
     print_json(data=activity)
+
+
+@account.command('register')
+@click.pass_obj
+@handle_api_error
+def delete_user(controller):
+    """ Register a new account """
+    creds = controller.new_registration(email=click.prompt('Enter an email'))
+    print_json(data=creds)
+    click.secho('Configure your keychain to use this account', fg=Colors.GREEN.value)
