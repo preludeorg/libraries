@@ -1,28 +1,27 @@
 # Probe SDK
 
-If you need access to the mHQ service beyond just launching a probe, this SDK is available for use.
+Use this utility if you want direct access to the Prelude API.
+
+> The detect-cli utility wraps around this SDK to provide a rich command line experience.
 
 ## Modules
 
-This SDK allows you to interact with several different mHQ services:
+This SDK allows you to interact with several Prelude modules:
 
 * Accounts (AccountController)
-* Endpoints (EndpointsController)
-* Probes (ProbeController)
-* TTPs (TTPsController)
+* Endpoints (EndpointController)
+* Database (DatabaseController)
+* Schedule (ScheduleController)
 
-Similar to the AWS Boto3 library, this is essentially just a wrapper around common API calls to our services.
-
-
-# Usage
-
-Install with:
+## Install
 
 ```bash
 pip install detect-sdk
 ```
 
-Then use it with:
+## Quick start
+
+The following example adds a new user to your account:
 
 ```python
 from detect_sdk.controllers.account_controller import AccountController
