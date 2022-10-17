@@ -27,13 +27,13 @@ def verify_credentials(func):
 
 class Account:
 
-    def __init__(self, profile='default', hq='https://detect_sdk.prelude.org', keychain_location=os.path.join(Path.home(), '.prelude', 'keychain.ini')):
+    def __init__(self, profile='default', hq='https://detect.dev.prelude.org', keychain_location=os.path.join(Path.home(), '.prelude', 'keychain.ini')):
         self.profile = profile
         self.hq = hq
         self.headers = dict()
         self.keychain_location = keychain_location
 
-    def configure(self, account_id, token, hq='https://detect_sdk.prelude.org', profile='default'):
+    def configure(self, account_id, token, hq='https://detect.dev.prelude.org', profile='default'):
         cfg = self.generate_config(account_id, token, hq, profile)
         self.write_keychain_config(cfg=cfg)
 
