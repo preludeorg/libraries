@@ -27,7 +27,7 @@ def view_manifest(controller):
 @click.pass_obj
 @handle_api_error
 def clone(controller):
-    """ Clone my project """
+    """ Clone my project locally """
     home = Path(PurePath(Path.home(), '.prelude', 'src'))
     home.mkdir(exist_ok=True)
 
@@ -46,7 +46,7 @@ def clone(controller):
 @click.pass_obj
 @handle_api_error
 def create(controller, ttp, name):
-    """ Upsert a TTP """
+    """ Add or update a TTP """
     controller.add_ttp(ttp=ttp, name=name)
     click.secho(f'Added {ttp}', fg=Colors.GREEN.value)
 
@@ -68,6 +68,6 @@ def add_dcf(controller, path):
 @click.pass_obj
 @handle_api_error
 def delete_ttp(controller, ttp):
-    """ Delete a TTP """
+    """ Remove a TTP """
     controller.delete_ttp(ttp=ttp)
     click.secho(f'Deleted {ttp}', fg=Colors.GREEN.value)
