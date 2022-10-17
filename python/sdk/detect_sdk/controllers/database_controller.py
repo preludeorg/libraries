@@ -36,33 +36,13 @@ class DatabaseController:
 
     @verify_credentials
     def clone(self, name):
-        res = requests.get(f'{self.account.hq}/dcf/{name}', headers=self.account.headers)
+        res = requests.get(f'{self.account.hq}/code/{name}', headers=self.account.headers)
         if res.status_code == 200:
             return res.content
         raise Exception(res.text)
 
     @verify_credentials
-    def delete_dcf(self, name):
-        res = requests.delete(f'{self.account.hq}/dcf/{name}', headers=self.account.headers)
-        if not res.status_code == 200:
-            raise Exception(res.text)
-
-    @verify_credentials
     def upload_dcf(self, name, code):
-        res = requests.post(f'{self.account.hq}/dcf/{name}', json=dict(code=code), headers=self.account.headers)
+        res = requests.post(f'{self.account.hq}/code/{name}', json=dict(code=code), headers=self.account.headers)
         if not res.status_code == 200:
             raise Exception(res.text)
-
-    @verify_credentials
-    def compile(self, ttp):
-        res = requests.post(f'{self.account.hq}/manifest/{ttp}/compile', headers=self.account.headers)
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
-
-    @verify_credentials
-    def deploy_command(self, ttp):
-        res = requests.get(f'{self.account.hq}/manifest/{ttp}/url', headers=self.account.headers)
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)

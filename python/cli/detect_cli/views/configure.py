@@ -12,4 +12,4 @@ def configure(account):
     account_id = click.prompt('Enter your account ID')
     account_token = click.prompt('Enter your account token')
     account.configure(account_id=account_id, token=account_token, hq=hq, profile=profile)
-    click.secho('Credentials configured!', fg=Colors.GREEN.value)
+    click.secho('Credentials saved', fg=Colors.GREEN.value)
