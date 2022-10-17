@@ -8,7 +8,7 @@ from detect_sdk.controllers.schedule_controller import ScheduleController
 @click.group()
 @click.pass_context
 def schedule(ctx):
-    """ Send TTPs to endpoints """
+    """ Continuously test your endpoints """
     ctx.obj = ScheduleController(account=ctx.obj)
 
 
