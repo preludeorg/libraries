@@ -53,12 +53,13 @@ prelude database clone
 
 Add or remove TTPs from your account using:
 ```zsh
-prelude database create '<TTP NAME>'
+prelude database new-ttp '<TTP NAME>'
 prelude database delete <TTP IDENTIFIER>
 ```
 
-Upload new code files:
+Create and upload new code files:
 ```zsh
+prelude database new-code <TTP ID>
 prelude database upload <PATH>
 ```
 
@@ -75,7 +76,7 @@ and last updated time. Each TTP has a unique UUID-4 identifier.
 ### Code files
 
 Code files are individual source files which can be compiled into executables. Each code file is associated to a TTP 
-through the logical naming convention: ```TTP_ID.ext```, where extension can be any supported programming language. 
+through the logical naming convention: ```TTP_ID_platform-architecture.ext```, where platform and architecture are optional and extension can be any supported programming language.
 
 > The supported programming languages are: C, C# and Swift. [Review the templates](prelude_cli/templates).
 
