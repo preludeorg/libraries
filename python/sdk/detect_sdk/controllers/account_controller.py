@@ -9,7 +9,7 @@ class AccountController:
         self.account = account
 
     @verify_credentials
-    def register(self, email):
+    def new_registration(self, email):
         res = requests.post(url=f'{self.account.hq}/account', json=dict(email=email), headers=self.account.headers)
         if res.status_code == 200:
             return res.json()

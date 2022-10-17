@@ -37,8 +37,13 @@ eval "$(_DETECT_COMPLETE=zsh_source detect)"
 
 ## Quick start
 
-Set up your keychain. Follow the prompts to add your account credentials, which saves to 
-~/.prelude/keychain.ini, and is used to authenticate all future requests.
+Start by registering a new Prelude account. You can skip this step if you already have one. 
+```zsh
+detect account register
+```
+
+Configure your keychain using your account credentials. Your keychain is saved to ~/.prelude/keychain.ini and is
+used to authenticate all future requests.
 ```zsh
 detect configure
 ```
