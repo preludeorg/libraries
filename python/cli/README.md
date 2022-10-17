@@ -77,7 +77,7 @@ and last updated time. Each TTP has a unique UUID-4 identifier.
 Code files are individual source files which can be compiled into executables. Each code file is associated to a TTP 
 through the logical naming convention: ```TTP_ID.ext```, where extension can be any supported programming language. 
 
-> The supported programming languages are: C, C# and Swift. [Review the templates](docs).
+> The supported programming languages are: C, C# and Swift. [Review the templates](prelude_cli/docs).
 
 Code files - after compilation - must be capable of the following options. The first executes the test and the 
 second runs any cleanup activities:
