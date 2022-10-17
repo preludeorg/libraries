@@ -11,7 +11,7 @@ from detect_cli.views.shared import handle_api_error
 @click.group()
 @click.pass_context
 def account(ctx):
-    """Interact with your Account"""
+    """ Administer your account """
     ctx.obj = AccountController(account=ctx.obj)
 
 
@@ -37,7 +37,7 @@ def delete_user(controller, email):
         click.secho(f'Deleted user {email}', fg=Colors.GREEN.value)
 
 
-@account.command('describe-account')
+@account.command('describe')
 @click.pass_obj
 @handle_api_error
 def describe_account(controller):
@@ -45,19 +45,19 @@ def describe_account(controller):
     print_json(data=controller.describe_account())
 
 
-@account.command('put-token')
+@account.command('token')
 @click.confirmation_option(prompt='Do you want to update the account token?')
 @click.argument('token')
 @click.pass_context
 @handle_api_error
 def update_token(ctx, token):
-    """Update your account token"""
+    """ Update your account token """
     ctx.obj.update_token(token=token)
     click.secho('Updated account token', fg=Colors.GREEN.value)
     ctx.invoke(describe_account)
 
 
-@account.command('describe-activity')
+@account.command('activity')
 @click.option('--days', help='number of days to search back', default=7, type=int)
 @click.pass_obj
 @handle_api_error

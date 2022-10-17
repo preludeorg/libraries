@@ -8,12 +8,12 @@ from detect_sdk.controllers.schedule_controller import ScheduleController
 @click.group()
 @click.pass_context
 def schedule(ctx):
-    """ Schedule TTPs on endpoints """
+    """ Continuously test your endpoints """
     ctx.obj = ScheduleController(account=ctx.obj)
 
 
-@schedule.command('activate-ttp')
-@click.argument('ttp_id')
+@schedule.command('activate')
+@click.argument('ttp')
 @click.option('--run_code',
               help='provide a run-code',
               default='daily',
@@ -21,18 +21,18 @@ def schedule(ctx):
 @click.confirmation_option(prompt='Do you want to activate the TTP?')
 @click.pass_obj
 @handle_api_error
-def activate_ttp(controller, ttp_id, run_code):
-    """Activate a TTP by ID"""
-    controller.activate_ttp(ttp=ttp_id, run_code=RunCode[run_code.upper()].value)
-    click.secho('Activated %s' % ttp_id, fg=Colors.GREEN.value)
+def activate_ttp(controller, ttp, run_code):
+    """ Add TTP to active queue """
+    controller.activate_ttp(ttp=ttp, run_code=RunCode[run_code.upper()].value)
+    click.secho('Activated %s' % ttp, fg=Colors.GREEN.value)
 
 
-@schedule.command('deactivate-ttp')
-@click.argument('ttp_id')
+@schedule.command('deactivate')
+@click.argument('ttp')
 @click.confirmation_option(prompt='Do you want to deactivate the TTP?')
 @click.pass_obj
 @handle_api_error
-def deactivate_ttp(controller, ttp_id):
-    """Deactivate a TTP by ID"""
-    controller.deactivate_ttp(ttp=ttp_id)
-    click.secho('Deactivated %s' % ttp_id, fg=Colors.GREEN.value)
+def deactivate_ttp(controller, ttp):
+    """ Remove TTP from active queue """
+    controller.deactivate_ttp(ttp=ttp)
+    click.secho('Deactivated %s' % ttp, fg=Colors.GREEN.value)

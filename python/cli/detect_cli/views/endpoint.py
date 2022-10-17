@@ -1,19 +1,19 @@
 import click
 from rich import print_json
 
-from detect_sdk.controllers.endpoints_controller import EndpointsController
+from detect_sdk.controllers.endpoint_controller import EndpointController
 from detect_sdk.models.codes import Colors
 from detect_cli.views.shared import handle_api_error
 
 
 @click.group()
 @click.pass_context
-def endpoints(ctx):
-    """Interact with endpoints"""
-    ctx.obj = EndpointsController(account=ctx.obj)
+def endpoint(ctx):
+    """ Manage your endpoints """
+    ctx.obj = EndpointController(account=ctx.obj)
 
 
-@endpoints.command('register-endpoint')
+@endpoint.command('register')
 @click.option('--tag', help='add a custom tag to this endpoint')
 @click.argument('name')
 @click.pass_obj
@@ -24,12 +24,12 @@ def register_endpoint(controller, name, tag):
     click.secho('Endpoint token: %s' % endpoint_token, fg=Colors.GREEN.value)
 
 
-@endpoints.command('describe-activity')
+@endpoint.command('activity')
 @click.option('--days', help='number of days to search back', default=7, type=int)
 @click.argument('endpoint_id')
 @click.pass_obj
 @handle_api_error
 def describe_activity(controller, endpoint_id, days):
-    """ Get a summary of Account activity, or an individual Endpoint """
+    """ Get a results for a specific endpoint """
     activity = controller.describe_activity(days=days, endpoint_id=endpoint_id)
     print_json(data=activity)
