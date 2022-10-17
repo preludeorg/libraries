@@ -1,9 +1,9 @@
 import click
-from detect_cli.views.account import account
-from detect_cli.views.configure import configure
-from detect_cli.views.database import database
-from detect_cli.views.detect import detect
-from detect_sdk.models.account import Account
+from prelude_cli.views.account import account
+from prelude_cli.views.configure import configure
+from prelude_cli.views.database import database
+from prelude_cli.views.detect import detect
+from prelude_sdk.models.account import Account
 
 
 @click.group()

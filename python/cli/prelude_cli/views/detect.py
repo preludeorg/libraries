@@ -1,9 +1,9 @@
 import click
 from rich import print_json
 
-from detect_sdk.models.codes import Colors, RunCode
-from detect_cli.views.shared import handle_api_error
-from detect_sdk.controllers.detect_controller import DetectController
+from prelude_sdk.models.codes import Colors, RunCode
+from prelude_cli.views.shared import handle_api_error
+from prelude_sdk.controllers.detect_controller import DetectController
 
 
 @click.group()

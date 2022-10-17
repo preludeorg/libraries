@@ -3,9 +3,9 @@ import uuid
 import click
 from rich import print_json
 
-from detect_sdk.controllers.account_controller import AccountController
-from detect_sdk.models.codes import Colors, Permission
-from detect_cli.views.shared import handle_api_error
+from prelude_sdk.controllers.account_controller import AccountController
+from prelude_sdk.models.codes import Colors, Permission
+from prelude_cli.views.shared import handle_api_error
 
 
 @click.group()

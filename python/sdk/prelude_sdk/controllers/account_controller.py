@@ -1,6 +1,6 @@
 import requests
 
-from detect_sdk.models.account import verify_credentials
+from prelude_sdk.models.account import verify_credentials
 
 
 class AccountController:
