@@ -22,7 +22,7 @@ def schedule(ctx):
 @click.pass_obj
 @handle_api_error
 def activate_ttp(controller, ttp, run_code):
-    """Activate a TTP by ID"""
+    """ Activate a TTP """
     controller.activate_ttp(ttp=ttp, run_code=RunCode[run_code.upper()].value)
     click.secho('Activated %s' % ttp, fg=Colors.GREEN.value)
 
@@ -33,6 +33,6 @@ def activate_ttp(controller, ttp, run_code):
 @click.pass_obj
 @handle_api_error
 def deactivate_ttp(controller, ttp):
-    """Deactivate a TTP by ID"""
+    """ Deactivate a TTP """
     controller.deactivate_ttp(ttp=ttp)
     click.secho('Deactivated %s' % ttp, fg=Colors.GREEN.value)
