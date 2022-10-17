@@ -70,7 +70,7 @@ def describe_activity(controller, days):
 @account.command('register')
 @click.pass_obj
 @handle_api_error
-def delete_user(controller):
+def register_account(controller):
     """ Register a new account """
     creds = controller.new_registration(email=click.prompt('Enter an email'))
     print_json(data=creds)
