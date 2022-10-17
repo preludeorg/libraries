@@ -1,11 +1,10 @@
-import json
 import uuid
 from pathlib import Path, PurePath
 
 import click
 from detect_cli.views.shared import handle_api_error
-from detect_sdk.models.codes import Colors
 from detect_sdk.controllers.database_controller import DatabaseController
+from detect_sdk.models.codes import Colors
 from rich import print_json
 
 
