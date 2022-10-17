@@ -1,7 +1,7 @@
 import click
 from functools import wraps
 
-from detect_sdk.models.codes import Colors
+from prelude_sdk.models.codes import Colors
 
 
 def handle_api_error(func):
