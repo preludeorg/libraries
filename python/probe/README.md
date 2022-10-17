@@ -2,13 +2,13 @@
 
 > One of Chopin's 24 Preludes. A virtuosic prelude, presents a technical challenge with its rapid hold-and-release of eighth notes against quarter notes in the right hand, involving chromatic movement.
 
-# Usage
-
-Install with:
+## Install
 
 ```bash
 pip install detect-probe
 ```
+
+## Quick start
 
 Include presto in a project with:
 
