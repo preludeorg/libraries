@@ -1,5 +1,5 @@
 import uuid
-from pathlib import Path, PurePath
+from pathlib import Path
 
 import click
 from prelude_cli.views.shared import handle_api_error
@@ -21,23 +21,6 @@ def database(ctx):
 def view_manifest(controller):
     """ Print my manifest """
     print_json(data=controller.print_manifest())
-
-
-@database.command('clone')
-@click.pass_obj
-@handle_api_error
-def clone(controller):
-    """ Clone my project locally """
-    home = Path(PurePath(Path.home(), '.prelude', 'src'))
-    home.mkdir(exist_ok=True)
-
-    listing = controller.print_manifest()
-    for ttp in listing:
-        for dcf in controller.view_ttp(ttp=ttp):
-            with open(f'{home}/{dcf}', 'wb') as code_file:
-                code_file.write(controller.clone(name=dcf))
-                click.secho(f'Cloned {dcf}')
-    click.secho(f'Project cloned to {home}', fg=Colors.GREEN.value)
 
 
 @database.command('create')
