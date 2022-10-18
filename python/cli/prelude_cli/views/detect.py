@@ -21,18 +21,20 @@ def detect(ctx):
 def register_endpoint(controller, name, tag):
     """Register a new endpoint"""
     endpoint_token = controller.register_endpoint(name=name, tag=tag)
-    click.secho('Endpoint token: %s' % endpoint_token, fg=Colors.GREEN.value)
+    click.secho(f'Endpoint token: {endpoint_token}', fg=Colors.GREEN.value)
 
 
 @detect.command('activity')
 @click.option('--days', help='number of days to search back', default=7, type=int)
-@click.argument('endpoint_id')
+@click.option('--endpoint_id', help='filter to a specific endpoint', default=None, type=str)
 @click.pass_obj
 @handle_api_error
 def describe_activity(controller, endpoint_id, days):
-    """ Get report for an endpoint """
-    activity = controller.describe_activity(days=days, endpoint_id=endpoint_id)
-    print_json(data=activity)
+    """ View results for my Account """
+    if endpoint_id:
+        print_json(data=controller.endpoint_activity(days=days, endpoint_id=endpoint_id))
+    else:
+        print_json(data=controller.account_activity(days=days))
 
 
 @detect.command('activate')
@@ -47,7 +49,7 @@ def describe_activity(controller, endpoint_id, days):
 def activate_ttp(controller, ttp, run_code):
     """ Add TTP to your queue """
     controller.activate_ttp(ttp=ttp, run_code=RunCode[run_code.upper()].value)
-    click.secho('Activated %s' % ttp, fg=Colors.GREEN.value)
+    click.secho(f'Activated {ttp}', fg=Colors.GREEN.value)
 
 
 @detect.command('deactivate')
@@ -58,4 +60,16 @@ def activate_ttp(controller, ttp, run_code):
 def deactivate_ttp(controller, ttp):
     """ Remove TTP from your queue """
     controller.deactivate_ttp(ttp=ttp)
-    click.secho('Deactivated %s' % ttp, fg=Colors.GREEN.value)
+    click.secho(f'Deactivated {ttp}', fg=Colors.GREEN.value)
+
+
+@detect.command('queue')
+@click.pass_obj
+@handle_api_error
+def queue(controller):
+    """ View active queue """
+    items = controller.print_queue()
+    if items:
+        print_json(data=items)
+    else:
+        click.secho('Your queue is empty', fg=Colors.RED.value)

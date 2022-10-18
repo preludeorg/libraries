@@ -17,6 +17,7 @@ class RunCode(Enum):
 @unique
 class Permission(Enum):
     ADMIN = 0
-    OUTPOST = 1
-    EXECUTIVE = 2
-    SERVICE = 3
+    EXECUTIVE = 1
+    SERVICE = 2
+    OPERATOR = 3
+    NONE = 4
