@@ -15,6 +15,26 @@ def account(ctx):
     ctx.obj = AccountController(account=ctx.obj)
 
 
+@account.command('register')
+@click.pass_obj
+@handle_api_error
+def register_account(controller):
+    """ Register a new account """
+    creds = controller.new_account(email=click.prompt('Enter an email'))
+    print_json(data=creds)
+    click.secho('Configure your keychain to use this account', fg=Colors.GREEN.value)
+
+
+@account.command('users')
+@click.pass_obj
+@handle_api_error
+def describe_account(controller):
+    """ View Account users """
+    for user in controller.get_users().values():
+        print(f'  --> User: {user["email"]} [{Permission(user["permission"])}]')
+    click.secho('Done', fg=Colors.GREEN.value)
+
+
 @account.command('create-user')
 @click.option('--permission', help='provide a permission level', default=[p.name for p in Permission][-1],
               type=click.Choice([p.name for p in Permission], case_sensitive=False), show_default=True)
@@ -37,14 +57,6 @@ def delete_user(controller, email):
         click.secho(f'Deleted user {email}', fg=Colors.GREEN.value)
 
 
-@account.command('describe')
-@click.pass_obj
-@handle_api_error
-def describe_account(controller):
-    """View account information"""
-    print_json(data=controller.describe_account())
-
-
 @account.command('token')
 @click.confirmation_option(prompt='Do you want to update the account token?')
 @click.argument('token')
@@ -54,24 +66,3 @@ def update_token(ctx, token):
     """ Update your account token """
     ctx.obj.update_token(token=token)
     click.secho('Updated account token', fg=Colors.GREEN.value)
-    ctx.invoke(describe_account)
-
-
-@account.command('activity')
-@click.option('--days', help='number of days to search back', default=7, type=int)
-@click.pass_obj
-@handle_api_error
-def describe_activity(controller, days):
-    """ Get a summary of Account activity """
-    activity = controller.describe_activity(days=days)
-    print_json(data=activity)
-
-
-@account.command('register')
-@click.pass_obj
-@handle_api_error
-def register_account(controller):
-    """ Register a new account """
-    creds = controller.new_registration(email=click.prompt('Enter an email'))
-    print_json(data=creds)
-    click.secho('Configure your keychain to use this account', fg=Colors.GREEN.value)

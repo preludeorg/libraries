@@ -18,13 +18,29 @@ class DetectController:
         raise Exception(f'Failed to register endpoint (reason:{res.status_code})')
 
     @verify_credentials
-    def describe_activity(self, endpoint_id=None, days=7):
-        """ Get a summary of Account activity, or an individual Endpoint """
+    def endpoint_activity(self, endpoint_id, days=7):
+        """ Get results for an individual Endpoint """
         params = dict(id=endpoint_id, days=days)
         res = requests.get(f'{self.account.hq}/account/endpoint/activity', headers=self.account.headers, params=params)
         if res.status_code == 200:
             return res.json()
         raise Exception(f'Failed to get activity (reason:{res.status_code})')
+
+    @verify_credentials
+    def account_activity(self, days=7):
+        """ Get report for an Account """
+        params = dict(days=days)
+        res = requests.get(f'{self.account.hq}/account/activity', headers=self.account.headers, params=params)
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(f'Failed to get activity (reason:{res.status_code})')
+
+    @verify_credentials
+    def print_queue(self):
+        res = requests.get(f'{self.account.hq}/account/queue', headers=self.account.headers)
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(f'Failed to find Account queue (reason:{res.status_code})')
 
     @verify_credentials
     def activate_ttp(self, ttp, run_code):
