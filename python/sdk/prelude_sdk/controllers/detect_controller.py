@@ -15,7 +15,7 @@ class DetectController:
         res = requests.post(f'{self.account.hq}/account/endpoint', headers=self.account.headers, json=params)
         if res.status_code == 200:
             return res.text
-        raise Exception(f'Failed to register endpoint (reason:{res.status_code})')
+        raise Exception(res.text)
 
     @verify_credentials
     def endpoint_activity(self, endpoint_id, days=7):
@@ -24,7 +24,7 @@ class DetectController:
         res = requests.get(f'{self.account.hq}/account/endpoint/activity', headers=self.account.headers, params=params)
         if res.status_code == 200:
             return res.json()
-        raise Exception(f'Failed to get activity (reason:{res.status_code})')
+        raise Exception(res.text)
 
     @verify_credentials
     def account_activity(self, days=7):
@@ -33,14 +33,14 @@ class DetectController:
         res = requests.get(f'{self.account.hq}/account/activity', headers=self.account.headers, params=params)
         if res.status_code == 200:
             return res.json()
-        raise Exception(f'Failed to get activity (reason:{res.status_code})')
+        raise Exception(res.text)
 
     @verify_credentials
     def print_queue(self):
         res = requests.get(f'{self.account.hq}/account/queue', headers=self.account.headers)
         if res.status_code == 200:
             return res.json()
-        raise Exception(f'Failed to find Account queue (reason:{res.status_code})')
+        raise Exception(res.text)
 
     @verify_credentials
     def activate_ttp(self, ttp, run_code):
@@ -51,11 +51,11 @@ class DetectController:
             json=dict(run_code=run_code)
         )
         if res.status_code != 200:
-            raise Exception(f'Failed to activate: {res.text}')
+            raise Exception(res.text)
 
     @verify_credentials
     def deactivate_ttp(self, ttp):
         """ Deactivate a TTP so endpoints will stop running it """
         res = requests.delete(f'{self.account.hq}/account/activation/{ttp}', headers=self.account.headers)
         if res.status_code != 200:
-            raise Exception(f'Failed to deactivate: {res.text}')
+            raise Exception(res.text)
