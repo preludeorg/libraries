@@ -13,7 +13,7 @@ def detect(ctx):
     ctx.obj = DetectController(account=ctx.obj)
 
 
-@detect.command('register')
+@detect.command('create-endpoint')
 @click.option('--tag', help='add a custom tag to this endpoint')
 @click.argument('name')
 @click.pass_obj
@@ -24,7 +24,7 @@ def register_endpoint(controller, name, tag):
     click.secho(f'Endpoint token: {endpoint_token}', fg=Colors.GREEN.value)
 
 
-@detect.command('activity')
+@detect.command('describe-activity')
 @click.option('--days', help='number of days to search back', default=7, type=int)
 @click.option('--endpoint_id', help='filter to a specific endpoint', default=None, type=str)
 @click.pass_obj
@@ -37,7 +37,7 @@ def describe_activity(controller, endpoint_id, days):
         print_json(data=controller.account_activity(days=days))
 
 
-@detect.command('activate')
+@detect.command('enable-ttp')
 @click.argument('ttp')
 @click.option('--run_code',
               help='provide a run-code',
@@ -52,7 +52,7 @@ def activate_ttp(controller, ttp, run_code):
     click.secho(f'Activated {ttp}', fg=Colors.GREEN.value)
 
 
-@detect.command('deactivate')
+@detect.command('disable-ttp')
 @click.argument('ttp')
 @click.confirmation_option(prompt='Do you want to deactivate the TTP?')
 @click.pass_obj
@@ -63,7 +63,7 @@ def deactivate_ttp(controller, ttp):
     click.secho(f'Deactivated {ttp}', fg=Colors.GREEN.value)
 
 
-@detect.command('queue')
+@detect.command('list-queue')
 @click.pass_obj
 @handle_api_error
 def queue(controller):

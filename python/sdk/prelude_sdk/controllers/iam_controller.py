@@ -3,7 +3,7 @@ import requests
 from prelude_sdk.models.account import verify_credentials
 
 
-class AccountController:
+class IAMController:
 
     def __init__(self, account):
         self.account = account
