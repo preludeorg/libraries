@@ -5,65 +5,66 @@ from pathlib import Path
 import click
 import prelude_cli.templates as templates
 from prelude_cli.views.shared import handle_api_error
-from prelude_sdk.controllers.database_controller import DatabaseController
 from prelude_sdk.models.codes import Colors
 from rich import print_json
+
+from prelude_sdk.controllers.build_controller import BuildController
 
 
 @click.group()
 @click.pass_context
-def database(ctx):
+def build(ctx):
     """ Maintain your TTP database """
-    ctx.obj = DatabaseController(account=ctx.obj)
+    ctx.obj = BuildController(account=ctx.obj)
 
 
-@database.command('view')
+@build.command('list-manifest')
 @click.pass_obj
 @handle_api_error
 def view_manifest(controller):
     """ Print my manifest """
-    print_json(data=controller.print_manifest())
+    print_json(data=controller.list_manifest())
 
 
-@database.command('clone')
+@build.command('clone')
 @click.pass_obj
 @handle_api_error
 def clone(controller):
     """ Clone my project locally """
     Path('prelude').mkdir(exist_ok=True)
 
-    listing = controller.print_manifest()
+    listing = controller.list_manifest()
     for ttp in listing:
-        for dcf in controller.view_ttp(ttp=ttp):
+        for dcf in controller.get_ttp(ttp=ttp):
             with open(f'prelude/{dcf}', 'wb') as code_file:
                 code_file.write(controller.clone(name=dcf))
                 click.secho(f'Cloned {dcf}')
     click.secho('Project cloned successfully', fg=Colors.GREEN.value)
 
 
-@database.command('new-ttp')
+@build.command('create-ttp')
 @click.argument('name')
 @click.option('--ttp', help='TTP identifier to update', default=str(uuid.uuid4()))
 @click.pass_obj
 @handle_api_error
 def create(controller, ttp, name):
     """ Add a TTP """
-    controller.add_ttp(ttp=ttp, name=name)
+    controller.create_ttp(ttp=ttp, name=name)
     click.secho(f'Added {ttp}', fg=Colors.GREEN.value)
 
 
-@database.command('upload')
+@build.command('put-code-file')
 @click.argument('path')
 @click.pass_obj
 @handle_api_error
 def add_dcf(controller, path):
     """ Upload a code file """
     with open(path, 'r') as code_file:
-        controller.upload_dcf(name=Path(path).name, code=code_file.read())
+        controller.put_code_file(name=Path(path).name, code=code_file.read())
         click.secho(f'Uploaded {path}', fg=Colors.GREEN.value)
 
 
-@database.command('delete')
+@build.command('delete-ttp')
 @click.argument('ttp')
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
@@ -74,7 +75,7 @@ def delete_ttp(controller, ttp):
     click.secho(f'Deleted {ttp}', fg=Colors.GREEN.value)
 
 
-@database.command('new-code')
+@build.command('create-code-file')
 @click.argument('ttp')
 @click.pass_obj
 @handle_api_error

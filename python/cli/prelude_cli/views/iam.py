@@ -1,21 +1,21 @@
 import uuid
 
 import click
+from prelude_cli.views.shared import handle_api_error
+from prelude_sdk.models.codes import Colors, Permission
 from rich import print_json
 
-from prelude_sdk.controllers.account_controller import AccountController
-from prelude_sdk.models.codes import Colors, Permission
-from prelude_cli.views.shared import handle_api_error
+from prelude_sdk.controllers.iam_controller import IAMController
 
 
 @click.group()
 @click.pass_context
-def account(ctx):
+def iam(ctx):
     """ Administer your account """
-    ctx.obj = AccountController(account=ctx.obj)
+    ctx.obj = IAMController(account=ctx.obj)
 
 
-@account.command('register')
+@iam.command('create-account')
 @click.pass_obj
 @handle_api_error
 def register_account(controller):
@@ -25,7 +25,7 @@ def register_account(controller):
     click.secho('Configure your keychain to use this account', fg=Colors.GREEN.value)
 
 
-@account.command('users')
+@iam.command('list-users')
 @click.pass_obj
 @handle_api_error
 def describe_account(controller):
@@ -35,7 +35,7 @@ def describe_account(controller):
     click.secho('Done', fg=Colors.GREEN.value)
 
 
-@account.command('create-user')
+@iam.command('create-user')
 @click.option('--permission', help='provide a permission level', default=[p.name for p in Permission][-1],
               type=click.Choice([p.name for p in Permission], case_sensitive=False), show_default=True)
 @click.option('--email', help='provide a unique identifier', default=str(uuid.uuid4()))
@@ -47,7 +47,7 @@ def create_user(controller, permission, email):
     click.secho(f'Created new [{permission}] account [{email}]. Token: {token}', fg=Colors.GREEN.value)
 
 
-@account.command('delete-user')
+@iam.command('delete-user')
 @click.argument('email')
 @click.pass_obj
 @handle_api_error
@@ -57,7 +57,7 @@ def delete_user(controller, email):
         click.secho(f'Deleted user {email}', fg=Colors.GREEN.value)
 
 
-@account.command('token')
+@iam.command('update-token')
 @click.confirmation_option(prompt='Do you want to update the account token?')
 @click.argument('token')
 @click.pass_context
