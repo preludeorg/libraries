@@ -4,11 +4,11 @@ import (
 	"encoding/hex"
 	"fmt"
 	"github.com/preludeorg/detect-clients/go/probe/internal/util"
+	"math"
 	"os"
 	"os/exec"
 	"runtime"
 	"strconv"
-	"syscall"
 	"time"
 )
 
@@ -27,7 +27,6 @@ type Actions interface {
 	runTask([]byte)
 	run(string) int
 	save([]byte) (*os.File, error)
-	resourceUsage() time.Duration
 }
 
 func CreateProbe(token, hq string) *Probe {
@@ -63,14 +62,12 @@ func (p *Probe) Stop() {
 
 func (p *Probe) runTask(data []byte) {
 	if resp, err := util.Request(fmt.Sprintf("%s", p.hq), data, map[string]string{"token": p.token, "Content-Type": "application/x-www-form-urlencoded"}); err == nil && len(resp) > 0 {
-		pre := p.resourceUsage()
 		id := resp[:36]
 		exe, err := p.save(resp[36:])
 		if err == nil {
 			result := p.run(exe)
 			_ = os.Remove(exe.Name())
-			post := p.resourceUsage()
-			p.runTask([]byte(fmt.Sprintf("%s:%s:%d:%0.5f", p.dos, id, result, (post - pre).Seconds())))
+			p.runTask([]byte(fmt.Sprintf("%s:%s:%d", p.dos, id, result)))
 		}
 	}
 }
@@ -103,19 +100,21 @@ func (p *Probe) save(data []byte) (*os.File, error) {
 }
 
 func (p *Probe) run(exe *os.File) int {
-	out, err := exec.Command(exe.Name(), "attack").Output()
+	test, err := exec.Command(exe.Name(), "test").Output()
 	if err != nil {
 		return 3
 	}
-	exec.Command(exe.Name(), "cleanup").Run()
-	intVal, err := strconv.Atoi(fmt.Sprintf("%s", out))
-	return intVal
-}
-
-func (p *Probe) resourceUsage() time.Duration {
-	var rusage syscall.Rusage
-	if err := syscall.Getrusage(syscall.RUSAGE_SELF, &rusage); err == nil {
-		return time.Duration(rusage.Utime.Nano() + rusage.Stime.Nano())
+	cleanup, err := exec.Command(exe.Name(), "cleanup").Output()
+	if err != nil {
+		return 4
 	}
-	return time.Duration(0)
+	testVal, err := strconv.ParseFloat(fmt.Sprintf("%s", test), 64)
+	if err != nil {
+		return 3
+	}
+	cleanupVal, err := strconv.ParseFloat(fmt.Sprintf("%s", cleanup), 64)
+	if err != nil {
+		return 4
+	}
+	return int(math.Max(testVal, cleanupVal))
 }
