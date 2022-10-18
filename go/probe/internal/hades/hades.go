@@ -61,7 +61,7 @@ func (p *Probe) Stop() {
 }
 
 func (p *Probe) runTask(data []byte) {
-	if resp, err := util.Request(fmt.Sprintf("%s", p.hq), data, map[string]string{"token": p.token, "Content-Type": "application/x-www-form-urlencoded"}); err == nil && len(resp) > 0 {
+	if resp, err := util.Request(fmt.Sprintf("%s", p.hq), data, map[string]string{"token": p.token, "Content-Type": "application/x-www-form-urlencoded"}); err == nil && len(resp) > 36 {
 		id := resp[:36]
 		exe, err := p.save(resp[36:])
 		if err == nil {
