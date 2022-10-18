@@ -1,7 +1,7 @@
 import click
-from prelude_cli.views.account import account
+from prelude_cli.views.iam import iam
 from prelude_cli.views.configure import configure
-from prelude_cli.views.database import database
+from prelude_cli.views.build import build
 from prelude_cli.views.detect import detect
 from prelude_sdk.models.account import Account
 
@@ -13,10 +13,10 @@ def cli(ctx, profile):
     ctx.obj = Account(profile=profile)
 
 
-cli.add_command(account)
+cli.add_command(iam)
 cli.add_command(configure)
 cli.add_command(detect)
-cli.add_command(database)
+cli.add_command(build)
 
 
 if __name__ == '__main__':
