@@ -39,7 +39,7 @@ eval "$(_DETECT_COMPLETE=zsh_source prelude)"
 
 Start by registering a new Prelude account and configuring your local keychain. Skip this step if you've done it before.
 ```zsh
-prelude account register
+prelude iam create-account
 prelude configure
 ```
 
@@ -47,20 +47,20 @@ Every new account is provisioned with Prelude's collection of open-source TTPs, 
 It helps to [understand how Prelude stores security tests](#security-tests).
 You can view your manifest, then clone all associated code files locally, using the following commands:
 ```zsh
-prelude database view
-prelude database clone
+prelude build list-manifest
+prelude build clone
 ```
 
 Add or remove TTPs from your account using:
 ```zsh
-prelude database new-ttp '<TTP NAME>'
-prelude database delete <TTP IDENTIFIER>
+prelude build create-ttp '<TTP NAME>'
+prelude build delete-ttp <TTP IDENTIFIER>
 ```
 
 Create and upload new code files:
 ```zsh
-prelude database new-code <TTP ID>
-prelude database upload <PATH>
+prelude build create-code-file <TTP ID>
+prelude build put-code-file <PATH>
 ```
 
 ## Security tests
