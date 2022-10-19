@@ -93,6 +93,14 @@ the state of the test.
 Both the test and clean options must return an applicable status code from this list:
 
 * 0: success
-* 1: unexpected failure; something went wrong (think catch block)
-* 2: expected failure 
-* 3: the system under test is not applicable (think skipped)
+* 1: unexpected test failure (think catch block)
+* 2: incorrect arguments used
+* 3-8: internal issue with test
+* 9: OS killed test
+* 10-14: internal issue with test
+* 15: probe killed the process
+* 17-18: outside program killed test
+* 24-25: used too many OS resources
+* 100: file could not write to disk
+* 101: file deleted on writing to disk
+* 256: binary execution error
