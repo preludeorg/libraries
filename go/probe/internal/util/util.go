@@ -1,41 +1,36 @@
 package util
 
 import (
-	"bytes"
 	"errors"
 	"io"
 	"io/fs"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
-func GetEnv(key, defaultValue string) string {
-	if value, ok := os.LookupEnv(key); ok {
-		return value
-	}
-	return defaultValue
-}
-
-func Request(url string, data []byte, headers map[string]string) ([]byte, error) {
+func Request(url string, headers map[string]string) ([]byte, string, error) {
 	client := &http.Client{}
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(data))
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 	for k, v := range headers {
 		req.Header.Set(k, v)
 	}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 	body, err := io.ReadAll(resp.Body)
 	defer resp.Body.Close()
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
-	return body, nil
+
+	return body, parseUUID(url), nil
 }
 
 func FindWorkingDirectory() (string, error) {
@@ -65,4 +60,23 @@ func FindWorkingDirectory() (string, error) {
 		return wd, nil
 	}
 	return "", errors.New("unable to find a working directory")
+}
+
+func Max(x, y int) int {
+	if x > y {
+		return x
+	}
+	return y
+}
+
+func parseUUID(str string) string {
+	uri, err := url.Parse(str)
+	if err == nil {
+		path := uri.EscapedPath()
+		components := strings.Split(path, "/")
+		if len(components) > 2 {
+			return components[2]
+		}
+	}
+	return ""
 }
