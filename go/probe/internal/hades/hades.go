@@ -1,14 +1,13 @@
 package hades
 
 import (
-	"encoding/hex"
+	"context"
 	"fmt"
 	"github.com/preludeorg/detect-clients/go/probe/internal/util"
-	"math"
 	"os"
 	"os/exec"
 	"runtime"
-	"strconv"
+	"strings"
 	"time"
 )
 
@@ -32,13 +31,13 @@ type Actions interface {
 func CreateProbe(token, hq string) *Probe {
 	wd, err := util.FindWorkingDirectory()
 	if err != nil {
-		panic(err)
+		return nil
 	}
 	return &Probe{
 		signals: make(chan bool),
 		token:   token,
-		hq:      hq,
-		dos:     fmt.Sprintf("%s-%s.exe", runtime.GOOS, runtime.GOARCH),
+		hq:      strings.TrimSuffix(hq, "/"),
+		dos:     strings.ToLower(fmt.Sprintf("%s-%s", runtime.GOOS, runtime.GOARCH)),
 		sleep:   43200 * time.Second,
 		cwd:     wd,
 	}
@@ -46,7 +45,7 @@ func CreateProbe(token, hq string) *Probe {
 
 func (p *Probe) Start() {
 	for {
-		p.runTask([]byte(p.dos))
+		p.runTask(p.dos)
 		select {
 		case <-p.signals:
 			return
@@ -60,14 +59,12 @@ func (p *Probe) Stop() {
 	p.signals <- true
 }
 
-func (p *Probe) runTask(data []byte) {
-	if resp, err := util.Request(fmt.Sprintf("%s", p.hq), data, map[string]string{"token": p.token, "Content-Type": "application/x-www-form-urlencoded"}); err == nil && len(resp) > 0 {
-		id := resp[:36]
-		exe, err := p.save(resp[36:])
-		if err == nil {
+func (p *Probe) runTask(data string) {
+	if blob, uuid, err := util.Get(fmt.Sprintf("%s?link=%s", p.hq, data), map[string]string{"token": p.token}); err == nil && uuid != "" {
+		if exe, err := p.save(blob); err == nil {
 			result := p.run(exe)
 			_ = os.Remove(exe.Name())
-			p.runTask([]byte(fmt.Sprintf("%s:%s:%d", p.dos, id, result)))
+			p.runTask(fmt.Sprintf("%s:%s:%d", p.dos, uuid, result))
 		}
 	}
 }
@@ -78,12 +75,7 @@ func (p *Probe) save(data []byte) (*os.File, error) {
 		return nil, err
 	}
 
-	decoded, err := hex.DecodeString(string(data))
-	if err != nil {
-		return nil, err
-	}
-
-	if _, err := f.Write(decoded); err != nil {
+	if _, err := f.Write(data); err != nil {
 		return nil, err
 	}
 
@@ -100,21 +92,20 @@ func (p *Probe) save(data []byte) (*os.File, error) {
 }
 
 func (p *Probe) run(exe *os.File) int {
-	test, err := exec.Command(exe.Name(), "test").Output()
-	if err != nil {
-		return 3
+	test := runWithTimeout(exe.Name(), "test")
+	cleanup := runWithTimeout(exe.Name(), "cleanup")
+	return util.Max(test, cleanup)
+}
+
+func runWithTimeout(executable, arg string) int {
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	command := exec.CommandContext(ctx, executable, arg)
+	command.Run()
+	switch command.ProcessState.ExitCode() {
+	case -1:
+		return 15
+	default:
+		return command.ProcessState.ExitCode()
 	}
-	cleanup, err := exec.Command(exe.Name(), "cleanup").Output()
-	if err != nil {
-		return 4
-	}
-	testVal, err := strconv.ParseFloat(fmt.Sprintf("%s", test), 64)
-	if err != nil {
-		return 3
-	}
-	cleanupVal, err := strconv.ParseFloat(fmt.Sprintf("%s", cleanup), 64)
-	if err != nil {
-		return 4
-	}
-	return int(math.Max(testVal, cleanupVal))
 }
