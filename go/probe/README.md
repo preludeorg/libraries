@@ -38,9 +38,9 @@ import (
 
 func main() {
     ps := hades.CreateService()
-	err := ps.LoadKeychain("/path/to/keychain.ini")
-	if err != nil {
-		panic(err)
+    err := ps.LoadKeychain("/path/to/keychain.ini")
+    if err != nil {
+	panic(err)
     }
     if err = ps.Register("my-amazing-probe"); err == nil {
         ps.Start()
