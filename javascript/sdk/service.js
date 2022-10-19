@@ -4,7 +4,8 @@ class Routes {
         this.headers = {
             'account': account,
             'token': token,
-            'content-type': 'application/json'
+            'content-type': 'application/json',
+            '_product': 'js-sdk'
         }
     }
     async handleRoute(route, options, json=true) {
