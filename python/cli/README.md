@@ -103,4 +103,5 @@ Both the test and clean options must return an applicable status code from this 
 * 24-25: used too many OS resources
 * 100: file could not write to disk
 * 101: file deleted on writing to disk
+* 102: test timed out
 * 256: binary execution error
