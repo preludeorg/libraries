@@ -29,8 +29,7 @@ func Request(url string, headers map[string]string) ([]byte, string, error) {
 	if err != nil {
 		return nil, "", err
 	}
-
-	return body, parseUUID(url), nil
+	return body, parseUUID(resp.Request.URL), nil
 }
 
 func FindWorkingDirectory() (string, error) {
@@ -69,14 +68,10 @@ func Max(x, y int) int {
 	return y
 }
 
-func parseUUID(str string) string {
-	uri, err := url.Parse(str)
-	if err == nil {
-		path := uri.EscapedPath()
-		components := strings.Split(path, "/")
-		if len(components) > 2 {
-			return components[2]
-		}
+func parseUUID(uri *url.URL) string {
+	components := strings.Split(uri.EscapedPath(), "/")
+	if len(components) > 3 {
+		return strings.Split(components[3], "_")[0]
 	}
 	return ""
 }
