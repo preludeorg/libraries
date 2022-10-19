@@ -104,4 +104,5 @@ Both the test and clean options must return an applicable status code from this 
 * 100: file could not write to disk
 * 101: file deleted on writing to disk
 * 102: test timed out
+* 103: test failed
 * 256: binary execution error
