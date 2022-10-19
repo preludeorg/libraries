@@ -14,7 +14,11 @@ def verify_credentials(func):
             cfg = args[0].account.read_keychain_config()
             args[0].account.profile = next(s for s in cfg.sections() if s == args[0].account.profile)
             args[0].account.hq = cfg.get(args[0].account.profile, 'hq')
-            args[0].account.headers = dict(account=cfg.get(args[0].account.profile, 'account'), token=cfg.get(args[0].account.profile, 'token'))
+            args[0].account.headers = dict(
+                account=cfg.get(args[0].account.profile, 'account'),
+                token=cfg.get(args[0].account.profile, 'token'),
+                _product='python-sdk'
+            )
             return func(*args, **kwargs)
         except FileNotFoundError:
             raise Exception('Please create a %s file' % args[0].account.keychain_location)
