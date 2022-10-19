@@ -58,7 +58,7 @@ func (ps *ProbeService) Register(name ...string) error {
 	api := fmt.Sprintf("%s/account/endpoint", ps.HQ)
 	headers := map[string]string{"account": ps.AccountId, "token": ps.AccountSecret, "Content-Type": "application/json"}
 	data, err := json.Marshal(map[string]string{"id": name[0]})
-	resp, err := util.Request(api, data, headers)
+	resp, err := util.Post(api, data, headers)
 	ps.Token = fmt.Sprintf("%s", resp)
 	return nil
 }

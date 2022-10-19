@@ -1,6 +1,7 @@
 package util
 
 import (
+	"bytes"
 	"errors"
 	"io"
 	"io/fs"
@@ -11,25 +12,42 @@ import (
 	"strings"
 )
 
-func Request(url string, headers map[string]string) ([]byte, string, error) {
+func GetEnv(key, defaultValue string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+	return defaultValue
+}
+
+func Post(url string, data []byte, headers map[string]string) ([]byte, error) {
+	data, _, err := request(url, "POST", data, headers)
+	return data, err
+}
+
+func Get(url string, headers map[string]string) ([]byte, string, error) {
+	data, uri, err := request(url, "GET", nil, headers)
+	return data, parseUUID(uri), err
+}
+
+func request(url, method string, data []byte, headers map[string]string) ([]byte, *url.URL, error) {
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest(method, url, bytes.NewReader(data))
 	if err != nil {
-		return nil, "", err
+		return nil, nil, err
 	}
 	for k, v := range headers {
 		req.Header.Set(k, v)
 	}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, "", err
+		return nil, nil, err
 	}
 	body, err := io.ReadAll(resp.Body)
 	defer resp.Body.Close()
 	if err != nil {
-		return nil, "", err
+		return nil, nil, err
 	}
-	return body, parseUUID(resp.Request.URL), nil
+	return body, resp.Request.URL, nil
 }
 
 func FindWorkingDirectory() (string, error) {
@@ -69,9 +87,11 @@ func Max(x, y int) int {
 }
 
 func parseUUID(uri *url.URL) string {
-	components := strings.Split(uri.EscapedPath(), "/")
-	if len(components) > 3 {
-		return strings.Split(components[3], "_")[0]
+	if uri != nil {
+		components := strings.Split(uri.EscapedPath(), "/")
+		if len(components) > 3 {
+			return strings.Split(components[3], "_")[0]
+		}
 	}
 	return ""
 }
