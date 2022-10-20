@@ -48,10 +48,10 @@ func FindWorkingDirectory() (string, error) {
 	err = filepath.WalkDir(cwd, func(path string, d fs.DirEntry, err error) error {
 		if d.IsDir() {
 			f, err := os.CreateTemp(path, "detect")
-			defer os.Remove(f.Name())
 			if err != nil {
 				return nil
 			}
+			defer os.Remove(f.Name())
 			_, err = os.Open(f.Name())
 			if err != nil {
 				return nil
