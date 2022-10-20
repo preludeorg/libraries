@@ -3,6 +3,7 @@ package util
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"io"
 	"io/fs"
 	"net/http"
@@ -19,14 +20,24 @@ func GetEnv(key, defaultValue string) string {
 	return defaultValue
 }
 
-func Post(url string, data []byte, headers map[string]string) ([]byte, int, error) {
+func Post(url string, data []byte, headers map[string]string) ([]byte, error) {
 	data, status, _, err := request(url, "POST", data, headers)
-	return data, status, err
+	if err != nil {
+		return nil, err
+	} else if status == 200 {
+		return data, err
+	}
+	return nil, errors.New(fmt.Sprintf("%s", data))
 }
 
-func Get(url string, headers map[string]string) ([]byte, int, string, error) {
+func Get(url string, headers map[string]string) ([]byte, string, error) {
 	data, status, uri, err := request(url, "GET", nil, headers)
-	return data, status, parseUUID(uri), err
+	if err != nil {
+		return nil, "", err
+	} else if status == 200 {
+		return data, parseUUID(uri), err
+	}
+	return nil, "", errors.New(fmt.Sprintf("%s", data))
 }
 
 func request(url, method string, data []byte, headers map[string]string) ([]byte, int, *url.URL, error) {
