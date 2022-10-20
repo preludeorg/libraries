@@ -3,6 +3,7 @@ package service
 import (
 	"bufio"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/preludeorg/detect-clients/go/probe/internal/hades"
 	"github.com/preludeorg/detect-clients/go/probe/internal/util"
@@ -58,7 +59,10 @@ func (ps *ProbeService) Register(name ...string) error {
 	api := fmt.Sprintf("%s/account/endpoint", ps.HQ)
 	headers := map[string]string{"account": ps.AccountId, "token": ps.AccountSecret, "Content-Type": "application/json"}
 	data, err := json.Marshal(map[string]string{"id": name[0]})
-	resp, err := util.Post(api, data, headers)
+	resp, status, err := util.Post(api, data, headers)
+	if status != 200 {
+		return errors.New(fmt.Sprintf("%s", resp))
+	}
 	ps.Token = fmt.Sprintf("%s", resp)
 	return nil
 }

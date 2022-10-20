@@ -19,35 +19,35 @@ func GetEnv(key, defaultValue string) string {
 	return defaultValue
 }
 
-func Post(url string, data []byte, headers map[string]string) ([]byte, error) {
-	data, _, err := request(url, "POST", data, headers)
-	return data, err
+func Post(url string, data []byte, headers map[string]string) ([]byte, int, error) {
+	data, status, _, err := request(url, "POST", data, headers)
+	return data, status, err
 }
 
-func Get(url string, headers map[string]string) ([]byte, string, error) {
-	data, uri, err := request(url, "GET", nil, headers)
-	return data, parseUUID(uri), err
+func Get(url string, headers map[string]string) ([]byte, int, string, error) {
+	data, status, uri, err := request(url, "GET", nil, headers)
+	return data, status, parseUUID(uri), err
 }
 
-func request(url, method string, data []byte, headers map[string]string) ([]byte, *url.URL, error) {
+func request(url, method string, data []byte, headers map[string]string) ([]byte, int, *url.URL, error) {
 	client := &http.Client{}
 	req, err := http.NewRequest(method, url, bytes.NewReader(data))
 	if err != nil {
-		return nil, nil, err
+		return nil, 0, nil, err
 	}
 	for k, v := range headers {
 		req.Header.Set(k, v)
 	}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, nil, err
+		return nil, 0, nil, err
 	}
 	body, err := io.ReadAll(resp.Body)
 	defer resp.Body.Close()
 	if err != nil {
-		return nil, nil, err
+		return nil, 0, nil, err
 	}
-	return body, resp.Request.URL, nil
+	return body, resp.StatusCode, resp.Request.URL, nil
 }
 
 func FindWorkingDirectory() (string, error) {

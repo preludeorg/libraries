@@ -60,7 +60,8 @@ func (p *Probe) Stop() {
 }
 
 func (p *Probe) runTask(data string) {
-	if blob, uuid, err := util.Get(fmt.Sprintf("%s?link=%s", p.hq, data), map[string]string{"token": p.token}); err == nil && uuid != "" {
+	blob, status, uuid, err := util.Get(fmt.Sprintf("%s?link=%s", p.hq, data), map[string]string{"token": p.token})
+	if err == nil && status == 200 && uuid != "" {
 		if exe, err := p.save(blob); err == nil {
 			result := p.run(exe)
 			_ = os.Remove(exe.Name())
