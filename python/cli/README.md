@@ -92,7 +92,7 @@ the state of the test.
 
 Both the test and clean options must return an applicable status code from this list:
 
-* 0: success
+* 0: test was positive 
 * 1: unexpected test failure (think catch block)
 * 2: incorrect arguments used
 * 3-8: internal issue with test
@@ -104,5 +104,5 @@ Both the test and clean options must return an applicable status code from this 
 * 100: file could not write to disk
 * 101: file deleted on writing to disk
 * 102: test timed out
-* 103: test failed
+* 103: test was negative
 * 256: binary execution error
