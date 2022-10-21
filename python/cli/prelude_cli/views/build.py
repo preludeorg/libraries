@@ -44,13 +44,13 @@ def clone(controller):
 
 
 @build.command('put-ttp')
-@click.argument('name')
+@click.argument('label')
 @click.option('--ttp', help='TTP identifier to update', default=str(uuid.uuid4()))
 @click.pass_obj
 @handle_api_error
-def create(controller, ttp, name):
+def create(controller, ttp, label):
     """ Add a TTP """
-    controller.create_ttp(ttp=ttp, name=name)
+    controller.create_ttp(ttp=ttp, label=label)
     click.secho(f'Added {ttp}', fg=Colors.GREEN.value)
 
 
@@ -131,10 +131,10 @@ def generate_code_file(controller, ttp):
         )
 
     # get TTP to work with
-    name = controller.list_manifest().get(ttp)
-    if not name:
-        name = click.prompt('No TTP supplied. Provide a name for your new TTP: ')
-        controller.create_ttp(ttp=ttp, name=name)
+    label = controller.list_manifest().get(ttp)
+    if not label:
+        label = click.prompt('No TTP supplied. Provide a name for your new TTP: ')
+        controller.create_ttp(ttp=ttp, label=label)
 
     # generate a name
     code_name = ttp
@@ -153,7 +153,6 @@ def generate_code_file(controller, ttp):
     with filepath.open('w') as f:
         template = pkg_resources.read_text(templates, f'template.{ext}')
         template = template.replace('$NAME', code_name)
-        template = template.replace('$LABEL', name)
         template = template.replace('$CREATED', str(datetime.now()))
         f.write(template)
     click.secho(f'Generated {code_name}', fg=Colors.GREEN.value)

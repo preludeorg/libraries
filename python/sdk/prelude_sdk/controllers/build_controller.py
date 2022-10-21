@@ -28,8 +28,8 @@ class BuildController:
             raise Exception(res.text)
 
     @verify_credentials
-    def create_ttp(self, ttp, name):
-        res = requests.put(f'{self.account.hq}/manifest', json=dict(id=ttp, name=name), headers=self.account.headers)
+    def create_ttp(self, ttp, label):
+        res = requests.put(f'{self.account.hq}/manifest', json=dict(id=ttp, label=label), headers=self.account.headers)
         if not res.status_code == 200:
             raise Exception(res.text)
 

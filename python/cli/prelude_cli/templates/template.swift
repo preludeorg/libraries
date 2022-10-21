@@ -1,6 +1,5 @@
 /*
 NAME: $NAME
-LABEL: $LABEL
 CREATED: $CREATED
 */
 
