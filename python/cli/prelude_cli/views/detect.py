@@ -71,18 +71,22 @@ def queue(controller):
 @handle_api_error
 def describe_activity(controller, days):
     """ View results for my Account """
-    raw = controller.account_activity(days=days)
+    days = controller.account_activity(days=days)
 
+    # shape results for overall view
     records = defaultdict(lambda: defaultdict(int))
-    for day, activity in raw.items():
-        for tag, test in activity.items():
-            for i, statuses in test.items():
-                for code, count in statuses.items():
-                    records[i][code] = count
+    for test in days.values():
+        for i, tags in test.items():
+            for result in tags.values():
+                for record in result:
+                    records[i]['ok'] += 0
+    #print_json(data=records)
 
+    # print to console
     report = Table()
     report.add_column('test')
-    report.add_column('volume')
+    report.add_column('tests run')
+    report.add_column('total endpoints')
     report.add_column('ok', style='green')
     report.add_column('defended', style='green')
     report.add_column('failed', style='red')
@@ -102,45 +106,5 @@ def describe_activity(controller, days):
                 error = '{0:.0%}'.format(count/volume)
         report.add_row(ttp, str(volume), str(ok), str(stopped), str(failed), str(error))
 
-    click.secho('* ok: everything is healthy', fg=Colors.GREEN.value)
-    click.secho('* defended: a control stopped the test', fg=Colors.GREEN.value)
-    click.secho('* failed: you have a problem', fg=Colors.RED.value)
-    click.secho('* error: the test encountered an issue', fg=Colors.MAGENTA.value)
-
     console = Console()
     console.print(report)
-
-    identifier = click.prompt('Enter a test ID to view by tag: ', default=None)
-    if identifier:
-        report = Table()
-        report.add_column('tag')
-        report.add_column('volume')
-        report.add_column('ok', style='green')
-        report.add_column('defended', style='green')
-        report.add_column('failed', style='red')
-        report.add_column('error', style='magenta')
-
-        records = defaultdict(lambda: defaultdict(int))
-        for day, activity in raw.items():
-            for tag, test in activity.items():
-                for i, statuses in test.items():
-                    if i != identifier:
-                        continue
-                    for code, count in statuses.items():
-                        records[tag][code] = count
-
-        for tag, summary in records.items():
-            ok, stopped, failed, error = 0, 0, 0, 0
-            volume = sum(summary.values())
-            for code, count in summary.items():
-                if code == str(103):
-                    ok = '{0:.0%}'.format(count/volume)
-                elif code == str(9):
-                    stopped = '{0:.0%}'.format(count/volume)
-                elif code == str(0):
-                    failed = '{0:.0%}'.format(count/volume)
-                else:
-                    error = '{0:.0%}'.format(count/volume)
-            report.add_row(tag, str(volume), str(ok), str(stopped), str(failed), str(error))
-        console = Console()
-        console.print(report)
