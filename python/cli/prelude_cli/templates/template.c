@@ -1,9 +1,15 @@
+/*
+NAME: $NAME
+LABEL: $SUMMARY
+CREATED: $CREATED
+*/
+
 #include <stdlib.h>
 #include <string.h>
 
 int test(void)
 {
-    char *command = "whoami";\n' +
+    char *command = "whoami";
     return system(command);
 }
 

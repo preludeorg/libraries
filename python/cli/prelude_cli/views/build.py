@@ -1,5 +1,6 @@
 import importlib.resources as pkg_resources
 import uuid
+from datetime import datetime
 from pathlib import Path
 
 import click
@@ -42,7 +43,7 @@ def clone(controller):
     click.secho('Project cloned successfully', fg=Colors.GREEN.value)
 
 
-@build.command('create-ttp')
+@build.command('put-ttp')
 @click.argument('name')
 @click.option('--ttp', help='TTP identifier to update', default=str(uuid.uuid4()))
 @click.pass_obj
@@ -86,43 +87,6 @@ def delete_code_file(controller, name):
     click.secho(f'Deleted {name}', fg=Colors.GREEN.value)
 
 
-@build.command('create-code-file')
-@click.argument('ttp')
-@click.pass_obj
-@handle_api_error
-def generate_code_file(controller, ttp):
-    """ Create a new code file """
-    platform = click.prompt(
-        text='Enter your desired platform',
-        type=click.Choice(['*', 'darwin', 'linux']),
-        show_choices=True,
-        default='*'
-    )
-    if platform is not '*':
-        ttp = f'{ttp}_{platform}'
-        architecture = click.prompt(
-            text='Enter your desired architecture',
-            type=click.Choice(['*', 'arm64', 'x86_64']),
-            show_choices=True,
-            default='*'
-        )
-        if architecture is not '*':
-            ttp = f'{ttp}-{architecture}'
-
-    extension = click.prompt(
-        text='Enter a file extension',
-        type=click.Choice(['c', 'cs', 'swift']),
-        show_choices=True
-    )
-    ttp = f'{ttp}.{extension}'
-
-    filepath = Path(ttp)
-    filepath.parent.mkdir(parents=True, exist_ok=True)
-    with filepath.open('w') as f:
-        f.write(pkg_resources.read_text(templates, f'template.{extension}'))
-    click.secho(f'Generated {ttp}', fg=Colors.GREEN.value)
-
-
 @build.command('create-url')
 @click.argument('name')
 @click.pass_obj
@@ -132,3 +96,64 @@ def create_url(controller, name):
     url = controller.create_url(name=name)
     print(url)
     click.secho(f'Use the above url to download {name}', fg=Colors.GREEN.value)
+
+
+
+@build.command('create-code-file')
+@click.option('--ttp', help='TTP identifier', default=str(uuid.uuid4()))
+@click.pass_obj
+@handle_api_error
+def generate_code_file(controller, ttp):
+    """ Create a new code file """
+    def platform():
+        p = click.prompt(
+            text='Select a platform',
+            type=click.Choice(['*', 'darwin', 'linux']),
+            show_choices=True,
+            default='*'
+        )
+        return p if p is not '*' else None
+
+    def architecture():
+        a = click.prompt(
+            text='Select an architecture',
+            type=click.Choice(['*', 'arm64', 'x86_64']),
+            show_choices=True,
+            default='*'
+        )
+        return a if a is not '*' else None
+
+    def extension():
+        return click.prompt(
+            text='Select a language',
+            type=click.Choice(['c', 'cs', 'swift']),
+            show_choices=True
+        )
+
+    # get TTP to work with
+    name = controller.list_manifest().get(ttp)
+    if not name:
+        name = click.prompt('No TTP supplied. Provide a name for your new TTP: ')
+        controller.create_ttp(ttp=ttp, name=name)
+
+    # generate a name
+    code_name = ttp
+    platform = platform()
+    if platform:
+        code_name = f'{code_name}_{platform}'
+        arch = architecture()
+        if arch:
+            code_name = f'{code_name}-{arch}'
+    ext = extension()
+    code_name = f'{code_name}.{ext}'
+
+    # create code file
+    filepath = Path(f'{ttp}/{code_name}')
+    filepath.parent.mkdir(parents=True, exist_ok=True)
+    with filepath.open('w') as f:
+        template = pkg_resources.read_text(templates, f'template.{ext}')
+        template = template.replace('$NAME', code_name)
+        template = template.replace('$LABEL', name)
+        template = template.replace('$CREATED', str(datetime.now()))
+        f.write(template)
+    click.secho(f'Generated {code_name}', fg=Colors.GREEN.value)

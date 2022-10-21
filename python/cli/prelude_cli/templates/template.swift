@@ -1,3 +1,9 @@
+/*
+NAME: $NAME
+LABEL: $SUMMARY
+CREATED: $CREATED
+*/
+
 func test() {
     print("testing")
 }
