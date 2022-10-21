@@ -75,6 +75,17 @@ def delete_ttp(controller, ttp):
     click.secho(f'Deleted {ttp}', fg=Colors.GREEN.value)
 
 
+@build.command('delete-code-file')
+@click.argument('name')
+@click.confirmation_option(prompt='Are you sure?')
+@click.pass_obj
+@handle_api_error
+def delete_code_file(controller, name):
+    """ Remove a code file """
+    controller.delete_code_file(name=name)
+    click.secho(f'Deleted {name}', fg=Colors.GREEN.value)
+
+
 @build.command('create-code-file')
 @click.argument('ttp')
 @click.pass_obj
