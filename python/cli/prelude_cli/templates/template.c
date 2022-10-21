@@ -3,7 +3,7 @@
 
 int test(void)
 {
-    char *command = "whoami";\n' +
+    char *command = "whoami";
     return system(command);
 }
 

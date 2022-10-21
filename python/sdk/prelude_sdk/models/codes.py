@@ -4,6 +4,7 @@ from enum import Enum, unique
 class Colors(Enum):
     GREEN = 'green'
     RED = 'red'
+    MAGENTA = 'magenta'
 
 
 @unique

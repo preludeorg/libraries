@@ -42,7 +42,7 @@ def clone(controller):
     click.secho('Project cloned successfully', fg=Colors.GREEN.value)
 
 
-@build.command('create-ttp')
+@build.command('put-ttp')
 @click.argument('name')
 @click.option('--ttp', help='TTP identifier to update', default=str(uuid.uuid4()))
 @click.pass_obj
