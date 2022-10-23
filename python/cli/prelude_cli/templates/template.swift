@@ -1,3 +1,7 @@
+/*
+NAME: $NAME
+CREATED: $CREATED
+*/
 func test() {
     print("testing")
 }
