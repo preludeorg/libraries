@@ -59,4 +59,3 @@ class BuildController:
         if not res.status_code == 200:
             raise Exception(res.text)
         return res.json()
-
