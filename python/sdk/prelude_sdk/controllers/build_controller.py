@@ -54,7 +54,7 @@ class BuildController:
             raise Exception(res.text)
 
     @verify_credentials
-    def create_url(self, name, code):
+    def create_url(self, name):
         res = requests.get(f'{self.account.hq}/build/deploy/{name}', headers=self.account.headers)
         if not res.status_code == 200:
             raise Exception(res.text)
