@@ -1,9 +1,10 @@
 import click
-from rich import print_json
-
-from prelude_sdk.models.codes import Colors, RunCode
 from prelude_cli.views.shared import handle_api_error
 from prelude_sdk.controllers.detect_controller import DetectController
+from prelude_sdk.models.codes import Colors, RunCode
+from rich import print_json
+from rich.console import Console
+from rich.table import Table
 
 
 @click.group()
@@ -22,19 +23,6 @@ def register_endpoint(controller, name, tag):
     """Register a new endpoint"""
     endpoint_token = controller.register_endpoint(name=name, tag=tag)
     click.secho(f'Endpoint token: {endpoint_token}', fg=Colors.GREEN.value)
-
-
-@detect.command('describe-activity')
-@click.option('--days', help='number of days to search back', default=7, type=int)
-@click.option('--endpoint_id', help='filter to a specific endpoint', default=None, type=str)
-@click.pass_obj
-@handle_api_error
-def describe_activity(controller, endpoint_id, days):
-    """ View results for my Account """
-    if endpoint_id:
-        print_json(data=controller.endpoint_activity(days=days, endpoint_id=endpoint_id))
-    else:
-        print_json(data=controller.account_activity(days=days))
 
 
 @detect.command('enable-ttp')
@@ -73,3 +61,28 @@ def queue(controller):
         print_json(data=items)
     else:
         click.secho('Your queue is empty', fg=Colors.RED.value)
+
+
+@detect.command('describe-activity')
+@click.option('--days', help='number of days to search back', default=7, type=int)
+@click.pass_obj
+@handle_api_error
+def describe_activity(controller, days):
+    """ View report for my Account """
+    raw = controller.describe_activity(days=days)
+    print_json(data=raw)
+
+    report = Table()
+    report.add_column('test')
+    report.add_column('tag')
+    report.add_column('volume (#)')
+    report.add_column('ok (%)', style='green')
+    report.add_column('defended (%)', style='green')
+    report.add_column('failed (%)', style='red')
+    report.add_column('error (%)', style='magenta')
+
+
+    #report.add_row(test, tag, str(volume), str(round((ok/volume) * 100)), str(round((stopped/volume) * 100)), str(round((failed/volume) * 100)), str(round((error/volume) * 100)))
+
+    console = Console()
+    console.print(report)

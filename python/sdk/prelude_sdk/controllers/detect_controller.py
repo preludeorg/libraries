@@ -18,19 +18,10 @@ class DetectController:
         raise Exception(res.text)
 
     @verify_credentials
-    def endpoint_activity(self, endpoint_id, days=7):
-        """ Get results for an individual Endpoint """
-        params = dict(id=endpoint_id, days=days)
-        res = requests.get(f'{self.account.hq}/account/endpoint/activity', headers=self.account.headers, params=params)
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
-
-    @verify_credentials
-    def account_activity(self, days=7):
+    def describe_activity(self, days=7):
         """ Get report for an Account """
         params = dict(days=days)
-        res = requests.get(f'{self.account.hq}/account/activity', headers=self.account.headers, params=params)
+        res = requests.get(f'{self.account.hq}/account/report', headers=self.account.headers, params=params)
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
