@@ -97,7 +97,7 @@ def describe_activity(controller, days):
 @click.pass_obj
 @handle_api_error
 def export_report(controller, days):
-    """ Print out data dump URL """
+    """ Review all failed tests """
     url = controller.export_report(days=days)
     print(url)
     click.secho(f'Use the above URL to download data dump', fg=Colors.GREEN.value)
