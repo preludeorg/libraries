@@ -1,18 +1,22 @@
 # Prelude CLI
 
-Want to standardize how you write, compile, validate and deploy security tests (TTPs)?
+Standardize how you write, compile, validate and deploy security tests (TTPs).
 
 The prelude-cli utility allows you to:
 
-* Write security tests (TTPs) in any language
-* Store tests in a cloud account for quick access and easy sharing
-* Automatically compile tests for every platform your chosen language supports
-* Add your tests to a continuous testing pipeline to track their efficacy
-* Generate a download link for any test in your collection
+* Store security tests in a cloud account
+* Register endpoints and deploy probes on them
+* Enable tests to run continuously against your probes
+* Monitor results
+
+There are four modules inside the CLI:
 
 > This library wraps around the prelude-sdk utility, which can be used standalone to interact with the Prelude API.
 
-Each security test uses an exit status to provide an objective analysis of its efficacy.
+1. iam: Prelude account management
+2. configure: establish a local keychain on your computer
+3. build: manage the security tests in your account
+4. detect: run continuous security tests against your endpoints
 
 ## Install
 
