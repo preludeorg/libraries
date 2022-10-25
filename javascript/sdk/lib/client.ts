@@ -16,7 +16,7 @@ export default class Client {
 
   async request(path: string, options: RequestInit = {}) {
     const headers = options.headers ?? {};
-    const response = await fetch(`${this.config.host}/${path}`, {
+    const response = await fetch(`${this.config.host}${path}`, {
       ...options,
       headers: {
         ...this.#defaultHeaders,
@@ -25,7 +25,7 @@ export default class Client {
     });
 
     if (!response.ok) {
-      // throw error here
+      throw Error(await response.text());
     }
 
     return response;

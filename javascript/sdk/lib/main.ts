@@ -1,2 +1,6 @@
-export * from "./service";
+import Service from "./service";
 export * from "./types";
+
+export default {
+  Service,
+};

@@ -1,5 +1,10 @@
 import Client from "../client";
-import type { BuildResults, Manifest, RequestOptions } from "../types";
+import type {
+  BuildResults,
+  Manifest,
+  ManifestList,
+  RequestOptions,
+} from "../types";
 
 export default class BuildController {
   #client: Client;
@@ -10,7 +15,7 @@ export default class BuildController {
 
   async listTTP(options: RequestOptions) {
     const response = await this.#client.request("/manifest", options);
-    return (await response.json()) as Manifest[];
+    return (await response.json()) as ManifestList;
   }
 
   async getTTP(id: string, options: RequestOptions = {}) {
@@ -58,9 +63,11 @@ export default class BuildController {
   }
 
   async getCodeFile(name: string, options: RequestOptions = {}) {
-    await this.#client.request(`/code/${name}`, {
+    const response = await this.#client.request(`/code/${name}`, {
       ...options,
     });
+
+    return response.text();
   }
 
   async deploy(name: string, options: RequestOptions = {}) {
