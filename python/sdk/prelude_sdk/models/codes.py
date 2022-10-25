@@ -20,6 +20,6 @@ class RunCode(Enum):
 class Permission(Enum):
     ADMIN = 0
     EXECUTIVE = 1
-    SERVICE = 2
-    OPERATOR = 3
+    OPERATOR = 2
+    SERVICE = 3
     NONE = 4
