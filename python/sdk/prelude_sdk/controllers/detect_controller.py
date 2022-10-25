@@ -18,16 +18,6 @@ class DetectController:
         raise Exception(res.text)
 
     @verify_credentials
-    def describe_activity(self, days=7, ttp=None):
-        """ Get report for an Account """
-        params = dict(days=days)
-        route = f'/{ttp}' if ttp else ''
-        res = requests.get(f'{self.account.hq}/account/report{route}', headers=self.account.headers, params=params)
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
-
-    @verify_credentials
     def print_queue(self):
         res = requests.get(f'{self.account.hq}/account/queue', headers=self.account.headers)
         if res.status_code == 200:
@@ -51,3 +41,22 @@ class DetectController:
         res = requests.delete(f'{self.account.hq}/account/activation/{ttp}', headers=self.account.headers)
         if res.status_code != 200:
             raise Exception(res.text)
+
+    @verify_credentials
+    def describe_activity(self, days=7, ttp=None):
+        """ Get report for an Account """
+        params = dict(days=days)
+        route = f'/{ttp}' if ttp else ''
+        res = requests.get(f'{self.account.hq}/account/report{route}', headers=self.account.headers, params=params)
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def export_report(self, days=7):
+        """ Generate a redirect URL to a data dump """
+        params = dict(days=days)
+        res = requests.get(f'{self.account.hq}/account/report-export', headers=self.account.headers, params=params)
+        if res.status_code == 200:
+            return res.url
+        raise Exception(res.text)

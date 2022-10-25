@@ -67,9 +67,9 @@ def queue(controller):
 @click.option('--days', help='days to look back', default=7, type=int)
 @click.pass_obj
 @handle_api_error
-def describe_activity(controller, days, ttp):
+def describe_activity(controller, days):
     """ View report for my Account """
-    raw = controller.describe_activity(days=days, ttp=ttp)
+    raw = controller.describe_activity(days=days)
 
     report = Table()
     report.add_column('test')
@@ -90,3 +90,14 @@ def describe_activity(controller, days, ttp):
 
     console = Console()
     console.print(report)
+
+
+@detect.command('export-report')
+@click.option('--days', help='days to look back', default=7, type=int)
+@click.pass_obj
+@handle_api_error
+def export_report(controller, days):
+    """ Print out data dump URL """
+    url = controller.export_report(days=days)
+    print(url)
+    click.secho(f'Use the above URL to download data dump', fg=Colors.GREEN.value)
