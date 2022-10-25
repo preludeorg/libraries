@@ -20,7 +20,6 @@
     "build": "vite build && tsc --emitDeclarationOnly"
   },
   "devDependencies": {
-    "@rollup/plugin-typescript": "^9.0.2",
     "@types/node": "^18.11.4",
     "tslib": "^2.4.0",
     "typescript": "^4.6.4",
