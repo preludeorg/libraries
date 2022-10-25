@@ -98,6 +98,16 @@ def create_url(controller, name):
     click.secho(f'Use the above url to download {name}', fg=Colors.GREEN.value)
 
 
+@build.command('delete-manifest')
+@click.confirmation_option(prompt='Are you sure?')
+@click.pass_obj
+@handle_api_error
+def purge_account(controller):
+    """ Delete all TTPs """
+    controller.delete_manifest()
+    click.secho('Manifest has been purged', fg=Colors.GREEN.value)
+
+
 @build.command('create-code-file')
 @click.option('--ttp', help='TTP identifier', default=str(uuid.uuid4()))
 @click.pass_obj
