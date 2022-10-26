@@ -96,7 +96,6 @@ the state of the test.
 
 Both the test and clean options must return an applicable status code from this list:
 
-* 0: test was positive 
 * 1: unexpected test failure (think catch block)
 * 2: incorrect arguments used
 * 3-8: internal issue with test
@@ -105,8 +104,10 @@ Both the test and clean options must return an applicable status code from this 
 * 15: probe killed the process
 * 17-18: outside program killed test
 * 24-25: used too many OS resources
-* 100: file could not write to disk
-* 101: file deleted on writing to disk
+* 100: test was a "yes"
+* 101: test was a "no"
 * 102: test timed out
 * 103: test was negative
+* 104: file could not write to disk
+* 105: file deleted on writing to disk
 * 256: binary execution error
