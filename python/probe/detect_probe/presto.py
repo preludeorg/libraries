@@ -26,17 +26,20 @@ class Probe:
 
     async def run(self, pack):
         def _measure():
+            name = ''
             try:
-                fp = tempfile.NamedTemporaryFile(dir=os.getcwd())
-                fp.write(pack[1])
-                os.close(fp)
-                os.chmod(fp.name, os.stat(fp.name).st_mode | stat.S_IEXEC)
-                test = subprocess.run([fp.name], timeout=2)
-                clean = subprocess.run([fp.name, 'clean'], timeout=2)
-                fp.close()
+                fd, name = tempfile.mkstemp(dir=os.getcwd())
+                os.write(fd, pack[1])
+                os.close(fd)
+                os.chmod(name, os.stat(name).st_mode | stat.S_IEXEC)
+                test = subprocess.run([name], timeout=2)
+                clean = subprocess.run([name, 'clean'], timeout=2)
+                os.remove(name)
                 return f'{DOS}:{pack[0]}:{max(test.returncode, clean.returncode)}'
             except subprocess.TimeoutExpired:
                 return f'{DOS}:{pack[0]}:102'
+            finally:
+                os.remove(name)
         if pack:
             asyncio.create_task(self.run(next(self.hq(_measure()), None)))
 
