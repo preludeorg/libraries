@@ -36,6 +36,8 @@ class Probe:
                 return f'{DOS}:{pack[0]}:{max(test.returncode, clean.returncode)}'
             except subprocess.TimeoutExpired:
                 return f'{DOS}:{pack[0]}:102'
+            except Exception:
+                return f'{DOS}:{pack[0]}:1'
         if pack:
             asyncio.create_task(self.run(next(self.hq(_measure()), None)))
 
