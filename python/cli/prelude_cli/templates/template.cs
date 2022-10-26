@@ -5,21 +5,21 @@ CREATED: $CREATED
 using System;
 
 class TTP {
-    static int Test() {
-        Console.WriteLine("Testing");
-        return 0;
+    static void Test() {
+        Console.WriteLine("Run test");
+        Environment.Exit(103);
     }
 
-    static int Clean() {
-        Console.WriteLine("Clean");
-        return 0;
+    static void Clean() {
+        Console.WriteLine("Clean up");
+        Environment.Exit(103);
     }
 
     static void Main(string[] args) {
-        if (args[0].Contains("clean")) {
-            Clean();
-        } else {
+        if (args.Length == 0) {
             Test();
+        } else {
+            Clean();
         }
     }
 }

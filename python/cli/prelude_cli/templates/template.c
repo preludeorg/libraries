@@ -4,23 +4,25 @@ CREATED: $CREATED
 */
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
-int test(void)
+void test(void)
 {
-    char *command = "whoami";
-    return system(command);
+    printf("Run test");
+    exit(103);
 }
 
-int clean(void)
+void clean(void)
 {
-    return 0;
+    printf("Clean up");
+    exit(103);
 }
 
 int main(int argc, char *argv[])
 {
-    if (strcmp(argv[1], "clean") == 0) {
-        return clean();
+    if (argc > 1) {
+        clean();
     } else {
-        return test();
+        test();
     }
 }
