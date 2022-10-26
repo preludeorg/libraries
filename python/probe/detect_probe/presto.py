@@ -4,6 +4,7 @@ import re
 import stat
 import subprocess
 import tempfile
+import os.path
 from urllib import request
 
 DOS = f'{os.uname().sysname}-{os.uname().machine}'.lower()
@@ -34,14 +35,14 @@ class Probe:
                 os.chmod(name, os.stat(name).st_mode | stat.S_IEXEC)
                 test = subprocess.run([name], timeout=2)
                 clean = subprocess.run([name, 'clean'], timeout=2)
-                os.remove(name)
                 return f'{DOS}:{pack[0]}:{max(test.returncode, clean.returncode)}'
             except subprocess.TimeoutExpired:
                 return f'{DOS}:{pack[0]}:102'
             except Exception:
                 return f'{DOS}:{pack[0]}:1'
             finally:
-                os.remove(name)
+                if os.path.exists(name):
+                    os.remove(name)
         if pack:
             asyncio.create_task(self.run(next(self.hq(_measure()), None)))
 
