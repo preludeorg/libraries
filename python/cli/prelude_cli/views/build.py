@@ -1,4 +1,5 @@
 import importlib.resources as pkg_resources
+import pathlib
 import uuid
 from datetime import datetime
 from pathlib import Path
@@ -110,9 +111,10 @@ def purge_account(controller):
 
 @build.command('create-code-file')
 @click.option('--ttp', help='TTP identifier', default=str(uuid.uuid4()))
+@click.option('--path', help='directory to store file', default='.')
 @click.pass_obj
 @handle_api_error
-def generate_code_file(controller, ttp):
+def generate_code_file(controller, ttp, path):
     """ Create a new code file """
     def platform():
         p = click.prompt(
@@ -157,7 +159,7 @@ def generate_code_file(controller, ttp):
     code_name = f'{code_name}.{ext}'
 
     # create code file
-    filepath = Path(f'{ttp}/{code_name}')
+    filepath = Path(pathlib.PurePath(path, code_name))
     filepath.parent.mkdir(parents=True, exist_ok=True)
     with filepath.open('w') as f:
         template = pkg_resources.read_text(templates, f'template.{ext}')
