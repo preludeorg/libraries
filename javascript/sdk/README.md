@@ -20,5 +20,5 @@ const credentials = await service.iam.newAccount("test@example.com");
 
 service.setCredentials(credentials);
 
-const manifests = await service.build.listManifest();
+const manifest = await service.build.listManifest();
 ```

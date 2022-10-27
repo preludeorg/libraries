@@ -80,4 +80,13 @@ export default class BuildController {
 
     return (await response.json()) as BuildResults;
   }
+
+  async deleteCompliedFiles(options: RequestOptions = {}) {
+    const response = await this.#client.requestWithAuth(`/code`, {
+      method: "DELETE",
+      ...options,
+    });
+
+    return response.text();
+  }
 }

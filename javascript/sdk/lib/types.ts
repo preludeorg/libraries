@@ -34,8 +34,9 @@ export interface AccountQueue {}
 export const RunCodes = {
   DEBUG: 0,
   DAILY: 1,
-  MONTHLY: 2,
-  ONCE: 3,
+  WEEKLY: 2,
+  MONTHLY: 3,
+  ONCE: 4,
 } as const;
 
 export type RunCode = typeof RunCodes[keyof typeof RunCodes];
@@ -43,8 +44,8 @@ export type RunCode = typeof RunCodes[keyof typeof RunCodes];
 export const Permissions = {
   ADMIN: 0,
   EXECUTIVE: 1,
-  SERVICE: 2,
-  OPERATOR: 3,
+  OPERATOR: 2,
+  SERVICE: 3,
   NONE: 4,
 } as const;
 

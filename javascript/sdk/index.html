@@ -18,16 +18,16 @@
 
       service.setCredentials(credentials);
 
-      const manifests = await service.build.listManifest();
+      const manifest = await service.build.listManifest();
 
-      console.log("Manifests before create", manifests);
+      console.log("Manifest before create", manifest);
 
       const ttpId = uuid.v4();
       await service.build.createTTP(ttpId, "This is a test");
 
-      const manifests2 = await service.build.listManifest();
+      const manifest2 = await service.build.listManifest();
 
-      console.log("Manifests after create", manifests2);
+      console.log("Manifest after create", manifest2);
     </script>
   </body>
 </html>

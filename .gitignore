@@ -6,3 +6,4 @@
 *.map
 **/build/**
 .idea
+yarn.lock

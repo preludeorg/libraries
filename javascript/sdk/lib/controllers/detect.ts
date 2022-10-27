@@ -27,22 +27,6 @@ export default class DetectController {
     return response.text();
   }
 
-  async endpointActivity(
-    { endpointId, days = 7 }: { endpointId: string; days?: number },
-    options: RequestOptions
-  ) {
-    const response = await this.#client.requestWithAuth(
-      "/account/endpoint/activity",
-      {
-        method: "GET",
-        body: JSON.stringify({ endpoint_id: endpointId, days }),
-        ...options,
-      }
-    );
-
-    return (await response.json()) as EndpointActivity;
-  }
-
   async accountActivity(
     { days = 7 }: { days?: number },
     options: RequestOptions
