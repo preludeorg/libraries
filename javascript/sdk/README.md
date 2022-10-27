@@ -14,7 +14,7 @@ The following example registers an account and gets the manifest:
 
 ```typescript
 import * as Prelude from "@prelude/sdk";
-const service = new Prelude.Service({ host: "https://detect.dev.prelude.org" });
+const service = new Prelude.Service({ host: "https://detect.prelude.org" });
 
 const credentials = await service.iam.newAccount("test@example.com");
 
