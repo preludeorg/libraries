@@ -1,6 +1,7 @@
 import Service from "./service";
-export * from "./types";
+import * as Types from "./types";
 
 export default {
   Service,
+  Types,
 };
