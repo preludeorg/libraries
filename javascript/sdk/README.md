@@ -10,7 +10,7 @@ npm install @prelude/sdk
 
 ## Quick start
 
-The following example registers an account and gets manifest:
+The following example registers an account and gets the manifest:
 
 ```typescript
 import * as Prelude from "@prelude/sdk";
