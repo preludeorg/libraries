@@ -20,6 +20,7 @@ export default class Client {
 
     this.#defaultHeaders = {
       "Content-Type": "application/json",
+      _product: "js-sdk",
     };
   }
 
