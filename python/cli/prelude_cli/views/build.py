@@ -99,7 +99,7 @@ def create_url(controller, name):
     click.secho(f'Use the above url to download {name}', fg=Colors.GREEN.value)
 
 
-@build.command('purge-manifest')
+@build.command('purge')
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
 @handle_api_error
