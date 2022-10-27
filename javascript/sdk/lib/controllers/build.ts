@@ -13,7 +13,7 @@ export default class BuildController {
     this.#client = client;
   }
 
-  async listManifest(options: RequestOptions) {
+  async listManifest(options: RequestOptions = {}) {
     const response = await this.#client.requestWithAuth("/manifest", options);
     return (await response.json()) as ManifestList;
   }
