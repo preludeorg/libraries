@@ -39,7 +39,7 @@ export default class Client {
 
   async #fetch(path: string, headers: HeadersInit, options: RequestInit) {
     const customHeaders = options.headers ?? {};
-    const response = await fetch(`${this.#host.toString()}${path}`, {
+    const response = await fetch(new URL(path, this.#host), {
       ...options,
       headers: {
         ...headers,
