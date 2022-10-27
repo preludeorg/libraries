@@ -8,6 +8,10 @@
   <body>
     <script type="module">
       import Prelude from "/lib/main.ts";
+      import * as uuid from "https://jspm.dev/uuid";
+
+      console.log(uuid);
+
       const service = new Prelude.Service({
         host: "https://detect.dev.prelude.org",
       });
@@ -18,7 +22,14 @@
 
       const manifests = await service.build.listManifest();
 
-      console.log(manifests);
+      console.log("Manifests before create", manifests);
+
+      const ttpId = uuid.v4();
+      await service.build.createTTP(ttpId, "This is a test");
+
+      const manifests2 = await service.build.listManifest();
+
+      console.log("Manifests after create", manifests2);
     </script>
   </body>
 </html>
