@@ -66,3 +66,10 @@ class BuildController:
         if not res.status_code == 200:
             raise Exception(res.text)
         return res.json()
+
+    @verify_credentials
+    def delete_compiled_files(self):
+        res = requests.delete(f'{self.account.hq}/code', headers=self.account.headers)
+        if not res.status_code == 200:
+            raise Exception(res.text)
+        return res.text

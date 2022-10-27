@@ -99,14 +99,24 @@ def create_url(controller, name):
     click.secho(f'Use the above url to download {name}', fg=Colors.GREEN.value)
 
 
-@build.command('delete-manifest')
+@build.command('purge-manifest')
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
 @handle_api_error
-def purge_account(controller):
-    """ Delete all TTPs """
+def purge_manifest(controller):
+    """ Delete all TTPs and code files """
     controller.delete_manifest()
     click.secho('Manifest has been purged', fg=Colors.GREEN.value)
+
+
+@build.command('purge-compiled')
+@click.confirmation_option(prompt='Are you sure?')
+@click.pass_obj
+@handle_api_error
+def purge_code_files(controller):
+    """ Delete all compiled code files """
+    text = controller.delete_compiled_files()
+    click.secho(text, fg=Colors.GREEN.value)
 
 
 @build.command('create-code-file')
