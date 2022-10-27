@@ -103,10 +103,10 @@ def create_url(controller, name):
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
 @handle_api_error
-def purge_manifest(controller):
-    """ Delete all TTPs and code files """
+def purge(controller):
+    """ Delete all stored TTPs and files """
     controller.delete_manifest()
-    click.secho('Manifest has been purged', fg=Colors.GREEN.value)
+    click.secho('Storage has been purged', fg=Colors.GREEN.value)
 
 
 @build.command('purge-compiled')
