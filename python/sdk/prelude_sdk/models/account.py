@@ -17,7 +17,7 @@ def verify_credentials(func):
             args[0].account.headers = dict(
                 account=cfg.get(args[0].account.profile, 'account'),
                 token=cfg.get(args[0].account.profile, 'token'),
-                _product='python-sdk'
+                _product='py-sdk'
             )
             return func(*args, **kwargs)
         except FileNotFoundError:
