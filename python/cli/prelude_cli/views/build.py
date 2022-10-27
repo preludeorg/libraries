@@ -162,6 +162,7 @@ def generate_code_file(controller, ttp):
     with filepath.open('w') as f:
         template = pkg_resources.read_text(templates, f'template.{ext}')
         template = template.replace('$NAME', code_name)
+        template = template.replace('$QUESTION', question)
         template = template.replace('$CREATED', str(datetime.now()))
         f.write(template)
     click.secho(f'Generated {code_name}', fg=Colors.GREEN.value)
