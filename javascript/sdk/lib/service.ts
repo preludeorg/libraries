@@ -4,7 +4,7 @@ import DetectController from "./controllers/detect";
 import IAMController from "./controllers/iam";
 import { Credentials, ServiceConfig } from "./types";
 
-export default class Service {
+export class Service {
   #client: Client;
 
   build: BuildController;

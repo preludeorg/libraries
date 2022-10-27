@@ -7,10 +7,8 @@
   </head>
   <body>
     <script type="module">
-      import Prelude from "/lib/main.ts";
+      import * as Prelude from "/lib/main.ts";
       import * as uuid from "https://jspm.dev/uuid";
-
-      console.log(uuid);
 
       const service = new Prelude.Service({
         host: "https://detect.dev.prelude.org",

@@ -13,7 +13,7 @@ npm install @prelude/sdk
 The following example registers an account and gets manifest:
 
 ```typescript
-import Prelude from "@prelude/sdk";
+import * as Prelude from "@prelude/sdk";
 const service = new Prelude.Service({ host: "https://detect.dev.prelude.org" });
 
 const credentials = await service.iam.newAccount("test@example.com");
