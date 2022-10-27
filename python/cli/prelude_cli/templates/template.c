@@ -10,13 +10,13 @@ CREATED: $CREATED
 void test(void)
 {
     printf("Run test");
-    exit(103);
+    exit(100);
 }
 
 void clean(void)
 {
     printf("Clean up");
-    exit(103);
+    exit(100);
 }
 
 int main(int argc, char *argv[])

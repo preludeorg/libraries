@@ -8,12 +8,12 @@ using System;
 class TTP {
     static void Test() {
         Console.WriteLine("Run test");
-        Environment.Exit(103);
+        Environment.Exit(100);
     }
 
     static void Clean() {
         Console.WriteLine("Clean up");
-        Environment.Exit(103);
+        Environment.Exit(100);
     }
 
     static void Main(string[] args) {
