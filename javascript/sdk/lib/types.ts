@@ -1,10 +1,15 @@
-export interface RequestConfig {
+export interface ServiceConfig {
   host: string;
+  /** credentials is optional since some requests can be made without them */
+  credentials?: Credentials;
+}
+
+export interface Credentials {
   account: string;
   token: string;
 }
 
-export type RequestOptions = Pick<RequestInit, "headers" | "signal">;
+export type RequestOptions = Omit<RequestInit, "method" | "body">;
 
 /** Dictionary to TTPs with
  * their id as the key
@@ -16,4 +21,21 @@ export type Manifest = string[];
 
 export interface BuildResults {}
 
-export interface NewAccountResponse {}
+export interface Users {}
+
+export interface CreatedUser {}
+
+export interface EndpointActivity {}
+
+export interface AccountActivity {}
+
+export interface AccountQueue {}
+
+export const RunCodes = {
+  DEBUG: 0,
+  DAILY: 1,
+  MONTHLY: 2,
+  ONCE: 3,
+} as const;
+
+export type RunCode = typeof RunCodes[keyof typeof RunCodes];

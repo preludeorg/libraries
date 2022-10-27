@@ -7,9 +7,13 @@
   </head>
   <body>
     <script type="module">
-      import Prelude from "/lib/main.ts"
-      
-      const service = new Prelude.Service({ })
+      import Prelude from "/lib/main.ts";
+
+      const service = new Prelude.Service({
+        host: "https://detect.dev.prelude.org",
+      });
+
+      console.log(await service.iam.newAccount("kenrick.beckett@prelude.org"));
     </script>
   </body>
 </html>

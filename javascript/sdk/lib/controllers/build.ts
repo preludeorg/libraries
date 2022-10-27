@@ -13,13 +13,13 @@ export default class BuildController {
     this.#client = client;
   }
 
-  async listTTP(options: RequestOptions) {
-    const response = await this.#client.request("/manifest", options);
+  async listManifest(options: RequestOptions) {
+    const response = await this.#client.requestWithAuth("/manifest", options);
     return (await response.json()) as ManifestList;
   }
 
   async getTTP(id: string, options: RequestOptions = {}) {
-    const response = await this.#client.request(`/manifest/${id}`, {
+    const response = await this.#client.requestWithAuth(`/manifest/${id}`, {
       ...options,
     });
 
@@ -27,7 +27,7 @@ export default class BuildController {
   }
 
   async createTTP(id: string, question: string, options: RequestOptions = {}) {
-    await this.#client.request(`/manifest`, {
+    await this.#client.requestWithAuth(`/manifest`, {
       method: "PUT",
       body: JSON.stringify({ id, question }),
       ...options,
@@ -35,7 +35,7 @@ export default class BuildController {
   }
 
   async deleteTTP(id: string, options: RequestOptions = {}) {
-    await this.#client.request(`/manifest/delete/${id}`, {
+    await this.#client.requestWithAuth(`/manifest/delete/${id}`, {
       method: "DELETE",
       ...options,
     });
@@ -45,7 +45,7 @@ export default class BuildController {
    * Creates or updates a code file
    */
   async putCodeFile(name: string, code: string, options: RequestOptions = {}) {
-    await this.#client.request(`/code/${name}`, {
+    await this.#client.requestWithAuth(`/code/${name}`, {
       method: "POST",
       body: JSON.stringify({ code }),
       ...options,
@@ -56,7 +56,7 @@ export default class BuildController {
    * Deletes a code file
    */
   async deleteCodeFile(name: string, options: RequestOptions = {}) {
-    await this.#client.request(`/code/${name}`, {
+    await this.#client.requestWithAuth(`/code/${name}`, {
       method: "DELETE",
       ...options,
     });
@@ -71,9 +71,12 @@ export default class BuildController {
   }
 
   async deploy(name: string, options: RequestOptions = {}) {
-    const response = await this.#client.request(`/build/deploy/${name}`, {
-      ...options,
-    });
+    const response = await this.#client.requestWithAuth(
+      `/build/deploy/${name}`,
+      {
+        ...options,
+      }
+    );
 
     return (await response.json()) as BuildResults;
   }
