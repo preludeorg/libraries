@@ -39,3 +39,13 @@ export const RunCodes = {
 } as const;
 
 export type RunCode = typeof RunCodes[keyof typeof RunCodes];
+
+export const Permissions = {
+  ADMIN: 0,
+  EXECUTIVE: 1,
+  SERVICE: 2,
+  OPERATOR: 3,
+  NONE: 4,
+} as const;
+
+export type Permission = typeof Permissions[keyof typeof Permissions];

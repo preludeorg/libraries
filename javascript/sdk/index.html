@@ -8,12 +8,17 @@
   <body>
     <script type="module">
       import Prelude from "/lib/main.ts";
-
       const service = new Prelude.Service({
         host: "https://detect.dev.prelude.org",
       });
 
-      console.log(await service.iam.newAccount("kenrick.beckett@prelude.org"));
+      const credentials = await service.iam.newAccount("test@example.com");
+
+      service.setCredentials(credentials);
+
+      const manifests = await service.build.listManifest();
+
+      console.log(manifests);
     </script>
   </body>
 </html>

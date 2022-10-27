@@ -1,5 +1,11 @@
 import Client from "../client";
-import type { CreatedUser, Credentials, RequestOptions, Users } from "../types";
+import type {
+  CreatedUser,
+  Credentials,
+  Permission,
+  RequestOptions,
+  Users,
+} from "../types";
 
 export default class IAMController {
   #client: Client;
@@ -39,7 +45,7 @@ export default class IAMController {
   }
 
   async createUser(
-    permission: string,
+    permission: Permission,
     email: string,
     options: RequestOptions = {}
   ) {
