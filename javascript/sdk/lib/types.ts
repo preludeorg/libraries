@@ -25,8 +25,6 @@ export interface Users {}
 
 export interface CreatedUser {}
 
-export interface EndpointActivity {}
-
 export interface AccountActivity {}
 
 export interface AccountQueue {}

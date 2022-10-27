@@ -2,7 +2,6 @@ import Client from "../client";
 import {
   AccountActivity,
   AccountQueue,
-  EndpointActivity,
   RequestOptions,
   RunCode,
 } from "../types";
