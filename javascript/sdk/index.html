@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prelude SDK</title>
+  </head>
+  <body>
+    <script type="module">
+      import * as Prelude from "/lib/main.ts";
+      import * as uuid from "https://jspm.dev/uuid";
+
+      const service = new Prelude.Service({
+        host: "https://detect.prelude.org",
+      });
+
+      const credentials = await service.iam.newAccount("test@example.com");
+
+      service.setCredentials(credentials);
+
+      const manifest = await service.build.listManifest();
+
+      console.log("Manifest before create", manifest);
+
+      const ttpId = uuid.v4();
+      await service.build.createTTP(ttpId, "This is a test");
+
+      const manifest2 = await service.build.listManifest();
+
+      console.log("Manifest after create", manifest2);
+    </script>
+  </body>
+</html>

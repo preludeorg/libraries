@@ -1,0 +1,29 @@
+{
+  "name": "@prelude/sdk",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/sdk.umd.cjs",
+  "module": "./dist/sdk.js",
+  "types": "./dist/main.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/sdk.js",
+      "require": "./dist/sdk.umd.cjs"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && tsc --emitDeclarationOnly"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.4",
+    "tslib": "^2.4.0",
+    "typescript": "^4.6.4",
+    "vite": "^3.1.0"
+  },
+  "dependencies": {}
+}
