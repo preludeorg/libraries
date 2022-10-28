@@ -26,12 +26,13 @@ class ProbeService:
 
         try:
             if not token:
-                raise NotImplementedError('Probe requires token to start')
+                raise NotImplementedError('Detect is not configured')
+
             os.environ['PRELUDE_TOKEN'] = token
             self._probe_thread = threading.Thread(target=the_upside_down, daemon=True)
             self._probe_thread.start()
-        except NotImplementedError as ex:
-            self.log.warning(ex)
+        except NotImplementedError:
+            """ Detect is not configured """
 
     def stop(self):
         """ Stop a running probe """
