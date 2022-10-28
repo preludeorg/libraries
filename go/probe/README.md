@@ -7,7 +7,7 @@
 Install with:
 
 ```bash
-go get github.com/preludeorg/detect-clients/go/probe
+go get github.com/preludeorg/libraries/go/probe
 ```
 
 Include Hades in a project with:
@@ -16,7 +16,7 @@ Include Hades in a project with:
 package main
 
 import (
-    hades "github.com/preludeorg/detect-clients/go/probe/pkg/service"
+    hades "github.com/preludeorg/libraries/go/probe/pkg/service"
 )
 
 func main() {
@@ -33,7 +33,7 @@ You can also manually load configurations from a keychain file and specify a nam
 package main
 
 import (
-    hades "github.com/preludeorg/detect-clients/go/probe/pkg/service"
+    hades "github.com/preludeorg/libraries/go/probe/pkg/service"
 )
 
 func main() {

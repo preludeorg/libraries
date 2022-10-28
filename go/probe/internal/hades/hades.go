@@ -3,7 +3,7 @@ package hades
 import (
 	"context"
 	"fmt"
-	"github.com/preludeorg/detect-clients/go/probe/internal/util"
+	"github.com/preludeorg/libraries/go/probe/internal/util"
 	"os"
 	"os/exec"
 	"runtime"

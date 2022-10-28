@@ -4,8 +4,8 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
-	"github.com/preludeorg/detect-clients/go/probe/internal/hades"
-	"github.com/preludeorg/detect-clients/go/probe/internal/util"
+	"github.com/preludeorg/libraries/go/probe/internal/hades"
+	"github.com/preludeorg/libraries/go/probe/internal/util"
 	"os"
 	"strings"
 )
