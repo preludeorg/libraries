@@ -63,7 +63,7 @@ export default class BuildController {
   }
 
   async getCodeFile(name: string, options: RequestOptions = {}) {
-    const response = await this.#client.request(`/code/${name}`, {
+    const response = await this.#client.requestWithAuth(`/code/${name}`, {
       ...options,
     });
 
