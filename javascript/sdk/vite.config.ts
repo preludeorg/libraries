@@ -5,7 +5,7 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, "lib/main.ts"),
-      name: "@prelude/sdk",
+      name: "@theprelude/sdk",
       fileName: "sdk",
     },
     rollupOptions: {},
