@@ -1,6 +1,6 @@
 {
   "name": "@theprelude/sdk",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "type": "module",
   "files": [
     "dist"
@@ -30,7 +30,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/preludeorg/detect-clients.git"
+    "url": "git+https://github.com/preludeorg/libraries.git"
   },
   "keywords": [
     "prelude",
@@ -40,7 +40,7 @@
   "author": "support@prelude.org",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/preludeorg/detect-clients/issues"
+    "url": "https://github.com/preludeorg/libraries/issues"
   },
-  "homepage": "https://github.com/preludeorg/detect-clients#readme"
+  "homepage": "https://github.com/preludeorg/libraries#readme"
 }
