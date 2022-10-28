@@ -2,7 +2,7 @@ import Client from "../client";
 import type {
   BuildResults,
   Manifest,
-  ManifestList,
+  TTPFiles,
   RequestOptions,
 } from "../types";
 
@@ -15,7 +15,7 @@ export default class BuildController {
 
   async listManifest(options: RequestOptions = {}) {
     const response = await this.#client.requestWithAuth("/manifest", options);
-    return (await response.json()) as ManifestList;
+    return (await response.json()) as Manifest;
   }
 
   async getTTP(id: string, options: RequestOptions = {}) {
@@ -23,7 +23,7 @@ export default class BuildController {
       ...options,
     });
 
-    return (await response.json()) as Manifest;
+    return (await response.json()) as TTPFiles;
   }
 
   async createTTP(id: string, question: string, options: RequestOptions = {}) {

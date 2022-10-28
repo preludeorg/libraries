@@ -14,10 +14,10 @@ export type RequestOptions = Omit<RequestInit, "method" | "body">;
 /** Dictionary to TTPs with
  * their id as the key
  * and question as the value */
-export type ManifestList = Record<string, string>;
+export type Manifest = Record<string, string>;
 
 /** List of code files in the TTP Manifest */
-export type Manifest = string[];
+export type TTPFiles = string[];
 
 export interface BuildResults {}
 
