@@ -9,8 +9,8 @@ class IAMController:
         self.account = account
 
     @verify_credentials
-    def new_account(self, email):
-        res = requests.post(url=f'{self.account.hq}/account', json=dict(email=email), headers=self.account.headers)
+    def new_account(self, handle):
+        res = requests.post(url=f'{self.account.hq}/account', json=dict(handle=handle), headers=self.account.headers)
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
@@ -23,10 +23,10 @@ class IAMController:
         raise Exception(res.text)
 
     @verify_credentials
-    def create_user(self, permission, email):
+    def create_user(self, permission, handle):
         res = requests.post(
             url=f'{self.account.hq}/account/user',
-            json=dict(permission=permission, email=email),
+            json=dict(permission=permission, handle=f'@{handle}'),
             headers=self.account.headers
         )
         if res.status_code == 200:
@@ -34,8 +34,8 @@ class IAMController:
         raise Exception(res.text)
 
     @verify_credentials
-    def delete_user(self, email):
-        res = requests.delete(f'{self.account.hq}/account/user', json=dict(email=email), headers=self.account.headers)
+    def delete_user(self, handle):
+        res = requests.delete(f'{self.account.hq}/account/user', json=dict(handle=handle), headers=self.account.headers)
         if res.status_code == 200:
             return True
         raise Exception(res.text)

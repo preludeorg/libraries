@@ -17,7 +17,7 @@ def iam(ctx):
 @handle_api_error
 def register_account(controller):
     """ Register a new account """
-    creds = controller.new_account(email=click.prompt('Enter an email'))
+    creds = controller.new_account(handle=click.prompt('Enter a handle'))
     print_json(data=creds)
     click.secho('Configure your keychain to use this account', fg=Colors.GREEN.value)
 
@@ -28,30 +28,30 @@ def register_account(controller):
 def describe_account(controller):
     """ View Account users """
     for user in controller.get_users().values():
-        print(f'  --> User: {user["email"]} [{Permission(user["permission"])}]')
+        print(f'  --> User: {user["handle"]} [{Permission(user["permission"])}]')
     click.secho('Done', fg=Colors.GREEN.value)
 
 
 @iam.command('create-user')
 @click.option('--permission', help='provide a permission level', default=[p.name for p in Permission][-1],
               type=click.Choice([p.name for p in Permission], case_sensitive=False), show_default=True)
-@click.argument('email')
+@click.argument('handle')
 @click.pass_obj
 @handle_api_error
-def create_user(controller, permission, email):
+def create_user(controller, permission, handle):
     """Create a new user in the account"""
-    token = controller.create_user(email=email, permission=Permission[permission.upper()].value)
-    click.secho(f'Created new [{permission}] account [{email}]. Token: {token}', fg=Colors.GREEN.value)
+    token = controller.create_user(handle=handle, permission=Permission[permission.upper()].value)
+    click.secho(f'Created new [{permission}] user [{handle}]. Token: {token}', fg=Colors.GREEN.value)
 
 
 @iam.command('delete-user')
-@click.argument('email')
+@click.argument('handle')
 @click.pass_obj
 @handle_api_error
-def delete_user(controller, email):
+def delete_user(controller, handle):
     """Delete a user from the account"""
-    if controller.delete_user(email=email):
-        click.secho(f'Deleted user {email}', fg=Colors.GREEN.value)
+    if controller.delete_user(handle=handle):
+        click.secho(f'Deleted user {handle}', fg=Colors.GREEN.value)
 
 
 @iam.command('update-token')

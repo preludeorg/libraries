@@ -22,4 +22,3 @@ class Permission(Enum):
     EXECUTIVE = 1
     OPERATOR = 2
     SERVICE = 3
-    NONE = 4
