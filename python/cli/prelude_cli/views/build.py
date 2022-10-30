@@ -88,17 +88,6 @@ def delete_code_file(controller, name):
     click.secho(f'Deleted {name}', fg=Colors.GREEN.value)
 
 
-@build.command('create-url')
-@click.argument('name')
-@click.pass_obj
-@handle_api_error
-def create_url(controller, name):
-    """ Generate deploy url """
-    url = controller.create_url(name=name)
-    print(url)
-    click.secho(f'Use the above url to download {name}', fg=Colors.GREEN.value)
-
-
 @build.command('purge')
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
