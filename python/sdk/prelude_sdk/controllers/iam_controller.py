@@ -26,7 +26,7 @@ class IAMController:
     def create_user(self, permission, handle):
         res = requests.post(
             url=f'{self.account.hq}/account/user',
-            json=dict(permission=permission, handle=f'@{handle}'),
+            json=dict(permission=permission, handle=handle),
             headers=self.account.headers
         )
         if res.status_code == 200:
