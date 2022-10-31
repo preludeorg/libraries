@@ -16,7 +16,7 @@ The following example registers an account and gets the manifest:
 import * as Prelude from "@theprelude/sdk";
 const service = new Prelude.Service({ host: "https://detect.prelude.org" });
 
-const credentials = await service.iam.newAccount("test@example.com");
+const credentials = await service.iam.newAccount("user_handle");
 
 service.setCredentials(credentials);
 
