@@ -19,8 +19,6 @@ export type Manifest = Record<string, string>;
 /** List of code files in the TTP Manifest */
 export type TTPFiles = string[];
 
-export interface BuildResults {}
-
 export interface Users {
   [id: string]: {
     handle: string;
