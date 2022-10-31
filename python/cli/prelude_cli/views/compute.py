@@ -29,16 +29,15 @@ def describe_server(controller):
 @handle_api_error
 def test_code(controller, name):
     """ Test a code file """
-    steps = controller.compute_proxy(route='test', name=name)
-    print_json(steps)
+    print_json(controller.compute_proxy(route='test', name=name))
 
 
 @compute.command('publish-code')
 @click.argument('name')
 @click.pass_obj
 @handle_api_error
-def publish_ttp(controller, name):
-    """ Save compiled binaries to storage """
+def publish_code(controller, name):
+    """ Save compiled code file to DB """
     controller.compute_proxy(route='publish', name=name)
     print(f'{name} published')
 
