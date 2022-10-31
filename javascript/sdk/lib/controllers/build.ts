@@ -1,10 +1,5 @@
 import Client from "../client";
-import type {
-  BuildResults,
-  Manifest,
-  TTPFiles,
-  RequestOptions,
-} from "../types";
+import type { Manifest, TTPFiles, RequestOptions } from "../types";
 
 export default class BuildController {
   #client: Client;
@@ -68,17 +63,6 @@ export default class BuildController {
     });
 
     return response.text();
-  }
-
-  async deploy(name: string, options: RequestOptions = {}) {
-    const response = await this.#client.requestWithAuth(
-      `/build/deploy/${name}`,
-      {
-        ...options,
-      }
-    );
-
-    return (await response.json()) as BuildResults;
   }
 
   async deleteCompliedFiles(options: RequestOptions = {}) {
