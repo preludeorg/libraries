@@ -20,7 +20,8 @@ def describe_server(controller):
     private_ip = controller.describe_server()
     if private_ip:
         click.secho(f'Your Compute server is {private_ip}', fg=Colors.GREEN.value)
-    print('Compute server booting up. Please try again in 30s.')
+    else:
+        print('Compute server booting up. Please try again in 30s.')
 
 
 @compute.command('test-code')
