@@ -21,9 +21,16 @@ export type TTPFiles = string[];
 
 export interface BuildResults {}
 
-export interface Users {}
+export interface Users {
+  [id: string]: {
+    handle: string;
+    permission: Permission;
+  };
+}
 
-export interface CreatedUser {}
+export interface CreatedUser {
+  token: string;
+}
 
 export interface AccountActivity {}
 
@@ -48,3 +55,29 @@ export const Permissions = {
 } as const;
 
 export type Permission = typeof Permissions[keyof typeof Permissions];
+
+export const ComputeRoutes = {
+  TEST: "test",
+  PUBLISH: "publish",
+} as const;
+
+export type ComputeRoute = typeof ComputeRoutes[keyof typeof ComputeRoutes];
+
+export interface ComputeProps {
+  /** Code file name */
+  name: string;
+}
+
+export interface ComputeResult {
+  architecture: string;
+  platform: string;
+  steps: {
+    duration: string;
+    name: string;
+    output: string;
+    status: number;
+    step: string;
+  }[];
+}
+
+export interface CreatedURL {}
