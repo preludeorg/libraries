@@ -15,12 +15,12 @@ export default class IAMController {
   }
 
   async newAccount(
-    email: string,
+    handle: string,
     options: RequestOptions = {}
   ): Promise<Credentials> {
     const response = await this.#client.request("/account", {
       method: "POST",
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ handle }),
       ...options,
     });
 
@@ -46,22 +46,22 @@ export default class IAMController {
 
   async createUser(
     permission: Permission,
-    email: string,
+    handle: string,
     options: RequestOptions = {}
   ) {
     const response = await this.#client.requestWithAuth("/account/user", {
       method: "POST",
-      body: JSON.stringify({ permission, email }),
+      body: JSON.stringify({ permission, handle }),
       ...options,
     });
 
     return (await response.json()) as CreatedUser;
   }
 
-  async deleteUser(email: string, options: RequestOptions = {}) {
+  async deleteUser(handle: string, options: RequestOptions = {}) {
     await this.#client.requestWithAuth("/account/user", {
       method: "DELETE",
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ handle }),
       ...options,
     });
 
