@@ -16,7 +16,14 @@ class ComputeController:
         raise Exception(res.text)
 
     @verify_credentials
-    def create_url(self, name):
+    def compute_proxy(self, route: str, data: dict):
+        res = requests.post(f'{self.account.hq}/compute/proxy/{route}', json=data, headers=self.account.headers)
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def create_url(self, name: str):
         res = requests.get(f'{self.account.hq}/compute/url/{name}', headers=self.account.headers)
         if res.status_code == 200:
             return res.json()

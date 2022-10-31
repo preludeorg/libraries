@@ -55,7 +55,7 @@ def create(controller, ttp, question):
     click.secho(f'Added {ttp}', fg=Colors.GREEN.value)
 
 
-@build.command('put-code-file')
+@build.command('put-code')
 @click.argument('path')
 @click.pass_obj
 @handle_api_error
@@ -77,7 +77,7 @@ def delete_ttp(controller, ttp):
     click.secho(f'Deleted {ttp}', fg=Colors.GREEN.value)
 
 
-@build.command('delete-code-file')
+@build.command('delete-code')
 @click.argument('name')
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
@@ -108,7 +108,7 @@ def purge_code_files(controller):
     click.secho(text, fg=Colors.GREEN.value)
 
 
-@build.command('create-code-file')
+@build.command('create-code')
 @click.option('--ttp', help='TTP identifier', default=str(uuid.uuid4()))
 @click.option('--path', help='directory to store file', default='.')
 @click.pass_obj
