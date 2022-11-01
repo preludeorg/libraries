@@ -24,6 +24,16 @@ def register_endpoint(controller, name, tag):
     endpoint_token = controller.register_endpoint(name=name, tag=tag)
     click.secho(f'Endpoint token: {endpoint_token}', fg=Colors.GREEN.value)
 
+@detect.command('create-question')
+@click.argument('question')
+@click.option('--parent_question_id', help='id of a parent question you are seeking to answer')
+@click.pass_obj
+@handle_api_error
+def create_question(controller, name):
+    """Register a new endpoint"""
+    question_id = controller.create_question(name=name)
+    click.secho(f'Question asked: {question_id}', fg=Colors.GREEN.value)
+
 
 @detect.command('enable-ttp')
 @click.argument('ttp')
@@ -101,3 +111,5 @@ def export_report(controller, days):
     url = controller.export_report(days=days)
     print(url)
     click.secho(f'Use the above URL to download data dump', fg=Colors.GREEN.value)
+
+

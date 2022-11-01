@@ -18,6 +18,15 @@ class DetectController:
         raise Exception(res.text)
 
     @verify_credentials
+    def create_question(self, question, parent_question_id=''):
+        """ Register (or re-register) an endpoint to your account """
+        params = dict(question=question, parent_id=parent_question_id)
+        res = requests.post(f'{self.account.hq}/account/question', headers=self.account.headers, json=params)
+        if res.status_code == 200:
+            return res.text
+        raise Exception(res.text)
+
+    @verify_credentials
     def print_queue(self):
         res = requests.get(f'{self.account.hq}/account/queue', headers=self.account.headers)
         if res.status_code == 200:
