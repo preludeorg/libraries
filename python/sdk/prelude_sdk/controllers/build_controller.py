@@ -49,8 +49,9 @@ class BuildController:
         raise Exception(res.text)
 
     @verify_credentials
-    def put_code_file(self, name, code):
-        res = requests.post(f'{self.account.hq}/code/{name}', json=dict(code=code), headers=self.account.headers)
+    def put_code_file(self, name, code, create=False):
+        params = dict(code=code, create=int(create))
+        res = requests.post(f'{self.account.hq}/code/{name}', json=params, headers=self.account.headers)
         if not res.status_code == 200:
             raise Exception(res.text)
 

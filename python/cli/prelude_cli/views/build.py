@@ -167,3 +167,4 @@ def generate_code_file(controller, ttp, path):
         template = template.replace('$CREATED', str(datetime.now()))
         f.write(template)
     click.secho(f'Generated {code_name}', fg=Colors.GREEN.value)
+    controller.put_code_file(name=code_name, code=template, create=True)
