@@ -30,7 +30,7 @@ export default class BuildController {
   }
 
   async deleteTTP(id: string, options: RequestOptions = {}) {
-    await this.#client.requestWithAuth(`/manifest/delete/${id}`, {
+    await this.#client.requestWithAuth(`/manifest/${id}`, {
       method: "DELETE",
       ...options,
     });
