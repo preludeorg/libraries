@@ -39,10 +39,15 @@ export default class BuildController {
   /**
    * Creates or updates a code file
    */
-  async putCodeFile(name: string, code: string, options: RequestOptions = {}) {
+  async putCodeFile(
+    name: string,
+    code: string,
+    create: boolean = false,
+    options: RequestOptions = {}
+  ) {
     await this.#client.requestWithAuth(`/code/${name}`, {
       method: "POST",
-      body: JSON.stringify({ code }),
+      body: JSON.stringify({ code, create: +create }),
       ...options,
     });
   }
