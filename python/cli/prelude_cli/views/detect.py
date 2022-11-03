@@ -25,30 +25,30 @@ def register_endpoint(controller, name, tag):
     click.secho(f'Endpoint token: {endpoint_token}', fg=Colors.GREEN.value)
 
 
-@detect.command('enable-ttp')
-@click.argument('ttp')
+@detect.command('enable-test')
+@click.argument('test')
 @click.option('--run_code',
               help='provide a run-code',
               default='daily',
               type=click.Choice(['daily', 'monthly', 'once', 'debug'], case_sensitive=False))
-@click.confirmation_option(prompt='Do you want to activate the TTP?')
+@click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
 @handle_api_error
-def activate_ttp(controller, ttp, run_code):
-    """ Add TTP to your queue """
-    controller.activate_ttp(ttp=ttp, run_code=RunCode[run_code.upper()].value)
-    click.secho(f'Activated {ttp}', fg=Colors.GREEN.value)
+def activate_test(controller, test, run_code):
+    """ Add test to your queue """
+    controller.enable_test(ident=test, run_code=RunCode[run_code.upper()].value)
+    click.secho(f'Activated {test}', fg=Colors.GREEN.value)
 
 
-@detect.command('disable-ttp')
-@click.argument('ttp')
-@click.confirmation_option(prompt='Do you want to deactivate the TTP?')
+@detect.command('disable-test')
+@click.argument('test')
+@click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
 @handle_api_error
-def deactivate_ttp(controller, ttp):
-    """ Remove TTP from your queue """
-    controller.deactivate_ttp(ttp=ttp)
-    click.secho(f'Deactivated {ttp}', fg=Colors.GREEN.value)
+def deactivate_test(controller, test):
+    """ Remove test from your queue """
+    controller.disable_test(ident=test)
+    click.secho(f'Deactivated {test}', fg=Colors.GREEN.value)
 
 
 @detect.command('list-queue')

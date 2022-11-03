@@ -16,16 +16,16 @@ from prelude_sdk.controllers.build_controller import BuildController
 @click.group()
 @click.pass_context
 def build(ctx):
-    """ Maintain your TTP database """
+    """ A terminal-based IDE """
     ctx.obj = BuildController(account=ctx.obj)
 
 
-@build.command('list-manifest')
+@build.command('list-tests')
 @click.pass_obj
 @handle_api_error
-def view_manifest(controller):
-    """ Print my manifest """
-    print_json(data=controller.list_manifest())
+def list_tests(controller):
+    """ Display my tests """
+    print_json(data=controller.list_tests())
 
 
 @build.command('clone')
@@ -35,56 +35,56 @@ def clone(controller):
     """ Clone my project locally """
     Path('prelude').mkdir(exist_ok=True)
 
-    listing = controller.list_manifest()
-    for ttp in listing:
-        for dcf in controller.get_ttp(ttp=ttp):
-            with open(f'prelude/{dcf}', 'wb') as test:
-                test.write(controller.clone(name=dcf))
-                click.secho(f'Cloned {dcf}')
+    listing = controller.list_tests()
+    for ident in listing:
+        for variant in controller.get_test(ident=ident):
+            with open(f'prelude/{variant}', 'wb') as test:
+                test.write(controller.clone(name=variant))
+                click.secho(f'Cloned {variant}')
     click.secho('Project cloned successfully', fg=Colors.GREEN.value)
 
 
-@build.command('put-ttp')
+@build.command('put-test')
 @click.argument('question')
-@click.option('--ttp', help='TTP identifier to update', default=str(uuid.uuid4()))
+@click.option('--test', help='Test ID to update', default=str(uuid.uuid4()))
 @click.pass_obj
 @handle_api_error
-def create(controller, ttp, question):
-    """ Add a TTP """
-    controller.create_ttp(ttp=ttp, question=question)
-    click.secho(f'Added {ttp}', fg=Colors.GREEN.value)
+def create_test(controller, test, question):
+    """ Add a test """
+    controller.create_test(ident=test, question=question)
+    click.secho(f'Added {test}', fg=Colors.GREEN.value)
 
 
 @build.command('put-test')
 @click.argument('path')
 @click.pass_obj
 @handle_api_error
-def add_test(controller, path):
-    """ Upload a test """
-    with open(path, 'r') as test:
-        controller.put_test(name=Path(path).name, code=test.read())
+def put_variant(controller, path):
+    """ Save a variant """
+    with open(path, 'r') as variant:
+        controller.create_variant(name=Path(path).name, code=variant.read())
         click.secho(f'Uploaded {path}', fg=Colors.GREEN.value)
 
 
-@build.command('delete-ttp')
-@click.argument('ttp')
+@build.command('delete-test')
+@click.argument('test')
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
 @handle_api_error
-def delete_ttp(controller, ttp):
-    """ Remove a TTP """
-    controller.delete_ttp(ttp=ttp)
-    click.secho(f'Deleted {ttp}', fg=Colors.GREEN.value)
+def delete_test(controller, test):
+    """ Remove a test """
+    controller.delete_test(ident=test)
+    click.secho(f'Deleted {test}', fg=Colors.GREEN.value)
 
 
-@build.command('delete-test')
+@build.command('delete-variant')
 @click.argument('name')
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
 @handle_api_error
-def delete_test(controller, name):
-    """ Remove a test """
-    controller.delete_test(name=name)
+def delete_variant(controller, name):
+    """ Remove a variant """
+    controller.delete_variant(name=name)
     click.secho(f'Deleted {name}', fg=Colors.GREEN.value)
 
 
@@ -93,8 +93,8 @@ def delete_test(controller, name):
 @click.pass_obj
 @handle_api_error
 def purge(controller):
-    """ Delete all stored TTPs and tests """
-    controller.delete_manifest()
+    """ Delete all stored tests and variants """
+    controller.purge_tests()
     click.secho('Storage has been purged', fg=Colors.GREEN.value)
 
 
@@ -102,19 +102,19 @@ def purge(controller):
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
 @handle_api_error
-def purge_compiled_tests(controller):
-    """ Delete all compiled tests """
-    text = controller.delete_compiled_tests()
+def purge_compiled_variants(controller):
+    """ Delete all compiled variants """
+    text = controller.delete_compiled_variants()
     click.secho(text, fg=Colors.GREEN.value)
 
 
-@build.command('create-test')
-@click.option('--ttp', help='TTP identifier', default=str(uuid.uuid4()))
+@build.command('create-variant')
+@click.option('--test', help='Test ID', default=str(uuid.uuid4()))
 @click.option('--path', help='directory to store code file', default='.')
 @click.pass_obj
 @handle_api_error
-def generate_test(controller, ttp, path):
-    """ Create a new test """
+def generate_test(controller, test, path):
+    """ Create a new test variant """
     def platform():
         p = click.prompt(
             text='Select a platform',
@@ -140,14 +140,14 @@ def generate_test(controller, ttp, path):
             show_choices=True
         )
 
-    # get TTP to work with
-    question = controller.list_manifest().get(ttp)
+    # get test to work with
+    question = controller.list_tests().get(test)
     if not question:
-        question = click.prompt('No TTP supplied. Ask a question to create a new TTP: ')
-        controller.create_ttp(ttp=ttp, question=question)
+        question = click.prompt('No test supplied. Ask a question to create a new test: ')
+        controller.create_test(ident=test, question=question)
 
     # generate a name
-    code_name = ttp
+    code_name = test
     platform = platform()
     if platform:
         code_name = f'{code_name}_{platform}'
@@ -167,4 +167,4 @@ def generate_test(controller, ttp, path):
         template = template.replace('$CREATED', str(datetime.now()))
         f.write(template)
     click.secho(f'Generated {code_name}', fg=Colors.GREEN.value)
-    controller.put_test(name=code_name, code=template, create=True)
+    controller.create_variant(name=code_name, code=template, create=True)
