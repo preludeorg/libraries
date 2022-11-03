@@ -63,8 +63,8 @@ prelude build delete-ttp <TTP IDENTIFIER>
 
 Create and upload new code files:
 ```zsh
-prelude build create-code-file <TTP ID>
-prelude build put-code-file <PATH>
+prelude build create-test <TTP ID>
+prelude build put-test <PATH>
 ```
 
 ## Security tests
