@@ -22,7 +22,7 @@ class BuildController:
             raise Exception(res.text)
 
     @verify_credentials
-    def delete_code_file(self, name):
+    def delete_test(self, name):
         res = requests.delete(f'{self.account.hq}/code/{name}', headers=self.account.headers)
         if not res.status_code == 200:
             raise Exception(res.text)
@@ -49,18 +49,11 @@ class BuildController:
         raise Exception(res.text)
 
     @verify_credentials
-    def put_code_file(self, name, code, create=False):
+    def put_test(self, name, code, create=False):
         params = dict(code=code, create=int(create))
         res = requests.post(f'{self.account.hq}/code/{name}', json=params, headers=self.account.headers)
         if not res.status_code == 200:
             raise Exception(res.text)
-
-    @verify_credentials
-    def create_url(self, name):
-        res = requests.get(f'{self.account.hq}/build/deploy/{name}', headers=self.account.headers)
-        if not res.status_code == 200:
-            raise Exception(res.text)
-        return res.json()
 
     @verify_credentials
     def delete_manifest(self):
@@ -70,7 +63,7 @@ class BuildController:
         return res.json()
 
     @verify_credentials
-    def delete_compiled_files(self):
+    def delete_compiled_tests(self):
         res = requests.delete(f'{self.account.hq}/code', headers=self.account.headers)
         if not res.status_code == 200:
             raise Exception(res.text)
