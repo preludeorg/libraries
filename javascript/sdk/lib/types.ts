@@ -16,8 +16,8 @@ export type RequestOptions = Omit<RequestInit, "method" | "body">;
  * and question as the value */
 export type Manifest = Record<string, { account_id: string; question: string }>;
 
-/** List of code files in the TTP Manifest */
-export type TTPFiles = string[];
+/** List of tests in the TTP Manifest */
+export type TTPTests = string[];
 
 export interface Users {
   [id: string]: {
@@ -62,7 +62,7 @@ export const ComputeRoutes = {
 export type ComputeRoute = typeof ComputeRoutes[keyof typeof ComputeRoutes];
 
 export interface ComputeProps {
-  /** Code file name */
+  /** test name */
   name: string;
 }
 
