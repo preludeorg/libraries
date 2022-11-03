@@ -25,10 +25,10 @@ class DetectController:
         raise Exception(res.text)
 
     @verify_credentials
-    def activate_ttp(self, ttp, run_code):
-        """ Activate a TTP so endpoints will start running it """
+    def enable_test(self, ident, run_code):
+        """ Activate a test so endpoints will start running it """
         res = requests.post(
-            url=f'{self.account.hq}/account/activation/{ttp}',
+            url=f'{self.account.hq}/account/activation/{ident}',
             headers=self.account.headers,
             json=dict(run_code=run_code)
         )
@@ -36,17 +36,17 @@ class DetectController:
             raise Exception(res.text)
 
     @verify_credentials
-    def deactivate_ttp(self, ttp):
-        """ Deactivate a TTP so endpoints will stop running it """
-        res = requests.delete(f'{self.account.hq}/account/activation/{ttp}', headers=self.account.headers)
+    def disable_test(self, ident):
+        """ Deactivate a test so endpoints will stop running it """
+        res = requests.delete(f'{self.account.hq}/account/activation/{ident}', headers=self.account.headers)
         if res.status_code != 200:
             raise Exception(res.text)
 
     @verify_credentials
-    def describe_activity(self, days=7, ttp=None):
+    def describe_activity(self, days=7, ident=None):
         """ Get report for an Account """
         params = dict(days=days)
-        route = f'/{ttp}' if ttp else ''
+        route = f'/{ident}' if ident else ''
         res = requests.get(f'{self.account.hq}/account/report{route}', headers=self.account.headers, params=params)
         if res.status_code == 200:
             return res.json()
