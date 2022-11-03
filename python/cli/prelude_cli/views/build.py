@@ -38,8 +38,8 @@ def clone(controller):
     listing = controller.list_manifest()
     for ttp in listing:
         for dcf in controller.get_ttp(ttp=ttp):
-            with open(f'prelude/{dcf}', 'wb') as code_file:
-                code_file.write(controller.clone(name=dcf))
+            with open(f'prelude/{dcf}', 'wb') as test:
+                test.write(controller.clone(name=dcf))
                 click.secho(f'Cloned {dcf}')
     click.secho('Project cloned successfully', fg=Colors.GREEN.value)
 
@@ -55,14 +55,14 @@ def create(controller, ttp, question):
     click.secho(f'Added {ttp}', fg=Colors.GREEN.value)
 
 
-@build.command('put-code')
+@build.command('put-test')
 @click.argument('path')
 @click.pass_obj
 @handle_api_error
-def add_dcf(controller, path):
-    """ Upload a code file """
-    with open(path, 'r') as code_file:
-        controller.put_code_file(name=Path(path).name, code=code_file.read())
+def add_test(controller, path):
+    """ Upload a test """
+    with open(path, 'r') as test:
+        controller.put_test(name=Path(path).name, code=test.read())
         click.secho(f'Uploaded {path}', fg=Colors.GREEN.value)
 
 
@@ -77,14 +77,14 @@ def delete_ttp(controller, ttp):
     click.secho(f'Deleted {ttp}', fg=Colors.GREEN.value)
 
 
-@build.command('delete-code')
+@build.command('delete-test')
 @click.argument('name')
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
 @handle_api_error
-def delete_code_file(controller, name):
-    """ Remove a code file """
-    controller.delete_code_file(name=name)
+def delete_test(controller, name):
+    """ Remove a test """
+    controller.delete_test(name=name)
     click.secho(f'Deleted {name}', fg=Colors.GREEN.value)
 
 
@@ -93,7 +93,7 @@ def delete_code_file(controller, name):
 @click.pass_obj
 @handle_api_error
 def purge(controller):
-    """ Delete all stored TTPs and files """
+    """ Delete all stored TTPs and tests """
     controller.delete_manifest()
     click.secho('Storage has been purged', fg=Colors.GREEN.value)
 
@@ -102,19 +102,19 @@ def purge(controller):
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
 @handle_api_error
-def purge_code_files(controller):
-    """ Delete all compiled code files """
-    text = controller.delete_compiled_files()
+def purge_compiled_tests(controller):
+    """ Delete all compiled tests """
+    text = controller.delete_compiled_tests()
     click.secho(text, fg=Colors.GREEN.value)
 
 
-@build.command('create-code')
+@build.command('create-test')
 @click.option('--ttp', help='TTP identifier', default=str(uuid.uuid4()))
-@click.option('--path', help='directory to store file', default='.')
+@click.option('--path', help='directory to store code file', default='.')
 @click.pass_obj
 @handle_api_error
-def generate_code_file(controller, ttp, path):
-    """ Create a new code file """
+def generate_test(controller, ttp, path):
+    """ Create a new test """
     def platform():
         p = click.prompt(
             text='Select a platform',
@@ -157,7 +157,7 @@ def generate_code_file(controller, ttp, path):
     ext = extension()
     code_name = f'{code_name}.{ext}'
 
-    # create code file
+    # create test
     filepath = Path(pathlib.PurePath(path, code_name))
     filepath.parent.mkdir(parents=True, exist_ok=True)
     with filepath.open('w') as f:
@@ -167,4 +167,4 @@ def generate_code_file(controller, ttp, path):
         template = template.replace('$CREATED', str(datetime.now()))
         f.write(template)
     click.secho(f'Generated {code_name}', fg=Colors.GREEN.value)
-    controller.put_code_file(name=code_name, code=template, create=True)
+    controller.put_test(name=code_name, code=template, create=True)

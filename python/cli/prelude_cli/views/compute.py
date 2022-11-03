@@ -24,12 +24,12 @@ def describe_server(controller):
         print('Compute server booting up. Please try again in 30s.')
 
 
-@compute.command('test-code')
+@compute.command('test')
 @click.argument('name')
 @click.pass_obj
 @handle_api_error
 def test_code(controller, name):
-    """ Test a code file """
+    """ Test code """
     print_json(controller.compute_proxy(route='test', name=name))
 
 
@@ -38,7 +38,7 @@ def test_code(controller, name):
 @click.pass_obj
 @handle_api_error
 def publish_code(controller, name):
-    """ Save compiled code file to DB """
+    """ Save compiled test to hot storage """
     controller.compute_proxy(route='publish', name=name)
     print(f'{name} published')
 
