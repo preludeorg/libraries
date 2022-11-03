@@ -1,5 +1,5 @@
 import Client from "../client";
-import type { Manifest, TTPFiles, RequestOptions } from "../types";
+import type { Manifest, TTPTests, RequestOptions } from "../types";
 
 export default class BuildController {
   #client: Client;
@@ -18,7 +18,7 @@ export default class BuildController {
       ...options,
     });
 
-    return (await response.json()) as TTPFiles;
+    return (await response.json()) as TTPTests;
   }
 
   async createTTP(id: string, question: string, options: RequestOptions = {}) {
@@ -37,9 +37,9 @@ export default class BuildController {
   }
 
   /**
-   * Creates or updates a code file
+   * Creates or updates a test
    */
-  async putCodeFile(
+  async putTest(
     name: string,
     code: string,
     create: boolean = false,
@@ -53,16 +53,19 @@ export default class BuildController {
   }
 
   /**
-   * Deletes a code file
+   * Deletes a test
    */
-  async deleteCodeFile(name: string, options: RequestOptions = {}) {
+  async deleteTest(name: string, options: RequestOptions = {}) {
     await this.#client.requestWithAuth(`/code/${name}`, {
       method: "DELETE",
       ...options,
     });
   }
 
-  async getCodeFile(name: string, options: RequestOptions = {}) {
+  /**
+   * Gets the content of test
+   */
+  async getTest(name: string, options: RequestOptions = {}) {
     const response = await this.#client.requestWithAuth(`/code/${name}`, {
       ...options,
     });
@@ -70,7 +73,7 @@ export default class BuildController {
     return response.text();
   }
 
-  async deleteCompliedFiles(options: RequestOptions = {}) {
+  async deleteCompliedTests(options: RequestOptions = {}) {
     const response = await this.#client.requestWithAuth(`/code`, {
       method: "DELETE",
       ...options,
