@@ -157,4 +157,4 @@ def generate_test(controller, test, path):
         template = template.replace('$CREATED', str(datetime.now()))
         f.write(template)
     click.secho(f'Generated {code_name}', fg=Colors.GREEN.value)
-    controller.create_variant(name=code_name, code=template, create=True)
+    controller.create_variant(name=code_name, code=template)

@@ -49,9 +49,8 @@ class BuildController:
         raise Exception(res.text)
 
     @verify_credentials
-    def create_variant(self, name, code, create=False):
-        params = dict(code=code, create=int(create))
-        res = requests.post(f'{self.account.hq}/variant/{name}', json=params, headers=self.account.headers)
+    def create_variant(self, name, code):
+        res = requests.post(f'{self.account.hq}/variant/{name}', json=dict(code=code), headers=self.account.headers)
         if not res.status_code == 200:
             raise Exception(res.text)
 
