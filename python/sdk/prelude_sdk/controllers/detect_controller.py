@@ -28,7 +28,7 @@ class DetectController:
     def enable_test(self, ident, run_code):
         """ Activate a test so endpoints will start running it """
         res = requests.post(
-            url=f'{self.account.hq}/account/activation/{ident}',
+            url=f'{self.account.hq}/account/queue/{ident}',
             headers=self.account.headers,
             json=dict(run_code=run_code)
         )
@@ -38,7 +38,7 @@ class DetectController:
     @verify_credentials
     def disable_test(self, ident):
         """ Deactivate a test so endpoints will stop running it """
-        res = requests.delete(f'{self.account.hq}/account/activation/{ident}', headers=self.account.headers)
+        res = requests.delete(f'{self.account.hq}/account/queue/{ident}', headers=self.account.headers)
         if res.status_code != 200:
             raise Exception(res.text)
 
