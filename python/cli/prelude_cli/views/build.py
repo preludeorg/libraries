@@ -44,7 +44,7 @@ def clone(controller):
     click.secho('Project cloned successfully', fg=Colors.GREEN.value)
 
 
-@build.command('put-test')
+@build.command('save-test')
 @click.argument('question')
 @click.option('--test', help='Test ID to update', default=str(uuid.uuid4()))
 @click.pass_obj
@@ -55,7 +55,7 @@ def create_test(controller, test, question):
     click.secho(f'Added {test}', fg=Colors.GREEN.value)
 
 
-@build.command('put-test')
+@build.command('save-variant')
 @click.argument('path')
 @click.pass_obj
 @handle_api_error

@@ -24,7 +24,7 @@ def describe_server(controller):
         print('Compute server booting up. Please try again in 30s.')
 
 
-@compute.command('test')
+@compute.command('test-variant')
 @click.argument('name')
 @click.pass_obj
 @handle_api_error
