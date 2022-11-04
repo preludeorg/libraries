@@ -20,12 +20,14 @@ def build(ctx):
     ctx.obj = BuildController(account=ctx.obj)
 
 
-@build.command('list-tests')
+@build.command('purge')
+@click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
 @handle_api_error
-def list_tests(controller):
-    """ Display my tests """
-    print_json(data=controller.list_tests())
+def purge(controller):
+    """ Delete all stored tests and variants """
+    controller.purge_account()
+    click.secho('Storage has been purged', fg=Colors.GREEN.value)
 
 
 @build.command('clone')
@@ -42,6 +44,14 @@ def clone(controller):
     click.secho('Project cloned successfully', fg=Colors.GREEN.value)
 
 
+@build.command('list-tests')
+@click.pass_obj
+@handle_api_error
+def list_tests(controller):
+    """ Display my tests """
+    print_json(data=controller.list_tests())
+
+
 @build.command('create-test')
 @click.argument('question')
 @click.option('--test', help='Test ID to update', default=str(uuid.uuid4()))
@@ -51,17 +61,6 @@ def create_test(controller, test, question):
     """ Add a test """
     controller.create_test(ident=test, question=question)
     click.secho(f'Added {test}', fg=Colors.GREEN.value)
-
-
-@build.command('save-variant')
-@click.argument('path')
-@click.pass_obj
-@handle_api_error
-def put_variant(controller, path):
-    """ Save a variant """
-    with open(path, 'r') as variant:
-        controller.create_variant(name=Path(path).name, code=variant.read())
-        click.secho(f'Uploaded {path}', fg=Colors.GREEN.value)
 
 
 @build.command('delete-test')
@@ -86,14 +85,15 @@ def delete_variant(controller, name):
     click.secho(f'Deleted {name}', fg=Colors.GREEN.value)
 
 
-@build.command('purge')
-@click.confirmation_option(prompt='Are you sure?')
+@build.command('save-variant')
+@click.argument('path')
 @click.pass_obj
 @handle_api_error
-def purge(controller):
-    """ Delete all stored tests and variants """
-    controller.purge_account()
-    click.secho('Storage has been purged', fg=Colors.GREEN.value)
+def put_variant(controller, path):
+    """ Save a variant """
+    with open(path, 'r') as variant:
+        controller.create_variant(name=Path(path).name, code=variant.read())
+        click.secho(f'Uploaded {path}', fg=Colors.GREEN.value)
 
 
 @build.command('create-variant')
