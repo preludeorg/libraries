@@ -3,31 +3,113 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
     <title>Prelude SDK</title>
   </head>
+
   <body>
+    <h1 class="text-xl py-2 ml-2">Testing SDK: (See Source)</h1>
+    <button
+      id="run"
+      class="ml-2 mb-2 bg-slate-900 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 text-white font-semibold h-8 px-6 rounded-lg w-full flex items-center justify-center sm:w-auto dark:bg-sky-500 dark:highlight-white/20 dark:hover:bg-sky-400"
+    >
+      Run Test
+    </button>
+    <pre id="log" class="w-1/2 bg-gray-100 p-2 min-h-screen text-sm"></pre>
     <script type="module">
+      let log = console.log;
+      let logger = document.getElementById("log");
+      console.log = function (...args) {
+        log(...args);
+        const message = args
+          .map((a) => {
+            if (typeof a == "string") {
+              return a;
+            }
+            return JSON.stringify(a, null, 2);
+          })
+          .join(" ");
+        logger.innerHTML += message + "<br />";
+      };
+    </script>
+
+    <script type="module">
+      function sleep(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+      }
+
       import * as Prelude from "/lib/main.ts";
       import * as uuid from "https://jspm.dev/uuid";
 
-      const service = new Prelude.Service({
-        host: "https://detect.prelude.org",
+      document.getElementById("run").addEventListener("click", async () => {
+        try {
+          const host = "https://detect.prelude.org";
+
+          console.log("Using host", host);
+          const service = new Prelude.Service({
+            host,
+          });
+
+          const credentials = await service.iam.newAccount("user_handle");
+
+          console.log("CREATE account", { credentials });
+
+          service.setCredentials(credentials);
+
+          console.log("List Tests", await service.build.listTests());
+
+          const testId = uuid.v4();
+          console.log(
+            "CREATE new test",
+            await service.build.createTest(testId, "This is a test")
+          );
+
+          console.log(
+            "List Tests after CREATE",
+            await service.build.listTests()
+          );
+
+          console.log("GET Test Variants", await service.build.getTest(testId));
+
+          console.log(
+            "CREATE Test Variant",
+            await service.build.createVariant(`${testId}.c`, "Testing...")
+          );
+
+          console.log("Waited 1s", await sleep(5000));
+
+          console.log(
+            "GET Test Variants after CREATE",
+            await service.build.getTest(testId)
+          );
+
+          console.log(
+            "GET Variant",
+            await service.build.getVariant(`${testId}.c`)
+          );
+
+          console.log(
+            "DELETE Variant",
+            await service.build.deleteVariant(`${testId}.c`)
+          );
+
+          console.log(
+            "GET Test Variants after DELETE",
+            await service.build.getTest(testId)
+          );
+
+          console.log("DELETE Test", await service.build.deleteTest(testId));
+
+          console.log(
+            "List Tests after DELETE",
+            await service.build.listTests()
+          );
+
+          console.log("DONE!");
+        } catch (e) {
+          console.log("Error", e.message);
+        }
       });
-
-      const credentials = await service.iam.newAccount("user_handle");
-
-      service.setCredentials(credentials);
-
-      const tests = await service.build.listTests();
-
-      console.log("Tests before create", tests);
-
-      const testId = uuid.v4();
-      await service.build.createTest(testId, "This is a test");
-
-      const tests2 = await service.build.listTests();
-
-      console.log("Tests after create", tests2);
     </script>
   </body>
 </html>
