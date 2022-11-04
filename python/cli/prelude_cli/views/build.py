@@ -34,17 +34,15 @@ def list_tests(controller):
 def clone(controller):
     """ Clone my project locally """
     Path('prelude').mkdir(exist_ok=True)
-
-    listing = controller.list_tests()
-    for ident in listing:
-        for variant in controller.get_test(ident=ident):
-            with open(f'prelude/{variant}', 'wb') as test:
-                test.write(controller.clone(name=variant))
+    for test in controller.list_tests():
+        for variant in controller.get_test(ident=test['id']):
+            with open(f'prelude/{variant}', 'wb') as code:
+                code.write(controller.clone(name=variant))
                 click.secho(f'Cloned {variant}')
     click.secho('Project cloned successfully', fg=Colors.GREEN.value)
 
 
-@build.command('save-test')
+@build.command('create-test')
 @click.argument('question')
 @click.option('--test', help='Test ID to update', default=str(uuid.uuid4()))
 @click.pass_obj
@@ -131,7 +129,8 @@ def generate_test(controller, test, path):
         )
 
     # get test to work with
-    question = controller.list_tests().get(test)
+    tests = controller.list_tests()
+    question = next((t.get('question') for t in tests if t['id'] == test), None)
     if not question:
         question = click.prompt('No test supplied. Ask a question to create a new test: ')
         controller.create_test(ident=test, question=question)
