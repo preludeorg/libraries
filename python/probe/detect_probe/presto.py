@@ -1,5 +1,5 @@
 import asyncio
-import os
+import platform
 import re
 import stat
 import subprocess
@@ -7,7 +7,7 @@ import tempfile
 import os.path
 from urllib import request
 
-DOS = f'{os.uname().sysname}-{os.uname().machine}'.lower()
+DOS = f'{platform.system()}-{platform.machine()}'.lower()
 UUID = re.compile('[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}')
 
 
