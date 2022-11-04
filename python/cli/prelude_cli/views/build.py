@@ -94,18 +94,8 @@ def delete_variant(controller, name):
 @handle_api_error
 def purge(controller):
     """ Delete all stored tests and variants """
-    controller.purge_tests()
+    controller.purge_account()
     click.secho('Storage has been purged', fg=Colors.GREEN.value)
-
-
-@build.command('purge-compiled')
-@click.confirmation_option(prompt='Are you sure?')
-@click.pass_obj
-@handle_api_error
-def purge_compiled_variants(controller):
-    """ Delete all compiled variants """
-    text = controller.delete_compiled_variants()
-    click.secho(text, fg=Colors.GREEN.value)
 
 
 @build.command('create-variant')

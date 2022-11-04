@@ -56,15 +56,8 @@ class BuildController:
             raise Exception(res.text)
 
     @verify_credentials
-    def purge_tests(self):
-        res = requests.delete(f'{self.account.hq}/test', headers=self.account.headers)
-        if not res.status_code == 200:
-            raise Exception(res.text)
-        return res.json()
-
-    @verify_credentials
-    def delete_compiled_variants(self):
-        res = requests.delete(f'{self.account.hq}/variant', headers=self.account.headers)
+    def purge_account(self):
+        res = requests.delete(f'{self.account.hq}/account/purge', headers=self.account.headers)
         if not res.status_code == 200:
             raise Exception(res.text)
         return res.text
