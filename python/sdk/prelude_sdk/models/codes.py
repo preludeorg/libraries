@@ -20,5 +20,5 @@ class RunCode(Enum):
 class Permission(Enum):
     ADMIN = 0
     EXECUTIVE = 1
-    OPERATOR = 2
+    BUILD = 2
     SERVICE = 3
