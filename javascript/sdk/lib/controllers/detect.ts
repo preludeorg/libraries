@@ -48,18 +48,16 @@ export default class DetectController {
     return (await response.json()) as AccountQueue;
   }
 
-  /** Activate a TTP so endpoints will start running it */
-  async activateTTP(ttpId: string, runCode: RunCode, options: RequestOptions) {
-    await this.#client.requestWithAuth(`/account/activation/${ttpId}`, {
+  async enableTest(test: string, runCode: RunCode, options: RequestOptions) {
+    await this.#client.requestWithAuth(`/account/activation/${test}`, {
       method: "POST",
       body: JSON.stringify({ run_code: runCode }),
       ...options,
     });
   }
 
-  /** Deactivate a TTP so endpoints will stop running it */
-  async deactivateTTP(ttpId: string, options: RequestOptions) {
-    await this.#client.requestWithAuth(`/account/activation/${ttpId}`, {
+  async disableTest(test: string, options: RequestOptions) {
+    await this.#client.requestWithAuth(`/account/activation/${test}`, {
       method: "DELETE",
       ...options,
     });

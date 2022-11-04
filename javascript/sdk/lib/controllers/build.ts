@@ -1,5 +1,5 @@
 import Client from "../client";
-import type { Manifest, TTPTests, RequestOptions } from "../types";
+import type { Test, RequestOptions } from "../types";
 
 export default class BuildController {
   #client: Client;
@@ -8,74 +8,55 @@ export default class BuildController {
     this.#client = client;
   }
 
-  async listManifest(options: RequestOptions = {}) {
-    const response = await this.#client.requestWithAuth("/manifest", options);
-    return (await response.json()) as Manifest;
+  async listTests(options: RequestOptions = {}) {
+    const response = await this.#client.requestWithAuth("/test", options);
+    return (await response.json()) as Test[];
   }
 
-  async getTTP(id: string, options: RequestOptions = {}) {
-    const response = await this.#client.requestWithAuth(`/manifest/${id}`, {
+  async getTest(id: string, options: RequestOptions = {}) {
+    const response = await this.#client.requestWithAuth(`/test/${id}`, {
       ...options,
     });
 
-    return (await response.json()) as TTPTests;
+    return (await response.json()) as string[];
   }
 
-  async createTTP(id: string, question: string, options: RequestOptions = {}) {
-    await this.#client.requestWithAuth(`/manifest`, {
+  async createTest(id: string, question: string, options: RequestOptions = {}) {
+    await this.#client.requestWithAuth(`/test`, {
       method: "PUT",
       body: JSON.stringify({ id, question }),
       ...options,
     });
   }
 
-  async deleteTTP(id: string, options: RequestOptions = {}) {
-    await this.#client.requestWithAuth(`/manifest/${id}`, {
+  async deleteTest(id: string, options: RequestOptions = {}) {
+    await this.#client.requestWithAuth(`/test/${id}`, {
       method: "DELETE",
       ...options,
     });
   }
 
-  /**
-   * Creates or updates a test
-   */
-  async putTest(
+  async createVariant(
     name: string,
     code: string,
-    create: boolean = false,
     options: RequestOptions = {}
   ) {
-    await this.#client.requestWithAuth(`/code/${name}`, {
+    await this.#client.requestWithAuth(`/variant/${name}`, {
       method: "POST",
-      body: JSON.stringify({ code, create: +create }),
+      body: JSON.stringify({ code }),
       ...options,
     });
   }
 
-  /**
-   * Deletes a test
-   */
-  async deleteTest(name: string, options: RequestOptions = {}) {
-    await this.#client.requestWithAuth(`/code/${name}`, {
+  async deleteVariant(name: string, options: RequestOptions = {}) {
+    await this.#client.requestWithAuth(`/variant/${name}`, {
       method: "DELETE",
       ...options,
     });
   }
 
-  /**
-   * Gets the content of test
-   */
-  async getTest(name: string, options: RequestOptions = {}) {
-    const response = await this.#client.requestWithAuth(`/code/${name}`, {
-      ...options,
-    });
-
-    return response.text();
-  }
-
-  async deleteCompliedTests(options: RequestOptions = {}) {
-    const response = await this.#client.requestWithAuth(`/code`, {
-      method: "DELETE",
+  async getVariant(name: string, options: RequestOptions = {}) {
+    const response = await this.#client.requestWithAuth(`/variant/${name}`, {
       ...options,
     });
 

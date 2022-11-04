@@ -11,13 +11,11 @@ export interface Credentials {
 
 export type RequestOptions = Omit<RequestInit, "method" | "body">;
 
-/** Dictionary to TTPs with
- * their id as the key
- * and question as the value */
-export type Manifest = Record<string, { account_id: string; question: string }>;
-
-/** List of tests in the TTP Manifest */
-export type TTPTests = string[];
+export interface Test {
+  account_id: string;
+  id: string;
+  question: string;
+}
 
 export interface Users {
   [id: string]: {

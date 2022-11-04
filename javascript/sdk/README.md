@@ -10,7 +10,7 @@ npm install @theprelude/sdk
 
 ## Quick start
 
-The following example registers an account and gets the manifest:
+The following example registers an account and gets the tests:
 
 ```typescript
 import * as Prelude from "@theprelude/sdk";
@@ -20,5 +20,5 @@ const credentials = await service.iam.newAccount("user_handle");
 
 service.setCredentials(credentials);
 
-const manifest = await service.build.listManifest();
+const tests = await service.build.listTests();
 ```

@@ -16,7 +16,10 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build && tsc --emitDeclarationOnly"
+    "build": "vite build && tsc --emitDeclarationOnly",
+    "lint": "tsc --noEmit",
+    "prepublishOnly": "yarn build",
+    "publish": "npm publish --access public"
   },
   "devDependencies": {
     "@types/node": "^18.11.4",
