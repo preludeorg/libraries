@@ -30,7 +30,7 @@ class DetectController:
         res = requests.post(
             url=f'{self.account.hq}/account/queue/{ident}',
             headers=self.account.headers,
-            json=dict(run_code=run_code)
+            json=dict(code=run_code)
         )
         if res.status_code != 200:
             raise Exception(res.text)
@@ -60,3 +60,19 @@ class DetectController:
         if res.status_code == 200:
             return res.url
         raise Exception(res.text)
+
+    @verify_credentials
+    def list_tags(self):
+        """ Get all tags associated to an Account """
+        res = requests.get(f'{self.account.hq}/account/tag', headers=self.account.headers)
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def update_tag(self, tag: str, owner: str = None, weight: int = None):
+        """ Apply metadata to an endpoint tag """
+        params = dict(owner=owner, weight=weight)
+        res = requests.put(f'{self.account.hq}/account/tag/{tag}', headers=self.account.headers, params=params)
+        if not res.status_code == 200:
+            raise Exception(res.text)

@@ -28,14 +28,13 @@ def register_endpoint(controller, name, tag):
 @detect.command('enable-test')
 @click.argument('test')
 @click.option('--run_code',
-              help='provide a run-code',
+              help='provide a run_code',
               default='daily',
               type=click.Choice(['daily', 'monthly', 'once', 'debug'], case_sensitive=False))
-@click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
 @handle_api_error
 def activate_test(controller, test, run_code):
-    """ Add test to your queue """
+    """ Add task to your queue """
     controller.enable_test(ident=test, run_code=RunCode[run_code.upper()].value)
     click.secho(f'Activated {test}', fg=Colors.GREEN.value)
 
@@ -60,7 +59,7 @@ def queue(controller):
     if items:
         print_json(data=items)
     else:
-        click.secho('Your queue is empty', fg=Colors.RED.value)
+        print('Your queue is empty')
 
 
 @detect.command('describe-activity')
@@ -101,3 +100,23 @@ def export_report(controller, days):
     url = controller.export_report(days=days)
     print(url)
     click.secho(f'Use the above URL to download data dump', fg=Colors.GREEN.value)
+
+
+@detect.command('list-tags')
+@click.pass_obj
+@handle_api_error
+def list_tags(controller):
+    """ List all endpoint tags """
+    print_json(data=controller.list_tags())
+
+
+@detect.command('save-tag')
+@click.argument('tag')
+@click.option('--owner', help='business unit owner', default=None, type=str)
+@click.option('--weight', help='relative weight', default=None, type=int)
+@click.pass_obj
+@handle_api_error
+def save_tag(controller, tag, owner, weight):
+    """ Apply metadata to a tag """
+    controller.update_tag(tag=tag, owner=owner, weight=weight)
+    click.secho(f'Tag "{tag}" saved', fg=Colors.GREEN.value)
