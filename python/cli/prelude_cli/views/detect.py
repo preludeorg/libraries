@@ -31,12 +31,12 @@ def register_endpoint(controller, name, tag):
               help='provide a run-code',
               default='daily',
               type=click.Choice(['daily', 'monthly', 'once', 'debug'], case_sensitive=False))
-@click.confirmation_option(prompt='Are you sure?')
+@click.option('--tags', multiple=True, default=[], help='make applicable only to specific tags')
 @click.pass_obj
 @handle_api_error
-def activate_test(controller, test, run_code):
+def activate_test(controller, test, run_code, tags):
     """ Add test to your queue """
-    controller.enable_test(ident=test, run_code=RunCode[run_code.upper()].value)
+    controller.enable_test(ident=test, run_code=RunCode[run_code.upper()].value, tags=tags)
     click.secho(f'Activated {test}', fg=Colors.GREEN.value)
 
 
@@ -113,10 +113,11 @@ def list_tags(controller):
 
 @detect.command('save-tag')
 @click.argument('tag')
-@click.argument('weight')
+@click.option('--owner', help='business unit owner', default=None, type=str)
+@click.option('--weight', help='relative weight', default=None, type=int)
 @click.pass_obj
 @handle_api_error
-def save_tag(controller, tag, weight):
-    """ Apply weight to a tag """
-    controller.weight_tag(tag=tag, weight=weight)
+def save_tag(controller, tag, owner, weight):
+    """ Apply metadata to a tag """
+    controller.update_tag(tag=tag, owner=owner, weight=weight)
     click.secho(f'Tag "{tag}" saved', fg=Colors.GREEN.value)

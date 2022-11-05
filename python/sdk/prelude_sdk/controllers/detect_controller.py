@@ -25,12 +25,12 @@ class DetectController:
         raise Exception(res.text)
 
     @verify_credentials
-    def enable_test(self, ident, run_code):
+    def enable_test(self, ident, run_code, tags):
         """ Activate a test so endpoints will start running it """
         res = requests.post(
             url=f'{self.account.hq}/account/queue/{ident}',
             headers=self.account.headers,
-            json=dict(run_code=run_code)
+            json=dict(code=run_code, tags=tags)
         )
         if res.status_code != 200:
             raise Exception(res.text)
@@ -70,9 +70,9 @@ class DetectController:
         raise Exception(res.text)
 
     @verify_credentials
-    def weight_tag(self, tag: str, weight: int):
-        """ Apply weight to an endpoint tag """
-        params = dict(weight=weight)
+    def update_tag(self, tag: str, owner: str = None, weight: int = None):
+        """ Apply metadata to an endpoint tag """
+        params = dict(owner=owner, weight=weight)
         res = requests.put(f'{self.account.hq}/account/tag/{tag}', headers=self.account.headers, params=params)
         if not res.status_code == 200:
             raise Exception(res.text)
