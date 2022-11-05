@@ -101,3 +101,22 @@ def export_report(controller, days):
     url = controller.export_report(days=days)
     print(url)
     click.secho(f'Use the above URL to download data dump', fg=Colors.GREEN.value)
+
+
+@detect.command('list-tags')
+@click.pass_obj
+@handle_api_error
+def list_tags(controller):
+    """ List all endpoint tags """
+    print_json(data=controller.list_tags())
+
+
+@detect.command('save-tag')
+@click.argument('tag')
+@click.argument('weight')
+@click.pass_obj
+@handle_api_error
+def save_tag(controller, tag, weight):
+    """ Apply weight to a tag """
+    controller.weight_tag(tag=tag, weight=weight)
+    click.secho(f'Tag "{tag}" saved', fg=Colors.GREEN.value)
