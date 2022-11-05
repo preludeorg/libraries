@@ -25,12 +25,12 @@ class DetectController:
         raise Exception(res.text)
 
     @verify_credentials
-    def enable_test(self, ident, run_code, tags):
+    def enable_test(self, ident, run_code):
         """ Activate a test so endpoints will start running it """
         res = requests.post(
             url=f'{self.account.hq}/account/queue/{ident}',
             headers=self.account.headers,
-            json=dict(code=run_code, tags=tags)
+            json=dict(code=run_code)
         )
         if res.status_code != 200:
             raise Exception(res.text)

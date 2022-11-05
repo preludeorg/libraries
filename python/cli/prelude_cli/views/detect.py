@@ -28,15 +28,14 @@ def register_endpoint(controller, name, tag):
 @detect.command('enable-test')
 @click.argument('test')
 @click.option('--run_code',
-              help='provide a run-code',
+              help='provide a run_code',
               default='daily',
               type=click.Choice(['daily', 'monthly', 'once', 'debug'], case_sensitive=False))
-@click.option('--tags', multiple=True, default=[], help='make applicable only to specific tags')
 @click.pass_obj
 @handle_api_error
-def activate_test(controller, test, run_code, tags):
-    """ Add test to your queue """
-    controller.enable_test(ident=test, run_code=RunCode[run_code.upper()].value, tags=tags)
+def activate_test(controller, test, run_code):
+    """ Add task to your queue """
+    controller.enable_test(ident=test, run_code=RunCode[run_code.upper()].value)
     click.secho(f'Activated {test}', fg=Colors.GREEN.value)
 
 
@@ -60,7 +59,7 @@ def queue(controller):
     if items:
         print_json(data=items)
     else:
-        click.secho('Your queue is empty', fg=Colors.RED.value)
+        print('Your queue is empty')
 
 
 @detect.command('describe-activity')
