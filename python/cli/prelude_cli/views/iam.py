@@ -29,7 +29,6 @@ def describe_account(controller):
     """ View Account users """
     for user in controller.get_users().values():
         print(f'  --> User: {user["handle"]} [{Permission(user["permission"])}]')
-    click.secho('Done', fg=Colors.GREEN.value)
 
 
 @iam.command('create-user')

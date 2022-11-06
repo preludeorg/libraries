@@ -2,7 +2,6 @@ import click
 from prelude_cli.views.shared import handle_api_error
 from prelude_sdk.controllers.detect_controller import DetectController
 from prelude_sdk.models.codes import Colors, RunCode
-from rich import print_json
 from rich.console import Console
 from rich.table import Table
 
@@ -34,9 +33,8 @@ def register_endpoint(controller, name, tag):
 @click.pass_obj
 @handle_api_error
 def activate_test(controller, test, run_code):
-    """ Add task to your queue """
+    """ Add test to your queue """
     controller.enable_test(ident=test, run_code=RunCode[run_code.upper()].value)
-    click.secho(f'Activated {test}', fg=Colors.GREEN.value)
 
 
 @detect.command('disable-test')
@@ -47,7 +45,7 @@ def activate_test(controller, test, run_code):
 def deactivate_test(controller, test):
     """ Remove test from your queue """
     controller.disable_test(ident=test)
-    click.secho(f'Deactivated {test}', fg=Colors.GREEN.value)
+    click.secho(f'Disabled {test}', fg=Colors.GREEN.value)
 
 
 @detect.command('list-queue')
@@ -55,11 +53,10 @@ def deactivate_test(controller, test):
 @handle_api_error
 def queue(controller):
     """ View active queue """
-    items = controller.print_queue()
-    if items:
-        print_json(data=items)
+    for task in controller.print_queue():
+        print(f'  --> {task["test"]} is running {RunCode(task.get("run_code"))}')
     else:
-        print('Your queue is empty')
+        click.secho(f'Finished printing queue', fg=Colors.GREEN.value)
 
 
 @detect.command('describe-activity')
@@ -100,23 +97,3 @@ def export_report(controller, days):
     url = controller.export_report(days=days)
     print(url)
     click.secho(f'Use the above URL to download data dump', fg=Colors.GREEN.value)
-
-
-@detect.command('list-tags')
-@click.pass_obj
-@handle_api_error
-def list_tags(controller):
-    """ List all endpoint tags """
-    print_json(data=controller.list_tags())
-
-
-@detect.command('save-tag')
-@click.argument('tag')
-@click.option('--owner', help='business unit owner', default=None, type=str)
-@click.option('--weight', help='relative weight', default=None, type=int)
-@click.pass_obj
-@handle_api_error
-def save_tag(controller, tag, owner, weight):
-    """ Apply metadata to a tag """
-    controller.update_tag(tag=tag, owner=owner, weight=weight)
-    click.secho(f'Tag "{tag}" saved', fg=Colors.GREEN.value)
