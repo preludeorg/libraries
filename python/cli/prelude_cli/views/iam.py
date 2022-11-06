@@ -27,8 +27,7 @@ def register_account(controller):
 @handle_api_error
 def describe_account(controller):
     """ View Account users """
-    for user in controller.get_users().values():
-        print(f'  --> User: {user["handle"]} [{Permission(user["permission"])}]')
+    print_json(data=controller.get_users())
 
 
 @iam.command('create-user')

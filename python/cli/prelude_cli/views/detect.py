@@ -2,6 +2,7 @@ import click
 from prelude_cli.views.shared import handle_api_error
 from prelude_sdk.controllers.detect_controller import DetectController
 from prelude_sdk.models.codes import Colors, RunCode
+from rich import print_json
 from rich.console import Console
 from rich.table import Table
 
@@ -53,10 +54,7 @@ def deactivate_test(controller, test):
 @handle_api_error
 def queue(controller):
     """ View active queue """
-    for task in controller.print_queue():
-        print(f'  --> {task["test"]} is running {RunCode(task.get("run_code"))}')
-    else:
-        click.secho(f'Finished printing queue', fg=Colors.GREEN.value)
+    print_json(data=controller.print_queue())
 
 
 @detect.command('describe-activity')
@@ -97,3 +95,11 @@ def export_report(controller, days):
     url = controller.export_report(days=days)
     print(url)
     click.secho(f'Use the above URL to download data dump', fg=Colors.GREEN.value)
+
+
+@detect.command('list-tags')
+@click.pass_obj
+@handle_api_error
+def list_tags(controller):
+    """ List all endpoint tags """
+    print_json(data=controller.list_tags())
