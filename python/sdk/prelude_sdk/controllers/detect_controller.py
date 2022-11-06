@@ -60,3 +60,11 @@ class DetectController:
         if res.status_code == 200:
             return res.url
         raise Exception(res.text)
+
+    @verify_credentials
+    def list_tags(self):
+        """ Get all tags associated to an Account """
+        res = requests.get(f'{self.account.hq}/account/tag', headers=self.account.headers)
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
