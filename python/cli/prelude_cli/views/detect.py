@@ -69,7 +69,7 @@ def describe_activity(controller, days):
 
     report = Table()
     report.add_column('test')
-    report.add_column('volume (#)')
+    report.add_column('endpoints (#)')
     report.add_column('ok (%)', style='green')
     report.add_column('defended (%)', style='green')
     report.add_column('failed (%)', style='red')
