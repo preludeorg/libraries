@@ -24,7 +24,7 @@ def describe_server(controller):
         print('Compute server booting up. Please try again in 30s.')
 
 
-@compute.command('test-variant')
+@compute.command('test')
 @click.argument('name')
 @click.pass_obj
 @handle_api_error
@@ -33,7 +33,7 @@ def test_code(controller, name):
     print_json(controller.compute_proxy(route='test', name=name))
 
 
-@compute.command('publish-code')
+@compute.command('publish')
 @click.argument('name')
 @click.pass_obj
 @handle_api_error
