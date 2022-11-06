@@ -27,15 +27,17 @@ def register_endpoint(controller, name, tag):
 
 @detect.command('enable-test')
 @click.argument('test')
+@click.option('--tags', help='only enable for these tags')
 @click.option('--run_code',
               help='provide a run_code',
               default='daily',
               type=click.Choice(['daily', 'monthly', 'once', 'debug'], case_sensitive=False))
 @click.pass_obj
 @handle_api_error
-def activate_test(controller, test, run_code):
+def activate_test(controller, test, run_code, tags):
     """ Add test to your queue """
-    controller.enable_test(ident=test, run_code=RunCode[run_code.upper()].value)
+    tags = tags.split(',') if tags else []
+    controller.enable_test(ident=test, run_code=RunCode[run_code.upper()].value, tags=tags)
 
 
 @detect.command('disable-test')
