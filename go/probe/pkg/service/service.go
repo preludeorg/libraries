@@ -24,7 +24,7 @@ type Actions interface {
 
 func CreateService() *ProbeService {
 	return &ProbeService{
-		HQ:            util.GetEnv("PRELUDE_HQ", "https://detect.prelude.org"),
+		HQ:            "https://detect.prelude.org",
 		Token:         util.GetEnv("PRELUDE_TOKEN", ""),
 		AccountId:     util.GetEnv("PRELUDE_ACCOUNT_ID", ""),
 		AccountSecret: util.GetEnv("PRELUDE_ACCOUNT_SECRET", ""),
