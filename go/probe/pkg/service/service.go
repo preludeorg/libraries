@@ -1,13 +1,11 @@
 package service
 
 import (
-	"bufio"
 	"encoding/json"
 	"fmt"
 	"github.com/preludeorg/libraries/go/probe/internal/hades"
 	"github.com/preludeorg/libraries/go/probe/internal/util"
 	"os"
-	"strings"
 )
 
 type ProbeService struct {
@@ -22,7 +20,6 @@ type Actions interface {
 	Start()
 	Stop()
 	Register(string)
-	LoadKeychain()
 }
 
 func CreateService() *ProbeService {
@@ -64,44 +61,4 @@ func (ps *ProbeService) Register(name ...string) error {
 	}
 	ps.Token = fmt.Sprintf("%s", resp)
 	return nil
-}
-
-func (ps *ProbeService) LoadKeychain(path string) error {
-	f, err := os.Open(path)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-	section := false
-	scanner := bufio.NewScanner(f)
-	scanner.Split(bufio.ScanLines)
-	for scanner.Scan() {
-		line := scanner.Text()
-		if strings.HasPrefix(line, "[") {
-			section = strings.Contains(line, "default")
-		}
-		if section {
-			if val := checkLine(line, "hq"); val != "" {
-				ps.HQ = val
-			} else if val = checkLine(line, "account"); val != "" {
-				ps.AccountId = val
-			} else if val = checkLine(line, "token"); val != "" {
-				ps.AccountSecret = val
-			}
-		}
-	}
-	if err = scanner.Err(); err != nil {
-		return err
-	}
-	return nil
-}
-
-func checkLine(line, key string) string {
-	if strings.HasPrefix(line, key) {
-		s := strings.SplitN(line, "=", 2)
-		if len(s) == 2 {
-			return strings.TrimSpace(s[1])
-		}
-	}
-	return ""
 }
