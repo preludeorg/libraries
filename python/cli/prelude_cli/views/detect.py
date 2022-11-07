@@ -61,31 +61,36 @@ def queue(controller):
 
 @detect.command('describe-activity')
 @click.option('--days', help='days to look back', default=7, type=int)
+@click.option('--test', help='retrieve detailed data for a single test', type=str)
 @click.pass_obj
 @handle_api_error
-def describe_activity(controller, days):
+def describe_activity(controller, days, test):
     """ View report for my Account """
-    raw = controller.describe_activity(days=days)
+    if test:
+        raw = controller.describe_activity(days=days, ident=test)
+        print_json(data=raw)
+    else:
+        raw = controller.describe_activity(days=days)
 
-    report = Table()
-    report.add_column('test')
-    report.add_column('endpoints (#)')
-    report.add_column('ok (%)', style='green')
-    report.add_column('defended (%)', style='green')
-    report.add_column('failed (%)', style='red')
-    report.add_column('error (%)', style='magenta')
+        report = Table()
+        report.add_column('test')
+        report.add_column('endpoints (#)')
+        report.add_column('ok (%)', style='green')
+        report.add_column('defended (%)', style='green')
+        report.add_column('failed (%)', style='red')
+        report.add_column('error (%)', style='magenta')
 
-    for i, test in raw.items():
-        ok = test.get('OK', 0)
-        stopped = test.get('DETECTED', 0)
-        failed = test.get('FAILED', 0)
-        error = test.get('ERROR', 0)
-        volume = ok + stopped + failed + error
-        report.add_row(i, str(volume), str(round((ok / volume) * 100)), str(round((stopped / volume) * 100)),
-                       str(round((failed / volume) * 100)), str(round((error / volume) * 100)))
+        for i, test in raw.items():
+            ok = test.get('OK', 0)
+            stopped = test.get('DETECTED', 0)
+            failed = test.get('FAILED', 0)
+            error = test.get('ERROR', 0)
+            volume = ok + stopped + failed + error
+            report.add_row(i, str(volume), str(round((ok / volume) * 100)), str(round((stopped / volume) * 100)),
+                           str(round((failed / volume) * 100)), str(round((error / volume) * 100)))
 
-    console = Console()
-    console.print(report)
+        console = Console()
+        console.print(report)
 
 
 @detect.command('export-report')
