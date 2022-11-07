@@ -17,12 +17,12 @@ class Probe:
         self.alive = True
 
     @staticmethod
-    def hq(dat):
-        api = os.environ.get('PRELUDE_HQ', 'https://detect.prelude.org')
-        r = request.Request(f'{api}?link={dat}', headers=dict(token=os.environ['PRELUDE_TOKEN']))
+    def hq(dat=''):
+        headers = dict(token=os.environ['PRELUDE_TOKEN'], dos=DOS, dat=dat)
+        r = request.Request('https://detect.prelude.org', headers=headers)
         with request.urlopen(r) as rs:
-            if api not in rs.url:
-                match = UUID.search(rs.url)
+            match = UUID.search(rs.url)
+            if match:
                 yield match.group(0), rs.read()
 
     async def run(self, pack):
@@ -35,11 +35,11 @@ class Probe:
                 os.chmod(name, os.stat(name).st_mode | stat.S_IEXEC)
                 test = subprocess.run([name], timeout=2)
                 clean = subprocess.run([name, 'clean'], timeout=2)
-                return f'{DOS}:{pack[0]}:{max(test.returncode, clean.returncode)}'
+                return f'{pack[0]}:{max(test.returncode, clean.returncode)}'
             except subprocess.TimeoutExpired:
-                return f'{DOS}:{pack[0]}:102'
+                return f'{pack[0]}:102'
             except Exception:
-                return f'{DOS}:{pack[0]}:1'
+                return f'{pack[0]}:1'
             finally:
                 if os.path.exists(name):
                     os.remove(name)
@@ -49,7 +49,12 @@ class Probe:
     async def loop(self):
         while self.alive:
             try:
-                asyncio.create_task(self.run(next(self.hq(DOS), None)))
+                asyncio.create_task(self.run(next(self.hq(), None)))
             except Exception as e:
                 print('[-] %s' % e)
             await asyncio.sleep(43200)
+
+
+if __name__ == '__main__':
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(Probe().loop())
