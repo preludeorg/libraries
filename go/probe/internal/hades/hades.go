@@ -12,12 +12,13 @@ import (
 )
 
 type Probe struct {
-	signals chan bool
-	token   string
-	hq      string
-	dos     string
-	sleep   time.Duration
-	cwd     string
+	signals       chan bool
+	token         string
+	hq            string
+	dos           string
+	sleep         time.Duration
+	cwd           string
+	commandTimout time.Duration
 }
 
 type Actions interface {
@@ -34,12 +35,13 @@ func CreateProbe(token, hq string) *Probe {
 		return nil
 	}
 	return &Probe{
-		signals: make(chan bool),
-		token:   token,
-		hq:      strings.TrimSuffix(hq, "/"),
-		dos:     strings.ToLower(fmt.Sprintf("%s-%s", runtime.GOOS, runtime.GOARCH)),
-		sleep:   43200 * time.Second,
-		cwd:     wd,
+		signals:       make(chan bool),
+		token:         token,
+		hq:            strings.TrimSuffix(hq, "/"),
+		dos:           strings.ToLower(fmt.Sprintf("%s-%s", runtime.GOOS, runtime.GOARCH)),
+		sleep:         43200 * time.Second,
+		cwd:           wd,
+		commandTimout: 2 * time.Second,
 	}
 }
 
@@ -60,11 +62,11 @@ func (p *Probe) Stop() {
 }
 
 func (p *Probe) runTask(data string) {
-	if blob, uuid, err := util.Get(fmt.Sprintf("%s?link=%s", p.hq, data), map[string]string{"token": p.token}); err == nil && uuid != "" {
+	if blob, uuid, err := util.Get(p.hq, map[string]string{"token": p.token, "dos": p.dos, "dat": data, "Content-Type": "application/json"}); err == nil && uuid != "" {
 		if exe, err := p.save(blob); err == nil {
 			result := p.run(exe)
 			_ = os.Remove(exe.Name())
-			p.runTask(fmt.Sprintf("%s:%s:%d", p.dos, uuid, result))
+			p.runTask(fmt.Sprintf("%s:%d", uuid, result))
 		}
 	}
 }
@@ -92,13 +94,13 @@ func (p *Probe) save(data []byte) (*os.File, error) {
 }
 
 func (p *Probe) run(exe *os.File) int {
-	test := runWithTimeout(exe.Name(), "test")
-	cleanup := runWithTimeout(exe.Name(), "cleanup")
+	test := runWithTimeout(exe.Name(), "test", p.commandTimout)
+	cleanup := runWithTimeout(exe.Name(), "cleanup", p.commandTimout)
 	return util.Max(test, cleanup)
 }
 
-func runWithTimeout(executable, arg string) int {
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+func runWithTimeout(executable, arg string, timeout time.Duration) int {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 	command := exec.CommandContext(ctx, executable, arg)
 	command.Run()
