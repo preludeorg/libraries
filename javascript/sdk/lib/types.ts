@@ -77,3 +77,9 @@ export interface ComputeResult {
 }
 
 export interface CreatedURL {}
+
+export interface EnableTest {
+  test: string;
+  runCode: RunCode;
+  tags: string[];
+}

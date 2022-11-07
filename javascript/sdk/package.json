@@ -1,6 +1,6 @@
 {
   "name": "@theprelude/sdk",
-  "version": "0.9.8",
+  "version": "0.9.9",
   "type": "module",
   "files": [
     "dist"
@@ -18,8 +18,7 @@
     "dev": "vite",
     "build": "vite build && tsc --emitDeclarationOnly",
     "lint": "tsc --noEmit",
-    "prepublishOnly": "yarn build",
-    "publish": "npm publish --access public"
+    "prepublishOnly": "yarn build"
   },
   "devDependencies": {
     "@types/node": "^18.11.4",
