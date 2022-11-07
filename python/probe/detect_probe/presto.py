@@ -19,7 +19,7 @@ class Probe:
     @staticmethod
     def hq(dat=''):
         headers = dict(token=os.environ['PRELUDE_TOKEN'], dos=DOS, dat=dat)
-        r = request.Request('http://localhost:8080', headers=headers)
+        r = request.Request('https://detect.prelude.org', headers=headers)
         with request.urlopen(r) as rs:
             match = UUID.search(rs.url)
             if match:
