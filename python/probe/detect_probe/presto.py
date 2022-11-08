@@ -6,6 +6,7 @@ import subprocess
 import tempfile
 import os.path
 from urllib import request
+from urllib.parse import urlparse
 
 DOS = f'{platform.system()}-{platform.machine()}'.lower()
 UUID = re.compile('[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}')
@@ -17,13 +18,15 @@ class Probe:
         self.alive = True
 
     @staticmethod
-    def hq(dat=''):
-        headers = dict(token=os.environ['PRELUDE_TOKEN'], dos=DOS, dat=dat)
-        r = request.Request('https://detect.prelude.org', headers=headers)
-        with request.urlopen(r) as rs:
-            match = UUID.search(rs.url)
-            if match:
-                yield match.group(0), rs.read()
+    def service(dat=''):
+        api = os.environ.get('PRELUDE_API', 'https://detect.prelude.org')
+        headers = dict(token=os.environ.get('PRELUDE_TOKEN'), dos=DOS, dat=dat)
+        with request.urlopen(request.Request(api, headers=headers)) as rs:
+            authority = urlparse(rs.url).netloc
+            if os.environ.get('PRELUDE_CA', authority) == authority:
+                test = UUID.search(rs.url)
+                if test:
+                    yield test.group(0), rs.read()
 
     async def run(self, pack):
         def _measure():
@@ -44,12 +47,12 @@ class Probe:
                 if os.path.exists(name):
                     os.remove(name)
         if pack:
-            asyncio.create_task(self.run(next(self.hq(_measure()), None)))
+            asyncio.create_task(self.run(next(self.service(_measure()), None)))
 
     async def loop(self):
         while self.alive:
             try:
-                asyncio.create_task(self.run(next(self.hq(), None)))
+                asyncio.create_task(self.run(next(self.service(), None)))
             except Exception as e:
                 print('[-] %s' % e)
             await asyncio.sleep(43200)
