@@ -26,7 +26,7 @@ def register_account(controller):
 @click.pass_obj
 @handle_api_error
 def describe_account(controller):
-    """ View Account users """
+    """ View account users """
     print_json(data=controller.get_users())
 
 
@@ -58,6 +58,6 @@ def delete_user(controller, handle):
 @click.pass_context
 @handle_api_error
 def update_token(ctx, token):
-    """ Update your account token """
+    """ Update your root token """
     ctx.obj.update_token(token=token)
     click.secho('Updated account token', fg=Colors.GREEN.value)
