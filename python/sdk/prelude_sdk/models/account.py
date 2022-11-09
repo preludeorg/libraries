@@ -9,8 +9,6 @@ def verify_credentials(func):
     @wraps(verify_credentials)
     def handler(*args, **kwargs):
         try:
-            if not exists(args[0].account.keychain_location):
-                raise FileNotFoundError
             cfg = args[0].account.read_keychain_config()
             args[0].account.profile = next(s for s in cfg.sections() if s == args[0].account.profile)
             args[0].account.hq = cfg.get(args[0].account.profile, 'hq')
@@ -42,6 +40,11 @@ class Account:
         self.write_keychain_config(cfg=cfg)
 
     def read_keychain_config(self):
+        if not exists(self.keychain_location):
+            head, _ = os.path.split(Path(self.keychain_location))
+            Path(head).mkdir(parents=True, exist_ok=True)
+            open(self.keychain_location, 'x').close()
+            self.configure('', '')
         cfg = configparser.ConfigParser()
         cfg.read(self.keychain_location)
         return cfg
