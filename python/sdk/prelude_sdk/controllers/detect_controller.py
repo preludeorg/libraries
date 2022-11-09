@@ -9,9 +9,9 @@ class DetectController:
         self.account = account
 
     @verify_credentials
-    def register_endpoint(self, name, tag=''):
+    def register_endpoint(self, name, tags):
         """ Register (or re-register) an endpoint to your account """
-        params = dict(id=name, tag=tag)
+        params = dict(id=name, tags=tags)
         res = requests.post(f'{self.account.hq}/account/endpoint', headers=self.account.headers, json=params)
         if res.status_code == 200:
             return res.text

@@ -15,13 +15,13 @@ def detect(ctx):
 
 
 @detect.command('create-endpoint')
-@click.option('--tag', help='add a custom tag to this endpoint')
+@click.option('--tags', help='add a custom tag to this endpoint', default='', type=str)
 @click.argument('name')
 @click.pass_obj
 @handle_api_error
-def register_endpoint(controller, name, tag):
+def register_endpoint(controller, name, tags=''):
     """Register a new endpoint"""
-    endpoint_token = controller.register_endpoint(name=name, tag=tag)
+    endpoint_token = controller.register_endpoint(name=name, tags=tags.split(','))
     click.secho(f'Endpoint token: {endpoint_token}', fg=Colors.GREEN.value)
 
 
