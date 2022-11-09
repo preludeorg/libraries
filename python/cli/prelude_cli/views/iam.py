@@ -19,7 +19,7 @@ def register_account(controller):
     """ Register a new account """
     creds = controller.new_account(handle=click.prompt('Enter a handle'))
     print_json(data=creds)
-    click.secho('Configure your keychain to use this account', fg=Colors.GREEN.value)
+    click.secho('Your keychain has been updated to use this account', fg=Colors.GREEN.value)
 
 
 @iam.command('list-users')
