@@ -9,11 +9,13 @@ import (
 )
 
 type ProbeService struct {
-	HQ            string
-	Token         string
-	AccountId     string
-	AccountSecret string
-	proc          *hades.Probe
+	PreludeService string
+	AccountId      string
+	AccountSecret  string
+	ProbeToken     string
+	ProbeTags      []string
+	ProbeName      string
+	proc           *hades.Probe
 }
 
 type Actions interface {
@@ -24,16 +26,18 @@ type Actions interface {
 
 func CreateService() *ProbeService {
 	return &ProbeService{
-		HQ:            "https://detect.prelude.org",
-		Token:         util.GetEnv("PRELUDE_TOKEN", ""),
-		AccountId:     util.GetEnv("PRELUDE_ACCOUNT_ID", ""),
-		AccountSecret: util.GetEnv("PRELUDE_ACCOUNT_SECRET", ""),
-		proc:          nil,
+		PreludeService: "https://detect.prelude.org",
+		ProbeToken:     util.GetEnv("PRELUDE_TOKEN", ""),
+		AccountId:      util.GetEnv("PRELUDE_ACCOUNT_ID", ""),
+		AccountSecret:  util.GetEnv("PRELUDE_ACCOUNT_SECRET", ""),
+		ProbeTags:      []string{},
+		ProbeName:      "",
+		proc:           nil,
 	}
 }
 
 func (ps *ProbeService) Start() {
-	ps.proc = hades.CreateProbe(ps.Token, ps.HQ)
+	ps.proc = hades.CreateProbe(ps.ProbeToken, ps.PreludeService)
 	go ps.proc.Start()
 }
 
@@ -43,22 +47,21 @@ func (ps *ProbeService) Stop() {
 	}
 }
 
-func (ps *ProbeService) Register(name ...string) error {
+func (ps *ProbeService) Register() error {
 	var err error
-	if len(name) < 1 {
-		name = make([]string, 1)
-		name[0], err = os.Hostname()
+	if ps.ProbeName == "" {
+		ps.ProbeName, err = os.Hostname()
 		if err != nil {
 			return err
 		}
 	}
-	api := fmt.Sprintf("%s/account/endpoint", ps.HQ)
+	api := fmt.Sprintf("%s/account/endpoint", ps.PreludeService)
 	headers := map[string]string{"account": ps.AccountId, "token": ps.AccountSecret, "Content-Type": "application/json"}
-	data, err := json.Marshal(map[string]string{"id": name[0]})
+	data, err := json.Marshal(map[string]interface{}{"id": ps.ProbeName, "tags": ps.ProbeTags})
 	resp, err := util.Post(api, data, headers)
 	if err != nil {
 		return err
 	}
-	ps.Token = fmt.Sprintf("%s", resp)
+	ps.ProbeToken = fmt.Sprintf("%s", resp)
 	return nil
 }
