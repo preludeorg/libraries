@@ -4,7 +4,7 @@
 
 Start by compiling:
 ```
-swiftc -Osize Sources/main.swift -o moonlight && strip moonlight
+swiftc -Osize Sources/moonlight.swift -o moonlight && strip moonlight
 ```
 
 Next, start as an executable:
