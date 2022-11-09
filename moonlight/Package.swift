@@ -4,11 +4,11 @@
 import PackageDescription
 
 let package = Package(
-    name: "Mini",
+    name: "moonlight",
     dependencies: [],
     targets: [
         .executableTarget(
-            name: "Mini",
+            name: "moonlight",
             dependencies: []),
     ]
 )
