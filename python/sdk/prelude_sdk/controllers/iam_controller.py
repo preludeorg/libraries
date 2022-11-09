@@ -11,9 +11,14 @@ class IAMController:
     @verify_credentials
     def new_account(self, handle):
         res = requests.post(url=f'{self.account.hq}/account', json=dict(handle=handle), headers=self.account.headers)
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        if res.status_code != 200:
+            raise Exception(res.text)
+        cfg = self.account.read_keychain_config()
+        res_json = res.json()
+        cfg[self.account.profile]['account'] = res_json['account_id']
+        cfg[self.account.profile]['token'] = res_json['token']
+        self.account.write_keychain_config(cfg)
+        return res_json
 
     @verify_credentials
     def get_users(self):
