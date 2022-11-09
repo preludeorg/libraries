@@ -55,7 +55,7 @@ class DetectController:
     def export_report(self, days=7):
         """ Generate a redirect URL to a data dump """
         params = dict(days=days)
-        res = requests.get(f'{self.account.hq}/account/report-export', headers=self.account.headers, params=params)
+        res = requests.get(f'{self.account.hq}/account/report/export', headers=self.account.headers, params=params)
         if res.status_code == 200:
             return res.url
         raise Exception(res.text)
