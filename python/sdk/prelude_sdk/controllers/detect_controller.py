@@ -43,11 +43,10 @@ class DetectController:
             raise Exception(res.text)
 
     @verify_credentials
-    def describe_activity(self, days=7, ident=None):
+    def describe_activity(self, days=7):
         """ Get report for an Account """
         params = dict(days=days)
-        route = f'/{ident}' if ident else ''
-        res = requests.get(f'{self.account.hq}/account/report{route}', headers=self.account.headers, params=params)
+        res = requests.get(f'{self.account.hq}/account/report', headers=self.account.headers, params=params)
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
