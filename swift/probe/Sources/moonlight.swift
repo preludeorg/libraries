@@ -3,7 +3,7 @@ import Foundation
 import FoundationNetworking
 #endif
 
-var Exit: int = 103
+var Locked: Int = 423
 
 struct Service {
     var api: String

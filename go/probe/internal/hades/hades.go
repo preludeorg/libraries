@@ -2,6 +2,7 @@ package hades
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/preludeorg/libraries/go/probe/internal/util"
 	"os"
@@ -10,8 +11,6 @@ import (
 	"strings"
 	"time"
 )
-
-const Exit = 103
 
 type Probe struct {
 	signals       chan bool
@@ -68,11 +67,10 @@ func (p *Probe) runTask(data string) {
 		if exe, err := p.save(blob); err == nil {
 			result := p.run(exe)
 			_ = os.Remove(exe.Name())
-			if result == Exit {
-				p.Stop()
-			}
 			p.runTask(fmt.Sprintf("%s:%d", uuid, result))
 		}
+	} else if errors.Is(err, util.KillSignalError) {
+		p.Stop()
 	}
 }
 

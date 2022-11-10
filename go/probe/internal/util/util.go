@@ -13,6 +13,8 @@ import (
 	"strings"
 )
 
+var KillSignalError = errors.New("kill signal")
+
 func GetEnv(key, defaultValue string) string {
 	if value, ok := os.LookupEnv(key); ok {
 		return value
@@ -36,6 +38,8 @@ func Get(url string, headers map[string]string) ([]byte, string, error) {
 		return nil, "", err
 	} else if status == 200 {
 		return data, parseUUID(uri), err
+	} else if status == 423 {
+		return nil, "", fmt.Errorf("kill signal")
 	}
 	return nil, "", errors.New(fmt.Sprintf("%s", data))
 }
