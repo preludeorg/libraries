@@ -3,8 +3,6 @@ import Foundation
 import FoundationNetworking
 #endif
 
-var Locked: Int = 423
-
 struct Service {
     var api: String
     var token: String
@@ -27,6 +25,9 @@ struct Service {
                 return
             }
             guard let response = response as? HTTPURLResponse, (200 ..< 400) ~= response.statusCode else {
+                if (response as! HTTPURLResponse).statusCode == 423 {
+                    exit(423)
+                }
                 print("ERROR: Bad request")
                 return
             }
