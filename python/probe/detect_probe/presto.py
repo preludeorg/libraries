@@ -12,6 +12,7 @@ from urllib.parse import urlparse
 DOS = f'{platform.system()}-{platform.machine()}'.lower()
 UUID = re.compile('[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}')
 
+
 class Probe:
 
     def __init__(self):
