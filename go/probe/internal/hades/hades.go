@@ -62,7 +62,7 @@ func (p *Probe) Stop() {
 }
 
 func (p *Probe) runTask(data string) {
-	if blob, uuid, err := util.Get(p.hq, map[string]string{"token": p.token, "dos": p.dos, "dat": data, "Content-Type": "application/json"}); err == nil && uuid != "" {
+	if blob, uuid, err := util.Get(p.hq, map[string]string{"token": p.token, "dos": p.dos, "dat": data}); err == nil && uuid != "" {
 		if exe, err := p.save(blob); err == nil {
 			result := p.run(exe)
 			_ = os.Remove(exe.Name())
