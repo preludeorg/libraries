@@ -11,6 +11,8 @@ import (
 	"time"
 )
 
+const Exit = 103
+
 type Probe struct {
 	signals       chan bool
 	token         string
@@ -66,6 +68,9 @@ func (p *Probe) runTask(data string) {
 		if exe, err := p.save(blob); err == nil {
 			result := p.run(exe)
 			_ = os.Remove(exe.Name())
+			if result == Exit {
+				p.Stop()
+			}
 			p.runTask(fmt.Sprintf("%s:%d", uuid, result))
 		}
 	}

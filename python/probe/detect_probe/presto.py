@@ -10,7 +10,7 @@ from urllib.parse import urlparse
 
 DOS = f'{platform.system()}-{platform.machine()}'.lower()
 UUID = re.compile('[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}')
-
+EXIT = 103
 
 class Probe:
 
@@ -38,6 +38,8 @@ class Probe:
                 os.chmod(name, os.stat(name).st_mode | stat.S_IEXEC)
                 test = subprocess.run([name], timeout=2)
                 clean = subprocess.run([name, 'clean'], timeout=2)
+                if test == EXIT or clean == EXIT:
+                    self.alive = False
                 return f'{pack[0]}:{max(test.returncode, clean.returncode)}'
             except subprocess.TimeoutExpired:
                 return f'{pack[0]}:102'
@@ -55,7 +57,8 @@ class Probe:
                 asyncio.create_task(self.run(next(self.service(), None)))
             except Exception as e:
                 print('[-] %s' % e)
-            await asyncio.sleep(43200)
+            if self.alive:
+                await asyncio.sleep(43200)
 
 
 if __name__ == '__main__':
