@@ -47,7 +47,7 @@ func CreateProbe(token, hq string) *Probe {
 
 func (p *Probe) Start() {
 	for {
-		p.runTask(p.dos)
+		p.runTask("")
 		select {
 		case <-p.signals:
 			return
