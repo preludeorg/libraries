@@ -60,3 +60,17 @@ class BuildController:
         if not res.status_code == 200:
             raise Exception(res.text)
         return res.text
+
+    @verify_credentials
+    def create_url(self, name: str):
+        res = requests.get(f'{self.account.hq}/variant/{name}/url', headers=self.account.headers)
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def compute_proxy(self, name: dict):
+        res = requests.post(f'{self.account.hq}/compute', json=dict(name=name), headers=self.account.headers)
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)

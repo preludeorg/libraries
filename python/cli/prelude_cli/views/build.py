@@ -96,6 +96,26 @@ def put_variant(controller, path):
         click.secho(f'Uploaded {path}', fg=Colors.GREEN.value)
 
 
+@build.command('create-url')
+@click.argument('name')
+@click.pass_obj
+@handle_api_error
+def create_url(controller, name):
+    """ Generate deploy url """
+    url = controller.create_url(name=name)
+    print(url)
+    click.secho(f'Use the above url to download {name}', fg=Colors.GREEN.value)
+
+
+@build.command('test')
+@click.argument('name')
+@click.pass_obj
+@handle_api_error
+def compile_test(controller, name):
+    """ Compile, scan and test variant """
+    print_json(data=controller.compute_proxy(name=name))
+
+
 @build.command('create-variant')
 @click.option('--test', help='Test ID', default=str(uuid.uuid4()))
 @click.option('--path', help='directory to store code file', default='.')
