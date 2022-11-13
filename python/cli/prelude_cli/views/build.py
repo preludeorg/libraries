@@ -114,12 +114,12 @@ def create_url(controller, name):
     print_json(data=controller.create_url(name=name))
 
 
-@build.command('run')
+@build.command('validate')
 @click.argument('name')
 @click.pass_obj
 @handle_api_error
 def compute(controller, name):
-    """ Compile, scan and test variant """
+    """ Compile and validate variant """
     print_json(data=controller.compute_proxy(name=name))
 
 
