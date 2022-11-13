@@ -60,6 +60,23 @@ def queue(controller):
     print_json(data=controller.print_queue())
 
 
+@detect.command('export-failures')
+@click.option('--days', help='days to look back', default=7, type=int)
+@click.pass_obj
+@handle_api_error
+def export_report(controller, days):
+    """ Review all failed tests """
+    print_json(data=controller.export_report(days=days))
+
+
+@detect.command('list-tags')
+@click.pass_obj
+@handle_api_error
+def list_tags(controller):
+    """ List all endpoint tags """
+    print_json(data=controller.list_tags())
+
+
 @detect.command('describe')
 @click.option('--days', help='days to look back', default=7, type=int)
 @click.pass_obj
@@ -89,20 +106,3 @@ def describe_activity(controller, days):
 
     console = Console()
     console.print(report)
-
-
-@detect.command('export-failures')
-@click.option('--days', help='days to look back', default=7, type=int)
-@click.pass_obj
-@handle_api_error
-def export_report(controller, days):
-    """ Review all failed tests """
-    print_json(data=controller.export_report(days=days))
-
-
-@detect.command('list-tags')
-@click.pass_obj
-@handle_api_error
-def list_tags(controller):
-    """ List all endpoint tags """
-    print_json(data=controller.list_tags())
