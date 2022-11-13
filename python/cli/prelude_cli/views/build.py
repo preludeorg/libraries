@@ -94,7 +94,7 @@ def delete_variant(controller, name):
     click.secho(f'Deleted {name}', fg=Colors.GREEN.value)
 
 
-@build.command('push-variant')
+@build.command('save')
 @click.argument('path')
 @click.pass_obj
 @handle_api_error
