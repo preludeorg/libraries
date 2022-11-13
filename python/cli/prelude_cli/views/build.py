@@ -16,7 +16,7 @@ from prelude_sdk.controllers.build_controller import BuildController
 @click.group()
 @click.pass_context
 def build(ctx):
-    """ A terminal-based security test environment """
+    """ Terminal-based security test environment """
     ctx.obj = BuildController(account=ctx.obj)
 
 
@@ -50,6 +50,15 @@ def clone(controller):
 def list_tests(controller):
     """ Display my tests """
     print_json(data=controller.list_tests())
+
+
+@build.command('get-test')
+@click.argument('test')
+@click.pass_obj
+@handle_api_error
+def get_test(controller, test):
+    """ Print all variants for test """
+    print_json(data=controller.get_test(ident=test))
 
 
 @build.command('create-test')
@@ -102,9 +111,7 @@ def put_variant(controller, path):
 @handle_api_error
 def create_url(controller, name):
     """ Generate download URL for variant """
-    url = controller.create_url(name=name)
-    print(url)
-    click.secho(f'Use the above url to download {name}', fg=Colors.GREEN.value)
+    print_json(data=controller.create_url(name=name))
 
 
 @build.command('run')

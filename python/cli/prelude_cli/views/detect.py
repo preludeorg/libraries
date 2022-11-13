@@ -97,9 +97,7 @@ def describe_activity(controller, days):
 @handle_api_error
 def export_report(controller, days):
     """ Review all failed tests """
-    url = controller.export_report(days=days)
-    print(url)
-    click.secho(f'Use the above URL to download data dump', fg=Colors.GREEN.value)
+    print_json(data=controller.export_report(days=days))
 
 
 @detect.command('list-tags')
