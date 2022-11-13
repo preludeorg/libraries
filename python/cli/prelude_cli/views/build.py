@@ -96,7 +96,7 @@ def put_variant(controller, path):
         click.secho(f'Uploaded {path}', fg=Colors.GREEN.value)
 
 
-@build.command('create-url')
+@build.command('url')
 @click.argument('name')
 @click.pass_obj
 @handle_api_error
