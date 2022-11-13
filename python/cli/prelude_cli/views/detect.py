@@ -77,7 +77,7 @@ def list_tags(controller):
     print_json(data=controller.list_tags())
 
 
-@detect.command('describe')
+@detect.command('activity')
 @click.option('--days', help='days to look back', default=7, type=int)
 @click.pass_obj
 @handle_api_error

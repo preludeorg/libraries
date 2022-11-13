@@ -114,7 +114,7 @@ def create_url(controller, name):
     print_json(data=controller.create_url(name=name))
 
 
-@build.command('validate')
+@build.command('run')
 @click.argument('name')
 @click.pass_obj
 @handle_api_error
