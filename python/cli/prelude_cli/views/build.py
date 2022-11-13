@@ -16,7 +16,7 @@ from prelude_sdk.controllers.build_controller import BuildController
 @click.group()
 @click.pass_context
 def build(ctx):
-    """ A terminal-based IDE """
+    """ A terminal-based security test environment """
     ctx.obj = BuildController(account=ctx.obj)
 
 
@@ -34,7 +34,7 @@ def purge(controller):
 @click.pass_obj
 @handle_api_error
 def clone(controller):
-    """ Clone my project locally """
+    """ Clone all variants locally """
     Path('prelude').mkdir(exist_ok=True)
     for test in controller.list_tests():
         for variant in controller.get_test(ident=test['id']):
@@ -58,7 +58,7 @@ def list_tests(controller):
 @click.pass_obj
 @handle_api_error
 def create_test(controller, test, question):
-    """ Add a test """
+    """ Add or update test """
     controller.create_test(ident=test, question=question)
     click.secho(f'Added {test}', fg=Colors.GREEN.value)
 
@@ -69,7 +69,7 @@ def create_test(controller, test, question):
 @click.pass_obj
 @handle_api_error
 def delete_test(controller, test):
-    """ Remove a test """
+    """ Remove test """
     controller.delete_test(ident=test)
     click.secho(f'Deleted {test}', fg=Colors.GREEN.value)
 
@@ -80,17 +80,17 @@ def delete_test(controller, test):
 @click.pass_obj
 @handle_api_error
 def delete_variant(controller, name):
-    """ Remove a variant """
+    """ Remove variant """
     controller.delete_variant(name=name)
     click.secho(f'Deleted {name}', fg=Colors.GREEN.value)
 
 
-@build.command('save-variant')
+@build.command('push-variant')
 @click.argument('path')
 @click.pass_obj
 @handle_api_error
 def put_variant(controller, path):
-    """ Save a variant """
+    """ Upload variant to cloud """
     with open(path, 'r') as variant:
         controller.create_variant(name=Path(path).name, code=variant.read())
         click.secho(f'Uploaded {path}', fg=Colors.GREEN.value)
@@ -101,17 +101,17 @@ def put_variant(controller, path):
 @click.pass_obj
 @handle_api_error
 def create_url(controller, name):
-    """ Generate deploy url """
+    """ Generate download URL for variant """
     url = controller.create_url(name=name)
     print(url)
     click.secho(f'Use the above url to download {name}', fg=Colors.GREEN.value)
 
 
-@build.command('test')
+@build.command('run')
 @click.argument('name')
 @click.pass_obj
 @handle_api_error
-def compile_test(controller, name):
+def compute(controller, name):
     """ Compile, scan and test variant """
     print_json(data=controller.compute_proxy(name=name))
 
@@ -122,7 +122,7 @@ def compile_test(controller, name):
 @click.pass_obj
 @handle_api_error
 def generate_test(controller, test, path):
-    """ Create a new test variant """
+    """ Create new test variant """
     def platform():
         p = click.prompt(
             text='Select a platform',

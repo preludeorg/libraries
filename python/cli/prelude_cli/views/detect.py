@@ -60,12 +60,12 @@ def queue(controller):
     print_json(data=controller.print_queue())
 
 
-@detect.command('describe-activity')
+@detect.command('describe')
 @click.option('--days', help='days to look back', default=7, type=int)
 @click.pass_obj
 @handle_api_error
 def describe_activity(controller, days):
-    """ View report for my Account """
+    """ View report for my account """
     raw = controller.describe_activity(days=days)
     build = BuildController(account=controller.account)
     tests = {row['id']: row['question'] for row in build.list_tests()}
@@ -91,7 +91,7 @@ def describe_activity(controller, days):
     console.print(report)
 
 
-@detect.command('export-report')
+@detect.command('export-failures')
 @click.option('--days', help='days to look back', default=7, type=int)
 @click.pass_obj
 @handle_api_error

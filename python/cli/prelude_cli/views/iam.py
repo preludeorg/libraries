@@ -37,7 +37,7 @@ def describe_account(controller):
 @click.pass_obj
 @handle_api_error
 def create_user(controller, permission, handle):
-    """Create a new user in the account"""
+    """Create a new user in your account"""
     token = controller.create_user(handle=handle, permission=Permission[permission.upper()].value)
     click.secho(f'Created new [{permission}] user [{handle}]. Token: {token}', fg=Colors.GREEN.value)
 
@@ -47,7 +47,7 @@ def create_user(controller, permission, handle):
 @click.pass_obj
 @handle_api_error
 def delete_user(controller, handle):
-    """Delete a user from the account"""
+    """Delete a user from your account"""
     if controller.delete_user(handle=handle):
         click.secho(f'Deleted user {handle}', fg=Colors.GREEN.value)
 
