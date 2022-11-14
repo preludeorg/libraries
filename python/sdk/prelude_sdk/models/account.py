@@ -36,7 +36,7 @@ class Account:
         self.keychain_location = keychain_location
 
     def configure(self, account_id, token, hq='https://detect.dev.prelude.org', profile='default'):
-        cfg = self.generate_config(account_id, token, hq, profile)
+        cfg = self._merge_configs(self.read_keychain_config(), self.generate_config(account_id, token, hq, profile))
         self.write_keychain_config(cfg=cfg)
 
     def read_keychain_config(self):
@@ -62,3 +62,9 @@ class Account:
             'token': token
         }
         return cfg
+
+    @staticmethod
+    def _merge_configs(cfg_from, cfg_to):
+        for section in cfg_from.sections():
+            cfg_to[section] = {k: cfg_from[section][k] for k in cfg_from[section]}
+        return cfg_to
