@@ -25,7 +25,7 @@ struct Service {
                 return
             }
             guard let response = response as? HTTPURLResponse, (200 ..< 400) ~= response.statusCode else {
-                print("ERROR: Bad request")
+                print("WARN: Request denied")
                 return
             }
 

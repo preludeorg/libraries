@@ -6,3 +6,5 @@
 *.map
 **/build/**
 .idea
+**/.swiftpm/**
+swift/probe/moonlight
