@@ -74,3 +74,10 @@ class BuildController:
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
+
+    @verify_credentials
+    def verified_tests(self):
+        res = requests.get(f'{self.account.hq}/verified', headers=self.account.headers)
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)

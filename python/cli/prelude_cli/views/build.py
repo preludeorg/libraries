@@ -123,6 +123,14 @@ def compute(controller, name):
     print_json(data=controller.compute_proxy(name=name))
 
 
+@build.command('list-verified')
+@click.pass_obj
+@handle_api_error
+def compute(controller):
+    """ List all verified tests """
+    print_json(data=controller.verified_tests())
+
+
 @build.command('create-variant')
 @click.option('--test', help='Test ID', default=str(uuid.uuid4()))
 @click.option('--path', help='directory to store code file', default='.')
