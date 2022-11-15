@@ -62,4 +62,33 @@ export default class BuildController {
 
     return response.text();
   }
+
+  async createURL(name: string, options: RequestOptions = {}) {
+    const response = await this.#client.requestWithAuth(
+      `/variant/${name}/url`,
+      {
+        ...options,
+      }
+    );
+
+    return response.json();
+  }
+
+  async computeProxy(name: string, options: RequestOptions = {}) {
+    const response = await this.#client.requestWithAuth(`/compute`, {
+      method: "POST",
+      body: JSON.stringify({ name }),
+      ...options,
+    });
+
+    return response.json();
+  }
+
+  async verifiedTests(options: RequestOptions = {}) {
+    const response = await this.#client.requestWithAuth(`/verified`, {
+      ...options,
+    });
+
+    return response.json();
+  }
 }
