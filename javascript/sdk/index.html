@@ -15,7 +15,10 @@
     >
       Run Test
     </button>
-    <pre id="log" class="w-1/2 bg-gray-100 p-2 min-h-screen text-sm"></pre>
+    <pre
+      id="log"
+      class="whitespace-pre-wrap break-words w-3/4 bg-gray-100 p-2 min-h-full text-sm"
+    ></pre>
     <script type="module">
       let log = console.log;
       let logger = document.getElementById("log");
@@ -30,6 +33,7 @@
           })
           .join(" ");
         logger.innerHTML += message + "<br />";
+        window.scrollTo(0, document.body.scrollHeight);
       };
     </script>
 
@@ -37,6 +41,36 @@
       function sleep(ms) {
         return new Promise((resolve) => setTimeout(resolve, ms));
       }
+
+      const variant = `/*
+      NAME: $NAME
+      QUESTION: $QUESTION
+      CREATED: $CREATED
+      */
+      #include <stdlib.h>
+      #include <string.h>
+      #include <stdio.h>
+
+      void test(void)
+      {
+          printf("Run test");
+          exit(100);
+      }
+
+      void clean(void)
+      {
+          printf("Clean up");
+          exit(100);
+      }
+
+      int main(int argc, char *argv[])
+      {
+          if (argc > 1) {
+              clean();
+          } else {
+              test();
+          }
+      }`;
 
       import * as Prelude from "/lib/main.ts";
       import * as uuid from "https://jspm.dev/uuid";
@@ -71,12 +105,15 @@
 
           console.log("GET Test Variants", await service.build.getTest(testId));
 
+          const variantName = `${testId}_linux.c`;
+
           console.log(
             "CREATE Test Variant",
-            await service.build.createVariant(`${testId}.c`, "Testing...")
+            await service.build.createVariant(variantName, variant)
           );
 
-          console.log("Waited 1s", await sleep(5000));
+          console.log("Waiting 1s");
+          await sleep(1000);
 
           console.log(
             "GET Test Variants after CREATE",
@@ -85,12 +122,28 @@
 
           console.log(
             "GET Variant",
-            await service.build.getVariant(`${testId}.c`)
+            (await service.build.getVariant(variantName)) === variant
+          );
+
+          console.log("COMPUTING... Variant");
+
+          const compute = await service.build.computeProxy(variantName);
+
+          console.log("COMPUTE Variant", compute);
+
+          console.log(
+            "CREATE URL for Variant",
+            await service.build.createURL(compute[0].name)
+          );
+
+          console.log(
+            "GET Verified Tests",
+            await service.build.verifiedTests()
           );
 
           console.log(
             "DELETE Variant",
-            await service.build.deleteVariant(`${testId}.c`)
+            await service.build.deleteVariant(variantName)
           );
 
           console.log(
