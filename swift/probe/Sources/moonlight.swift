@@ -79,7 +79,7 @@ struct System {
     }
     func executable(url: URL) {
         let task = Process()
-        task.launchPath = "/bin/bash"
+        task.executableURL = URL(fileURLWithPath: "/bin/bash")
         task.arguments = ["-c", "chmod +x \(url.path)"]
         do { try task.run() } catch { print("ERROR: Could not chmod: \(error)") }
         task.waitUntilExit()
