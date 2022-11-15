@@ -25,7 +25,9 @@ struct Service {
                 return
             }
             guard let response = response as? HTTPURLResponse, (200 ..< 400) ~= response.statusCode else {
-                print("WARN: Request denied")
+                if let httpResponse = response as? HTTPURLResponse {
+                    print("WARN: Request denied (\(httpResponse.statusCode))")
+                }
                 return
             }
 
@@ -67,7 +69,7 @@ struct System {
         let task = Process()
         task.executableURL = url
         task.arguments = [name]
-        do { try task.run() } catch { print("ERROR: Could not run \(name): \(error)") }
+        do { try task.run() } catch { print("ERROR: \(error)") }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
             if task.isRunning {
@@ -81,7 +83,7 @@ struct System {
         let task = Process()
         task.executableURL = URL(fileURLWithPath: "/bin/bash")
         task.arguments = ["-c", "chmod +x \(url.path)"]
-        do { try task.run() } catch { print("ERROR: Could not chmod: \(error)") }
+        do { try task.run() } catch { print("ERROR: \(error)") }
         task.waitUntilExit()
     }
 }
