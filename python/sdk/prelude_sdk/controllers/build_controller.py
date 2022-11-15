@@ -69,7 +69,7 @@ class BuildController:
         raise Exception(res.text)
 
     @verify_credentials
-    def compute_proxy(self, name: dict):
+    def compute_proxy(self, name: str):
         res = requests.post(f'{self.account.hq}/compute', json=dict(name=name), headers=self.account.headers)
         if res.status_code == 200:
             return res.json()
