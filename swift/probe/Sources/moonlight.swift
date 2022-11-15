@@ -67,7 +67,7 @@ struct System {
         let task = Process()
         task.executableURL = url
         task.arguments = [name]
-        task.launch()
+        do { try task.run() } catch { print("ERROR: Could not run \(name): \(error)") }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
             if task.isRunning {
