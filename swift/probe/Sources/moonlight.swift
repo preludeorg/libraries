@@ -65,7 +65,7 @@ struct System {
     func run(url: URL, name: String) -> Optional<Int32>{
         executable(url: url)
         let task = Process()
-        task.launchPath = url.path
+        task.executableURL = url
         task.arguments = [name]
         task.launch()
         
