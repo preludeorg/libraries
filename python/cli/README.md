@@ -57,30 +57,30 @@ prelude build clone
 
 Add or remove TTPs from your account using:
 ```zsh
-prelude build create-ttp '<TTP NAME>'
-prelude build delete-ttp <TTP IDENTIFIER>
+prelude build create-test '<TEST NAME>'
+prelude build delete-test <TEST IDENTIFIER>
 ```
 
 Create and upload new code files:
 ```zsh
-prelude build create-test <TTP ID>
-prelude build put-test <PATH>
+prelude build create-variant <VARIANT NAME>
+prelude build save <PATH>
 ```
 
 ## Security tests
 
-TTP is a generally overloaded acronym standing for Tactics, Techniques and Procedures. At Prelude, TTPs represent individual 
-security tests and are broken into two components: metadata and code files.
+TTP is a generally overloaded acronym standing for Tactics, Techniques and Procedures. At Prelude, TTPs are represent by individual 
+security test and are broken into two components: metadata and code files.
 
 ### Metadata
 
-TTP metadata is stored in your manifest and hosted in Prelude's cloud. Metadata includes properties such as name
-and last updated time. Each TTP has a unique UUID-4 identifier.
+Metadata is stored in your manifest and hosted in Prelude's cloud. Metadata includes properties such as name
+and last updated time. Each test has a unique UUID-4 identifier.
 
 ### Code files
 
-Code files are individual source files which can be compiled into executables. Each code file is associated to a TTP 
-through the logical naming convention: ```TTP_ID_platform-architecture.ext```, where platform and architecture are optional and extension can be any supported programming language.
+Code files are individual source files which can be compiled into executables. We call those variants. Each variant is associated to a security test 
+through the logical naming convention: ```TEST_ID_platform-architecture.ext```, where platform and architecture are optional and extension can be any supported programming language.
 
 > The supported programming languages are: C, C# and Swift. [Review the templates](prelude_cli/templates).
 
