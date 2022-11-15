@@ -1,5 +1,5 @@
 import Client from "../client";
-import type { Test, RequestOptions } from "../types";
+import type { Test, RequestOptions, ComputeResult } from "../types";
 
 export default class BuildController {
   #client: Client;
