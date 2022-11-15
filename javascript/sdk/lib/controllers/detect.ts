@@ -15,12 +15,12 @@ export default class DetectController {
 
   /** Register (or re-register) an endpoint to your account */
   async registerEndpoint(
-    { name, tag = "" }: { name: string; tag?: string },
+    { name, tags = [] }: { name: string; tags?: string[] },
     options: RequestOptions
   ) {
     const response = await this.#client.requestWithAuth("/account/endpoint", {
       method: "POST",
-      body: JSON.stringify({ name, tag }),
+      body: JSON.stringify({ name, tags }),
       ...options,
     });
 
@@ -78,7 +78,7 @@ export default class DetectController {
   /** Generate a redirect URL to a data dump */
   async exportReport({ days = 7 }: { days?: number }, options: RequestOptions) {
     const response = await this.#client.requestWithAuth(
-      "/account/report-export",
+      "/account/report/export",
       {
         method: "GET",
         body: JSON.stringify({ days }),
