@@ -53,17 +53,14 @@ export const Permissions = {
 export type Permission = typeof Permissions[keyof typeof Permissions];
 
 export interface ComputeResult {
-  architecture: string;
-  platform: string;
+  name: string;
   steps: {
-    duration: string;
-    name: string;
-    output: string;
+    output: string | unknown[];
     status: number;
     step: string;
+    duration: string;
   }[];
 }
-
 export interface EnableTest {
   test: string;
   runCode: RunCode;

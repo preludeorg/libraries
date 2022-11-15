@@ -71,7 +71,7 @@ export default class BuildController {
       }
     );
 
-    return response.json();
+    return (await response.json()) as { url: string };
   }
 
   async computeProxy(name: string, options: RequestOptions = {}) {
@@ -81,7 +81,7 @@ export default class BuildController {
       ...options,
     });
 
-    return response.json();
+    return (await response.json()) as ComputeResult[];
   }
 
   async verifiedTests(options: RequestOptions = {}) {
@@ -89,6 +89,6 @@ export default class BuildController {
       ...options,
     });
 
-    return response.json();
+    return (await response.json()) as string[];
   }
 }
