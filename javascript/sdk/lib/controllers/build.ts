@@ -1,5 +1,5 @@
 import Client from "../client";
-import type { Test, RequestOptions } from "../types";
+import type { Test, RequestOptions, ComputeResult } from "../types";
 
 export default class BuildController {
   #client: Client;
@@ -61,5 +61,34 @@ export default class BuildController {
     });
 
     return response.text();
+  }
+
+  async createURL(name: string, options: RequestOptions = {}) {
+    const response = await this.#client.requestWithAuth(
+      `/variant/${name}/url`,
+      {
+        ...options,
+      }
+    );
+
+    return (await response.json()) as { url: string };
+  }
+
+  async computeProxy(name: string, options: RequestOptions = {}) {
+    const response = await this.#client.requestWithAuth(`/compute`, {
+      method: "POST",
+      body: JSON.stringify({ name }),
+      ...options,
+    });
+
+    return (await response.json()) as ComputeResult[];
+  }
+
+  async verifiedTests(options: RequestOptions = {}) {
+    const response = await this.#client.requestWithAuth(`/verified`, {
+      ...options,
+    });
+
+    return (await response.json()) as string[];
   }
 }

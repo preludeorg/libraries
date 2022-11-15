@@ -52,32 +52,15 @@ export const Permissions = {
 
 export type Permission = typeof Permissions[keyof typeof Permissions];
 
-export const ComputeRoutes = {
-  TEST: "test",
-  PUBLISH: "publish",
-} as const;
-
-export type ComputeRoute = typeof ComputeRoutes[keyof typeof ComputeRoutes];
-
-export interface ComputeProps {
-  /** test name */
-  name: string;
-}
-
 export interface ComputeResult {
-  architecture: string;
-  platform: string;
+  name: string;
   steps: {
-    duration: string;
-    name: string;
-    output: string;
+    output: string | unknown[];
     status: number;
     step: string;
+    duration: string;
   }[];
 }
-
-export interface CreatedURL {}
-
 export interface EnableTest {
   test: string;
   runCode: RunCode;
