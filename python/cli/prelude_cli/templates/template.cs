@@ -5,7 +5,7 @@ CREATED: $CREATED
 */
 using System;
 
-class TTP {
+class Question {
     static void Test() {
         Console.WriteLine("Run test");
         Environment.Exit(100);
