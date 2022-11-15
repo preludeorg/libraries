@@ -141,7 +141,7 @@ def generate_test(controller, test, path):
     def platform():
         p = click.prompt(
             text='Select a platform',
-            type=click.Choice(['*', 'darwin', 'linux']),
+            type=click.Choice(['*', 'darwin', 'linux', 'windows']),
             show_choices=True,
             default='*'
         )
