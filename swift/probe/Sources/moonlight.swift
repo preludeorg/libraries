@@ -81,7 +81,7 @@ struct System {
         let task = Process()
         task.launchPath = "/bin/bash"
         task.arguments = ["-c", "chmod +x \(url.path)"]
-        task.launch()
+        do { try task.run() } catch { print("ERROR: Could not chmod: \(error)") }
         task.waitUntilExit()
     }
 }
