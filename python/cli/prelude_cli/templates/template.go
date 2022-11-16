@@ -10,7 +10,7 @@ func test() {
     os.Exit(100)
 }
 
-func cleanup() {
+func clean() {
     fmt.Println("Clean up")
     os.Exit(100)
 }
@@ -18,7 +18,7 @@ func cleanup() {
 func main() {
     args := os.Args[1:]
     if len(args) > 0 {
-        cleanup()
+        clean()
     } else {
         test()
     }
