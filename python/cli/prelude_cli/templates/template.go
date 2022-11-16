@@ -11,7 +11,7 @@ func test() {
 }
 
 func cleanup() {
-    fmt.Println("Clean up")https://github.com/preludeorg/libraries/pull/new/mk
+    fmt.Println("Clean up")
     os.Exit(100)
 }
 
