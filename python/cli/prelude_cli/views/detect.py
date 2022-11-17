@@ -21,7 +21,7 @@ def detect(ctx):
 @click.pass_obj
 @handle_api_error
 def register_endpoint(controller, name, tags=''):
-    """Register a new endpoint"""
+    """ Register a new endpoint """
     endpoint_token = controller.register_endpoint(name=name, tags=tags.split(','))
     click.secho(f'Endpoint token: {endpoint_token}', fg=Colors.GREEN.value)
 
@@ -36,7 +36,7 @@ def register_endpoint(controller, name, tags=''):
 @click.pass_obj
 @handle_api_error
 def activate_test(controller, test, run_code, tags):
-    """ Add test to your queue """
+    """ Add TEST to your queue """
     tags = tags.split(',') if tags else []
     controller.enable_test(ident=test, run_code=RunCode[run_code.upper()].value, tags=tags)
 
@@ -47,7 +47,7 @@ def activate_test(controller, test, run_code, tags):
 @click.pass_obj
 @handle_api_error
 def deactivate_test(controller, test):
-    """ Remove test from your queue """
+    """ Remove TEST from your queue """
     controller.disable_test(ident=test)
     click.secho(f'Disabled {test}', fg=Colors.GREEN.value)
 
@@ -56,7 +56,7 @@ def deactivate_test(controller, test):
 @click.pass_obj
 @handle_api_error
 def queue(controller):
-    """ View active queue """
+    """ List all tests in your active queue """
     print_json(data=controller.print_queue())
 
 

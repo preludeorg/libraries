@@ -25,7 +25,7 @@ def build(ctx):
 @click.pass_obj
 @handle_api_error
 def purge(controller):
-    """ Delete all stored tests and variants """
+    """ Delete all tests and variants """
     controller.purge_account()
     click.secho('Storage has been purged', fg=Colors.GREEN.value)
 
@@ -34,7 +34,7 @@ def purge(controller):
 @click.pass_obj
 @handle_api_error
 def clone(controller):
-    """ Clone all variants locally """
+    """ Clone all variants to your local environment """
     Path('prelude').mkdir(exist_ok=True)
     for test in controller.list_tests():
         for variant in controller.get_test(ident=test['id']):
@@ -48,7 +48,7 @@ def clone(controller):
 @click.pass_obj
 @handle_api_error
 def list_tests(controller):
-    """ Display my tests """
+    """ List all tests """
     print_json(data=controller.list_tests())
 
 
@@ -57,7 +57,10 @@ def list_tests(controller):
 @click.pass_obj
 @handle_api_error
 def get_test(controller, test):
-    """ Print all variants for test """
+    """ List all variants for TEST
+
+     TEST is the UUID of a security test
+     """
     print_json(data=controller.get_test(ident=test))
 
 
@@ -67,7 +70,7 @@ def get_test(controller, test):
 @click.pass_obj
 @handle_api_error
 def create_test(controller, test, question):
-    """ Add or update test """
+    """ Create or update a test """
     controller.create_test(ident=test, question=question)
     click.secho(f'Added {test}', fg=Colors.GREEN.value)
 
@@ -78,49 +81,55 @@ def create_test(controller, test, question):
 @click.pass_obj
 @handle_api_error
 def delete_test(controller, test):
-    """ Remove test """
+    """ Delete TEST
+
+     TEST is the UUID of a security test
+     """
     controller.delete_test(ident=test)
     click.secho(f'Deleted {test}', fg=Colors.GREEN.value)
 
 
 @build.command('delete-variant')
-@click.argument('name')
+@click.argument('variant')
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
 @handle_api_error
-def delete_variant(controller, name):
-    """ Remove variant """
-    controller.delete_variant(name=name)
-    click.secho(f'Deleted {name}', fg=Colors.GREEN.value)
+def delete_variant(controller, variant):
+    """ Delete VARIANT """
+    controller.delete_variant(name=variant)
+    click.secho(f'Deleted {variant}', fg=Colors.GREEN.value)
 
 
 @build.command('save')
-@click.argument('path')
+@click.argument('path', type=click.Path(exists=True))
 @click.pass_obj
 @handle_api_error
 def put_variant(controller, path):
-    """ Upload variant to cloud """
+    """ Upload the variant at PATH to your Prelude database """
     with open(path, 'r') as variant:
         controller.create_variant(name=Path(path).name, code=variant.read())
         click.secho(f'Uploaded {path}', fg=Colors.GREEN.value)
 
 
 @build.command('url')
-@click.argument('name')
+@click.argument('variant')
 @click.pass_obj
 @handle_api_error
-def create_url(controller, name):
-    """ Generate download URL for variant """
-    print_json(data=controller.create_url(name=name))
+def create_url(controller, variant):
+    """ Generate a download URL for VARIANT
+
+     VARIANT is the name of the _compiled_ variant
+     """
+    print_json(data=controller.create_url(name=variant))
 
 
 @build.command('run')
-@click.argument('name')
+@click.argument('variant')
 @click.pass_obj
 @handle_api_error
-def compute(controller, name):
-    """ Compile and validate variant """
-    print_json(data=controller.compute_proxy(name=name))
+def compute(controller, variant):
+    """ Compile and validate VARIANT """
+    print_json(data=controller.compute_proxy(name=variant))
 
 
 @build.command('list-verified')
@@ -137,7 +146,7 @@ def compute(controller):
 @click.pass_obj
 @handle_api_error
 def generate_test(controller, test, path):
-    """ Create new test variant """
+    """ Create a new test variant """
     def platform():
         p = click.prompt(
             text='Select a platform',
