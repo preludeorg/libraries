@@ -100,6 +100,20 @@ def delete_variant(controller, variant):
     click.secho(f'Deleted {variant}', fg=Colors.GREEN.value)
 
 
+@build.command('delete-verified')
+@click.argument('name')
+@click.confirmation_option(prompt='Are you sure?')
+@click.pass_obj
+@handle_api_error
+def delete_verified(controller, name):
+    """ Delete Verified test
+
+    NAME is the name of a verified test
+    """
+    controller.delete_verified(name=name)
+    click.secho(f'Deleted {name}', fg=Colors.GREEN.value)
+
+
 @build.command('save')
 @click.argument('path', type=click.Path(exists=True))
 @click.pass_obj
