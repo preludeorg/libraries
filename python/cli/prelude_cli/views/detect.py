@@ -16,7 +16,7 @@ def detect(ctx):
 
 
 @detect.command('create-endpoint')
-@click.option('--tags', help='a comma-separate list of tags for this endpoint', default='', type=str)
+@click.option('--tags', help='a comma-separated list of tags for this endpoint', default='', type=str)
 @click.argument('name')
 @click.pass_obj
 @handle_api_error
