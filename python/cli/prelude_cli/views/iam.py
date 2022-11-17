@@ -17,6 +17,7 @@ def iam(ctx):
 @handle_api_error
 def register_account(controller):
     """ Register a new account """
+    click.confirm(f'Overwrite local account credentials for "{controller.account.profile}" profile?', abort=True)
     creds = controller.new_account(handle=click.prompt('Enter a handle'))
     print_json(data=creds)
     click.secho('Your keychain has been updated to use this account', fg=Colors.GREEN.value)
