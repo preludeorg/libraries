@@ -15,6 +15,7 @@ def iam(ctx):
 @iam.command('create-account')
 @click.pass_obj
 @handle_api_error
+@click.confirmation_option(prompt='Overwrite local account credentials for selected profile?')
 def register_account(controller):
     """ Register a new account """
     creds = controller.new_account(handle=click.prompt('Enter a handle'))
