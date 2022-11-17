@@ -89,6 +89,17 @@ def delete_test(controller, test):
     click.secho(f'Deleted {test}', fg=Colors.GREEN.value)
 
 
+@build.command('delete-variant')
+@click.argument('variant')
+@click.confirmation_option(prompt='Are you sure?')
+@click.pass_obj
+@handle_api_error
+def delete_variant(controller, variant):
+    """ Delete VARIANT """
+    controller.delete_variant(name=variant)
+    click.secho(f'Deleted {variant}', fg=Colors.GREEN.value)
+
+
 @build.command('delete-verified')
 @click.argument('name')
 @click.confirmation_option(prompt='Are you sure?')
@@ -97,7 +108,7 @@ def delete_test(controller, test):
 def delete_verified(controller, name):
     """ Delete Verified test
 
-    NAME is the UUID of a security test
+    NAME is the name of a verified test
     """
     controller.delete_verified(name=name)
     click.secho(f'Deleted {name}', fg=Colors.GREEN.value)
