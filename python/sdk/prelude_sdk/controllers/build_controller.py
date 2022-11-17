@@ -28,6 +28,12 @@ class BuildController:
             raise Exception(res.text)
 
     @verify_credentials
+    def delete_verified(self, name):
+        res = requests.delete(f'{self.account.hq}/verified/{name}', headers=self.account.headers)
+        if not res.status_code == 200:
+            raise Exception(res.text)
+
+    @verify_credentials
     def create_test(self, ident, question):
         data = dict(id=ident, question=question)
         res = requests.put(f'{self.account.hq}/test', json=data, headers=self.account.headers)
