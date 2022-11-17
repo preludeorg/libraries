@@ -25,7 +25,7 @@ def build(ctx):
 @click.pass_obj
 @handle_api_error
 def purge(controller):
-    """ Delete all tests and variants """
+    """ Delete all tests, variants, and verified variants """
     controller.purge_account()
     click.secho('Storage has been purged', fg=Colors.GREEN.value)
 
@@ -81,7 +81,7 @@ def create_test(controller, test, question):
 @click.pass_obj
 @handle_api_error
 def delete_test(controller, test):
-    """ Delete TEST
+    """ Delete TEST and its variants
 
      TEST is the UUID of a security test
      """
@@ -101,17 +101,17 @@ def delete_variant(controller, variant):
 
 
 @build.command('delete-verified')
-@click.argument('name')
+@click.argument('variant')
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
 @handle_api_error
-def delete_verified(controller, name):
-    """ Delete Verified test
+def delete_verified(controller, variant):
+    """ Delete VARIANT
 
-    NAME is the name of a verified test
+    VARIANT is the name of a _verified_ variant
     """
-    controller.delete_verified(name=name)
-    click.secho(f'Deleted {name}', fg=Colors.GREEN.value)
+    controller.delete_verified(name=variant)
+    click.secho(f'Deleted {variant}', fg=Colors.GREEN.value)
 
 
 @build.command('save')
@@ -132,8 +132,8 @@ def put_variant(controller, path):
 def create_url(controller, variant):
     """ Generate a download URL for VARIANT
 
-     VARIANT is the name of the _compiled_ variant
-     """
+    VARIANT is the name of a _verified_ variant
+    """
     print_json(data=controller.create_url(name=variant))
 
 
