@@ -81,7 +81,7 @@ def create_test(controller, test, question):
 @click.pass_obj
 @handle_api_error
 def delete_test(controller, test):
-    """ Delete TEST, including its variants and verified variants
+    """ Delete TEST and its variants
 
      TEST is the UUID of a security test
      """
