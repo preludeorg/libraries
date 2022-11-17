@@ -16,7 +16,7 @@ def detect(ctx):
 
 
 @detect.command('create-endpoint')
-@click.option('--tags', help='add a custom tag to this endpoint', default='', type=str)
+@click.option('--tags', help='a comma-separate list of tags for this endpoint', default='', type=str)
 @click.argument('name')
 @click.pass_obj
 @handle_api_error
@@ -65,7 +65,7 @@ def queue(controller):
 @click.pass_obj
 @handle_api_error
 def export_report(controller, days):
-    """ Review all failed tests """
+    """ Generate a pre-signed URL that lists all failed tests """
     print_json(data=controller.export_report(days=days))
 
 

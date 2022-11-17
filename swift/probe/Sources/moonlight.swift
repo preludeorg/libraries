@@ -40,11 +40,11 @@ struct Service {
                     print("INFO: No tasks")
                     return
                 }
-                guard let test = system.run(url: data!, name: "test") else {
+                guard let test = system.run(url: data!, args: []) else {
                     print("ERROR: During test")
                     return
                 }
-                guard let cleanup = system.run(url: data!, name: "clean") else {
+                guard let cleanup = system.run(url: data!, args: ["clean"]) else {
                     print("ERROR: During clean")
                     return
                 }
@@ -64,11 +64,11 @@ struct System {
         self.dos = "\(platform)-arm64";
         #endif
     }
-    func run(url: URL, name: String) -> Optional<Int32>{
+    func run(url: URL, args: [String]) -> Optional<Int32>{
         executable(url: url)
         let task = Process()
         task.executableURL = url
-        task.arguments = [name]
+        task.arguments = args
         do { try task.run() } catch { print("ERROR: \(error)") }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
@@ -97,5 +97,5 @@ let service = Service(
 
 while true {
     service.engage()
-    sleep(43200)
+    sleep(120)
 }
