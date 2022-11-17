@@ -146,7 +146,7 @@ def compute(controller):
 @click.pass_obj
 @handle_api_error
 def generate_test(controller, test, path):
-    """ Create new a test variant """
+    """ Create a new test variant """
     def platform():
         p = click.prompt(
             text='Select a platform',

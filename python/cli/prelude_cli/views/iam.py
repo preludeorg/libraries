@@ -26,7 +26,7 @@ def register_account(controller):
 @click.pass_obj
 @handle_api_error
 def describe_account(controller):
-    """ List account users """
+    """ List all users in your account """
     print_json(data=controller.get_users())
 
 

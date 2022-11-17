@@ -56,7 +56,7 @@ def deactivate_test(controller, test):
 @click.pass_obj
 @handle_api_error
 def queue(controller):
-    """ List all tests in your queue """
+    """ List all tests in your active queue """
     print_json(data=controller.print_queue())
 
 
