@@ -26,7 +26,7 @@ def register_account(controller):
 @click.pass_obj
 @handle_api_error
 def describe_account(controller):
-    """ View account users """
+    """ List account users """
     print_json(data=controller.get_users())
 
 
@@ -37,7 +37,7 @@ def describe_account(controller):
 @click.pass_obj
 @handle_api_error
 def create_user(controller, permission, handle):
-    """Create a new user in your account"""
+    """ Create a new user in your account """
     token = controller.create_user(handle=handle, permission=Permission[permission.upper()].value)
     click.secho(f'Created new [{permission}] user [{handle}]. Token: {token}', fg=Colors.GREEN.value)
 
@@ -47,7 +47,7 @@ def create_user(controller, permission, handle):
 @click.pass_obj
 @handle_api_error
 def delete_user(controller, handle):
-    """Delete a user from your account"""
+    """ Remove a user from your account """
     if controller.delete_user(handle=handle):
         click.secho(f'Deleted user {handle}', fg=Colors.GREEN.value)
 
@@ -58,6 +58,6 @@ def delete_user(controller, handle):
 @click.pass_context
 @handle_api_error
 def update_token(ctx, token):
-    """ Update your root token """
+    """ Update your account administrator token to TOKEN """
     ctx.obj.update_token(token=token)
     click.secho('Updated account token', fg=Colors.GREEN.value)
