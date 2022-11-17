@@ -1,5 +1,5 @@
 import click
-from prelude_cli.views.shared import handle_api_error
+from prelude_cli.views.shared import handle_api_error, prompt_overwrite_credentials
 from prelude_sdk.controllers.iam_controller import IAMController
 from prelude_sdk.models.codes import Colors, Permission
 from rich import print_json
@@ -15,9 +15,9 @@ def iam(ctx):
 @iam.command('create-account')
 @click.pass_obj
 @handle_api_error
+@prompt_overwrite_credentials
 def register_account(controller):
     """ Register a new account """
-    click.confirm(f'Overwrite local account credentials for "{controller.account.profile}" profile?', abort=True)
     creds = controller.new_account(handle=click.prompt('Enter a handle'))
     print_json(data=creds)
     click.secho('Your keychain has been updated to use this account', fg=Colors.GREEN.value)
