@@ -101,23 +101,77 @@ EOF
 }
 
 install_darwin() {
-  local _running_user="${USER}"
-  local _plist_path="/Users/${_running_user}/Library/LaunchAgents/com.preludesecurity.detect.plist"
-  local _app_dir="/Users/${_running_user}/.prelude/bin"
-  local _app_tmp="/tmp/prelude"
-  _primary_group=$(id -gn)
+    local _running_user="${USER}"
+    local _plist_path="/Users/${_running_user}/Library/LaunchAgents/com.preludesecurity.detect.plist"
+    local _app_dir="/Users/${_running_user}/.prelude/bin"
+    local _app_tmp="/tmp/prelude"
+    _primary_group=$(id -gn)
 
-  mkdir -p "${_app_tmp}"
-  echo "[*] Standing up as user: ${_running_user}"
-  install -o "${_running_user}" -g "${_primary_group}" -m 750 -d "${_app_dir}"
-  register_new_endpoint
-  download_probe "$_app_tmp"
-  install -o "${_running_user}" -g "${_primary_group}" -m 755 "${_app_tmp}/${PROBE_NAME}" "${_app_dir}/${PROBE_NAME}"
-  install_darwin_plist "$_plist_path" "$_running_user" "$_app_dir"
-  unset ENDPOINT_TOKEN
-  echo "[*] Cleaning up tmp directory"
-  rm -rf "${_app_tmp}"
+    mkdir -p "${_app_tmp}"
+    echo "[*] Standing up as user: ${_running_user}"
+    install -o "${_running_user}" -g "${_primary_group}" -m 750 -d "${_app_dir}"
+    register_new_endpoint
+    download_probe "$_app_tmp"
+    install -o "${_running_user}" -g "${_primary_group}" -m 755 "${_app_tmp}/${PROBE_NAME}" "${_app_dir}/${PROBE_NAME}"
+    install_darwin_plist "$_plist_path" "$_running_user" "$_app_dir"
+    unset ENDPOINT_TOKEN
+    echo "[*] Cleaning up tmp directory"
+    rm -rf "${_app_tmp}"
+}
 
+setup_prelude_user () {
+  local _username=$1
+
+  echo "[*] Setting up user: ${_username}"
+  useradd --shell "/usr/sbin/nologin" \
+          --base-dir "/home" \
+          --create-home \
+          --system "${_username}"
+}
+
+install_linux_systemd_service() {
+    local _app_dir=$1
+    local _running_user=$2
+    local _service_file_path="/etc/systemd/system/${PROBE_NAME}.service"
+
+    echo "[*] Writing service file: ${_service_file_path}"
+    cat << EOF | tee "${_service_file_path}" >/dev/null
+[Unit]
+Description=Prelude Detect Moonlight Probe
+[Service]
+Type=simple
+User=${_running_user}
+Environment=PRELUDE_TOKEN=${ENDPOINT_TOKEN}
+WorkingDirectory=${_app_dir}
+ExecStart=${_app_dir}/${PROBE_NAME}
+Restart=on-failure
+RestartSec=10
+[Install]
+WantedBy=multi-user.target
+EOF
+
+    # Reload services
+    systemctl daemon-reload
+    systemctl enable "${PROBE_NAME}.service"
+    systemctl restart "${PROBE_NAME}.service"
+}
+
+install_linux() {
+    local _running_user="prelude"
+    local _app_dir="/opt/${_running_user}/.prelude/bin"
+    local _app_tmp="/tmp/prelude"
+    _primary_group=$(id -gn)
+
+    mkdir -p "${_app_tmp}"
+    echo "[*] Standing up as user: ${_running_user}"
+    setup_prelude_user $_running_user
+    install -o "${_running_user}" -g "${_primary_group}" -m 755 -d "${_app_dir}"
+    register_new_endpoint
+    download_probe "$_app_tmp"
+
+    install -o "${_running_user}" -g "${_primary_group}" -m 755 "${_app_tmp}/${PROBE_NAME}" "${_app_dir}/${PROBE_NAME}"
+    install_linux_systemd_service $_app_dir $_running_user
+    unset ENDPOINT_TOKEN
 }
 
 echo "[+] Detect setup started"
@@ -131,6 +185,18 @@ echo "[+] Determining OS"
 # determine OS
 if [[ ${OSTYPE} == "darwin"* ]]; then
     install_darwin
+elif [[ ${OSTYPE} == "linux"* ]]; then
+      if [ "$EUID" -ne 0 ]; then
+        echo -e "[!] Script must be run with root privileges"
+        exit 1
+    fi
+    if [[ -d /run/systemd/system ]]; then
+        echo "[D] System may be supported"
+    else
+        echo -e "[!] SystemD not present on system, aborting"
+        exit 2
+    fi
+    install_linux
 else
     echo "[!] Unsupported OS!"
     exit 3
