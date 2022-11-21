@@ -1,5 +1,5 @@
 import Client from "../client";
-import type { Test, RequestOptions, ComputeResult } from "../types";
+import type { ComputeResult, RequestOptions, Test } from "../types";
 
 export default class BuildController {
   #client: Client;
@@ -90,5 +90,12 @@ export default class BuildController {
     });
 
     return (await response.json()) as string[];
+  }
+
+  async deleteVerified(name: string, options: RequestOptions = {}) {
+    await this.#client.requestWithAuth(`/verified/${name}`, {
+      method: "DELETE",
+      ...options,
+    });
   }
 }
