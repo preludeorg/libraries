@@ -37,7 +37,9 @@ Set a PRELUDE_TOKEN environment variable, with the value equal to your endpoint 
 Download the probe binary on the endpoint
 This bash script demonstrates both.
 
-          PRELUDE_TOKEN='<INSERT TOKEN>'
-          curl -X GET -L "https://detect.prelude.org/download/moonlight?os=darwin" -H "token:${PRELUDE_TOKEN}") > moonlight
-          chmod +x moonlight
-          ./moonlight
+```
+PRELUDE_TOKEN='<INSERT TOKEN>'
+curl -X GET -L "https://detect.prelude.org/download/moonlight?os=darwin" -H "token:${PRELUDE_TOKEN}") > moonlight
+chmod +x moonlight
+./moonlight
+```
