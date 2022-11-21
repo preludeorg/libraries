@@ -128,12 +128,22 @@
           console.log("COMPUTE Variant", compute);
 
           console.log(
+            "GET Verified Tests",
+            await service.build.verifiedTests()
+          );
+
+          console.log(
             "CREATE URL for Variant",
             await service.build.createURL(compute[0].name)
           );
 
           console.log(
-            "GET Verified Tests",
+            "DELETE Verified",
+            await service.build.deleteVerified(compute[0].name)
+          );
+
+          console.log(
+            "GET Verified After DELETE",
             await service.build.verifiedTests()
           );
 
