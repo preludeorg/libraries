@@ -17,12 +17,12 @@ These libraries are designed for security engineers, DevOps engineers, software 
 | Library Name  | Purpose       | Repository 
 | ------------- | ------------- | -------------
 | Go Probe  | A standalone SDK probe that supports Go  | <a href="https://github.com/preludeorg/libraries/tree/master/go/probe">go/probe</a>
-| Javascript SDK  | Direct access to the Prelude API  | <a href="https://github.com/preludeorg/libraries/tree/master/go/probe">javascript/sdk</a>
-| Python CLI  | Access Prelude Build & Detect through a CLI  | <a href="https://github.com/preludeorg/libraries/tree/master/python/cli">python/cli</a>
 | Python Probe  | A standalone SDK probe that supports Python  | <a href="https://github.com/preludeorg/libraries/tree/master/python/probe">python/probe</a>
-| Python SDK  | Direct access to the Prelude API  | <a href="https://github.com/preludeorg/libraries/tree/master/python/sdk">python/sdk</a>
-| Shell Install | Copy installation scripts  | <a href="https://github.com/preludeorg/libraries/tree/master/shell/install">shell/install</a>
 | Swift Probe  | Standalone probe for Linux & Mac  | <a href="https://github.com/preludeorg/libraries/tree/master/swift/probe">swift/probe</a>
+| Javascript SDK  | Direct access to the Prelude API  | <a href="https://github.com/preludeorg/libraries/tree/master/go/probe">javascript/sdk</a>
+| Python SDK  | Direct access to the Prelude API  | <a href="https://github.com/preludeorg/libraries/tree/master/python/sdk">python/sdk</a>
+| Python CLI  | Access Prelude Build & Detect through a CLI  | <a href="https://github.com/preludeorg/libraries/tree/master/python/cli">python/cli</a>
+| Shell Install | Copy installation scripts  | <a href="https://github.com/preludeorg/libraries/tree/master/shell/install">shell/install</a>
 
 
 <h3>The Probe</h3>
