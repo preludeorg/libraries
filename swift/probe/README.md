@@ -1,16 +1,19 @@
 # Moonlight
+Probe written in [swift](https://www.swift.org/)
 
 ## Getting started
 
-Start by compiling:
+* Start by compiling:
 ```
-swiftc -Osize Sources/moonlight.swift -o moonlight && strip moonlight
-```
+swiftc -Osize ./Sources/moonlight.swift -o moonlight_darwin-x86_64 -target x86_64-apple-macos10.13 && strip moonlight_darwin-x86_64
 
-Next, start as an executable:
+swiftc -Osize ./Sources/moonlight.swift -o moonlight_darwin-arm64 -target arm64-apple-macos10.13 && strip moonlight_darwin-arm64
 ```
-./moonlight
-```
+  * This may require XCode to be installed in addition to the XCode CLI tools. 
+* Export PRELUDE_TOKEN `export PRELUDE_TOKEN=<SECRET>`
+* Next, start an executable: 
+  * x86 mac: `./moonlight_darwin-x86_64`
+  * m1 or arm mac: `./moonlight_darwin-x86_64`
 
 ### My story
 
