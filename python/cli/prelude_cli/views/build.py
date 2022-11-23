@@ -186,7 +186,7 @@ def generate_test(controller, test, path):
     def extension():
         return click.prompt(
             text='Select a language',
-            type=click.Choice(['c', 'cs', 'swift']),
+            type=click.Choice(['c', 'cs', 'swift', 'go']),
             show_choices=True
         )
 
