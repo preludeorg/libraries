@@ -5,7 +5,9 @@ import PackageDescription
 
 let package = Package(
     name: "moonlight",
-    path: "./Sources",
+    products: [
+      .executable(name: "moonlight", targets: ["moonlight"]),
+    ],
     dependencies: [],
     targets: [
         .executableTarget(
