@@ -9,6 +9,7 @@ swiftc -Osize ./Sources/moonlight.swift -o moonlight_darwin-x86_64 -target x86_6
 
 swiftc -Osize ./Sources/moonlight.swift -o moonlight_darwin-arm64 -target arm64-apple-macos10.13 && strip moonlight_darwin-arm64
 ```
+  * This may require XCode to be installed in addition to the XCode CLI tools. 
 * Export PRELUDE_TOKEN `export PRELUDE_TOKEN=<SECRET>`
 * Next, start an executable: 
   * x86 mac: `./moonlight_darwin-x86_64`
