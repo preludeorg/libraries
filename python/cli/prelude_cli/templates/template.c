@@ -4,7 +4,6 @@ QUESTION: $QUESTION
 CREATED: $CREATED
 */
 #include <stdlib.h>
-#include <string.h>
 #include <stdio.h>
 
 void test(void)

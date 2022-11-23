@@ -59,6 +59,7 @@ def list_tests(controller):
 def get_test(controller, test):
     """ List all variants for TEST
 
+    /b
      TEST is the UUID of a security test
      """
     print_json(data=controller.get_test(ident=test))
@@ -83,6 +84,7 @@ def create_test(controller, test, question):
 def delete_test(controller, test):
     """ Delete TEST and its variants
 
+    /b
      TEST is the UUID of a security test
      """
     controller.delete_test(ident=test)
@@ -108,6 +110,7 @@ def delete_variant(controller, variant):
 def delete_verified(controller, variant):
     """ Delete VARIANT
 
+    /b
     VARIANT is the name of a _verified_ variant
     """
     controller.delete_verified(name=variant)
@@ -132,6 +135,7 @@ def put_variant(controller, path):
 def create_url(controller, variant):
     """ Generate a download URL for VARIANT
 
+    /b
     VARIANT is the name of a _verified_ variant
     """
     print_json(data=controller.create_url(name=variant))
@@ -182,7 +186,7 @@ def generate_test(controller, test, path):
     def extension():
         return click.prompt(
             text='Select a language',
-            type=click.Choice(['c', 'cs', 'swift']),
+            type=click.Choice(['c', 'cs', 'swift', 'go']),
             show_choices=True
         )
 
