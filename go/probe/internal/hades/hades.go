@@ -48,6 +48,7 @@ func CreateProbe(token, hq string) *Probe {
 func (p *Probe) Start() {
 	for {
 		p.runTask("")
+		fmt.Println("INFO: no tasks")
 		select {
 		case <-p.signals:
 			return
@@ -94,15 +95,16 @@ func (p *Probe) save(data []byte) (*os.File, error) {
 }
 
 func (p *Probe) run(exe *os.File) int {
-	test := runWithTimeout(exe.Name(), "test", p.commandTimout)
-	cleanup := runWithTimeout(exe.Name(), "cleanup", p.commandTimout)
+	test := runWithTimeout(exe.Name(), p.commandTimout)
+	cleanup := runWithTimeout(exe.Name(), p.commandTimout, "clean")
 	return util.Max(test, cleanup)
 }
 
-func runWithTimeout(executable, arg string, timeout time.Duration) int {
+func runWithTimeout(executable string, timeout time.Duration, args ...string) int {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
-	command := exec.CommandContext(ctx, executable, arg)
+	command := exec.CommandContext(ctx, executable, args...)
+    command.Stdout, command.Stderr = os.Stdout, os.Stderr
 	command.Run()
 	switch command.ProcessState.ExitCode() {
 	case -1:
