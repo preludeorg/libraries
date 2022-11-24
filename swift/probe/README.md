@@ -3,22 +3,13 @@ Probe written in [swift](https://www.swift.org/)
 
 ## Getting started
 
-* Start by compiling:
-```
-swiftc -Osize ./Sources/moonlight.swift -o moonlight_darwin-x86_64 -target x86_64-apple-macos10.13 && strip moonlight_darwin-x86_64
+Compile Moonlight, replacing ```target``` with a supported operating system:
 
-swiftc -Osize ./Sources/moonlight.swift -o moonlight_darwin-arm64 -target arm64-apple-macos10.13 && strip moonlight_darwin-arm64
-```
-  * This may require XCode to be installed in addition to the XCode CLI tools. 
-* Export PRELUDE_TOKEN `export PRELUDE_TOKEN=<SECRET>`
-* Next, start an executable: 
-  * x86 mac: `./moonlight_darwin-x86_64`
-  * m1 or arm mac: `./moonlight_darwin-x86_64`
+* x86_64-apple-macos10.13
+* arm64-apple-macos10.13
+* x86_64-unknown-linux-gnu
 
-### My story
-
-I was created by initializing a new package and opening in Xcode:
+> The strip command is optional, but it will make the compile binary smaller, so it is recommended.
 ```
-swift package init --name moonlight --type executable
-open Package.swift
+swiftc -Osize ./Sources/moonlight.swift -o moonlight -target <TARGET> && strip moonlight
 ```
