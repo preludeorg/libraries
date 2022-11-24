@@ -3,7 +3,7 @@ Probe written in [swift](https://www.swift.org/)
 
 ## Getting started
 
-Compile Moonlight, replacing ```target``` with a supported operating system:
+Compile Moonlight, replacing ```<TARGET>``` with a supported operating system:
 
 * x86_64-apple-macos10.13
 * arm64-apple-macos10.13
