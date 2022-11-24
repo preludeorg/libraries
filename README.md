@@ -22,24 +22,10 @@ These libraries are designed for security engineers, DevOps engineers, software 
 | Javascript SDK  | Direct access to the Prelude API  | <a href="https://github.com/preludeorg/libraries/tree/master/go/probe">javascript/sdk</a>
 | Python SDK  | Direct access to the Prelude API  | <a href="https://github.com/preludeorg/libraries/tree/master/python/sdk">python/sdk</a>
 | Python CLI  | Access Prelude Build & Detect through a CLI  | <a href="https://github.com/preludeorg/libraries/tree/master/python/cli">python/cli</a>
-| Shell Install | Copy installation scripts  | <a href="https://github.com/preludeorg/libraries/tree/master/shell/install">shell/install</a>
+| Shell Install | Standalone probe installation guides  | <a href="https://github.com/preludeorg/libraries/tree/master/shell/install">shell/install</a>
 
 
 <h3>The Probe</h3>
 
 A probe is a temporary process that requires no special privileges and no installation to run. A probe can just be started. Probes are designed to be very lightweight - measuring between 1-50KB on disk - and to run anywhere you have code. As such, probes can deploy out on devices ranging from laptops to servers to cloud environments and OT infrastructure. Probes are designed to work with <a href="https://www.preludesecurity.com/products/detect">Prelude Detect</a>, bringing safety and scale to continuous testing.</a>
 
-<h4>Standalone probes</h4>
-
-Deploying a standalone probe requires you to:
-
-Set a PRELUDE_TOKEN environment variable, with the value equal to your endpoint token.
-Download the probe binary on the endpoint
-This bash script demonstrates both.
-
-```
-PRELUDE_TOKEN='<INSERT TOKEN>'
-curl -X GET -L "https://detect.prelude.org/download/moonlight?os=darwin" -H "token:${PRELUDE_TOKEN}") > moonlight
-chmod +x moonlight
-./moonlight
-```
