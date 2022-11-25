@@ -77,6 +77,14 @@ def list_tags(controller):
     print_json(data=controller.list_tags())
 
 
+@detect.command('list-probes')
+@click.pass_obj
+@handle_api_error
+def list_probes(controller):
+    """ List all endpoint probes """
+    print_json(data=controller.list_probes())
+
+
 @detect.command('activity')
 @click.option('--days', help='days to look back', default=7, type=int)
 @click.pass_obj

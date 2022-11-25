@@ -67,3 +67,11 @@ class DetectController:
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
+
+    @verify_credentials
+    def list_probes(self):
+        """ Get all probes associated to an Account """
+        res = requests.get(f'{self.account.hq}/account/probe', headers=self.account.headers)
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
