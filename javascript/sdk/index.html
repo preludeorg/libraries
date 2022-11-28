@@ -73,7 +73,7 @@
 
       document.getElementById("run").addEventListener("click", async () => {
         try {
-          const host = "https://detect.prelude.org";
+          const host = "https://detect.dev.prelude.org";
 
           console.log("Using host", host);
           const service = new Prelude.Service({
@@ -163,6 +163,14 @@
             "List Tests after DELETE",
             await service.build.listTests()
           );
+
+          console.log("PURGE ACCOUNT", await service.iam.purgeAccount());
+
+          try {
+            await service.build.listTests();
+          } catch (e) {
+            console.log("List Tests after PURGE", e.message);
+          }
 
           console.log("DONE!");
         } catch (e) {
