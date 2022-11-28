@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 env: 
-  MAC_TARGET=x86_64-apple-macos10.13
+  MAC_TARGET: x86_64-apple-macos10.13
 
 jobs:
   build:
