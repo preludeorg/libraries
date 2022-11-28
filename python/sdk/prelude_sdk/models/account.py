@@ -66,5 +66,6 @@ class Account:
     @staticmethod
     def _merge_configs(cfg_from, cfg_to):
         for section in cfg_from.sections():
-            cfg_to[section] = {k: cfg_from[section][k] for k in cfg_from[section]}
+            if section not in cfg_to:
+                cfg_to[section] = {k: cfg_from[section][k] for k in cfg_from[section]}
         return cfg_to
