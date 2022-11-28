@@ -7,5 +7,7 @@
 **/build/**
 .idea
 **/.swiftpm/**
-swift/probe/moonlight
-swift/probe/.build/
+**/.build
+swift/probe/moonlight_linux*
+swift/probe/moonlight_darwin*
+
