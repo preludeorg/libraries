@@ -22,11 +22,11 @@ jobs:
       - name: Build Darwin x86
         working-directory: swift/probe
         run: |
-        swiftc -Osize ./Sources/moonlight.swift -o moonlight_darwin-x86_64 -target ${{ env.MAC_TARGET }}
-        strip moonlight_darwin-x86_64
+          swiftc -Osize ./Sources/moonlight.swift -o moonlight_darwin-x86_64 -target ${{ env.MAC_TARGET }}
+          strip moonlight_darwin-x86_64
       
       - name: Build Darwin arm64
         working-directory: swift/probe
         run: |
-        swiftc -Osize ./Sources/moonlight.swift -o moonlight_darwin-arm64 -target ${{ env.MAC_TARGET }}
-        strip moonlight_darwin-arm64
+          swiftc -Osize ./Sources/moonlight.swift -o moonlight_darwin-arm64 -target ${{ env.MAC_TARGET }}
+          strip moonlight_darwin-arm64
