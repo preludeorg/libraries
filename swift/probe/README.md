@@ -1,7 +1,9 @@
 # Moonlight
 Probe written in [swift](https://www.swift.org/)
 
-## Getting started
+## Mac Getting started
+
+Assuming you are on a mac (swift cross compiling seems pretty dicey).
 
 * Start by compiling:
 ```
@@ -19,3 +21,25 @@ swiftc -Osize ./Sources/moonlight.swift -o moonlight_darwin-arm64 -target arm64-
 ```
 swiftc -Osize ./Sources/moonlight.swift -o moonlight -target <TARGET> && strip moonlight
 ```
+
+## Linux Getting Started
+Assuming you're on an m1 mac, which can run both x86 and arm docker containers, you can use the following steps.
+
+* _Note:_ The -slim images are runtime only images, and do not include the compiler.  
+
+See also: 
+* https://stackoverflow.com/questions/43007424/what-targets-are-available-for-the-swiftc-target-and-target-cpu-option
+* https://github.com/apple/swift/blob/main/utils/swift_build_support/swift_build_support/targets.py#L151
+
+* Build for arm64: 
+```
+docker run  --platform linux/aarch64-it --rm -v $PWD:/mnt/probe swift:5.7.1 swiftc -Osize /mnt/probe/Sources/moonlight.swift -o /mnt/probe/moonlight_linux-aarch64 -target aarch64-unknown-linux-gnu
+docker run  --platform linux/aarch64 -it --rm -v $PWD:/mnt/probe swift:5.7.1 strip /mnt/probe/moonlight_linux-aarch64
+```
+* Build for x86_64: 
+```
+docker run --platform linux/amd64 -it --rm -v $PWD:/mnt/probe swift:5.7.1 swiftc -Osize /mnt/probe/Sources/moonlight.swift -o /mnt/probe/moonlight_linux-x86_64 -target x86_64-unknown-linux-gnu
+
+docker run --platform linux/amd64 -it --rm -v $PWD:/mnt/probe swift:5.7.1 strp /mnt/probe/moonlight_linux-x86_64
+```
+* Build for windows is a lot right now. If you have an x86 mac, you could probaly have a docker context for building widows instances. ARM mac users are in rough shape, https://github.com/StefanScherer/windows-docker-machine/issues/84 includes discussion on m1 support for window and docker. 
