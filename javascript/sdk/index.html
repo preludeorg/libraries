@@ -164,6 +164,14 @@
             await service.build.listTests()
           );
 
+          console.log("PURGE ACCOUNT", await service.iam.purgeAccount());
+
+          try {
+            await service.build.listTests();
+          } catch (e) {
+            console.log("List Tests after PURGE", e.message);
+          }
+
           console.log("DONE!");
         } catch (e) {
           console.log("Error", e.message);

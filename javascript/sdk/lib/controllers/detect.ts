@@ -2,8 +2,8 @@ import Client from "../client";
 import {
   AccountActivity,
   AccountQueue,
-  RequestOptions,
   EnableTest,
+  RequestOptions,
 } from "../types";
 
 export default class DetectController {
@@ -89,9 +89,9 @@ export default class DetectController {
     return (await response.json()) as string;
   }
 
-  /** Get all tags associated to an Account */
-  async listTags(options: RequestOptions) {
-    const response = await this.#client.requestWithAuth("/account/tag", {
+  /** Get all probes associated to an Account */
+  async listProbes(options: RequestOptions) {
+    const response = await this.#client.requestWithAuth("/account/probes", {
       method: "GET",
       ...options,
     });
