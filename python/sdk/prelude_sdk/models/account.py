@@ -36,15 +36,15 @@ class Account:
         self.keychain_location = keychain_location
 
     def configure(self, account_id, token, hq='https://detect.prelude.org', profile='default'):
-        cfg = self._merge_configs(self.read_keychain_config(), self.generate_config(account_id, token, hq, profile))
+        cfg = self._merge_configs(self.read_keychain_config(hq, profile), self.generate_config(account_id, token, hq, profile))
         self.write_keychain_config(cfg=cfg)
 
-    def read_keychain_config(self):
+    def read_keychain_config(self, hq, profile):
         if not exists(self.keychain_location):
             head, _ = os.path.split(Path(self.keychain_location))
             Path(head).mkdir(parents=True, exist_ok=True)
             open(self.keychain_location, 'x').close()
-            self.configure('', '')
+            self.configure('', '', hq, profile)
         cfg = configparser.ConfigParser()
         cfg.read(self.keychain_location)
         return cfg
