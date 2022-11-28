@@ -62,3 +62,13 @@ def update_token(ctx, token):
     """ Update your account administrator token to TOKEN """
     ctx.obj.update_token(token=token)
     click.secho('Updated account token', fg=Colors.GREEN.value)
+
+
+@iam.command('purge')
+@click.confirmation_option(prompt='Are you sure?')
+@click.pass_obj
+@handle_api_error
+def purge(controller):
+    """ Delete your account """
+    controller.purge_account()
+    click.secho('Your account has been deleted', fg=Colors.GREEN.value)

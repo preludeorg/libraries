@@ -53,3 +53,10 @@ class IAMController:
         cfg = self.account.read_keychain_config()
         cfg[self.account.profile]['token'] = token
         self.account.write_keychain_config(cfg)
+
+    @verify_credentials
+    def purge_account(self):
+        res = requests.delete(f'{self.account.hq}/account/purge', headers=self.account.headers)
+        if not res.status_code == 200:
+            raise Exception(res.text)
+        return res.text
