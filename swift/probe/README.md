@@ -15,10 +15,7 @@ swiftc -Osize ./Sources/moonlight.swift -o moonlight_darwin-arm64 -target arm64-
   * x86 mac: `./moonlight_darwin-x86_64`
   * m1 or arm mac: `./moonlight_darwin-x86_64`
 
-### My story
-
-I was created by initializing a new package and opening in Xcode:
+> The strip command is optional, but it will make the compile binary smaller, so it is recommended.
 ```
-swift package init --name moonlight --type executable
-open Package.swift
+swiftc -Osize ./Sources/moonlight.swift -o moonlight -target <TARGET> && strip moonlight
 ```

@@ -20,16 +20,6 @@ def build(ctx):
     ctx.obj = BuildController(account=ctx.obj)
 
 
-@build.command('purge')
-@click.confirmation_option(prompt='Are you sure?')
-@click.pass_obj
-@handle_api_error
-def purge(controller):
-    """ Delete all tests, variants, and verified variants """
-    controller.purge_account()
-    click.secho('Storage has been purged', fg=Colors.GREEN.value)
-
-
 @build.command('clone')
 @click.pass_obj
 @handle_api_error

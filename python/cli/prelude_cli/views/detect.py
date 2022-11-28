@@ -69,12 +69,12 @@ def export_report(controller, days):
     print_json(data=controller.export_report(days=days))
 
 
-@detect.command('list-tags')
+@detect.command('list-probes')
 @click.pass_obj
 @handle_api_error
-def list_tags(controller):
-    """ List all endpoint tags """
-    print_json(data=controller.list_tags())
+def list_probes(controller):
+    """ List all endpoint probes """
+    print_json(data=controller.list_probes())
 
 
 @detect.command('activity')
