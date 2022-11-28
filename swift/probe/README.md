@@ -37,7 +37,7 @@ docker run  --platform linux/aarch64 -it --rm -v $PWD:/mnt/probe swift:5.7.1 str
 ### Build for x86_64: 
 ```
 docker run --platform linux/amd64 -it --rm -v $PWD:/mnt/probe swift:5.7.1 swiftc -Osize /mnt/probe/Sources/moonlight.swift -o /mnt/probe/moonlight_linux-x86_64 -target x86_64-unknown-linux-gnu
-docker run --platform linux/amd64 -it --rm -v $PWD:/mnt/probe swift:5.7.1 strp /mnt/probe/moonlight_linux-x86_64
+docker run --platform linux/amd64 -it --rm -v $PWD:/mnt/probe swift:5.7.1 strip /mnt/probe/moonlight_linux-x86_64
 ```
 
 
