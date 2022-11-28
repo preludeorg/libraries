@@ -16,7 +16,7 @@ swiftc -Osize ./Sources/moonlight.swift -o moonlight_darwin-arm64 -target arm64-
 * Export PRELUDE_TOKEN `export PRELUDE_TOKEN=<SECRET>`
 * Next, start an executable: 
   * x86 mac: `./moonlight_darwin-x86_64`
-  * m1 or arm mac: `./moonlight_darwin-x86_64`
+  * m1 or arm mac: `./moonlight_darwin-arm64`
 
 ## Building linux clients
 Assuming you're on an m1 mac, which can run both x86 and arm docker containers, you can use the following steps.
