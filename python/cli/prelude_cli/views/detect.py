@@ -65,7 +65,7 @@ def queue(controller):
 @click.pass_obj
 @handle_api_error
 def export_report(controller, days):
-    """ Generate a pre-signed URL that lists all tests """
+    """ Generate a pre-signed URL that lists test run history """
     print_json(data=controller.export_report(days=days))
 
 
