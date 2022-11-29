@@ -22,7 +22,8 @@ jobs:
     name: Dev - Build Moonlight probes (macos), and copy to dev bucket
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Check out code. 
+        uses: actions/checkout@v3
 
       - name: Build Darwin x86
         working-directory: swift/probe
@@ -56,10 +57,13 @@ jobs:
     name: Dev - Build Moonlight probes (linux), and copy to dev bucket
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Check out code. 
+        uses: actions/checkout@v3
+      
+      - name: Setup swift
+        uses: swift-actions/setup-swift@v1
 
       - name: Build Linux aarch64
-        uses: swift-actions/setup-swift@v1
         working-directory: swift/probe
         run: |
           swiftc -Osize Sources/Moonlight/moonlight.swift -o moonlight_linux-aarch64 -target aarch64-unknown-linux-gnu
