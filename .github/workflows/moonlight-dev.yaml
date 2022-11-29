@@ -1,0 +1,84 @@
+name: Swift Dev Builds
+
+on:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - 'swift/probe/**'
+  workflow_dispatch:
+
+env: 
+  MAC_TARGET: x86_64-apple-macos10.13
+  AWS_REGION: ${{ secrets.BUCKET_REGION }}
+  S3_BUCKET: ${{ secrets.BUCKET_NAME }}
+
+jobs:
+  build_macos:
+
+    runs-on: macos-latest
+    environment: dev
+
+    name: Dev - Build Moonlight probes (macos), and copy to dev bucket
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build Darwin x86
+        working-directory: swift/probe
+        run: |
+          swiftc -Osize ./Sources/Moonlight/moonlight.swift -o moonlight_darwin-x86_64 -target ${{ env.MAC_TARGET }}
+          strip moonlight_darwin-x86_64
+      
+      - name: Build Darwin arm64
+        working-directory: swift/probe
+        run: |
+          swiftc -Osize ./Sources/Moonlight/moonlight.swift -o moonlight_darwin-arm64 -target ${{ env.MAC_TARGET }}
+          strip moonlight_darwin-arm64
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
+
+      - name: Copy files to the test website with the AWS CLI
+        run: |
+          aws s3 cp moonlight_darwin-x86_64 s3://${{ env.S3_BUCKET }}/prelude/probes/
+          aws s3 cp moonlight_darwin-arm64 s3://${{ env.S3_BUCKET }}/prelude/probes/
+  
+  build_linux:
+
+    runs-on: ubuntu-latest
+    environment: dev
+
+    name: Dev - Build Moonlight probes (linux), and copy to dev bucket
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build Linux aarch64
+        uses: swift-actions/setup-swift@v1
+        working-directory: swift/probe
+        run: |
+          swiftc -Osize Sources/Moonlight/moonlight.swift -o moonlight_linux-aarch64 -target aarch64-unknown-linux-gnu
+          strip moonlight_linux-aarch64
+      
+      - name: Build Linux arm64
+        working-directory: swift/probe
+        run: |
+          swiftc -Osize Sources/Moonlight/moonlight.swift -o moonlight_linux-x86_64 -target x86_64-unknown-linux-gnu
+          strip moonlight_linux-x86_64
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
+
+      - name: Copy files to the test website with the AWS CLI
+        run: |
+          aws s3 cp moonlight_linux-aarch64 s3://${{ env.S3_BUCKET }}/prelude/probes/
+          aws s3 cp moonlight_linux-x86_64 s3://${{ env.S3_BUCKET }}/prelude/probes/
