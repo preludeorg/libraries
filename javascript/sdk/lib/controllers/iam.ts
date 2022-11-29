@@ -75,4 +75,13 @@ export default class IAMController {
       ...options,
     });
   }
+
+  async purgeAccount(options: RequestOptions = {}) {
+    const response = await this.#client.requestWithAuth("/account/purge", {
+      method: "DELETE",
+      ...options,
+    });
+
+    return response.text();
+  }
 }
