@@ -10,4 +10,4 @@
 **/.build
 swift/probe/moonlight_linux*
 swift/probe/moonlight_darwin*
-
+python/*/dist/
