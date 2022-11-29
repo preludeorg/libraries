@@ -39,7 +39,7 @@ class Account:
         cfg = self._merge_configs(self.read_keychain_config(hq, profile), self.generate_config(account_id, token, hq, profile))
         self.write_keychain_config(cfg=cfg)
 
-    def read_keychain_config(self, hq, profile):
+    def read_keychain_config(self, hq='https://detect.prelude.org', profile='default'):
         if not exists(self.keychain_location):
             head, _ = os.path.split(Path(self.keychain_location))
             Path(head).mkdir(parents=True, exist_ok=True)
