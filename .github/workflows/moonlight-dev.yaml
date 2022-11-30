@@ -46,6 +46,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
 
       - name: Copy files to the test website with the AWS CLI
+        working-directory: swift/probe
         run: |
           aws s3 cp moonlight_darwin-x86_64 s3://${{ env.S3_BUCKET }}/prelude/probes/
           aws s3 cp moonlight_darwin-arm64 s3://${{ env.S3_BUCKET }}/prelude/probes/
@@ -84,6 +85,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
 
       - name: Copy files to the test website with the AWS CLI
+        working-directory: swift/probe
         run: |
           aws s3 cp moonlight_linux-aarch64 s3://${{ env.S3_BUCKET }}/prelude/probes/
           aws s3 cp moonlight_linux-x86_64 s3://${{ env.S3_BUCKET }}/prelude/probes/
