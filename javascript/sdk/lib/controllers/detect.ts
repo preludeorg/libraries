@@ -3,6 +3,7 @@ import {
   AccountActivity,
   AccountQueue,
   EnableTest,
+  Probe,
   RequestOptions,
 } from "../types";
 
@@ -15,19 +16,19 @@ export default class DetectController {
 
   /** Register (or re-register) an endpoint to your account */
   async registerEndpoint(
-    { name, tags = [] }: { name: string; tags?: string[] },
-    options: RequestOptions
+    { id, tags = [] }: { id: string; tags?: string[] },
+    options: RequestOptions = {}
   ) {
     const response = await this.#client.requestWithAuth("/account/endpoint", {
       method: "POST",
-      body: JSON.stringify({ name, tags }),
+      body: JSON.stringify({ id, tags }),
       ...options,
     });
 
     return response.text();
   }
 
-  async printQueue(options: RequestOptions) {
+  async printQueue(options: RequestOptions = {}) {
     const response = await this.#client.requestWithAuth("/account/queue", {
       method: "GET",
       ...options,
@@ -39,7 +40,7 @@ export default class DetectController {
   /** Enable a test so endpoints will start running it */
   async enableTest(
     { test, runCode, tags }: EnableTest,
-    options: RequestOptions
+    options: RequestOptions = {}
   ) {
     await this.#client.requestWithAuth(`/account/queue/${test}`, {
       method: "POST",
@@ -49,7 +50,7 @@ export default class DetectController {
   }
 
   /** Disable a test so endpoints will stop running it */
-  async disableTest(test: string, options: RequestOptions) {
+  async disableTest(test: string, options: RequestOptions = {}) {
     await this.#client.requestWithAuth(`/account/queue/${test}`, {
       method: "DELETE",
       ...options,
@@ -59,7 +60,7 @@ export default class DetectController {
   /** Get report for an Account */
   async describeActivity(
     { days = 7, ident }: { days?: number; ident?: string },
-    options: RequestOptions
+    options: RequestOptions = {}
   ) {
     let route = !!ident ? `/${ident}` : "";
 
@@ -76,7 +77,10 @@ export default class DetectController {
   }
 
   /** Generate a redirect URL to a data dump */
-  async exportReport({ days = 7 }: { days?: number }, options: RequestOptions) {
+  async exportReport(
+    { days = 7 }: { days?: number },
+    options: RequestOptions = {}
+  ) {
     const response = await this.#client.requestWithAuth(
       "/account/report/export",
       {
@@ -90,12 +94,12 @@ export default class DetectController {
   }
 
   /** Get all probes associated to an Account */
-  async listProbes(options: RequestOptions) {
+  async listProbes(options: RequestOptions = {}) {
     const response = await this.#client.requestWithAuth("/account/probes", {
       method: "GET",
       ...options,
     });
 
-    return await response.json();
+    return (await response.json()) as Probe[];
   }
 }

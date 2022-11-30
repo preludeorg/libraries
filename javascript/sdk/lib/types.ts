@@ -17,11 +17,9 @@ export interface Test {
   question: string;
 }
 
-export interface Users {
-  [id: string]: {
-    handle: string;
-    permission: Permission;
-  };
+export interface User {
+  handle: string;
+  permission: Permission;
 }
 
 export interface CreatedUser {
@@ -65,4 +63,10 @@ export interface EnableTest {
   test: string;
   runCode: RunCode;
   tags: string[];
+}
+
+export interface Probe {
+  endpoint_id: string;
+  tags: string[];
+  updated: string;
 }

@@ -4,7 +4,7 @@ import * as uuid from "uuid";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { Service } from "../lib/main";
 
-function sleep(ms) {
+function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
@@ -15,10 +15,10 @@ const getTemplate = async (ext: string) => {
   );
 };
 
-describe("build", async () => {
+describe.skip("build", async () => {
   let service = new Service({ host: "https://detect.dev.prelude.org" });
   beforeAll(async () => {
-    const credentials = await service.iam.newAccount("internal-tester");
+    const credentials = await service.iam.newAccount("internal-tester-build");
     service.setCredentials(credentials);
   });
 
