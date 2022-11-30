@@ -51,7 +51,7 @@ jobs:
           aws s3 cp moonlight_darwin-x86_64 s3://${{ env.S3_BUCKET }}/prelude/probes/
           aws s3 cp moonlight_darwin-arm64 s3://${{ env.S3_BUCKET }}/prelude/probes/
   
-container-test-job:
+  container-test-job:
     runs-on: ubuntu-latest
     container:
       image: swift:5.7.1
