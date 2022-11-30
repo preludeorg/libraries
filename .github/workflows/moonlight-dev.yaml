@@ -1,11 +1,14 @@
 name: Swift Dev Builds
 
 on:
-  pull_request:
+  push:
     branches:
       - master
     paths:
       - 'swift/probe/**'
+  release:
+    types:
+      - created
   workflow_dispatch:
 
 env: 
@@ -51,35 +54,25 @@ jobs:
           aws s3 cp moonlight_darwin-x86_64 s3://${{ env.S3_BUCKET }}/prelude/probes/
           aws s3 cp moonlight_darwin-arm64 s3://${{ env.S3_BUCKET }}/prelude/probes/
   
-  build_linux_arm64:
-    runs-on: macos-latest
+  build_linux:
+
+    runs-on: ubuntu-latest
     environment: dev
-    container:
-      image: swift:5.7.1
-      options: --platform linux/aarch64
+
+    name: Dev - Build Moonlight probes (linux), and copy to dev bucket
+
     steps:
-
-  # build_linux:
-
-  #   runs-on: ubuntu-latest
-
-  #   name: Dev - Build Moonlight probes (linux), and copy to dev bucket
-
-  #   steps:
       - name: Check out code. 
         uses: actions/checkout@v3
       
-      - name: Build Linux aarch64
+      - name: Setup swift
+        uses: swift-actions/setup-swift@v1
+      
+      - name: Build Linux x86_64
         working-directory: swift/probe
         run: |
-          swiftc -Osize Sources/Moonlight/moonlight.swift -o moonlight_linux-aarch64 -target aarch64-unknown-linux-gnu
-          strip moonlight_linux-aarch64
-      
-      # - name: Build Linux arm64
-      #   working-directory: swift/probe
-      #   run: |
-      #     swiftc -Osize Sources/Moonlight/moonlight.swift -o moonlight_linux-x86_64 -target x86_64-unknown-linux-gnu
-      #     strip moonlight_linux-x86_64
+          swiftc -Osize Sources/Moonlight/moonlight.swift -o moonlight_linux-x86_64 -target x86_64-unknown-linux-gnu
+          strip moonlight_linux-x86_64
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -91,4 +84,4 @@ jobs:
       - name: Copy files to the test website with the AWS CLI
         working-directory: swift/probe
         run: |
-          aws s3 cp moonlight_linux-aarch64 s3://${{ env.S3_BUCKET }}/prelude/probes/
+          aws s3 cp moonlight_linux-x86_64 s3://${{ env.S3_BUCKET }}/prelude/probes/
