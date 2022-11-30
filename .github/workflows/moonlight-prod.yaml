@@ -1,11 +1,6 @@
-name: Moonlight Dev Builds
+name: Moonlight Prod Builds
 
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - 'swift/probe/**'
   release:
     types:
       - created
@@ -20,9 +15,9 @@ jobs:
   build_macos:
 
     runs-on: macos-latest
-    environment: dev
+    environment: prod
 
-    name: Dev - Build Moonlight probes (macos), and copy to dev bucket
+    name: Prod - Build Moonlight probes (macos), and copy to prod bucket
 
     steps:
       - name: Check out code. 
@@ -57,9 +52,9 @@ jobs:
   build_linux:
 
     runs-on: ubuntu-latest
-    environment: dev
+    environment: prod
 
-    name: Dev - Build Moonlight probes (linux), and copy to dev bucket
+    name: Prod - Build Moonlight probes (linux), and copy to prod bucket
 
     steps:
       - name: Check out code. 
