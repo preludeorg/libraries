@@ -18,13 +18,19 @@
     "dev": "vite",
     "build": "vite build && tsc --emitDeclarationOnly",
     "lint": "tsc --noEmit",
-    "prepublishOnly": "yarn build"
+    "prepublishOnly": "yarn build",
+    "test": "vitest",
+    "test:ui": "yarn test --ui"
   },
   "devDependencies": {
     "@types/node": "^18.11.4",
+    "@vitest/coverage-c8": "^0.25.3",
+    "@vitest/ui": "^0.25.3",
     "tslib": "^2.4.0",
     "typescript": "^4.6.4",
-    "vite": "^3.1.0"
+    "uuid": "^9.0.0",
+    "vite": "^3.1.0",
+    "vitest": "^0.25.3"
   },
   "description": "Use this utility if you want direct access to the Prelude API.",
   "directories": {
