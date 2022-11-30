@@ -52,11 +52,11 @@ jobs:
           aws s3 cp moonlight_darwin-arm64 s3://${{ env.S3_BUCKET }}/prelude/probes/
   
   build_linux_arm64:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     environment: dev
     container:
       image: swift:5.7.1
-      #options: --platform linux/aarch64
+      options: --platform linux/aarch64
     steps:
 
   # build_linux:
