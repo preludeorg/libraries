@@ -58,8 +58,6 @@ jobs:
       image: swift:5.7.1
       options: --platform linux/aarch64
     steps:
-      - name: Check for dockerenv file
-        run: (ls /.dockerenv && echo Found dockerenv) || (echo No dockerenv)
 
   # build_linux:
 
