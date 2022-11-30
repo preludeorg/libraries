@@ -56,7 +56,7 @@ jobs:
     environment: dev
     container:
       image: swift:5.7.1
-      options: --platform linux/aarch64
+      #options: --platform linux/aarch64
     steps:
 
   # build_linux:
