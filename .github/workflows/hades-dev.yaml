@@ -4,8 +4,9 @@ on:
   pull_request:
     branches:
       - master
-    # paths:
-    #   - 'cmd/hades/**'
+    paths:
+      - 'cmd/hades/**'
+      - '.github/workflows/**'
   release:
     types:
       - created
@@ -31,13 +32,13 @@ jobs:
       - name: Check out code. 
         uses: actions/checkout@v3
 
-      - name: Build Linux x86_64
+      - name: Build All
         run: |
-          GOOS=linux GOARCH=amd64   CGO_ENABLED=0 go build -o hades_linux-amd64   -a -ldflags -s -w -extldflags "-static" ./cmd/hades
-          GOOS=linux GOARCH=arm64   CGO_ENABLED=0 go build -o hades_linux-arm64   -a -ldflags -s -w -extldflags "-static" ./cmd/hades
-          GOOS=darwin GOARCH=amd64  CGO_ENABLED=0 go build -o hades_darwin-amd64  -a -ldflags -s -w -extldflags "-static" ./cmd/hades
-          GOOS=darwin GOARCH=arm64  CGO_ENABLED=0 go build -o hades_darwin-arm64  -a -ldflags -s -w -extldflags "-static" ./cmd/hades
-          GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -o hades_windows-amd64 -a -ldflags -s -w -extldflags "-static" ./cmd/hades
+          GOOS=linux GOARCH=amd64   CGO_ENABLED=0 go build -o hades_linux-amd64   -a -ldflags '-s -w -extldflags "-static"' ./cmd/hades
+          GOOS=linux GOARCH=arm64   CGO_ENABLED=0 go build -o hades_linux-arm64   -a -ldflags '-s -w -extldflags "-static"' ./cmd/hades
+          GOOS=darwin GOARCH=amd64  CGO_ENABLED=0 go build -o hades_darwin-amd64  -a -ldflags '-s -w -extldflags "-static"' ./cmd/hades
+          GOOS=darwin GOARCH=arm64  CGO_ENABLED=0 go build -o hades_darwin-arm64  -a -ldflags '-s -w -extldflags "-static"' ./cmd/hades
+          GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -o hades_windows-amd64 -a -ldflags '-s -w -extldflags "-static"' ./cmd/hades
       
       - name: Install upx, and pack binaries
         working-directory: cmd/hades
