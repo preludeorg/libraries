@@ -60,6 +60,6 @@ jobs:
         run: |
           apt install -y awscli
           aws s3 cp hades_linux-amd64 s3://${{ env.S3_BUCKET }}/prelude/probes/hades/
-          aws s3 cp hades_linux-arm6 s3://${{ env.S3_BUCKET }}/prelude/probes/hades/
+          aws s3 cp hades_linux-arm64 s3://${{ env.S3_BUCKET }}/prelude/probes/hades/
           aws s3 cp hades_darwin-amd64 s3://${{ env.S3_BUCKET }}/prelude/probes/hades/
           aws s3 cp hades_windows-amd64 s3://${{ env.S3_BUCKET }}/prelude/probes/hades/
