@@ -15,7 +15,7 @@ const getTemplate = async (ext: string) => {
   );
 };
 
-describe.skip("build", async () => {
+describe("build", async () => {
   let service = new Service({ host: "https://detect.dev.prelude.org" });
   beforeAll(async () => {
     const credentials = await service.iam.newAccount("internal-tester-build");
@@ -73,15 +73,23 @@ describe.skip("build", async () => {
       expect(code).toEqual(template);
     });
 
-    it("computes the variant", async () => {
-      const compute = await service.build.computeProxy(variantName);
-      expect(compute.length).toBeGreaterThan(0);
-      /* Checks that all steps have a status true */
-      expect(
-        compute.every((r) => r.steps.every((s) => s.status === 0)),
-        `Expected all variants to pass. Got ${JSON.stringify(compute, null, 2)}`
-      ).toBeTruthy();
-    }, 60_000);
+    it(
+      "computes the variant",
+      async () => {
+        const compute = await service.build.computeProxy(variantName);
+        expect(compute.length).toBeGreaterThan(0);
+        /* Checks that all steps have a status true */
+        expect(
+          compute.every((r) => r.steps.every((s) => s.status === 0)),
+          `Expected all variants to pass. Got ${JSON.stringify(
+            compute,
+            null,
+            2
+          )}`
+        ).toBeTruthy();
+      },
+      { retry: 2, timeout: 120_000 }
+    );
 
     it("gets the verified security tests", async () => {
       const vsts = await service.build.verifiedTests();

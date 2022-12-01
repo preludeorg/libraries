@@ -37,26 +37,72 @@ describe("detect", () => {
 
   afterAll(async () => {
     await service.iam.purgeAccount();
-    // await fs.unlink(probePath);
-    // probeProcess?.kill();
+    await fs.unlink(probePath);
+    probeProcess?.kill();
   });
 
   it("registers an endpoint", async () => {
     const token = await service.detect.registerEndpoint({
       id: "test",
-      tags: [],
+      tags: ["test-tag"],
     });
 
     expectTypeOf(token).toBeString();
     probeToken = token;
   });
 
+  it("prints an empty the queue", async () => {
+    const queue = await service.detect.printQueue();
+    expectTypeOf(queue).toBeArray();
+  });
+
   it("lists probes", async () => {
     const probes = await service.detect.listProbes();
-    expect(probes[0].endpoint_id).toEqual("test");
-    expect(probes[0].tags).toEqual([]);
+    expect(probes).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          endpoint_id: "test",
+          tags: ["test-tag"],
+        }),
+      ])
+    );
   }, 10_000);
 
+  it(
+    "compiles Can I run sudo with no password? test",
+    async () => {
+      await sleep(3000);
+      const compute = await service.build.computeProxy(
+        "082e2303-cc14-4854-b72f-b77ea1e1acd8.c"
+      );
+      expect(
+        compute.every((r) => r.steps.every((s) => s.status === 0)),
+        `Expected all variants to pass. Got ${JSON.stringify(compute, null, 2)}`
+      ).toBeTruthy();
+    },
+    { timeout: 30_000, retry: 10 }
+  );
+
+  it("enables Can I run sudo with no password? test", async () => {
+    await service.detect.enableTest({
+      test: "082e2303-cc14-4854-b72f-b77ea1e1acd8",
+      runCode: RunCodes.DEBUG,
+      tags: ["test-tag"],
+    });
+  });
+
+  it("prints a queue with Can I run sudo with no password", async () => {
+    const queue = await service.detect.printQueue();
+    expect(queue).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          test: "082e2303-cc14-4854-b72f-b77ea1e1acd8",
+          run_code: RunCodes.DEBUG,
+          tag: "test-tag",
+        }),
+      ])
+    );
+  });
   describe("moonlight probe", () => {
     it("downloads", async () => {
       const file = await downloadFile(
@@ -67,7 +113,7 @@ describe("detect", () => {
       await fs.chmod(probePath, "755");
     });
 
-    it.skip("starts", async () => {
+    it("starts", async () => {
       return new Promise((res, rej) => {
         probeProcess = spawn(probePath, {
           env: {
@@ -76,15 +122,12 @@ describe("detect", () => {
           },
         });
 
-        // probeProcess?.on("spawn", () => {
-
-        // });
+        probeProcess?.on("spawn", () => {
+          res("ok");
+        });
 
         probeProcess?.stdout?.on("readable", () => {
-          const buff = probeProcess?.stdout?.read(100);
-
           console.log(probeProcess?.stdout?.read(100));
-          res(buff);
         });
 
         probeProcess?.on("error", (data) => {
@@ -98,26 +141,40 @@ describe("detect", () => {
     }, 10_000);
   });
 
-  it("compiles health check test", async () => {
-    await sleep(5000);
-    const compute = await service.build.computeProxy(
-      "39de298a-911d-4a3b-aed4-1e8281010a9a.c"
+  it(
+    "gets the activity",
+    async () => {
+      await sleep(4000);
+      const activity = await service.detect.describeActivity();
+      expect(activity).toEqual(
+        expect.objectContaining({
+          "082e2303-cc14-4854-b72f-b77ea1e1acd8": { OK: 1 },
+        })
+      );
+    },
+    { retry: 10, timeout: 10_000 }
+  );
+
+  it("exports the activity", async () => {
+    const url = await service.detect.exportReport();
+    /* should be a url */
+    expect(url).toMatch(
+      /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi
     );
-    expect(
-      compute.every((r) => r.steps.every((s) => s.status === 0)),
-      `Expected all variants to pass. Got ${JSON.stringify(compute, null, 2)}`
-    ).toBeTruthy();
-  }, 60_000);
+  });
 
-  it("enables the health check test", async () => {
-    await service.detect.enableTest({
-      test: "39de298a-911d-4a3b-aed4-1e8281010a9a",
-      runCode: RunCodes.DEBUG,
-      tags: [],
-    });
+  it("disables Can I run sudo with no password? test", async () => {
+    await service.detect.disableTest("082e2303-cc14-4854-b72f-b77ea1e1acd8");
+  });
 
-    console.log(probeToken);
-
-    await sleep(60_000);
-  }, 60_000);
+  it("prints a queue without Can I run sudo with no password", async () => {
+    const queue = await service.detect.printQueue();
+    expect(queue).not.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          test: "082e2303-cc14-4854-b72f-b77ea1e1acd8",
+        }),
+      ])
+    );
+  });
 });

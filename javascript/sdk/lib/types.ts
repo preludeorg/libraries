@@ -26,7 +26,7 @@ export interface CreatedUser {
   token: string;
 }
 
-export interface AccountActivity {}
+export type AccountActivity = Record<string, any>;
 
 export interface AccountQueue {}
 

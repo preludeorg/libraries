@@ -2,7 +2,7 @@ import * as uuid from "uuid";
 import { describe, expect, expectTypeOf, it } from "vitest";
 import { Permissions, Service } from "../lib/main";
 
-describe.skip("iam", () => {
+describe("iam", () => {
   let service = new Service({ host: "https://detect.dev.prelude.org" });
 
   it("creates registers a new account", async () => {

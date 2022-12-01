@@ -34,7 +34,7 @@ export default class DetectController {
       ...options,
     });
 
-    return (await response.json()) as AccountQueue;
+    return (await response.json()) as AccountQueue[];
   }
 
   /** Enable a test so endpoints will start running it */
@@ -44,7 +44,7 @@ export default class DetectController {
   ) {
     await this.#client.requestWithAuth(`/account/queue/${test}`, {
       method: "POST",
-      body: JSON.stringify({ run_code: runCode, tags }),
+      body: JSON.stringify({ code: runCode, tags }),
       ...options,
     });
   }
@@ -58,17 +58,12 @@ export default class DetectController {
   }
 
   /** Get report for an Account */
-  async describeActivity(
-    { days = 7, ident }: { days?: number; ident?: string },
-    options: RequestOptions = {}
-  ) {
-    let route = !!ident ? `/${ident}` : "";
-
+  async describeActivity(days: number = 7, options: RequestOptions = {}) {
+    const searchParams = new URLSearchParams({ days: days.toString() });
     const response = await this.#client.requestWithAuth(
-      `/account/report${route}`,
+      `/account/report?${searchParams.toString()}`,
       {
         method: "GET",
-        body: JSON.stringify({ days }),
         ...options,
       }
     );
@@ -77,20 +72,20 @@ export default class DetectController {
   }
 
   /** Generate a redirect URL to a data dump */
-  async exportReport(
-    { days = 7 }: { days?: number },
-    options: RequestOptions = {}
-  ) {
+  async exportReport(days: number = 7, options: RequestOptions = {}) {
+    const searchParams = new URLSearchParams({ days: days.toString() });
     const response = await this.#client.requestWithAuth(
-      "/account/report/export",
+      `/account/report/export?${searchParams.toString()}`,
       {
         method: "GET",
-        body: JSON.stringify({ days }),
+        redirect: "manual",
         ...options,
       }
     );
 
-    return (await response.json()) as string;
+    const location = response.headers.get("location");
+
+    return location ?? "";
   }
 
   /** Get all probes associated to an Account */
