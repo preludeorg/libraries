@@ -1,12 +1,11 @@
 name: Hades Dev Builds
 
 on:
-  pull_request:
+  merge:
     branches:
       - master
     paths:
       - 'cmd/hades/**'
-      - '.github/workflows/**'
   release:
     types:
       - created
@@ -58,5 +57,5 @@ jobs:
       - name: Instal aws cli and copy files to the s3 bucket with the AWS CLI
         working-directory: go/probe
         run: |
-          apt install awscli
+          apt install -y awscli
           aws s3 cp hades_* s3://${{ env.S3_BUCKET }}/prelude/probes/hades/
