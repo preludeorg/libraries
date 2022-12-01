@@ -1,13 +1,14 @@
 import * as uuid from "uuid";
 import { describe, expect, expectTypeOf, it } from "vitest";
 import { Permissions, Service } from "../../lib/main";
+import "../fetch-polyfill";
 
 const serviceURL = import.meta.env.VITE_PRELUDE_SERVICE_URL;
 
 describe("iam", () => {
   let service = new Service({ host: serviceURL });
 
-  it("creates registers a new account", async () => {
+  it("creates a new account", async () => {
     const credentials = await service.iam.newAccount("internal-test-iam");
     expectTypeOf(credentials.account).toBeString();
     expectTypeOf(credentials.token).toBeString();

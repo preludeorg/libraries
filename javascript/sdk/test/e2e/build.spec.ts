@@ -3,6 +3,7 @@ import path from "path";
 import * as uuid from "uuid";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { Service } from "../../lib/main";
+import "../fetch-polyfill";
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
