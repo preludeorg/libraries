@@ -5,7 +5,7 @@ A multiplatform etect probe written in [swift](https://www.swift.org/).
 
 To download precompiled moonlight binaries from our API endpoint, you'll need a detect 
 token. You can provision your token by running `prelude iam create-account` 
-(insructions [here](https://docs.prelude.org/docs/prelude-cli))
+(instructions [here](https://docs.prelude.org/docs/prelude-cli))
 
 ### m1 / m2 Mac Download
 
@@ -85,7 +85,8 @@ swift code that uses FoundationNetworking (see:
 * Install the dependencies of your distro
   * Debian: 
     ```
-    apt install -y \
+    apt update
+    apt install \
               curl \
               binutils \
               libc6-dev \
@@ -105,11 +106,13 @@ swift code that uses FoundationNetworking (see:
     ```
   * Centos
     ```
+    dnf update
     dnf install ncurses-compat-libs glibc-headers gcc gcc-c++ kernel-devel libcurl-devel
     ```
   * Amzn Linux
     ```
-    # tbd
+    yum update
+    yum install tar gzip libcurl-devel ncurses-compat-libs glibc-headers gcc
     ```
 * Download swift upstream distribution: 
   * Debian `curl https://download.swift.org/swift-5.7.1-release/ubuntu2004/swift-5.7.1-RELEASE/swift-5.7.1-RELEASE-ubuntu20.04.tar.gz -o swift-5.7.1.tar.gz`
