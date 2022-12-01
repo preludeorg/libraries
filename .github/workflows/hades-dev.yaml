@@ -1,7 +1,7 @@
 name: Hades Dev Builds
 
 on:
-  merge:
+  pull_request:
     branches:
       - master
     paths:
