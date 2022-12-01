@@ -37,7 +37,7 @@ struct Service {
             if ca.isEmpty || ca == authority {
                 let name = relative.components(separatedBy: "/").last!
                 if name.isEmpty {
-                    print("INFO: No tasks")
+                    print("INFO: Done running tests")
                     return
                 }
                 guard let test = system.run(url: data!, args: []) else {

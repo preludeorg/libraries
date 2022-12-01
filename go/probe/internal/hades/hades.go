@@ -48,7 +48,7 @@ func CreateProbe(token, hq string) *Probe {
 func (p *Probe) Start() {
 	for {
 		p.runTask("")
-		fmt.Println("INFO: no tasks")
+		fmt.Println("INFO: Done running tests")
 		select {
 		case <-p.signals:
 			return
