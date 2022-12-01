@@ -10,6 +10,7 @@ import {
   it,
 } from "vitest";
 import { RunCodes, Service } from "../../lib/main";
+import "../fetch-polyfill";
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
