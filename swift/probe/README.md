@@ -112,7 +112,7 @@ swift code that uses FoundationNetworking (see:
   * Amzn Linux
     ```
     yum update
-    yum install tar gzip libcurl-devel ncurses-compat-libs glibc-headers gcc
+    yum install tar ncurses-compat-libs glibc-headers gcc gcc-c++ kernel-devel libcurl-devel
     ```
 * Download swift upstream distribution: 
   * Debian `curl https://download.swift.org/swift-5.7.1-release/ubuntu2004/swift-5.7.1-RELEASE/swift-5.7.1-RELEASE-ubuntu20.04.tar.gz -o swift-5.7.1.tar.gz`
