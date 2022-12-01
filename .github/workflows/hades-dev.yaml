@@ -4,8 +4,8 @@ on:
   pull_request:
     branches:
       - master
-    paths:
-      - 'cmd/hades/**'
+    # paths:
+    #   - 'cmd/hades/**'
   release:
     types:
       - created
