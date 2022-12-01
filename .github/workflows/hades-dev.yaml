@@ -41,7 +41,7 @@ jobs:
           GOOS=darwin GOARCH=arm64  CGO_ENABLED=0 go build -o hades_darwin-arm64  -a -ldflags '-s -w -extldflags "-static"' ./cmd/hades
           GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -o hades_windows-amd64 -a -ldflags '-s -w -extldflags "-static"' ./cmd/hades
       
-      - name: Install upx, and pack binaries
+      - name: Install upx and pack binaries
         working-directory: go/probe
         run: |
           apt update
@@ -55,7 +55,8 @@ jobs:
           aws-access-key-id: ${{ secrets.ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
 
-      - name: Copy files to the test website with the AWS CLI
+      - name: Instal aws cli and copy files to the s3 bucket with the AWS CLI
         working-directory: go/probe
         run: |
+          apt install awscli
           aws s3 cp hades_* s3://${{ env.S3_BUCKET }}/prelude/probes/hades/
