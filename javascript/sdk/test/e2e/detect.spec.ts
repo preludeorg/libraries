@@ -129,20 +129,27 @@ describe("detect", () => {
           },
         });
 
-        probeProcess?.on("spawn", () => {
+        /* after 3 seconds without an stderr assume it started successfully.
+         * Reason: On Macos probes doesn't talk on stdout
+         */
+        setTimeout(() => {
+          res("ok");
+        }, 3_000);
+
+        probeProcess?.stdout?.on("data", () => {
           res("ok");
         });
 
-        probeProcess?.stdout?.on("readable", () => {
-          console.log(probeProcess?.stdout?.read(100));
+        probeProcess?.stderr?.on("data", (data) => {
+          rej(`stderr: ${data}`);
         });
 
         probeProcess?.on("error", (data) => {
-          rej(data);
+          rej(`closed with error: ${data}`);
         });
 
         probeProcess?.on("close", (code) => {
-          rej(code);
+          rej(`closed with code: ${code}`);
         });
       });
     });
