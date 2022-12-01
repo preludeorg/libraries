@@ -1,0 +1,59 @@
+name: Hades Dev Builds
+
+on:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - 'cmd/hades/**'
+  release:
+    types:
+      - created
+  workflow_dispatch:
+
+env: 
+  MAC_TARGET: x86_64-apple-macos10.13
+  AWS_REGION: ${{ secrets.BUCKET_REGION }}
+  S3_BUCKET: ${{ secrets.BUCKET_NAME }}
+
+jobs:
+  go_cross_compile:
+
+    runs-on: ubuntu-latest
+    container:
+      image: golang:bullseye
+
+    environment: dev
+
+    name: Dev - Build Hades probes (crosscompile), and copy to dev bucket
+
+    steps:
+      - name: Check out code. 
+        uses: actions/checkout@v3
+
+      - name: Build Linux x86_64
+        run: |
+          GOOS=linux GOARCH=amd64   CGO_ENABLED=0 go build -o hades_linux-amd64   -a -ldflags -s -w -extldflags "-static" ./cmd/hades
+          GOOS=linux GOARCH=arm64   CGO_ENABLED=0 go build -o hades_linux-arm64   -a -ldflags -s -w -extldflags "-static" ./cmd/hades
+          GOOS=darwin GOARCH=amd64  CGO_ENABLED=0 go build -o hades_darwin-amd64  -a -ldflags -s -w -extldflags "-static" ./cmd/hades
+          GOOS=darwin GOARCH=arm64  CGO_ENABLED=0 go build -o hades_darwin-arm64  -a -ldflags -s -w -extldflags "-static" ./cmd/hades
+          GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -o hades_windows-amd64 -a -ldflags -s -w -extldflags "-static" ./cmd/hades
+      
+      - name: Install upx, and pack binaries
+        working-directory: cmd/hades
+        run: |
+          sudo apt update
+          sudo apt install -y upx
+          upx --best ./hades_*
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
+
+      - name: Copy files to the test website with the AWS CLI
+        working-directory: cmd/hades
+        run: |
+          aws s3 cp hades_* s3://${{ env.S3_BUCKET }}/prelude/probes/hades/

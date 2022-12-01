@@ -7,4 +7,10 @@
 **/build/**
 .idea
 **/.swiftpm/**
-swift/probe/moonlight
+**/.build
+swift/probe/moonlight_linux*
+swift/probe/moonlight_darwin*
+python/*/dist/
+go/probe/hades_linux*
+go/probe/hades_darwin*
+go/probe/hades_windows*
