@@ -1,9 +1,11 @@
 import * as uuid from "uuid";
 import { describe, expect, expectTypeOf, it } from "vitest";
-import { Permissions, Service } from "../lib/main";
+import { Permissions, Service } from "../../lib/main";
+
+const serviceURL = import.meta.env.VITE_PRELUDE_SERVICE_URL;
 
 describe("iam", () => {
-  let service = new Service({ host: "https://detect.dev.prelude.org" });
+  let service = new Service({ host: serviceURL });
 
   it("creates registers a new account", async () => {
     const credentials = await service.iam.newAccount("internal-test-iam");

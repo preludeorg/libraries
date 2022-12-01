@@ -9,7 +9,7 @@ import {
   expectTypeOf,
   it,
 } from "vitest";
-import { RunCodes, Service } from "../lib/main";
+import { RunCodes, Service } from "../../lib/main";
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -25,8 +25,10 @@ async function downloadFile(url: string, headers: Record<string, string>) {
   return response.arrayBuffer();
 }
 
+const serviceURL = import.meta.env.VITE_PRELUDE_SERVICE_URL;
+
 describe("detect", () => {
-  let service = new Service({ host: "https://detect.dev.prelude.org" });
+  let service = new Service({ host: serviceURL });
   let probePath = path.resolve("./moonlight");
   let probeToken = "";
   let probeProcess: ChildProcess | null = null;
@@ -66,7 +68,7 @@ describe("detect", () => {
         }),
       ])
     );
-  }, 10_000);
+  });
 
   it(
     "compiles Can I run sudo with no password? test",
@@ -106,7 +108,7 @@ describe("detect", () => {
   describe("moonlight probe", () => {
     it("downloads", async () => {
       const file = await downloadFile(
-        "https://detect.dev.prelude.org/download/moonlight?dos=darwin-arm64",
+        `${serviceURL}/download/moonlight?dos=darwin-arm64`,
         { token: probeToken }
       );
       await fs.writeFile(probePath, Buffer.from(file));
@@ -118,7 +120,7 @@ describe("detect", () => {
         probeProcess = spawn(probePath, {
           env: {
             PRELUDE_TOKEN: probeToken,
-            PRELUDE_API: "https://detect.dev.prelude.org",
+            PRELUDE_API: serviceURL,
           },
         });
 
@@ -138,7 +140,7 @@ describe("detect", () => {
           rej(code);
         });
       });
-    }, 10_000);
+    });
   });
 
   it(
@@ -152,7 +154,7 @@ describe("detect", () => {
         })
       );
     },
-    { retry: 2, timeout: 10_000 }
+    { retry: 2 }
   );
 
   it("exports the activity", async () => {

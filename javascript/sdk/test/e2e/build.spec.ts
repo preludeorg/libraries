@@ -2,7 +2,7 @@ import fs from "fs/promises";
 import path from "path";
 import * as uuid from "uuid";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { Service } from "../lib/main";
+import { Service } from "../../lib/main";
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -15,8 +15,10 @@ const getTemplate = async (ext: string) => {
   );
 };
 
+const serviceURL = import.meta.env.VITE_PRELUDE_SERVICE_URL;
+
 describe("build", async () => {
-  let service = new Service({ host: "https://detect.dev.prelude.org" });
+  let service = new Service({ host: serviceURL });
   beforeAll(async () => {
     const credentials = await service.iam.newAccount("internal-tester-build");
     service.setCredentials(credentials);
