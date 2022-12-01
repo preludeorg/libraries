@@ -1,6 +1,7 @@
 import configparser
 import os
 from functools import wraps
+from importlib.metadata import version
 from os.path import exists
 from pathlib import Path
 
@@ -15,7 +16,8 @@ def verify_credentials(func):
             args[0].account.headers = dict(
                 account=cfg.get(args[0].account.profile, 'account'),
                 token=cfg.get(args[0].account.profile, 'token'),
-                _product='py-sdk'
+                _product='py-sdk',
+                _version=version('prelude_sdk')
             )
             return func(*args, **kwargs)
         except FileNotFoundError:
