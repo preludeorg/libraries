@@ -1,4 +1,5 @@
 import { Credentials } from "./types";
+import { version } from "../package.json";
 
 function assertValidURL(url: URL) {
   const validScheme = url.protocol === "http:" || url.protocol === "https:";
@@ -21,6 +22,7 @@ export default class Client {
     this.#defaultHeaders = {
       "Content-Type": "application/json",
       _product: "js-sdk",
+      _version: version,
     };
   }
 
