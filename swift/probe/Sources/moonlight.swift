@@ -81,14 +81,22 @@ struct System {
     }
     func executable(url: URL) {
         let task = Process()
+        #if os(Windows)
+        task.executableURL = URL(fileURLWithPath: "cmd")
+        #else
         task.executableURL = URL(fileURLWithPath: "/bin/bash")
+        #endif
         task.arguments = ["-c", "chmod +x \(url.path)"]
         do { try task.run() } catch { print("ERROR: \(error)") }
         task.waitUntilExit()
     }
 }
 
+#if os(Windows)
+let system = System(platform: "windows")
+#else
 let system = System(platform: "darwin")
+#endif
 let service = Service(
     api: ProcessInfo.processInfo.environment["PRELUDE_API", default: "https://detect.prelude.org"],
     token: ProcessInfo.processInfo.environment["PRELUDE_TOKEN", default: ""],
@@ -97,5 +105,5 @@ let service = Service(
 
 while true {
     service.engage()
-    sleep(43200)
+    try await Task.sleep(nanoseconds: UInt64(43200 * Double(1000000000)))
 }
