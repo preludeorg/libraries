@@ -55,6 +55,7 @@ class Probe:
                 asyncio.create_task(self.run(next(self.service(), None)))
             except Exception as e:
                 print('[-] %s' % e)
+            print('INFO: Done running tests')
             await asyncio.sleep(43200)
 
 
