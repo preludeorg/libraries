@@ -80,7 +80,7 @@ describe("detect", () => {
         `Expected all variants to pass. Got ${JSON.stringify(compute, null, 2)}`
       ).toBeTruthy();
     },
-    { timeout: 30_000, retry: 10 }
+    { timeout: 30_000, retry: 2 }
   );
 
   it("enables Can I run sudo with no password? test", async () => {
