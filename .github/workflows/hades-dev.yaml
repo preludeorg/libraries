@@ -44,8 +44,8 @@ jobs:
       - name: Install upx, and pack binaries
         working-directory: go/probe
         run: |
-          sudo apt update
-          sudo apt install -y upx
+          apt update
+          apt install -y upx
           upx --best ./hades_*
       
       - name: Configure AWS credentials
