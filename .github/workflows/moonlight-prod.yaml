@@ -43,7 +43,7 @@ jobs:
           aws-access-key-id: ${{ secrets.ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
 
-      - name: Copy files to the test website with the AWS CLI
+      - name: Copy files to s3 with the AWS CLI
         working-directory: swift/probe
         run: |
           aws s3 cp moonlight_darwin-x86_64 s3://${{ env.S3_BUCKET }}/prelude/probes/
