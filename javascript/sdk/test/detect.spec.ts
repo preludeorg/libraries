@@ -152,7 +152,7 @@ describe("detect", () => {
         })
       );
     },
-    { retry: 10, timeout: 10_000 }
+    { retry: 2, timeout: 10_000 }
   );
 
   it("exports the activity", async () => {
