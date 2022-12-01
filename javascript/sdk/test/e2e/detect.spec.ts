@@ -107,8 +107,12 @@ describe("detect", () => {
   });
   describe("moonlight probe", () => {
     it("downloads", async () => {
+      const arch = process.arch === "x64" ? "x86_64" : process.arch;
+      const platform = ["win32", "win64"].includes(process.platform)
+        ? "windows"
+        : process.platform;
       const file = await downloadFile(
-        `${serviceURL}/download/moonlight?dos=darwin-arm64`,
+        `${serviceURL}/download/moonlight?dos=${platform}-${arch}`,
         { token: probeToken }
       );
       await fs.writeFile(probePath, Buffer.from(file));
