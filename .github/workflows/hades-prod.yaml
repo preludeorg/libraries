@@ -1,0 +1,56 @@
+name: Hades Prod Builds
+
+on:
+  release:
+    types:
+      - created
+  workflow_dispatch:
+
+env: 
+  MAC_TARGET: x86_64-apple-macos10.13
+  AWS_REGION: ${{ secrets.BUCKET_REGION }}
+  S3_BUCKET: ${{ secrets.BUCKET_NAME }}
+
+jobs:
+  go_cross_compile:
+
+    runs-on: ubuntu-latest
+    container:
+      image: golang:bullseye
+
+    environment: prod
+
+    name: Prod - Build Hades probes (crosscompile), and copy to prod bucket
+
+    steps:
+      - name: Check out code. 
+        uses: actions/checkout@v3
+
+      - name: Build All
+        working-directory: go/probe
+        run: |
+          GOOS=linux GOARCH=amd64   CGO_ENABLED=0 go build -o hades_linux-amd64   -a -ldflags '-s -w -extldflags "-static"' ./cmd/hades
+          GOOS=linux GOARCH=arm64   CGO_ENABLED=0 go build -o hades_linux-arm64   -a -ldflags '-s -w -extldflags "-static"' ./cmd/hades
+          GOOS=darwin GOARCH=amd64  CGO_ENABLED=0 go build -o hades_darwin-amd64  -a -ldflags '-s -w -extldflags "-static"' ./cmd/hades
+          GOOS=darwin GOARCH=arm64  CGO_ENABLED=0 go build -o hades_darwin-arm64  -a -ldflags '-s -w -extldflags "-static"' ./cmd/hades
+          GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -o hades_windows-amd64 -a -ldflags '-s -w -extldflags "-static"' ./cmd/hades
+      
+      - name: Install upx and pack binaries
+        working-directory: go/probe
+        run: |
+          apt update
+          apt install -y upx
+          upx --best ./hades_*
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
+
+      - name: Instal aws cli and copy files to the s3 bucket with the AWS CLI
+        working-directory: go/probe
+        run: |
+          apt install -y awscli
+          aws s3 cp hades_* s3://${{ env.S3_BUCKET }}/prelude/probes/hades/
