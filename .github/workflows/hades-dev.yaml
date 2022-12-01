@@ -33,6 +33,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build All
+        working-directory: go/probe
         run: |
           GOOS=linux GOARCH=amd64   CGO_ENABLED=0 go build -o hades_linux-amd64   -a -ldflags '-s -w -extldflags "-static"' ./cmd/hades
           GOOS=linux GOARCH=arm64   CGO_ENABLED=0 go build -o hades_linux-arm64   -a -ldflags '-s -w -extldflags "-static"' ./cmd/hades
@@ -41,7 +42,7 @@ jobs:
           GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -o hades_windows-amd64 -a -ldflags '-s -w -extldflags "-static"' ./cmd/hades
       
       - name: Install upx, and pack binaries
-        working-directory: cmd/hades
+        working-directory: go/probe
         run: |
           sudo apt update
           sudo apt install -y upx
@@ -55,6 +56,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
 
       - name: Copy files to the test website with the AWS CLI
-        working-directory: cmd/hades
+        working-directory: go/probe
         run: |
           aws s3 cp hades_* s3://${{ env.S3_BUCKET }}/prelude/probes/hades/
