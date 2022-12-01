@@ -88,8 +88,6 @@ swift code that uses FoundationNetworking (see:
     apt install -y \
               curl \
               binutils \
-              git \
-              gnupg2 \
               libc6-dev \
               libcurl4 \
               libedit2 \
@@ -105,13 +103,22 @@ swift code that uses FoundationNetworking (see:
               zlib1g-dev  \
               libncurses6 
     ```
+  * Centos
+    ```
+    dnf install ncurses-compat-libs glibc-headers gcc gcc-c++ kernel-devel libcurl-devel
+    ```
+  * Amzn Linux
+    ```
+    # tbd
+    ```
 * Download swift upstream distribution: 
-  ```
-  curl https://download.swift.org/swift-5.7.1-release/ubuntu2004/swift-5.7.1-RELEASE/swift-5.7.1-RELEASE-ubuntu20.04.tar.gz -o swift-5.7.1-RELEASE-ubuntu20.04.tar.gz
+  * Debian `curl https://download.swift.org/swift-5.7.1-release/ubuntu2004/swift-5.7.1-RELEASE/swift-5.7.1-RELEASE-ubuntu20.04.tar.gz -o swift-5.7.1.tar.gz`
+  * CentOS `curl https://download.swift.org/swift-5.7.1-release/centos7/swift-5.7.1-RELEASE/swift-5.7.1-RELEASE-centos7.tar.gz -o swift-5.7.1.tar.gz`
+  * Amzn Linux `curl https://download.swift.org/swift-5.7.1-release/amazonlinux2/swift-5.7.1-RELEASE/swift-5.7.1-RELEASE-amazonlinux2.tar.gz -o swift-5.7.1.tar.gz`
   ```
 * Unpack into the root of your machine
   ```
-  tar -xf swift-5.7.1-RELEASE-ubuntu20.04.tar.gz --strip-components=1 --directory /
+  tar -xf swift-5.7.1.tar.gz --strip-components=1 --directory /
   ```
 * Test swiftc works `swiftc --version`
   * Should output 
@@ -121,14 +128,14 @@ swift code that uses FoundationNetworking (see:
     Swift version 5.7.1 (swift-5.7.1-RELEASE)
     Target: x86_64-unknown-linux-gnu
     ```
-* Cleanup tar: `rm swift-5.7.1-RELEASE-ubuntu20.04.tar.gz`
+* Cleanup tar: `rm swift-5.7.1.tar.gz`
 * Clone this repository, and change into the _libraries/swift/probe_ directory
 * Compile the application with dynamic libaries
   ```
   swiftc -Osize Sources/Moonlight/moonlight.swift -o moonlight_linux-x86_64 
   ```
 * Compile the application with a static stdlib (still requires libcurl on system). Warning
-  this binary will be ~50 megs, 42 after stripping
+  this binary will be ~50 megs, ~43 after stripping
   ```
   swiftc -static-stdlib -Osize Sources/Moonlight/moonlight.swift -o moonlight_linux-x86_64 
   strip moonlight_linux-x86_64 
@@ -160,7 +167,6 @@ git
   docker run --platform linux/amd64 -it --rm -v $PWD:/mnt/probe swift:5.7.1 swiftc -Osize /mnt/probe/Sources/Moonlight/moonlight.swift -o /mnt/probe/moonlight_linux-x86_64 -target x86_64-unknown-linux-gnu
   docker run --platform linux/amd64 -it --rm -v $PWD:/mnt/probe swift:5.7.1 strip /mnt/probe/moonlight_linux-x86_64
   ```
-
 
 ### Build for windows
 Un-tested. It is a lot right now. If you have an x86 mac, you could probaly have a docker context for building widows instances. ARM mac users are in rough shape, https://github.com/StefanScherer/windows-docker-machine/issues/84 includes discussion on m1 support for window and docker. 
