@@ -3,7 +3,7 @@ name: Presto Dev Builds
 on:
   pull_request:
     branches:
-      - main
+      - master
     paths:
       - '.github/workflows/**'
       - 'python/probe/**'
