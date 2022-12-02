@@ -28,11 +28,11 @@ jobs:
       - name: Build All
         working-directory: go/probe
         run: |
-          GOOS=linux GOARCH=amd64   CGO_ENABLED=0 go build -o hades_linux-amd64   -a -ldflags '-s -w -extldflags "-static"' ./cmd/hades
+          GOOS=linux GOARCH=amd64   CGO_ENABLED=0 go build -o hades_linux-x86_64   -a -ldflags '-s -w -extldflags "-static"' ./cmd/hades
           GOOS=linux GOARCH=arm64   CGO_ENABLED=0 go build -o hades_linux-arm64   -a -ldflags '-s -w -extldflags "-static"' ./cmd/hades
-          GOOS=darwin GOARCH=amd64  CGO_ENABLED=0 go build -o hades_darwin-amd64  -a -ldflags '-s -w -extldflags "-static"' ./cmd/hades
+          GOOS=darwin GOARCH=amd64  CGO_ENABLED=0 go build -o hades_darwin-x86_64  -a -ldflags '-s -w -extldflags "-static"' ./cmd/hades
           GOOS=darwin GOARCH=arm64  CGO_ENABLED=0 go build -o hades_darwin-arm64  -a -ldflags '-s -w -extldflags "-static"' ./cmd/hades
-          GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -o hades_windows-amd64 -a -ldflags '-s -w -extldflags "-static"' ./cmd/hades
+          GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -o hades_windows-x86_64 -a -ldflags '-s -w -extldflags "-static"' ./cmd/hades
       
       - name: Install upx and pack binaries
         working-directory: go/probe
@@ -52,7 +52,7 @@ jobs:
         working-directory: go/probe
         run: |
           apt install -y awscli
-          aws s3 cp hades_linux-amd64 s3://${{ env.S3_BUCKET }}/prelude/probes/hades/
+          aws s3 cp hades_linux-x86_64 s3://${{ env.S3_BUCKET }}/prelude/probes/hades/
           aws s3 cp hades_linux-arm64 s3://${{ env.S3_BUCKET }}/prelude/probes/hades/
-          aws s3 cp hades_darwin-amd64 s3://${{ env.S3_BUCKET }}/prelude/probes/hades/
-          aws s3 cp hades_windows-amd64 s3://${{ env.S3_BUCKET }}/prelude/probes/hades/
+          aws s3 cp hades_darwin-x86_64 s3://${{ env.S3_BUCKET }}/prelude/probes/hades/
+          aws s3 cp hades_windows-x86_64 s3://${{ env.S3_BUCKET }}/prelude/probes/hades/
