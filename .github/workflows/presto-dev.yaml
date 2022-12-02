@@ -17,7 +17,7 @@ env:
   S3_BUCKET: ${{ secrets.BUCKET_NAME }}
 
 jobs:
-  copy to s3:
+  copy_to_s3:
 
     runs-on: ubuntu-latest
 
