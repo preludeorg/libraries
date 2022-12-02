@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - '.github/workflows/**'
-      - 'python/probe'
+      - 'python/probe/**'
   release:
     types:
       - created
