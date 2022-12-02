@@ -51,6 +51,7 @@ jobs:
       - name: Instal aws cli and copy files to the s3 bucket with the AWS CLI
         working-directory: go/probe
         run: |
+          apt update
           apt install -y awscli
           aws s3 cp hades_linux-x86_64 s3://${{ env.S3_BUCKET }}/prelude/probes/hades/
           aws s3 cp hades_linux-arm64 s3://${{ env.S3_BUCKET }}/prelude/probes/hades/
