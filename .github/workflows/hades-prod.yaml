@@ -7,7 +7,6 @@ on:
   workflow_dispatch:
 
 env: 
-  MAC_TARGET: x86_64-apple-macos10.13
   AWS_REGION: ${{ secrets.BUCKET_REGION }}
   S3_BUCKET: ${{ secrets.BUCKET_NAME }}
 
