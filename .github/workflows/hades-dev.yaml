@@ -42,12 +42,12 @@ jobs:
           GOOS=darwin GOARCH=arm64  CGO_ENABLED=0 go build -o hades_darwin-arm64  -a -ldflags '-s -w -extldflags "-static"' ./cmd/hades
           GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -o hades_windows-x86_64 -a -ldflags '-s -w -extldflags "-static"' ./cmd/hades
       
-      - name: Install upx and pack binaries
-        working-directory: go/probe
-        run: |
-          apt update
-          apt install -y upx
-          upx --best ./hades_*
+      # - name: Install upx and pack binaries
+      #   working-directory: go/probe
+      #   run: |
+      #     apt update
+      #     apt install -y upx
+      #     upx --best ./hades_*
       
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
