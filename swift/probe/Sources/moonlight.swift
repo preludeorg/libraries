@@ -65,9 +65,9 @@ struct System {
         #endif
     }
     func run(url: URL, args: [String]) -> Optional<Int32>{
-        executable(url: url)
+        let path = executable(url: url)!
         let task = Process()
-        task.executableURL = url
+        task.executableURL = path
         task.arguments = args
         do { try task.run() } catch { print("ERROR: \(error)") }
         
@@ -79,16 +79,25 @@ struct System {
         task.waitUntilExit()
         return task.terminationStatus
     }
-    func executable(url: URL) {
+    func executable(url: URL) -> Optional<URL> {
+        var path = URL(fileURLWithPath: url.path)
         let task = Process()
         #if os(Windows)
-        task.executableURL = URL(fileURLWithPath: "cmd")
+        task.executableURL = URL(fileURLWithPath: "ren")
+        guard let range = url.path.range(of: ".tmp") else {
+            print("ERROR: bad extension")
+            return nil
+        }
+
+        path = URL(string: "\(url.path[..<range.lowerBound]).exe")!
+        task.arguments = [NSString(string: url.path).expandingTildeInPath, NSString(string: path.path).expandingTildeInPath]
         #else
         task.executableURL = URL(fileURLWithPath: "/bin/bash")
-        #endif
         task.arguments = ["-c", "chmod +x \(url.path)"]
+        #endif
         do { try task.run() } catch { print("ERROR: \(error)") }
         task.waitUntilExit()
+        return path
     }
 }
 
