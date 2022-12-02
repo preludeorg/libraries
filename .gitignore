@@ -8,3 +8,4 @@
 .idea
 **/.swiftpm/**
 swift/probe/moonlight
+**/dist
