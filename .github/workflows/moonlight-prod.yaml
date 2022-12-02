@@ -46,8 +46,8 @@ jobs:
       - name: Copy files to s3 with the AWS CLI
         working-directory: swift/probe
         run: |
-          aws s3 cp moonlight_darwin-x86_64 s3://${{ env.S3_BUCKET }}/prelude/probes/
-          aws s3 cp moonlight_darwin-arm64 s3://${{ env.S3_BUCKET }}/prelude/probes/
+          aws s3 cp moonlight_darwin-x86_64 s3://${{ env.S3_BUCKET }}/prelude/probes/moonlight/
+          aws s3 cp moonlight_darwin-arm64 s3://${{ env.S3_BUCKET }}/prelude/probes/moonlight/
   
   # build_linux:
 
