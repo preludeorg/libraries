@@ -1,0 +1,39 @@
+name: Presto Prod Builds
+
+on:
+  release:
+    types:
+      - created
+  workflow_dispatch:
+
+env: 
+  AWS_REGION: ${{ secrets.BUCKET_REGION }}
+  S3_BUCKET: ${{ secrets.BUCKET_NAME }}
+
+jobs:
+  copy_to_s3:
+
+    runs-on: ubuntu-latest
+
+    environment: prod
+
+    name: Prod - Build Presto probes (not really build), and copy to prod bucket
+
+    steps:
+      - name: Check out code. 
+        uses: actions/checkout@v3
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
+
+      - name: Copy files to the s3 bucket
+        run: |
+          aws s3 cp python/probe/detect_probe/presto.py s3://${{ env.S3_BUCKET }}/prelude/probes/presto/presto_darwin-x86_64.py
+          aws s3 cp python/probe/detect_probe/presto.py s3://${{ env.S3_BUCKET }}/prelude/probes/presto/presto_darwin-arm64.py
+          aws s3 cp python/probe/detect_probe/presto.py s3://${{ env.S3_BUCKET }}/prelude/probes/presto/presto_linux-x86_64.py
+          aws s3 cp python/probe/detect_probe/presto.py s3://${{ env.S3_BUCKET }}/prelude/probes/presto/presto_linux-arm64.py
+          aws s3 cp python/probe/detect_probe/presto.py s3://${{ env.S3_BUCKET }}/prelude/probes/presto/presto_windows-x86_64.py
