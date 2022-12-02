@@ -63,4 +63,5 @@ jobs:
           aws s3 cp hades_linux-x86_64 s3://${{ env.S3_BUCKET }}/prelude/probes/hades/
           aws s3 cp hades_linux-arm64 s3://${{ env.S3_BUCKET }}/prelude/probes/hades/
           aws s3 cp hades_darwin-x86_64 s3://${{ env.S3_BUCKET }}/prelude/probes/hades/
+          aws s3 cp hades_darwin-arm64 s3://${{ env.S3_BUCKET }}/prelude/probes/hades/
           aws s3 cp hades_windows-x86_64 s3://${{ env.S3_BUCKET }}/prelude/probes/hades/
