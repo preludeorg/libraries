@@ -48,6 +48,10 @@ export default class Client {
       },
     });
 
+    if (options.redirect === "manual" && response.status === 302) {
+      return response;
+    }
+
     if (!response.ok) {
       throw Error(await response.text());
     }
