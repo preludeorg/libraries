@@ -6,7 +6,7 @@ import { Credentials, ServiceConfig } from "./types";
 
 export class Service {
   #client: Client;
-
+  credentials?: Credentials;
   build: BuildController;
   iam: IAMController;
   detect: DetectController;
@@ -20,6 +20,7 @@ export class Service {
   }
 
   setCredentials(credentials: Credentials) {
+    this.credentials = credentials;
     this.#client.setCredentials(credentials);
   }
 }

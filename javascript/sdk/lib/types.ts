@@ -17,18 +17,16 @@ export interface Test {
   question: string;
 }
 
-export interface Users {
-  [id: string]: {
-    handle: string;
-    permission: Permission;
-  };
+export interface User {
+  handle: string;
+  permission: Permission;
 }
 
 export interface CreatedUser {
   token: string;
 }
 
-export interface AccountActivity {}
+export type AccountActivity = Record<string, any>;
 
 export interface AccountQueue {}
 
@@ -65,4 +63,10 @@ export interface EnableTest {
   test: string;
   runCode: RunCode;
   tags: string[];
+}
+
+export interface Probe {
+  endpoint_id: string;
+  tags: string[];
+  updated: string;
 }

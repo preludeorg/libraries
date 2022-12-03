@@ -4,7 +4,7 @@ import type {
   Credentials,
   Permission,
   RequestOptions,
-  Users,
+  User,
 } from "../types";
 
 export default class IAMController {
@@ -41,7 +41,7 @@ export default class IAMController {
       ...options,
     });
 
-    return (await response.json()) as Users;
+    return (await response.json()) as User[];
   }
 
   async createUser(
