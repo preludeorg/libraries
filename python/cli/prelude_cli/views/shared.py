@@ -10,5 +10,5 @@ def handle_api_error(func):
         try:
             return func(*args, **kwargs)
         except Exception as e:
-            click.secho(e, fg=Colors.RED.value)
+            click.secho(e.args[0], fg=Colors.RED.value)
     return handler
