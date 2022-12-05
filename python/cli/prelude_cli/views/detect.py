@@ -60,15 +60,6 @@ def queue(controller):
     print_json(data=controller.print_queue())
 
 
-@detect.command('export')
-@click.option('--days', help='days to look back', default=7, type=int)
-@click.pass_obj
-@handle_api_error
-def export_report(controller, days):
-    """ Generate a pre-signed URL that lists test run history """
-    print_json(data=controller.export_report(days=days))
-
-
 @detect.command('list-probes')
 @click.pass_obj
 @handle_api_error
