@@ -33,7 +33,6 @@ struct Service {
 
             let relative = response.url!.path
             let authority = response.url!.host!
-
             if ca.isEmpty || ca == authority {
                 let name = relative.components(separatedBy: "/").last!
                 if name.isEmpty {
@@ -81,22 +80,17 @@ struct System {
     }
     func executable(url: URL) -> Optional<URL> {
         var path = URL(fileURLWithPath: url.path)
-        let task = Process()
         #if os(Windows)
-        task.executableURL = URL(fileURLWithPath: "ren")
-        guard let range = url.path.range(of: ".tmp") else {
-            print("ERROR: bad extension")
-            return nil
-        }
-
-        path = URL(string: "\(url.path[..<range.lowerBound]).exe")!
-        task.arguments = [NSString(string: url.path).expandingTildeInPath, NSString(string: path.path).expandingTildeInPath]
+        let range = url.lastPathComponent.range(of: ".tmp")!
+        path = URL(string: "\(url.lastPathComponent[..<range.lowerBound]).exe", relativeTo: path)!
+        do { try FileManager.default.copyItem(atPath: url.path, toPath: path.path) } catch { print("ERROR: \(error)") }
         #else
+        let task = Process()
         task.executableURL = URL(fileURLWithPath: "/bin/bash")
         task.arguments = ["-c", "chmod +x \(url.path)"]
-        #endif
         do { try task.run() } catch { print("ERROR: \(error)") }
         task.waitUntilExit()
+        #endif
         return path
     }
 }
@@ -114,5 +108,5 @@ let service = Service(
 
 while true {
     service.engage()
-    try await Task.sleep(nanoseconds: UInt64(43200 * Double(1000000000)))
+    Thread.sleep(forTimeInterval: 43200)
 }
