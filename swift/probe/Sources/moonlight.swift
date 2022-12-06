@@ -81,8 +81,7 @@ struct System {
     func executable(url: URL) -> Optional<URL> {
         var path = URL(fileURLWithPath: url.path)
         #if os(Windows)
-        let range = url.lastPathComponent.range(of: ".tmp")!
-        path = URL(string: "\(url.lastPathComponent[..<range.lowerBound]).exe", relativeTo: path)!
+        path = url.deletingPathExtension().appendingPathExtension("exe")
         do { try FileManager.default.copyItem(atPath: url.path, toPath: path.path) } catch { print("ERROR: \(error)") }
         #else
         let task = Process()
