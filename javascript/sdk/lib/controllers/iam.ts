@@ -68,10 +68,13 @@ export default class IAMController {
     return true;
   }
 
-  async updateToken(token: string, options: RequestOptions = {}) {
+  async updateAccount(
+    { token = "", handle = "" }: { token?: string; handle?: string },
+    options: RequestOptions = {}
+  ) {
     await this.#client.requestWithAuth("/account", {
       method: "PUT",
-      body: JSON.stringify({ token }),
+      body: JSON.stringify({ token, handle }),
       ...options,
     });
   }
