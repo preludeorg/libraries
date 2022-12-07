@@ -60,8 +60,19 @@ def delete_user(controller, handle):
 @handle_api_error
 def update_token(ctx, token):
     """ Update your account administrator token to TOKEN """
-    ctx.obj.update_token(token=token)
+    ctx.obj.update_account(token=token)
     click.secho('Updated account token', fg=Colors.GREEN.value)
+
+
+@iam.command('update-handle')
+@click.confirmation_option(prompt='Do you want to update the account handle?')
+@click.argument('handle')
+@click.pass_context
+@handle_api_error
+def update_handle(ctx, handle):
+    """ Update your account administrator handle to HANDLE """
+    ctx.obj.update_account(handle=handle)
+    click.secho('Updated account handle', fg=Colors.GREEN.value)
 
 
 @iam.command('purge')

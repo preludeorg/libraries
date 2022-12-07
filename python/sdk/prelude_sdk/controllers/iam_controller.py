@@ -46,13 +46,16 @@ class IAMController:
         raise Exception(res.text)
 
     @verify_credentials
-    def update_token(self, token):
-        res = requests.put(f'{self.account.hq}/account', headers=self.account.headers, json=dict(token=token))
+    def update_account(self, handle: str = "", token: str = ""):
+        res = requests.put(f'{self.account.hq}/account', headers=self.account.headers, json=dict(handle=handle, token=token))
         if res.status_code != 200:
             raise Exception(res.text)
-        cfg = self.account.read_keychain_config()
-        cfg[self.account.profile]['token'] = token
-        self.account.write_keychain_config(cfg)
+        
+        if token: 
+            cfg = self.account.read_keychain_config()
+            cfg[self.account.profile]['token'] = token
+            self.account.write_keychain_config(cfg)
+
 
     @verify_credentials
     def purge_account(self):
