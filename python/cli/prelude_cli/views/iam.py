@@ -28,7 +28,8 @@ def register_account(controller):
 @handle_api_error
 def describe_account(controller):
     """ List all users in your account """
-    users = {user["handle"]: Permission(user["permission"]).name for user in controller.get_users()}
+    users = {p.name: [] for p in Permission}
+    [users[Permission(u['permission']).name].append(u['handle']) for u in controller.get_users()]
     print_json(data=users)
 
 
