@@ -12,6 +12,7 @@ $PRELUDE_API="https://detect.prelude.org"
 $PROBE_NAME=$probeName
 $PRELUDE_ACCOUNT_ID=$preludeAccountId
 $PRELUDE_ACCOUNT_SECRET=$preludeAccountSecret
+
 function LogError {
     param([string]$errStr)
     Write-Host "[!] $errStr" -ForegroundColor Red
