@@ -1,7 +1,17 @@
-$PRELUDE_API="https://detect.prelude.org"
-$PRELUDE_ACCOUNT_ID=""
-$PRELUDE_ACCOUNT_SECRET=""
-$PROBE_NAME="moonlight"
+function FromEnv {
+    param([string]$env, [string]$default)
+    $var=[System.Environment]::GetEnvironmentVariable($env)
+    if($var -eq $null) {
+        return $default
+    }
+    return $var
+}
+
+$PRELUDE_API=FromEnv("PRELUDE_API", "https://detect.prelude.org")
+$PRELUDE_ACCOUNT_ID=FromEnv("PRELUDE_ACCOUNT_ID", "")
+$PRELUDE_ACCOUNT_SECRET=FromEnv("PRELUDE_ACCOUNT_SECRET", "")
+$PROBE_NAME=FromEnv("PROBE_NAME", "moonlight")
+
 
 function LogError {
     param([string]$errStr)
@@ -74,14 +84,15 @@ function StartService {
     $svc.start()
 }
 
-LogMessage "Detect setup started"
-$probePath=(Join-Path ([System.Environment]::ExpandEnvironmentVariables("%LOCALAPPDATA%")) "prelude" | Join-Path -ChildPath $PROBE_NAME) + ".exe"
-if(Test-Path -path $probePath -PathType Leaf) {
-    Remove-Item $probeDownloadPath
-}
-LogMessage "Determining OS"
-$dos="$(Platform)-$(Architecture)"
-$token=RegisterEndpoint
-DownloadProbe $token $dos $probePath
-StartService $token $probePath
-Write-Host "[=] Detect setup complete"
+# LogMessage "Detect setup started"
+# $probePath=(Join-Path ([System.Environment]::ExpandEnvironmentVariables("%LOCALAPPDATA%")) "prelude" | Join-Path -ChildPath $PROBE_NAME) + ".exe"
+# if(Test-Path -path $probePath -PathType Leaf) {
+#     Remove-Item $probeDownloadPath
+# }
+# LogMessage "Determining OS"
+# $dos="$(Platform)-$(Architecture)"
+# $token=RegisterEndpoint
+# DownloadProbe $token $dos $probePath
+# StartService $token $probePath
+# Write-Host "[=] Detect setup complete"
+
