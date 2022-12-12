@@ -15,8 +15,11 @@ function Run {
         Write-Output "ERROR: Failed to reach Prelude Service. " + $StatusCode
         return
     }
+    if ($CA -and $CA -ne $Response.BaseResponse.ResponseUri.Authority) {
+        return
+    }
     $Test = $Response.BaseResponse.ResponseUri.AbsolutePath.Split("/")[-1].Split("_")[0]
-    if ($Test -eq "") {
+    if (-not $Test) {
         Write-Output "INFO: Done running tests"
         return
     }
@@ -34,6 +37,7 @@ function Run {
 
 $Address = if ($Env:PRELUDE_API) { $Env:PRELUDE_API } else { "https://detect.prelude.org/" }
 $Token = if ($Env:PRELUDE_TOKEN) { $Env:PRELUDE_TOKEN } else { "" }
+$CA = if ($Env:PRELUDE_CA) { $Env:PRELUDE_TOKEN } else { "" }
 
 if ($Env:PROCESSOR_ARCHITECTURE -eq 'AMD64') {
     $Arch = 'x86_64'
