@@ -10,73 +10,73 @@ class BuildController:
 
     @verify_credentials
     def list_tests(self):
-        res = requests.get(f'{self.account.hq}/test', headers=self.account.headers)
+        res = requests.get(f'{self.account.hq}/build/tests', headers=self.account.headers)
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
 
     @verify_credentials
-    def delete_test(self, ident):
-        res = requests.delete(f'{self.account.hq}/test/{ident}', headers=self.account.headers)
-        if not res.status_code == 200:
-            raise Exception(res.text)
-
-    @verify_credentials
-    def delete_variant(self, name):
-        res = requests.delete(f'{self.account.hq}/variant/{name}', headers=self.account.headers)
-        if not res.status_code == 200:
-            raise Exception(res.text)
-
-    @verify_credentials
-    def delete_verified(self, name):
-        res = requests.delete(f'{self.account.hq}/verified/{name}', headers=self.account.headers)
-        if not res.status_code == 200:
-            raise Exception(res.text)
-
-    @verify_credentials
     def create_test(self, ident, question):
         data = dict(id=ident, question=question)
-        res = requests.put(f'{self.account.hq}/test', json=data, headers=self.account.headers)
+        res = requests.put(f'{self.account.hq}/build/tests', json=data, headers=self.account.headers)
+        if not res.status_code == 200:
+            raise Exception(res.text)
+
+    @verify_credentials
+    def delete_test(self, ident):
+        res = requests.delete(f'{self.account.hq}/build/tests/{ident}', headers=self.account.headers)
         if not res.status_code == 200:
             raise Exception(res.text)
 
     @verify_credentials
     def get_test(self, ident):
-        res = requests.get(f'{self.account.hq}/test/{ident}', headers=self.account.headers)
+        res = requests.get(f'{self.account.hq}/build/tests/{ident}', headers=self.account.headers)
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
 
     @verify_credentials
+    def delete_variant(self, name):
+        res = requests.delete(f'{self.account.hq}/build/variant/{name}', headers=self.account.headers)
+        if not res.status_code == 200:
+            raise Exception(res.text)
+
+    @verify_credentials
     def clone(self, name):
-        res = requests.get(f'{self.account.hq}/variant/{name}', headers=self.account.headers)
+        res = requests.get(f'{self.account.hq}/build/variant/{name}', headers=self.account.headers)
         if res.status_code == 200:
             return res.content
         raise Exception(res.text)
 
     @verify_credentials
     def create_variant(self, name, code):
-        res = requests.post(f'{self.account.hq}/variant/{name}', json=dict(code=code), headers=self.account.headers)
+        res = requests.post(f'{self.account.hq}/build/variant/{name}', json=dict(code=code), headers=self.account.headers)
         if not res.status_code == 200:
             raise Exception(res.text)
 
     @verify_credentials
+    def delete_verified(self, name):
+        res = requests.delete(f'{self.account.hq}/build/verified/{name}', headers=self.account.headers)
+        if not res.status_code == 200:
+            raise Exception(res.text)
+
+    @verify_credentials
+    def verified_tests(self):
+        res = requests.get(f'{self.account.hq}/build/verified', headers=self.account.headers)
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
     def create_url(self, name: str):
-        res = requests.get(f'{self.account.hq}/variant/{name}/url', headers=self.account.headers)
+        res = requests.get(f'{self.account.hq}/build/{name}/url', headers=self.account.headers)
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
 
     @verify_credentials
     def compute_proxy(self, name: str):
-        res = requests.post(f'{self.account.hq}/compute', json=dict(name=name), headers=self.account.headers)
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
-
-    @verify_credentials
-    def verified_tests(self):
-        res = requests.get(f'{self.account.hq}/verified', headers=self.account.headers)
+        res = requests.post(f'{self.account.hq}/build/compute', json=dict(name=name), headers=self.account.headers)
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
