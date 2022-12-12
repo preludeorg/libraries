@@ -1,17 +1,14 @@
 [CmdletBinding()]
 param(
-  [Parameter(Mandatory=$true, HelpMessage="Probe name")]
-  [String]$probeName,
   [Parameter(Mandatory=$true, HelpMessage="Prelude Account Id")]
   [String]$preludeAccountId,
   [Parameter(Mandatory=$true, HelpMessage="Prelude Account Secret")]
-  [String]$preludeAccountSecret
+  [String]$preludeAccountSecret,
+  [Parameter(HelpMessage="Probe name")]
+  [String]$probeName="hades"
 )
 
 $PRELUDE_API="https://detect.prelude.org"
-$PROBE_NAME=$probeName
-$PRELUDE_ACCOUNT_ID=$preludeAccountId
-$PRELUDE_ACCOUNT_SECRET=$preludeAccountSecret
 
 function LogError {
     param([string]$errStr)
@@ -24,11 +21,7 @@ function LogMessage {
 }
 
 function Platform {
-    if ($IsLinux) {
-        return "linux"
-    } elseif ($IsMacOS) {
-        return "darwin"
-    } elseif (-not (Test-Path variable:IsWindows) -or $IsWindows) {
+    if (-not (Test-Path variable:IsWindows) -or $IsWindows) {
         return "windows"
     } else {
         LogError "Platform not supported"
@@ -53,7 +46,7 @@ function Architecture {
 function RegisterEndpoint {
     LogMessage "Provisioning Detect Endpoint Token..."
     $data = @{"id"=$env:computername;"tag"="windows"} | ConvertTo-Json
-    $response = Invoke-WebRequest -Method POST -Uri $PRELUDE_API/account/endpoint -Headers @{"account"="$PRELUDE_ACCOUNT_ID";"token"="$PRELUDE_ACCOUNT_SECRET"} -ContentType "application/json" -Body $data
+    $response = Invoke-WebRequest -Method POST -Uri $PRELUDE_API/account/endpoint -Headers @{"account"=$preludeAccountId;"token"=$preludeAccountSecret} -ContentType "application/json" -Body $data
     if($response.StatusCode -ne 200) {
         LogError "Endpoint failed to register! $($response.StatusDescription)"
         Exit 1
@@ -65,7 +58,7 @@ function DownloadProbe {
     param ([string]$token, [string]$dos, [string]$out)
     LogMessage "Downloading Probe..."
     try { 
-        Invoke-WebRequest -Method GET -Uri $PRELUDE_API/download/$PROBE_NAME -Headers @{"token"="$token";"dos"="$dos"} -OutFile $out -PassThru
+        Invoke-WebRequest -Method GET -Uri $PRELUDE_API/download/$probeName -Headers @{"token"="$token";"dos"="$dos"} -OutFile $out -PassThru
     } catch [System.Net.WebException] { 
         LogError "Detect failed to download! $($_.ErrorDetails)"
         Exit 1
@@ -85,7 +78,7 @@ function StartService {
 }
 
 LogMessage "Detect setup started"
-$probePath=(Join-Path ([System.Environment]::ExpandEnvironmentVariables("%LOCALAPPDATA%")) "prelude" | Join-Path -ChildPath $PROBE_NAME) + ".exe"
+$probePath=(Join-Path ([System.Environment]::ExpandEnvironmentVariables("%LOCALAPPDATA%")) "prelude" | Join-Path -ChildPath $probeName) + ".exe"
 if(Test-Path -path $probePath -PathType Leaf) {
     Remove-Item $probeDownloadPath
 }
