@@ -28,7 +28,8 @@ def register_account(controller):
 @handle_api_error
 def describe_account(controller):
     """ List all users in your account """
-    print_json(data=controller.get_users())
+    users = {user["handle"]: Permission(user["permission"]).name for user in controller.get_users()}
+    print_json(data=users)
 
 
 @iam.command('create-user')
@@ -51,17 +52,6 @@ def delete_user(controller, handle):
     """ Remove a user from your account """
     if controller.delete_user(handle=handle):
         click.secho(f'Deleted user {handle}', fg=Colors.GREEN.value)
-
-
-@iam.command('update-token')
-@click.confirmation_option(prompt='Do you want to update the account token?')
-@click.argument('token')
-@click.pass_context
-@handle_api_error
-def update_token(ctx, token):
-    """ Update your account administrator token to TOKEN """
-    ctx.obj.update_token(token=token)
-    click.secho('Updated account token', fg=Colors.GREEN.value)
 
 
 @iam.command('purge')
