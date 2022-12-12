@@ -1,4 +1,4 @@
-                    function Run {
+function Run {
     Param([String]$Dat = "")
 
     $TempFile = [System.IO.Path]::GetTempFileName() | Rename-Item -NewName { [System.IO.Path]::ChangeExtension($_, "exe") } -PassThru
