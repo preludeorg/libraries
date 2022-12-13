@@ -173,3 +173,13 @@ git
 
 ### Build for windows
 Un-tested. It is a lot right now. If you have an x86 mac, you could probaly have a docker context for building widows instances. ARM mac users are in rough shape, https://github.com/StefanScherer/windows-docker-machine/issues/84 includes discussion on m1 support for window and docker. 
+
+## Running as Service on MacOS
+
+To run moonlight as a service
+
+* Get [prelude-detect-install.sh](./prelude-detect-install.sh)
+* Check if moonlight is running: `ps aux | grep moonlight`
+* Kill service if you are 
+`launchctl unload -w ~/Library/LaunchAgents/org.prelude.detect.plist`
+* Run installer `./prelude-detect-install.sh`
