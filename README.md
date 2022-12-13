@@ -1,11 +1,6 @@
-## Prelude Libraries
+# Prelude Libraries
 
-Prelude maintains a collection of open-source libraries that interact with our products:
-
-* [Prelude Build](https://www.preludesecurity.com/products/build): Security test authoring
-* [Prelude Detect](https://www.preludesecurity.com/products/detect): Continuous security testing
-
-<h3>Libraries</h3>
+Prelude maintains a collection of open-source libraries that interact with our products, [Build](https://www.preludesecurity.com/products/build) and [Detect](ttps://www.preludesecurity.com/products/detect):
 
 | Library Name  | Purpose       | Repository 
 | ------------- | ------------- | -------------
