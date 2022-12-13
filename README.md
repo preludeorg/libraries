@@ -18,7 +18,7 @@ These libraries are designed for security engineers, DevOps engineers, software 
 | Go Probe  | An SDK probe that supports Go  | <a href="https://github.com/preludeorg/libraries/tree/master/go/probe">go/probe</a>
 | Python Probe  | An SDK probe that supports Python  | <a href="https://github.com/preludeorg/libraries/tree/master/python/probe">python/probe</a>
 | Swift Probe  | Standalone probe for Linux & Mac  | <a href="https://github.com/preludeorg/libraries/tree/master/swift/probe">swift/probe</a>
-| PowerShell Probe  | Standalone probe Windows  | <a href="https://github.com/preludeorg/libraries/tree/master/powershell/probe">swift/probe</a>
+| PowerShell Probe  | Standalone probe Windows  | <a href="https://github.com/preludeorg/libraries/tree/master/powershell/probe">powershell/probe</a>
 | Javascript SDK  | Direct access to the Prelude API  | <a href="https://github.com/preludeorg/libraries/tree/master/go/probe">javascript/sdk</a>
 | Python SDK  | Direct access to the Prelude API  | <a href="https://github.com/preludeorg/libraries/tree/master/python/sdk">python/sdk</a>
 | Python CLI  | Access Prelude Build & Detect through a CLI  | <a href="https://github.com/preludeorg/libraries/tree/master/python/cli">python/cli</a>
