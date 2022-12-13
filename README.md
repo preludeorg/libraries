@@ -2,11 +2,8 @@
 
 Prelude maintains a collection of open-source libraries that are used to power our products:
 
-
-<ol>
-    <li><a href="https://www.preludesecurity.com/products/build">Prelude Build</a>: Security test authoring</li>
-    <li><a href="https://www.preludesecurity.com/products/detect">Prelude Detect</a>: Continuous security testing</li>
-</ol>
+* [Prelude Build](https://www.preludesecurity.com/products/build): Security test authoring
+* [Prelude Detect](https://www.preludesecurity.com/products/detect): Continuous security testing
 
 <h3>Libraries</h3>
 
