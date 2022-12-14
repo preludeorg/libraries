@@ -20,8 +20,8 @@ Libraries are organized by language and categorized into Probes and SDK(s).
 
 ### Probe
 
-A [probe](https://docs.prelude.org/docs/probes) is an ephemeral endpoint process that requires no special privileges and no installation. Probes have one duty: accept security tests from Detect, execute them, and respond with the result.
+A [probe](https://docs.prelude.org/docs/probes) is an ephemeral endpoint process that requires no special privileges or installation. Probes have one duty: accept security tests from Detect, execute them, and respond with the result.
 
 ### SDK
 
-A Software Development Kit (SDK) allows you to build your own tooling against the Prelude Service API. Additionally, some probes have SDK implementations allowing you to deploy them from inside other applications. [Read more](https://docs.prelude.org/docs/probes#sdk-probes).
+A Software Development Kit (SDK) allows you to build your own tooling against the Prelude Service API. Additionally, some probes have [SDK implementations](https://docs.prelude.org/docs/probes#sdk-probes) allowing you to deploy them from inside other applications.
