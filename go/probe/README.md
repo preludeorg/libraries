@@ -2,6 +2,8 @@
 
 A probe written in Go.
 
+Hades can run as either a standalone script or be installed into another app as a library (SDK). 
+
 ## Quick start | Standalone
 
 Compile Hades for each supported operating system:
