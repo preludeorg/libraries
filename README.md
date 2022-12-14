@@ -18,7 +18,7 @@ prelude iam create-account
 
 Libraries are organized by language and categorized into Probes and SDK(s).
 
-> If you want to deploy probes around your infrastructure, select a probe and follow the instructions. If you want to write your own client against the API, select an SDK.
+> If you want to run security tests on your infrastructure, select a probe and follow the instructions. If you want to write your own client against the API, select an SDK.
 
 ### Probe
 
