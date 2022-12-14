@@ -11,7 +11,7 @@ Libraries are organized by language and categorized by:
 
 ## Probe
 
-A probe is a temporary process that requires no special privileges and no installation to run. Probes have one duty: they accept security tests from Detect, execute them, and respond with the result. [Read the docs](https://docs.prelude.org/docs/probes).
+A probe is an ephemeral endpoint process that requires no special privileges and no installation to run. Probes have one duty: they accept security tests from Detect, execute them, and respond with the result. [Read the docs](https://docs.prelude.org/docs/probes).
 
 ## SDK
 
