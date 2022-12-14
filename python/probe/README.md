@@ -2,7 +2,7 @@
 
 A probe written in Python. 
 
-Presto can run as either a standalone script or be installed into another application as a library (SDK). 
+Presto can run as either a standalone script or be installed into another app as a library (SDK). 
 
 ## Quick start: Standalone
 
