@@ -7,7 +7,7 @@ Libraries are organized by language and are categorized by:
 * Probe
 * SDK
 
-> The Prelude CLI supports all Build and Detect functionality. Install from source or through ```pip install prelude-cli```.
+> Additionally, the Prelude CLI supports all Build and Detect functionality. Install from source or through ```pip install prelude-cli```.
 
 ## Probe
 
