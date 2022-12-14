@@ -32,8 +32,8 @@ A Software Development Kit (SDK) allows you to build your own tooling against th
 
 | Name  | Supported | Runtime | SDK option
 | ------------- | ------------- | ------------- | -------------
-| Moonlight | MacOS | Swift | No
-| Hades | Windows, MacOS, Linux | Go | Yes
-| Presto | Windows, MacOS, Linux | Python | Yes
-| Raindrop | Windows | PowerShell | No
+| [Moonlight](https://github.com/preludeorg/libraries/tree/master/swift/probe) | MacOS | Swift | No
+| [Hades](https://github.com/preludeorg/libraries/tree/master/go/probe) | Windows, MacOS, Linux | Go | Yes
+| [Presto](https://github.com/preludeorg/libraries/tree/master/python/probe) | Windows, MacOS, Linux | Python | Yes
+| [Raindrop](https://github.com/preludeorg/libraries/tree/master/powershell/probe) | Windows | PowerShell | No
 
