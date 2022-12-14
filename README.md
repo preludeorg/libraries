@@ -15,4 +15,4 @@ A [probe](https://docs.prelude.org/docs/probes) is an ephemeral endpoint process
 
 ## SDK
 
-A Software Development Kit (SDK) allows you to build your own tooling against the Prelude Service API. 
+A Software Development Kit (SDK) allows you to build your own tooling against the Prelude Service API. Additionally, some probes have SDK implementations allowing you to deploy them from inside other applications. [Read more](https://docs.prelude.org/docs/probes#sdk-probes).
