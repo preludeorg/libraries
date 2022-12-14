@@ -2,7 +2,7 @@
 
 Prelude maintains a collection of open-source libraries that interact with our products, [Build](https://docs.prelude.org/docs/build) and [Detect](https://docs.prelude.org/docs/the-basics).
 
-Libraries are organized by language and are categorized by:
+Libraries are organized by language and categorized by:
 
 * Probe
 * SDK
