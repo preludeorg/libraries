@@ -2,17 +2,26 @@
 
 Prelude maintains a collection of open-source libraries that interact with our products, [Build](https://docs.prelude.org/docs/build) and [Detect](https://docs.prelude.org/docs/the-basics).
 
-Libraries are organized by language and categorized by:
+You must have a [Prelude Account](https://docs.prelude.org/docs/prelude-account) to use these libraries. 
 
-* Probe
-* SDK
+## Prelude Account
 
-> There is a special library called the [Prelude CLI](https://docs.prelude.org/docs/prelude-cli), which supports all Build and Detect functionality.
+Create a free account by installing the [Prelude CLI](https://docs.prelude.org/docs/prelude-cli) and running the ``create-account`` command:
+```bash
+pip3 install prelude-cli
+prelude iam create-account
+```
 
-## Probe
+> If you use [Build](https://build.preludesecurity.com) you can export your credentials and use those.
+
+## Getting started
+
+Libraries are organized by language and categorized into Probes and SDK(s).
+
+### Probe
 
 A [probe](https://docs.prelude.org/docs/probes) is an ephemeral endpoint process that requires no special privileges and no installation. Probes have one duty: accept security tests from Detect, execute them, and respond with the result.
 
-## SDK
+### SDK
 
 A Software Development Kit (SDK) allows you to build your own tooling against the Prelude Service API. Additionally, some probes have SDK implementations allowing you to deploy them from inside other applications. [Read more](https://docs.prelude.org/docs/probes#sdk-probes).
