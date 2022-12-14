@@ -4,21 +4,21 @@ A probe written in Python.
 
 Presto can run as either a standalone script or be installed into another app as a library (SDK). 
 
-## Quick start: Standalone
+## Quick start | Standalone
 
 ```bash
 export PRELUDE_TOKEN=<YOUR TOKEN>
 python detect_probe/presto.py
 ```
 
-## Quick start: SDK
+## Quick start | SDK
 
-Install the library via pip:
+Install the library:
 ```bash
-pip install detect-probe
+pip3 install detect-probe
 ```
 
-Include presto in a project with:
+Include presto in a project:
 
 ```python
 from detect_probe.service import ProbeService
