@@ -9,7 +9,7 @@ Compile Moonlight, replacing ```<TARGET>``` with your desired operating system:
 * x86_64-apple-macos10.13
 * arm64-apple-macos10.13
 
-> The strip command is optional, but it will make the compile binary smaller, so we recommended it.
+> The strip command is optional, but it will make the compiled binary smaller, so we recommended it.
 
 ```
 swiftc -Osize ./Sources/moonlight.swift -o moonlight -target <TARGET> && strip moonlight
