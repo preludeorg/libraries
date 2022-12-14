@@ -6,6 +6,8 @@ Presto can run as either a standalone script or be installed into another app as
 
 ## Quick start | Standalone
 
+> [Register an endpoint](https://docs.prelude.org/docs/probes#registering-endpoints) to get a token
+
 ```bash
 export PRELUDE_TOKEN=<YOUR TOKEN>
 python detect_probe/presto.py
