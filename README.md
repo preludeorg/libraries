@@ -7,7 +7,7 @@ Libraries are organized by language and categorized by:
 * Probe
 * SDK
 
-> Additionally, there is a special library called the Prelude CLI, which supports all Build and Detect functionality. [Read the docs](https://docs.prelude.org/docs/prelude-cli).
+> There is also a special library called the Prelude CLI, which supports all Build and Detect functionality. [Read the docs](https://docs.prelude.org/docs/prelude-cli).
 
 ## Probe
 
