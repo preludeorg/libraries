@@ -51,18 +51,6 @@ describe("iam", () => {
     expect(users.length).toEqual(1);
   });
 
-  it("updates the account token", async () => {
-    const oldCreds = service.credentials!;
-    const newToken = uuid.v4();
-    await service.iam.updateToken(newToken);
-
-    await expect(service.iam.getUsers()).rejects.toThrowError("Unauthorized");
-
-    service.setCredentials({ ...oldCreds, token: newToken });
-
-    expectTypeOf(await service.iam.getUsers()).toBeArray();
-  });
-
   it("purges the account", async () => {
     const message = await service.iam.purgeAccount();
     expectTypeOf(message).toBeString();
