@@ -14,25 +14,27 @@ describe("iam", () => {
     service.setCredentials(credentials);
   });
 
-  it("gets an empty list of users for new account", async () => {
+  it("gets a list of users for new account", async () => {
     const users = await service.iam.getUsers();
     expectTypeOf(users).toBeArray();
-    expect(users.length).toEqual(0);
+    expect(users.length).toEqual(1);
   });
 
   const userHandle = "test-user-admin";
+  let userToken = "";
   it("creates an admin user for the account", async () => {
     const user = await service.iam.createUser(Permissions.ADMIN, userHandle);
 
     expectTypeOf(user.token).toBeString();
+    userToken = user.token;
   });
 
   it("gets list of the users containing the admin user", async () => {
     const users = await service.iam.getUsers();
     expectTypeOf(users).toBeArray();
-    expect(users.length).toEqual(1);
+    expect(users.length).toEqual(2);
 
-    expect(users[0]).toEqual({
+    expect(users[1]).toEqual({
       handle: userHandle,
       permission: Permissions.ADMIN,
     });
@@ -43,10 +45,10 @@ describe("iam", () => {
     expect(isDeleted).toEqual(true);
   });
 
-  it("gets an empty user list after delete ", async () => {
+  it("gets user list after delete", async () => {
     const users = await service.iam.getUsers();
     expectTypeOf(users).toBeArray();
-    expect(users.length).toEqual(0);
+    expect(users.length).toEqual(1);
   });
 
   it("updates the account token", async () => {
