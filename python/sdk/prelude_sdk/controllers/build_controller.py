@@ -18,7 +18,7 @@ class BuildController:
     @verify_credentials
     def create_test(self, ident, question):
         data = dict(id=ident, question=question)
-        res = requests.put(f'{self.account.hq}/build/tests', json=data, headers=self.account.headers)
+        res = requests.post(f'{self.account.hq}/build/tests', json=data, headers=self.account.headers)
         if not res.status_code == 200:
             raise Exception(res.text)
 
