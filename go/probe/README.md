@@ -1,10 +1,28 @@
 # Hades
 
-> One of Chopin's 24 Preludes. Hades is considered by many to be the most difficult of the Chopin preludes.[2] Hans von Bülow dubbed this prelude "Hades." It was composed between 1836 and 1839, published in 1839 and dedicated to Camille Pleyel who commissioned the opus 28 preludes for 2,000 francs.
+A probe written in Go.
 
-# Usage
+Hades can run as either a standalone script or be installed into another app as a library (SDK). 
 
-Install with:
+## Quick start | Standalone
+
+Compile Hades for each supported operating system:
+```
+GOOS=darwin go build -ldflags="-s -w" -o hades main.go;
+GOOS=linux go build -ldflags="-s -w" -o hades main.go;
+GOOS=windows go build -ldflags="-s -w" -o hades.exe main.go;
+```
+
+Start the probe:
+
+> [Register an endpoint](https://docs.prelude.org/docs/probes#registering-endpoints) to get a token
+
+```bash
+export PRELUDE_TOKEN=<TOKEN>
+./hades
+```
+
+## Quick start | SDK
 
 ```bash
 go get github.com/preludeorg/libraries/go/probe
@@ -25,32 +43,4 @@ func main() {
         ps.Start()
     }
 }
-```
-
-You can also manually load configurations from a keychain file and specify a name with:
-
-```golang
-package main
-
-import (
-    hades "github.com/preludeorg/libraries/go/probe/pkg/service"
-)
-
-func main() {
-    ps := hades.CreateService()
-    err := ps.LoadKeychain("/path/to/keychain.ini")
-    if err != nil {
-	panic(err)
-    }
-    if err = ps.Register("my-amazing-probe"); err == nil {
-        ps.Start()
-    }
-}
-```
-
-## Development
-
-For local testing you can use:
-```bash
-go run cmd/hades/hades.go
 ```

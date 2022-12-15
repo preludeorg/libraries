@@ -68,14 +68,6 @@ export default class IAMController {
     return true;
   }
 
-  async updateToken(token: string, options: RequestOptions = {}) {
-    await this.#client.requestWithAuth("/account", {
-      method: "PUT",
-      body: JSON.stringify({ token }),
-      ...options,
-    });
-  }
-
   async purgeAccount(options: RequestOptions = {}) {
     const response = await this.#client.requestWithAuth("/account/purge", {
       method: "DELETE",
