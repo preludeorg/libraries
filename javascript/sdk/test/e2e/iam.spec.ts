@@ -1,4 +1,3 @@
-import * as uuid from "uuid";
 import { describe, expect, expectTypeOf, it } from "vitest";
 import { Permissions, Service } from "../../lib/main";
 
@@ -21,12 +20,10 @@ describe("iam", () => {
   });
 
   const userHandle = "test-user-admin";
-  let userToken = "";
   it("creates an admin user for the account", async () => {
     const user = await service.iam.createUser(Permissions.ADMIN, userHandle);
 
     expectTypeOf(user.token).toBeString();
-    userToken = user.token;
   });
 
   it("gets list of the users containing the admin user", async () => {
