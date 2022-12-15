@@ -18,7 +18,7 @@ export default class IAMController {
     handle: string,
     options: RequestOptions = {}
   ): Promise<Credentials> {
-    const response = await this.#client.request("/account", {
+    const response = await this.#client.request("/iam/account", {
       method: "POST",
       body: JSON.stringify({ handle }),
       ...options,
@@ -36,7 +36,7 @@ export default class IAMController {
   }
 
   async getUsers(options: RequestOptions = {}) {
-    const response = await this.#client.requestWithAuth("/account/user", {
+    const response = await this.#client.requestWithAuth("/iam/user", {
       method: "GET",
       ...options,
     });
@@ -49,7 +49,7 @@ export default class IAMController {
     handle: string,
     options: RequestOptions = {}
   ) {
-    const response = await this.#client.requestWithAuth("/account/user", {
+    const response = await this.#client.requestWithAuth("/iam/user", {
       method: "POST",
       body: JSON.stringify({ permission, handle }),
       ...options,
@@ -59,7 +59,7 @@ export default class IAMController {
   }
 
   async deleteUser(handle: string, options: RequestOptions = {}) {
-    await this.#client.requestWithAuth("/account/user", {
+    await this.#client.requestWithAuth("/iam/user", {
       method: "DELETE",
       body: JSON.stringify({ handle }),
       ...options,
@@ -69,7 +69,7 @@ export default class IAMController {
   }
 
   async purgeAccount(options: RequestOptions = {}) {
-    const response = await this.#client.requestWithAuth("/account/purge", {
+    const response = await this.#client.requestWithAuth("/iam/account", {
       method: "DELETE",
       ...options,
     });
