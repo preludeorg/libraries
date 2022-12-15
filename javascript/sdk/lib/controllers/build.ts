@@ -9,12 +9,15 @@ export default class BuildController {
   }
 
   async listTests(options: RequestOptions = {}) {
-    const response = await this.#client.requestWithAuth("/test", options);
+    const response = await this.#client.requestWithAuth(
+      "/build/tests",
+      options
+    );
     return (await response.json()) as Test[];
   }
 
   async getTest(id: string, options: RequestOptions = {}) {
-    const response = await this.#client.requestWithAuth(`/test/${id}`, {
+    const response = await this.#client.requestWithAuth(`/build/tests/${id}`, {
       ...options,
     });
 
@@ -22,15 +25,15 @@ export default class BuildController {
   }
 
   async createTest(id: string, question: string, options: RequestOptions = {}) {
-    await this.#client.requestWithAuth(`/test`, {
-      method: "PUT",
+    await this.#client.requestWithAuth(`/build/tests`, {
+      method: "POST",
       body: JSON.stringify({ id, question }),
       ...options,
     });
   }
 
   async deleteTest(id: string, options: RequestOptions = {}) {
-    await this.#client.requestWithAuth(`/test/${id}`, {
+    await this.#client.requestWithAuth(`/build/tests/${id}`, {
       method: "DELETE",
       ...options,
     });
@@ -41,7 +44,7 @@ export default class BuildController {
     code: string,
     options: RequestOptions = {}
   ) {
-    await this.#client.requestWithAuth(`/variant/${name}`, {
+    await this.#client.requestWithAuth(`/build/variant/${name}`, {
       method: "POST",
       body: JSON.stringify({ code }),
       ...options,
@@ -49,33 +52,33 @@ export default class BuildController {
   }
 
   async deleteVariant(name: string, options: RequestOptions = {}) {
-    await this.#client.requestWithAuth(`/variant/${name}`, {
+    await this.#client.requestWithAuth(`/build/variant/${name}`, {
       method: "DELETE",
       ...options,
     });
   }
 
   async getVariant(name: string, options: RequestOptions = {}) {
-    const response = await this.#client.requestWithAuth(`/variant/${name}`, {
-      ...options,
-    });
-
-    return response.text();
-  }
-
-  async createURL(name: string, options: RequestOptions = {}) {
     const response = await this.#client.requestWithAuth(
-      `/variant/${name}/url`,
+      `/build/variant/${name}`,
       {
         ...options,
       }
     );
 
+    return response.text();
+  }
+
+  async createURL(name: string, options: RequestOptions = {}) {
+    const response = await this.#client.requestWithAuth(`/build/${name}/url`, {
+      ...options,
+    });
+
     return (await response.json()) as { url: string };
   }
 
   async computeProxy(name: string, options: RequestOptions = {}) {
-    const response = await this.#client.requestWithAuth(`/compute`, {
+    const response = await this.#client.requestWithAuth(`/build/compute`, {
       method: "POST",
       body: JSON.stringify({ name }),
       ...options,
@@ -93,7 +96,7 @@ export default class BuildController {
   }
 
   async deleteVerified(name: string, options: RequestOptions = {}) {
-    await this.#client.requestWithAuth(`/verified/${name}`, {
+    await this.#client.requestWithAuth(`/build/verified/${name}`, {
       method: "DELETE",
       ...options,
     });
