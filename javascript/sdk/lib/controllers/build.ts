@@ -88,7 +88,7 @@ export default class BuildController {
   }
 
   async verifiedTests(options: RequestOptions = {}) {
-    const response = await this.#client.requestWithAuth(`/verified`, {
+    const response = await this.#client.requestWithAuth(`/build/verified`, {
       ...options,
     });
 
