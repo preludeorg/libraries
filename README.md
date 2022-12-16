@@ -30,10 +30,10 @@ A Software Development Kit (SDK) allows you to build your own tooling against th
 
 ## Probe compatibility 
 
-| Name  | Supported | Runtime | SDK option
+| Name  |  Runtime | SDK option | Supported (DOS)
 | ------------- | ------------- | ------------- | -------------
-| [Moonlight](https://github.com/preludeorg/libraries/tree/master/swift/probe) | MacOS | Swift | No
-| [Hades](https://github.com/preludeorg/libraries/tree/master/go/probe) | Windows, MacOS, Linux | Go | Yes
-| [Presto](https://github.com/preludeorg/libraries/tree/master/python/probe) | Windows, MacOS, Linux | Python | Yes
-| [Raindrop](https://github.com/preludeorg/libraries/tree/master/powershell/probe) | Windows | PowerShell | No
+| [Moonlight](https://github.com/preludeorg/libraries/tree/master/swift/probe) | Swift | No | darwin-x86_64, darwin-arm64
+| [Hades](https://github.com/preludeorg/libraries/tree/master/go/probe) | Go | Yes | windows-x86_64, linux-x86_64, darwin-x86_64, darwin-arm64
+| [Presto](https://github.com/preludeorg/libraries/tree/master/python/probe) | Python | Yes | windows-x86_64, linux-x86_64, darwin-x86_64, darwin-arm64
+| [Raindrop](https://github.com/preludeorg/libraries/tree/master/powershell/probe) | PowerShell | No | windows-x86_64
 
