@@ -1,16 +1,26 @@
 # Presto
 
-> One of Chopin's 24 Preludes. A virtuosic prelude, presents a technical challenge with its rapid hold-and-release of eighth notes against quarter notes in the right hand, involving chromatic movement.
+A probe written in Python. 
 
-## Install
+Presto can run as either a standalone script or be installed into another app as a library (SDK). 
+
+## Quick start | Standalone
+
+> [Register an endpoint](https://docs.prelude.org/docs/probes#registering-endpoints) to get a token
 
 ```bash
-pip install detect-probe
+export PRELUDE_TOKEN=<YOUR TOKEN>
+python detect_probe/presto.py
 ```
 
-## Quick start
+## Quick start | SDK
 
-Include presto in a project with:
+Install the library:
+```bash
+pip3 install detect-probe
+```
+
+Include presto in a project:
 
 ```python
 from detect_probe.service import ProbeService

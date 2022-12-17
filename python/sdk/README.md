@@ -1,33 +1,21 @@
 # Prelude SDK
 
-Use this utility if you want direct access to the Prelude API.
+Interact with the Prelude Service API via Python. 
 
 > The prelude-cli utility wraps around this SDK to provide a rich command line experience.
 
-## Modules
+Install this package to write your own tooling that works with Build or Detect functionality.
 
-This SDK allows you to interact with several Prelude modules:
+- IAM: manage your account
+- Build: write and maintain your collection of security tests
+- Detect: schedule security tests for your endpoints
 
-* Accounts (AccountController)
-* Database (DatabaseController)
-* Detect (DetectController)
-
-## Install
+## Quick start
 
 ```bash
 pip install prelude-sdk
 ```
 
-## Quick start
+## Documentation 
 
-The following example adds a new user to your account:
-
-```python
-from detect_sdk.controllers.account_controller import AccountController
-from detect_sdk.models.account import Account
-from detect_sdk.models.codes import Permission
-
-
-controller = AccountController(account=Account())
-token = controller.create_user(permission=Permission['SERVICE'].value)
-```
+TBD

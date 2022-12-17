@@ -1,31 +1,39 @@
-## Prelude Libraries
+# Prelude Libraries
 
-Prelude maintains a collection of open-source libraries that are used to power our products:
+Prelude maintains a collection of open-source libraries that interact with our products, [Build](https://docs.prelude.org/docs/build) and [Detect](https://docs.prelude.org/docs/the-basics).
 
+You must have a [Prelude Account](https://docs.prelude.org/docs/prelude-account) to use these libraries. 
 
-<ol>
-          <li><a href="https://www.preludesecurity.com/products/build">Prelude Build</a>: Security test authoring</li>
-          <li><a href="https://www.preludesecurity.com/products/detect">Prelude Detect</a>: Continuous security testing</li>
-</ol>
+## Prelude Account
 
+Create a free account by installing the [Prelude CLI](https://docs.prelude.org/docs/prelude-cli) and running the ``create-account`` command:
+```bash
+pip3 install prelude-cli
+prelude iam create-account
+```
 
-These libraries are designed for security engineers, DevOps engineers, software engineers and IT analysts. They allow you to download, use and edit Prelude's core services in whatever format you're most comfortable with. 
+> Alternatively, if you use [Build](https://build.preludesecurity.com) you can export your credentials from inside the application.
 
-<h3>Libraries</h3>
+## Getting started
 
-| Library Name  | Purpose       | Repository 
-| ------------- | ------------- | -------------
-| Go Probe  | An SDK probe that supports Go  | <a href="https://github.com/preludeorg/libraries/tree/master/go/probe">go/probe</a>
-| Python Probe  | An SDK probe that supports Python  | <a href="https://github.com/preludeorg/libraries/tree/master/python/probe">python/probe</a>
-| Swift Probe  | Standalone probe for Linux & Mac  | <a href="https://github.com/preludeorg/libraries/tree/master/swift/probe">swift/probe</a>
-| Javascript SDK  | Direct access to the Prelude API  | <a href="https://github.com/preludeorg/libraries/tree/master/go/probe">javascript/sdk</a>
-| Python SDK  | Direct access to the Prelude API  | <a href="https://github.com/preludeorg/libraries/tree/master/python/sdk">python/sdk</a>
-| Python CLI  | Access Prelude Build & Detect through a CLI  | <a href="https://github.com/preludeorg/libraries/tree/master/python/cli">python/cli</a>
-| Shell Install | Standalone probe installation guides  | <a href="https://github.com/preludeorg/libraries/tree/master/shell/install">shell/install</a>
+Libraries are organized by language and categorized into Probes and SDK(s).
 
+> If you want to run security tests on your infrastructure, select a probe and follow the instructions. If you want to write your own client against the API, select an SDK.
 
-<h3>The Probe</h3>
+### Probe
 
-A probe is a temporary process that requires no special privileges and no installation to run. A probe can just be started. Probes are designed to be very lightweight - measuring between 1-50KB on disk - and to run anywhere you have code. As such, probes can deploy out on devices ranging from laptops to servers to cloud environments and OT infrastructure. Probes are designed to work with <a href="https://www.preludesecurity.com/products/detect">Prelude Detect</a>, bringing safety and scale to continuous testing.</a>
+A [probe](https://docs.prelude.org/docs/probes) is an ephemeral endpoint process that requires no special privileges or installation. Probes have one duty: accept security tests from Detect, execute them, and respond with the result.
 
-Probes can be installed either standalone or imported into an existing project via a library (SDK). In either case, when the probe starts, it will periodically run security tests against the device it's installed on. [Read the full documentation](https://docs.prelude.org/docs/probes).
+### SDK
+
+A Software Development Kit (SDK) allows you to build your own tooling against the Prelude Service API. Additionally, some probes have [SDK implementations](https://docs.prelude.org/docs/probes#sdk-probes) allowing you to deploy them from inside your own applications.
+
+## Probe compatibility 
+
+| Name  |  Runtime | SDK option | Supported (DOS)
+| ------------- | ------------- | ------------- | -------------
+| [Moonlight](https://github.com/preludeorg/libraries/tree/master/swift/probe) | Swift | No | darwin-x86_64, darwin-arm64
+| [Hades](https://github.com/preludeorg/libraries/tree/master/go/probe) | Go | Yes | windows-x86_64, linux-x86_64, darwin-x86_64, darwin-arm64
+| [Presto](https://github.com/preludeorg/libraries/tree/master/python/probe) | Python | Yes | windows-x86_64, linux-x86_64, darwin-x86_64, darwin-arm64
+| [Raindrop](https://github.com/preludeorg/libraries/tree/master/powershell/probe) | PowerShell | No | windows-x86_64
+

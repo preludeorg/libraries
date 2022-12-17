@@ -1,10 +1,17 @@
 # Prelude CLI
 
-Standardize how you write, compile, validate and deploy security tests.
+Interact with the full range of features in Build or Detect, organized by:
 
+- IAM: manage your account 
+- Build: write and maintain your collection of security tests
+- Detect: schedule security tests for your endpoints
+
+## Quick start
 ```bash
 pip install prelude-cli
 prelude --help
 ```
 
-## Full documentation can be found at [docs.prelude.org](https://docs.prelude.org/v2/docs/prelude-cli)
+## Documentation
+
+https://docs.prelude.org/v2/docs/prelude-cli
