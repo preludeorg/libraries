@@ -1,6 +1,5 @@
 import click
 from prelude_cli.views.shared import handle_api_error
-from prelude_sdk.controllers.build_controller import BuildController
 from prelude_sdk.controllers.detect_controller import DetectController
 from prelude_sdk.models.codes import Colors, RunCode
 from rich import print_json
@@ -73,27 +72,17 @@ def list_probes(controller):
 @click.pass_obj
 @handle_api_error
 def describe_activity(controller, days):
-    """ View report for my account """
+    """ View my Detect results """
     raw = controller.describe_activity(days=days)
-    build = BuildController(account=controller.account)
-    tests = {row['id']: row['question'] for row in build.list_tests()}
 
     report = Table()
+    report.add_column('date')
     report.add_column('test')
-    report.add_column('endpoints (#)')
-    report.add_column('ok (%)', style='green')
-    report.add_column('defended (%)', style='green')
-    report.add_column('failed (%)', style='red')
-    report.add_column('error (%)', style='magenta')
+    report.add_column('endpoint')
+    report.add_column('status', style='magenta')
 
-    for i, test in raw.items():
-        ok = test.get('OK', 0)
-        stopped = test.get('DETECTED', 0)
-        failed = test.get('FAILED', 0)
-        error = test.get('ERROR', 0)
-        volume = ok + stopped + failed + error
-        report.add_row(tests[i], str(volume), str(round((ok / volume) * 100)), str(round((stopped / volume) * 100)),
-                       str(round((failed / volume) * 100)), str(round((error / volume) * 100)))
+    for record in raw:
+        report.add_row(record['date'], record['test'], record['endpoint_id'], record['status'])
 
     console = Console()
     console.print(report)
