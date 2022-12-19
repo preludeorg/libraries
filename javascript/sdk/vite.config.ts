@@ -13,7 +13,7 @@ export default defineConfig({
     rollupOptions: {},
   },
   test: {
-    testTimeout: 10_000,
+    testTimeout: 30_000,
     setupFiles: ["./test/setup.ts"],
   },
 });
