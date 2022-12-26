@@ -19,7 +19,7 @@ export default class DetectController {
     { id, tags = [] }: { id: string; tags?: string[] },
     options: RequestOptions = {}
   ) {
-    const response = await this.#client.requestWithAuth("/account/endpoint", {
+    const response = await this.#client.requestWithAuth("/detect/endpoint", {
       method: "POST",
       body: JSON.stringify({ id, tags }),
       ...options,
@@ -29,7 +29,7 @@ export default class DetectController {
   }
 
   async printQueue(options: RequestOptions = {}) {
-    const response = await this.#client.requestWithAuth("/account/queue", {
+    const response = await this.#client.requestWithAuth("/detect/queue", {
       method: "GET",
       ...options,
     });
@@ -42,7 +42,7 @@ export default class DetectController {
     { test, runCode, tags }: EnableTest,
     options: RequestOptions = {}
   ) {
-    await this.#client.requestWithAuth(`/account/queue/${test}`, {
+    await this.#client.requestWithAuth(`/detect/queue/${test}`, {
       method: "POST",
       body: JSON.stringify({ code: runCode, tags }),
       ...options,
@@ -51,7 +51,7 @@ export default class DetectController {
 
   /** Disable a test so endpoints will stop running it */
   async disableTest(test: string, options: RequestOptions = {}) {
-    await this.#client.requestWithAuth(`/account/queue/${test}`, {
+    await this.#client.requestWithAuth(`/detect/queue/${test}`, {
       method: "DELETE",
       ...options,
     });
@@ -61,7 +61,7 @@ export default class DetectController {
   async describeActivity(days: number = 7, options: RequestOptions = {}) {
     const searchParams = new URLSearchParams({ days: days.toString() });
     const response = await this.#client.requestWithAuth(
-      `/account/report?${searchParams.toString()}`,
+      `/detect/activity?${searchParams.toString()}`,
       {
         method: "GET",
         ...options,
@@ -71,26 +71,9 @@ export default class DetectController {
     return (await response.json()) as AccountActivity;
   }
 
-  /** Generate a redirect URL to a data dump */
-  async exportReport(days: number = 7, options: RequestOptions = {}) {
-    const searchParams = new URLSearchParams({ days: days.toString() });
-    const response = await this.#client.requestWithAuth(
-      `/account/report/export?${searchParams.toString()}`,
-      {
-        method: "GET",
-        redirect: "manual",
-        ...options,
-      }
-    );
-
-    const location = response.headers.get("location");
-
-    return location ?? "";
-  }
-
   /** Get all probes associated to an Account */
   async listProbes(options: RequestOptions = {}) {
-    const response = await this.#client.requestWithAuth("/account/probes", {
+    const response = await this.#client.requestWithAuth("/detect/probes", {
       method: "GET",
       ...options,
     });
