@@ -1,24 +1,19 @@
 # Prelude SDK
 
-Use this utility if you want direct access to the Prelude API.
+Interact with the Prelude Service API via JavaScript. 
 
-## Install
+Install this package to write your own tooling that works with Build or Detect functionality.
+
+- IAM: manage your account
+- Build: write and maintain your collection of security tests
+- Detect: schedule security tests for your endpoints
+
+## Quick start
 
 ```bash
 npm install @theprelude/sdk
 ```
 
-## Quick start
+## Documentation 
 
-The following example registers an account and gets the tests:
-
-```typescript
-import * as Prelude from "@theprelude/sdk";
-const service = new Prelude.Service({ host: "https://detect.prelude.org" });
-
-const credentials = await service.iam.newAccount("user_handle");
-
-service.setCredentials(credentials);
-
-const tests = await service.build.listTests();
-```
+TBD
