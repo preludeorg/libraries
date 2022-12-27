@@ -35,7 +35,7 @@ do
             echo "[*] No big deal. You can always do this later."
         fi
         sleep $pause
-        echo "Goodbye!"
+        echo "See you back in the Prelude Platform!"
         break
     else
         echo -e "[*] Retrieved test with identifier: ${test}"
