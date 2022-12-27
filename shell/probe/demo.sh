@@ -9,8 +9,6 @@ pause=3
 sys=$(uname -s)-$(uname -m)
 dos=$(echo $sys | tr '[:upper:]' '[:lower:]')
 
-# Execute tests
-
 while :
 do
     temp=$(mktemp)
@@ -42,11 +40,11 @@ do
         sleep $pause
         ca=$(echo $location | sed -e 's|^[^/]*//||' -e 's|/.*$||')
         if [ "$confirm" = true ];then
-            echo ""
+            echo
             echo -e "> Tests are served from the Prelude Central Authority: ${ca}"
             echo -e "> This is one of several safety precautions built into test execution"
             echo -e "> Read the full safety report: https://docs.prelude.org/docs/safety"
-            echo ""
+            echo
             read -p "Press ENTER to run the test"
         fi
         chmod +x $temp
@@ -69,11 +67,11 @@ do
             max=9
         fi
         if [ "$confirm" = true ];then
-            echo ""
+            echo
             echo "> Prelude collects the minimal amount of telemetry for each test run"
             echo "> Only the test identifier and result code are sent off the endpoint"
             echo "> Results will display inside your Prelude Platform"
-            echo ""
+            echo
             read -p "Press ENTER to report this result"
         fi
         curl -sL -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "dat:${test}:${max}" $PRELUDE_API
