@@ -27,6 +27,11 @@ do
             temp=$(mktemp)
             curl -sL -o $temp -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" $PRELUDE_API/download/install
             chmod +x $temp
+            echo "[!] Installing software requires permission. You will be prompted."
+            echo
+            echo "> The script is open source: https://github.com/preludeorg/libraries/blob/master/shell/install/install.sh"
+            echo 
+            read -p "Press ENTER to continue"
             echo $'\e[1;33m'
             sudo $temp
             echo $'\e[0m'
@@ -52,7 +57,7 @@ do
             read -p "Press ENTER to run the test"
         fi
         chmod +x $temp
-        echo "[*] Test written to disk successfully"
+        echo "[*] Test written to disk"
         sleep $pause
         echo "[*] Measuring the reaction from endpoint defense"
         sleep $pause
@@ -73,15 +78,19 @@ do
 
         sleep $pause
         
+        dat=${test}:${max}
         if [ "$confirm" = true ];then
             echo
             echo "> Prelude collects the minimal amount of telemetry for each test run"
             echo "> Only the test identifier and result code are sent off the endpoint"
             echo "> Results will display inside your Prelude Platform"
             echo
-            read -p "Press ENTER to report this result"
+            sleep $pause
+            echo -e "[*] This test will send the following result: ${dat}"
+            echo
+            read -p "Press ENTER to continue"
         fi
-        curl -sL -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "dat:${test}:${max}" $PRELUDE_API
+        curl -sL -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "dat:${dat}" $PRELUDE_API
         echo -e "\n.........................\n"
         sleep $pause
         confirm=false
