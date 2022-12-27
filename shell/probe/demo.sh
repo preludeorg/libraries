@@ -21,12 +21,17 @@ do
         sleep $pause
         read -p "[!] Would you like to install this script so it retests daily? (y/N) " -n 1 -r
         if [[ $REPLY =~ ^[Yy]$ ]];then
-            echo ""
-            echo "[*] Downloading installation script..."
+            echo
+            echo "[*] Downloading installation script"
             sleep $pause
-            # download install script and run it as sudo
+            temp=$(mktemp)
+            curl -sL -o $temp -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" $PRELUDE_API/download/install
+            chmod +x $temp
+            echo $'\e[1;33m'
+            sudo $temp
+            echo $'\e[0m'
         else
-            echo ""
+            echo
             echo "[*] No big deal. You can always do this later."
         fi
         sleep $pause
