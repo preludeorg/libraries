@@ -12,7 +12,7 @@ dos=$(echo $sys | tr '[:upper:]' '[:lower:]')
 while :
 do
     temp=$(mktemp)
-    echo "[*] Contacting Prelude for next scheduled test"
+    echo "[*] Contacting Prelude for the next scheduled test"
     location=$(curl -sL -w %{url_effective} -o $temp -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" $PRELUDE_API)
     test=$(echo $location | grep -o '[0-9a-f]\{8\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{12\}')
 
@@ -35,7 +35,6 @@ do
             echo "[*] No big deal. You can always do this later."
         fi
         sleep $pause
-        echo "[*] Head back to your browser to analyze your results"
         echo "Goodbye!"
         break
     else
@@ -71,6 +70,9 @@ do
         else
             max=9
         fi
+
+        sleep $pause
+        
         if [ "$confirm" = true ];then
             echo
             echo "> Prelude collects the minimal amount of telemetry for each test run"
