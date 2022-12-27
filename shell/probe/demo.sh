@@ -56,8 +56,8 @@ do
             echo
             read -p "Press ENTER to run the test"
         fi
-        chmod +x $temp
         echo "[*] Measuring the reaction from endpoint defense"
+        chmod +x $temp
         sleep $pause
 
         if test -f "$temp";then
