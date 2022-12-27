@@ -27,7 +27,7 @@ do
             temp=$(mktemp)
             curl -sL -o $temp -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" $PRELUDE_API/download/install
             chmod +x $temp
-            echo "[!] Installing software requires permission. You will be prompted."
+            echo "[!] Installing software requires permission. You will be prompted for your password."
             echo
             echo "> The script is open source: https://github.com/preludeorg/libraries/blob/master/shell/install/install.sh"
             echo "> You will need to provide your account ID and account token, which you can export from Build"
@@ -83,7 +83,7 @@ do
         dat=${test}:${max}
         if [ "$confirm" = true ];then
             echo
-            echo "> Prelude collects the minimal amount of telemetry for each test run"
+            echo "> Prelude collects the minimal amount of telemetry from each test"
             echo "> Only the test identifier and result code are sent off the endpoint"
             echo "> Results will display inside your Prelude Platform"
             echo
