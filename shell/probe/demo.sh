@@ -30,7 +30,7 @@ do
             echo "[!] Installing software requires permission. You will be prompted."
             echo
             echo "> The script is open source: https://github.com/preludeorg/libraries/blob/master/shell/install/install.sh"
-            echo 
+            echo
             read -p "Press ENTER to continue"
             echo $'\e[1;33m'
             sudo $temp
@@ -57,8 +57,6 @@ do
             read -p "Press ENTER to run the test"
         fi
         chmod +x $temp
-        echo "[*] Test written to disk"
-        sleep $pause
         echo "[*] Measuring the reaction from endpoint defense"
         sleep $pause
 
@@ -86,7 +84,7 @@ do
             echo "> Results will display inside your Prelude Platform"
             echo
             sleep $pause
-            echo -e "[*] This test will send the following result: ${dat}"
+            echo -e "[!] This test will send the following result: ${dat}"
             echo
             read -p "Press ENTER to continue"
         fi
