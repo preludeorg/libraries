@@ -30,10 +30,14 @@ do
             echo "[!] Installing software requires permission. You will be prompted."
             echo
             echo "> The script is open source: https://github.com/preludeorg/libraries/blob/master/shell/install/install.sh"
+            echo "> You will need to provide your account ID and account token, which you can export from Build"
             echo
             read -p "Press ENTER to continue"
+            echo
+            read -p "Enter your account ID: " ACCOUNT_ID
+            read -p "Enter your account token: " ACCOUNT_TOKEN
             echo $'\e[1;33m'
-            sudo $temp
+            sudo $temp -a $ACCOUNT_ID -s $ACCOUNT_TOKEN
             echo $'\e[0m'
         else
             echo
