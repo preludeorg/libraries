@@ -47,7 +47,6 @@ class Probe:
                 if os.path.exists(name):
                     os.remove(name)
         if pack:
-            print(f'Executing test: {pack[0]}')
             asyncio.create_task(self.run(next(self.service(_measure()), None)))
 
     async def loop(self):
