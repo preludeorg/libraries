@@ -93,7 +93,6 @@ do
             read -p "Press ENTER to continue"
         fi
         curl -sL -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "dat:${dat}" $PRELUDE_API
-        echo -e "\n.........................\n"
         sleep $pause
         confirm=false
     fi
