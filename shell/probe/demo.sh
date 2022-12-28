@@ -12,14 +12,15 @@ dos=$(echo $sys | tr '[:upper:]' '[:lower:]')
 while :
 do
     temp=$(mktemp)
+    echo
     echo "[*] Contacting Prelude for the next scheduled test"
     location=$(curl -sL -w %{url_effective} -o $temp -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" $PRELUDE_API)
     test=$(echo $location | grep -o '[0-9a-f]\{8\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{12\}')
 
     if [ -z "$test" ];then
-        echo "[*] All scheduled tests are complete for today"
+        echo "[✓] All scheduled tests are complete for today"
         sleep $pause
-        read -p "[!] Would you like to install this script so it retests daily? (y/N) " -n 1 -r
+        read -p "[!] Would you like to install this script so it retests daily? (Y/N) " -n 1 -r
         if [[ $REPLY =~ ^[Yy]$ ]];then
             echo
             echo "[*] Downloading installation script"
@@ -44,12 +45,14 @@ do
             echo "[*] No big deal. You can always do this later."
         fi
         sleep $pause
+        echo
         echo "See you back in the Prelude Platform!"
+        echo
         break
     else
-        echo -e "[*] Retrieved test with identifier: ${test}"
+        echo -e "[✓] Retrieved test with identifier: ${test}"
         sleep $pause
-        echo -e "[*] Wrote test to temp file: ${temp}"
+        echo -e "[✓] Wrote test to temp file: ${temp}"
         sleep $pause
         ca=$(echo $location | sed -e 's|^[^/]*//||' -e 's|/.*$||')
         if [ "$confirm" = true ];then
@@ -60,6 +63,7 @@ do
             echo
             read -p "Press ENTER to run the test"
         fi
+        echo
         echo "[*] Measuring the reaction from endpoint defense"
         chmod +x $temp
         sleep $pause
@@ -79,10 +83,9 @@ do
         fi
 
         sleep $pause
-        
+
         dat=${test}:${max}
         if [ "$confirm" = true ];then
-            echo
             echo "> Prelude collects the minimal amount of telemetry from each test"
             echo "> Only the test identifier and result code are sent off the endpoint"
             echo "> Results will display inside your Prelude Platform"
