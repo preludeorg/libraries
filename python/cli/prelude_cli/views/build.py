@@ -173,13 +173,6 @@ def generate_test(controller, test, path):
         )
         return a if a is not '*' else None
 
-    def extension():
-        return click.prompt(
-            text='Select a language',
-            type=click.Choice(['c', 'cs', 'swift', 'go']),
-            show_choices=True
-        )
-
     # get test to work with
     tests = controller.list_tests()
     question = next((t.get('question') for t in tests if t['id'] == test), None)
@@ -195,14 +188,14 @@ def generate_test(controller, test, path):
         arch = architecture()
         if arch:
             code_name = f'{code_name}-{arch}'
-    ext = extension()
-    code_name = f'{code_name}.{ext}'
+
+    code_name = f'{code_name}.go'
 
     # create test
     filepath = Path(pathlib.PurePath(path, code_name))
     filepath.parent.mkdir(parents=True, exist_ok=True)
     with filepath.open('w') as f:
-        template = pkg_resources.read_text(templates, f'template.{ext}')
+        template = pkg_resources.read_text(templates, f'template.go')
         template = template.replace('$NAME', code_name)
         template = template.replace('$QUESTION', question)
         template = template.replace('$CREATED', str(datetime.now()))
