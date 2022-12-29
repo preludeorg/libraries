@@ -67,7 +67,7 @@ install_darwin_plist () {
     local _app_dir=$3
     echo "[+] Generate PLIST"
 
-    [[ ! -d "$(dirname $_plist_file_path)" ]] && mkdir "$(dirname $_plist_file_path)"
+    [[ ! -d "$(dirname $_plist_file_path)" ]] && mkdir -p "$(dirname $_plist_file_path)"
 
     cat << EOF | tee "${_plist_file_path}" >/dev/null
 <?xml version="1.0" encoding="UTF-8"?>
