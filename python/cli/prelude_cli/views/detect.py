@@ -82,7 +82,7 @@ def describe_activity(controller, days):
     report.add_column('status', style='magenta')
 
     for record in raw:
-        report.add_row(record['date'], record['test'], record['endpoint_id'], record['status'])
+        report.add_row(record['date'], record['test'], record['endpoint_id'], str(record['status']))
 
     console = Console()
     console.print(report)
