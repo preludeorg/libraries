@@ -19,9 +19,9 @@ do
             chmod +x $temp
 
             if test -f "$temp";then
-                expect -c "set timeout 5; spawn $temp; expect timeout { exit 102 }"
+                $temp
                 res1=$?
-                expect -c "set timeout 5; spawn $temp -cleanup; expect timeout { exit 102 }"
+                $temp -cleanup
                 res2=$?
                 max=$(( $res1 > $res2 ? $res1 : $res2 ))
             else
