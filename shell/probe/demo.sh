@@ -72,9 +72,9 @@ do
             echo "[!] Test was not quarantined. Moving on to execution."
             sleep $pause
             echo $'\e[1;33m'
-            expect -c "set timeout 3; spawn $temp; expect timeout { exit 102 }"
+            expect -c "set timeout 5; spawn $temp; expect timeout { exit 102 }"
             res1=$?
-            expect -c "set timeout 3; spawn $temp -cleanup; expect timeout { exit 102 }"
+            expect -c "set timeout 5; spawn $temp -cleanup; expect timeout { exit 102 }"
             res2=$?
             echo $'\e[0m'
             max=$(( $res1 > $res2 ? $res1 : $res2 ))
