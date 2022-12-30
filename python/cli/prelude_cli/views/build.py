@@ -32,6 +32,18 @@ def clone(controller):
     click.secho('Project cloned successfully', fg=Colors.GREEN.value)
 
 
+@build.command('download')
+@click.pass_obj
+@click.argument('test')
+@handle_api_error
+def download(controller, test):
+    """ Download a single test to your local environment """
+    code = controller.download_test(ident=test)
+    with open(f'{test["id"]}.go', 'wb') as test_code:
+        test_code.write(code)
+        click.secho(f'Cloned {test["id"]}')
+
+
 @build.command('list-tests')
 @click.pass_obj
 @handle_api_error
@@ -42,7 +54,6 @@ def list_tests(controller):
 
 @build.command('create-test')
 @click.argument('question')
-@click.option('--test', help='Test ID to update', default=str(uuid.uuid4()))
 @click.pass_obj
 @handle_api_error
 def create_test(controller, test, question):
@@ -59,12 +70,17 @@ def create_test(controller, test, question):
 @click.pass_obj
 @handle_api_error
 def delete_test(controller, test):
-    """ Delete TEST and its variants
-
-     TEST is the UUID of a security test
-     """
+    """ Delete TEST """
     controller.delete_test(ident=test)
     click.secho(f'Deleted {test}', fg=Colors.GREEN.value)
+
+
+@build.command('list-vst')
+@click.pass_obj
+@handle_api_error
+def list_vst(controller):
+    """ List all verified tests """
+    print_json(data=controller.list_vst())
 
 
 @build.command('delete-vst')
@@ -75,7 +91,7 @@ def delete_test(controller, test):
 def delete_vst(controller, variant):
     """ Delete VST
 
-    VST is the name of a verified test
+    VST is the full name of a verified test
     """
     controller.delete_vst(name=variant)
     click.secho(f'Deleted {variant}', fg=Colors.GREEN.value)
@@ -96,26 +112,18 @@ def save_test(controller, path):
 @click.argument('vst')
 @click.pass_obj
 @handle_api_error
-def create_url(controller, variant):
+def create_url(controller, name):
     """ Generate a download URL for VST
 
-    VST is the name of a _verified_ test
+    NAME is the name of a _verified_ test
     """
-    print_json(data=controller.create_url(name=variant))
+    print_json(data=controller.create_url(name=name))
 
 
-@build.command('run')
+@build.command('compute')
 @click.argument('test')
 @click.pass_obj
 @handle_api_error
 def compute(controller, test):
-    """ Compile and validate TEST """
+    """ Compile and validate a TEST """
     print_json(data=controller.compute(name=test))
-
-
-@build.command('list-verified')
-@click.pass_obj
-@handle_api_error
-def list_verified(controller):
-    """ List all verified tests """
-    print_json(data=controller.list_vst())
