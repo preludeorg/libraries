@@ -16,15 +16,15 @@ class BuildController:
         raise Exception(res.text)
 
     @verify_credentials
-    def create_test(self, ident, question):
-        data = dict(id=ident, question=question)
+    def create_test(self, test_id, question):
+        data = dict(id=test_id, question=question)
         res = requests.post(f'{self.account.hq}/build/tests', json=data, headers=self.account.headers)
         if not res.status_code == 200:
             raise Exception(res.text)
 
     @verify_credentials
-    def delete_test(self, ident):
-        res = requests.delete(f'{self.account.hq}/build/tests/{ident}', headers=self.account.headers)
+    def delete_test(self, test_id):
+        res = requests.delete(f'{self.account.hq}/build/tests/{test_id}', headers=self.account.headers)
         if not res.status_code == 200:
             raise Exception(res.text)
 
@@ -42,21 +42,8 @@ class BuildController:
             raise Exception(res.text)
 
     @verify_credentials
-    def delete_vst(self, name):
-        res = requests.delete(f'{self.account.hq}/build/vst/{name}', headers=self.account.headers)
-        if not res.status_code == 200:
-            raise Exception(res.text)
-
-    @verify_credentials
-    def list_vst(self):
-        res = requests.get(f'{self.account.hq}/build/vst', headers=self.account.headers)
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
-
-    @verify_credentials
-    def create_url(self, name: str):
-        res = requests.get(f'{self.account.hq}/build/{name}/url', headers=self.account.headers)
+    def create_url(self, vst: str):
+        res = requests.get(f'{self.account.hq}/build/{vst}/url', headers=self.account.headers)
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
