@@ -52,9 +52,9 @@ def create_test(controller, question):
     template = pkg_resources.read_text(templates, 'template.go')
     controller.upload_test(name=basename, code=template)
 
-    with open(basename, 'wb') as test_code:
+    with open(basename, 'w') as test_code:
         test_code.write(template)
-        click.secho(f'Created {basename}')
+        click.secho(f'Created {basename}', fg=Colors.GREEN.value)
 
 
 @build.command('delete-test')
