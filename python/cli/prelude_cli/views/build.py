@@ -48,7 +48,7 @@ def download(controller, test):
 @click.pass_obj
 @handle_api_error
 def list_tests(controller):
-    """ List all tests """
+    """ List all security tests """
     print_json(data=controller.list_tests())
 
 
@@ -56,12 +56,17 @@ def list_tests(controller):
 @click.argument('question')
 @click.pass_obj
 @handle_api_error
-def create_test(controller, test, question):
-    """ Create a new test """
+def create_test(controller, question):
+    """ Create a new security test """
+    test = str(uuid.uuid4())
     controller.create_test(ident=test, question=question)
+
     template = pkg_resources.read_text(templates, 'template.go')
     controller.upload_test(name=f'{test}.go', code=template)
-    click.secho(f'Added {test}', fg=Colors.GREEN.value)
+
+    with open(f'{test}.go', 'wb') as test_code:
+        test_code.write(template)
+        click.secho(f'Created {test["id"]}.go')
 
 
 @build.command('delete-test')
@@ -79,7 +84,7 @@ def delete_test(controller, test):
 @click.pass_obj
 @handle_api_error
 def list_vst(controller):
-    """ List all verified tests """
+    """ List all verified security tests """
     print_json(data=controller.list_vst())
 
 
@@ -88,13 +93,10 @@ def list_vst(controller):
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
 @handle_api_error
-def delete_vst(controller, variant):
-    """ Delete VST
-
-    VST is the full name of a verified test
-    """
-    controller.delete_vst(name=variant)
-    click.secho(f'Deleted {variant}', fg=Colors.GREEN.value)
+def delete_vst(controller, vst):
+    """ Delete a verified security test """
+    controller.delete_vst(name=vst)
+    click.secho(f'Deleted {vst}', fg=Colors.GREEN.value)
 
 
 @build.command('save')
@@ -102,7 +104,7 @@ def delete_vst(controller, variant):
 @click.pass_obj
 @handle_api_error
 def save_test(controller, path):
-    """ Upload the test at PATH """
+    """ Upload a security test on disk """
     with open(path, 'r') as variant:
         controller.upload_test(name=Path(path).name, code=variant.read())
         click.secho(f'Uploaded {path}', fg=Colors.GREEN.value)
@@ -112,12 +114,9 @@ def save_test(controller, path):
 @click.argument('vst')
 @click.pass_obj
 @handle_api_error
-def create_url(controller, name):
-    """ Generate a download URL for VST
-
-    NAME is the name of a _verified_ test
-    """
-    print_json(data=controller.create_url(name=name))
+def create_url(controller, vst):
+    """ Generate a download URL for a VST """
+    print_json(data=controller.create_url(name=vst))
 
 
 @build.command('compute')
@@ -125,5 +124,5 @@ def create_url(controller, name):
 @click.pass_obj
 @handle_api_error
 def compute(controller, test):
-    """ Compile and validate a TEST """
+    """ Create a VST from a test """
     print_json(data=controller.compute(name=test))
