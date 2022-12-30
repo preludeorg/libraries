@@ -25,8 +25,9 @@ def clone(controller):
     """ Download all tests to your local environment """
     Path('prelude').mkdir(exist_ok=True)
     for test in controller.list_tests():
-        code = controller.download_test(ident=test['id'])
-        with open(f'prelude/{test["id"]}.go', 'wb') as test_code:
+        name = f'{test["id"]}.go'
+        code = controller.download_test(name=name)
+        with open(f'prelude/{name}', 'wb') as test_code:
             test_code.write(code)
             click.secho(f'Cloned {test["id"]}')
     click.secho('Project cloned successfully', fg=Colors.GREEN.value)
@@ -38,8 +39,9 @@ def clone(controller):
 @handle_api_error
 def download(controller, test):
     """ Download a single test to your local environment """
-    code = controller.download_test(ident=test)
-    with open(f'{test["id"]}.go', 'wb') as test_code:
+    name = f'{test["id"]}.go'
+    code = controller.download_test(name=name)
+    with open(name, 'wb') as test_code:
         test_code.write(code)
         click.secho(f'Cloned {test["id"]}')
 
