@@ -85,7 +85,7 @@ def save_test(controller, path):
 
 
 @build.command('url')
-@click.argument('name')
+@click.argument('vst')
 @click.pass_obj
 @handle_api_error
 def create_url(controller, vst):
