@@ -1,5 +1,7 @@
 import importlib.resources as pkg_resources
 import uuid
+
+from datetime import datetime
 from pathlib import Path
 
 import click
@@ -50,6 +52,9 @@ def create_test(controller, truth):
 
     controller.create_test(test_id=test_id, truth=truth)
     template = pkg_resources.read_text(templates, 'template.go')
+    template = template.replace('$NAME', basename)
+    template = template.replace('$TRUTH', truth)
+    template = template.replace('$CREATED', str(datetime.now()))
     controller.upload_test(name=basename, code=template)
 
     with open(basename, 'w') as test_code:
