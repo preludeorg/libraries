@@ -40,15 +40,15 @@ def list_tests(controller):
 
 
 @build.command('create-test')
-@click.argument('question')
+@click.argument('truth')
 @click.pass_obj
 @handle_api_error
-def create_test(controller, question):
+def create_test(controller, truth):
     """ Create a new security test """
     test_id = str(uuid.uuid4())
     basename = f'{test_id}.go'
 
-    controller.create_test(test_id=test_id, question=question)
+    controller.create_test(test_id=test_id, truth=truth)
     template = pkg_resources.read_text(templates, 'template.go')
     controller.upload_test(name=basename, code=template)
 
