@@ -42,38 +42,38 @@
         return new Promise((resolve) => setTimeout(resolve, ms));
       }
 
-      const variant = `
-      #include <stdlib.h>
-      #include <string.h>
-      #include <stdio.h>
+      const code = `
+        package main
+        import (
+            "fmt"
+            "os"
+        )
 
-      void test(void)
-      {
-          printf("Run test");
-          exit(100);
-      }
+        func test() {
+            fmt.Println("Run test")
+            os.Exit(100)
+        }
 
-      void clean(void)
-      {
-          printf("Clean up");
-          exit(100);
-      }
+        func clean() {
+            fmt.Println("Clean up")
+            os.Exit(100)
+        }
 
-      int main(int argc, char *argv[])
-      {
-          if (argc > 1) {
-              clean();
-          } else {
-              test();
-          }
-      }`;
+        func main() {
+            args := os.Args[1:]
+            if len(args) > 0 {
+                clean()
+            } else {
+                test()
+            }
+        }`;
 
       import * as Prelude from "/lib/main.ts";
       import * as uuid from "https://jspm.dev/uuid";
 
       document.getElementById("run").addEventListener("click", async () => {
         try {
-          const host = "https://detect.prelude.org";
+          const host = "https://api.staging.preludesecurity.com";
 
           console.log("Using host", host);
           const service = new Prelude.Service({
@@ -91,7 +91,7 @@
           const testId = uuid.v4();
           console.log(
             "CREATE new test",
-            await service.build.createTest(testId, "This is a test")
+            await service.build.createTest(testId, "This is a test", code)
           );
 
           console.log(
@@ -99,62 +99,23 @@
             await service.build.listTests()
           );
 
-          console.log("GET Test Variants", await service.build.getTest(testId));
-
-          const variantName = `${testId}_linux.c`;
+          const testName = `${testId}.go`;
 
           console.log(
-            "CREATE Test Variant",
-            await service.build.createVariant(variantName, variant)
-          );
-
-          console.log("Waiting 1s");
-          await sleep(1000);
-
-          console.log(
-            "GET Test Variants after CREATE",
-            await service.build.getTest(testId)
+            "DOWNLOAD Test code",
+            await service.build.downloadTest(testName)
           );
 
           console.log(
-            "GET Variant",
-            (await service.build.getVariant(variantName)) === variant
+            "UPLOAD Test code",
+            await service.build.uploadTest(testName, code)
           );
 
-          console.log("COMPUTING... Variant");
-
-          const compute = await service.build.computeProxy(variantName);
-
-          console.log("COMPUTE Variant", compute);
-
-          console.log(
-            "GET Verified Tests",
-            await service.build.verifiedTests()
-          );
+          const compute = await service.build.computeProxy(testName);
 
           console.log(
             "CREATE URL for Variant",
             await service.build.createURL(compute[0].name)
-          );
-
-          console.log(
-            "DELETE Verified",
-            await service.build.deleteVerified(compute[0].name)
-          );
-
-          console.log(
-            "GET Verified After DELETE",
-            await service.build.verifiedTests()
-          );
-
-          console.log(
-            "DELETE Variant",
-            await service.build.deleteVariant(variantName)
-          );
-
-          console.log(
-            "GET Test Variants after DELETE",
-            await service.build.getTest(testId)
           );
 
           console.log("DELETE Test", await service.build.deleteTest(testId));
