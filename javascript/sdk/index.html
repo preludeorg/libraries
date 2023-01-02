@@ -43,30 +43,30 @@
       }
 
       const code = `
-        package main
-        import (
-            "fmt"
-            "os"
-        )
+      package main
+      import (
+          "fmt"
+          "os"
+      )
 
-        func test() {
-            fmt.Println("Run test")
-            os.Exit(100)
-        }
+      func test() {
+          fmt.Println("Run test")
+          os.Exit(100)
+      }
 
-        func clean() {
-            fmt.Println("Clean up")
-            os.Exit(100)
-        }
+      func clean() {
+          fmt.Println("Clean up")
+          os.Exit(100)
+      }
 
-        func main() {
-            args := os.Args[1:]
-            if len(args) > 0 {
-                clean()
-            } else {
-                test()
-            }
-        }`;
+      func main() {
+          args := os.Args[1:]
+          if len(args) > 0 {
+              clean()
+          } else {
+              test()
+          }
+      }`;
 
       import * as Prelude from "/lib/main.ts";
       import * as uuid from "https://jspm.dev/uuid";
