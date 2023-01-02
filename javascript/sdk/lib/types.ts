@@ -14,7 +14,9 @@ export type RequestOptions = Omit<RequestInit, "method" | "body">;
 export interface Test {
   account_id: string;
   id: string;
-  question: string;
+  name: string;
+  truth: string;
+  vst: string[];
 }
 
 export interface User {
