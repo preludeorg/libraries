@@ -15,7 +15,7 @@ export interface Test {
   account_id: string;
   id: string;
   name: string;
-  truth: string;
+  rule: string;
   vst: string[];
 }
 
