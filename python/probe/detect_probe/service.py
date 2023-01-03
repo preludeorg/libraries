@@ -46,7 +46,7 @@ class ProbeService:
         try:
             if self.account_id and self.secret:
                 r = request.Request(
-                    url='https://detect.prelude.org/account/endpoint',
+                    url='https://detect.preludesecurity.com/account/endpoint',
                     data=str.encode(json.dumps(dict(id=name))),
                     headers={
                         'account': self.account_id,

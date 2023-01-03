@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PRELUDE_API="https://detect.prelude.org"
+PRELUDE_API="https://detect.preludesecurity.com"
 
 sys=$(uname -s)-$(uname -m)
 dos=$(echo $sys | tr '[:upper:]' '[:lower:]')

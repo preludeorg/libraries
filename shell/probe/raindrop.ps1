@@ -35,7 +35,7 @@ function Run {
     Run -Dat $Status
 }
 
-$Address = if ($Env:PRELUDE_API) { $Env:PRELUDE_API } else { "https://detect.prelude.org/" }
+$Address = if ($Env:PRELUDE_API) { $Env:PRELUDE_API } else { "https://detect.preludesecurity.com/" }
 $Token = if ($Env:PRELUDE_TOKEN) { $Env:PRELUDE_TOKEN } else { "" }
 $CA = if ($Env:PRELUDE_CA) { $Env:PRELUDE_CA } else { "" }
 
