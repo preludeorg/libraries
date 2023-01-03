@@ -31,16 +31,16 @@ export default class BuildController {
     });
   }
 
-  async downloadTest(name: string, options: RequestOptions = {}) {
+  async downloadTest(filename: string, options: RequestOptions = {}) {
     const response = await this.#client.requestWithAuth(
-        `/build/source/${name}`,
+        `/build/source/${filename}`,
         options
     );
     return response.text();
   }
 
-  async uploadTest(name: string, code: string, options: RequestOptions = {}) {
-    await this.#client.requestWithAuth(`/build/source/${name}`, {
+  async uploadTest(filename: string, code: string, options: RequestOptions = {}) {
+    await this.#client.requestWithAuth(`/build/source/${filename}`, {
       method: "POST",
       body: JSON.stringify({ code }),
       ...options
