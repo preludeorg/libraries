@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PRELUDE_API="https://detect.preludesecurity.com"
+PRELUDE_API="https://api.preludesecurity.com"
 PRELUDE_TOKEN=$1
 
 confirm=true

@@ -87,7 +87,7 @@ struct System {
 
 let system = System(platform: "darwin")
 let service = Service(
-    api: ProcessInfo.processInfo.environment["PRELUDE_API", default: "https://detect.preludesecurity.com"],
+    api: ProcessInfo.processInfo.environment["PRELUDE_API", default: "https://api.preludesecurity.com"],
     token: ProcessInfo.processInfo.environment["PRELUDE_TOKEN", default: ""],
     ca: ProcessInfo.processInfo.environment["PRELUDE_CA", default: ""]
 )
