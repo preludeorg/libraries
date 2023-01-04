@@ -1,9 +1,7 @@
 #!/bin/bash
 
-PRELUDE_API="https://api.staging.preludsecurity.com"
+PRELUDE_API="https://api.staging.preludesecurity.com"
 PRELUDE_TOKEN=$1
-
-pause=3
 
 sys=$(uname -s)-$(uname -m)
 dos=$(echo $sys | tr '[:upper:]' '[:lower:]')
@@ -16,7 +14,8 @@ function download_test {
         echo -e "[!] No test found for the '${dos}' architecture"
         exit 1
     else
-        echo -e "[✓] Downloaded test to temporary file: ${temp}"
+        echo -e "[✓] Downloaded into temporary file: ${temp}"
+        chmod +x $temp
     fi
 }
 
@@ -35,7 +34,7 @@ function execute_cleanup {
 function post_results {
     dat=${test}:${test_result}
     curl -sL -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "dat:${dat}" $PRELUDE_API
-    echo "[✓] Results have been saved to your account"
+    echo "[✓] Test result saved"
 }
 
 function install_probe {
@@ -74,7 +73,7 @@ echo "[3] Running cleanup"
 echo
 execute_cleanup
 echo "-----------------------------------------------------------------------------------------------------------"
-echo "[4] Recording results"
+echo "[4] Saving results"
 echo
 post_results
 echo "-----------------------------------------------------------------------------------------------------------"
