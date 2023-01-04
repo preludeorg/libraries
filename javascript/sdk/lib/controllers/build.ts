@@ -16,7 +16,12 @@ export default class BuildController {
     return (await response.json()) as Test[];
   }
 
-  async createTest(id: string, rule: string, code: string, options: RequestOptions = {}) {
+  async createTest(
+    id: string,
+    rule: string,
+    code: string,
+    options: RequestOptions = {}
+  ) {
     await this.#client.requestWithAuth(`/build/tests`, {
       method: "POST",
       body: JSON.stringify({ id, rule, code }),
@@ -33,17 +38,21 @@ export default class BuildController {
 
   async downloadTest(filename: string, options: RequestOptions = {}) {
     const response = await this.#client.requestWithAuth(
-        `/build/source/${filename}`,
-        options
+      `/build/source/${filename}`,
+      options
     );
     return response.text();
   }
 
-  async uploadTest(filename: string, code: string, options: RequestOptions = {}) {
+  async uploadTest(
+    filename: string,
+    code: string,
+    options: RequestOptions = {}
+  ) {
     await this.#client.requestWithAuth(`/build/source/${filename}`, {
       method: "POST",
       body: JSON.stringify({ code }),
-      ...options
+      ...options,
     });
   }
 
@@ -54,10 +63,10 @@ export default class BuildController {
     return (await response.json()) as { url: string };
   }
 
-  async computeProxy(name: string, options: RequestOptions = {}) {
+  async computeProxy(id: string, options: RequestOptions = {}) {
     const response = await this.#client.requestWithAuth(`/build/compute`, {
       method: "POST",
-      body: JSON.stringify({ name }),
+      body: JSON.stringify({ id }),
       ...options,
     });
 
