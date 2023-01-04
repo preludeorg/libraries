@@ -8,7 +8,7 @@ pause=3
 sys=$(uname -s)-$(uname -m)
 dos=$(echo $sys | tr '[:upper:]' '[:lower:]')
 
-function get_test {
+function download_test {
     temp=$(mktemp)
     location=$(curl -sL -w %{url_effective} -o $temp -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" $PRELUDE_API)
     test=$(echo $location | grep -o '[0-9a-f]\{8\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{12\}')
@@ -62,19 +62,19 @@ echo
 echo "Starting test at: $(date +"%T")"
 echo
 echo "-----------------------------------------------------------------------------------------------------------"
-echo "[1] Downloading test..."
+echo "[1] Downloading test"
 echo
-get_test
+download_test
 echo "-----------------------------------------------------------------------------------------------------------"
-echo "[2] Executing test..."
+echo "[2] Executing test"
 echo
 execute_test
 echo "-----------------------------------------------------------------------------------------------------------"
-echo "[3] Running cleanup..."
+echo "[3] Running cleanup"
 echo
 execute_cleanup
 echo "-----------------------------------------------------------------------------------------------------------"
-echo "[4] Recording results..."
+echo "[4] Recording results"
 echo
 post_results
 echo "-----------------------------------------------------------------------------------------------------------"
@@ -84,14 +84,14 @@ if [[ $REPLY =~ ^[Yy]$ ]];then
     install_probe
 fi
 echo 
-echo 
+echo
 echo
 echo "###########################################################################################################"
 echo
 echo "Summary"
 echo 
 if [ "$test_result" = 100 ];then
-    echo "[✓] Your computer detected and responded to a malicious Office document dropped on the disk."
+    echo "[✓] Good job! Your computer detected and responded to a malicious Office document dropped on the disk."
 else
     echo "[!] Your computer was unable to detect a malicious Office document dropped on the disk."
     echo "[!] This puts the machine at risk from a variety of computer attacks, including many tied to CVE exploits such as blah."
