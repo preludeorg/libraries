@@ -94,9 +94,9 @@ def create_url(controller, vst):
 
 
 @build.command('compute')
-@click.argument('name')
+@click.argument('test')
 @click.pass_obj
 @handle_api_error
-def compute(controller, name):
-    """ Create a VST from a test name """
-    print_json(data=controller.compute(name=name))
+def compute(controller, test):
+    """ Create a VST from a test """
+    print_json(data=controller.compute(test_id=test))

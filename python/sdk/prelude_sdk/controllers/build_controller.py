@@ -49,8 +49,8 @@ class BuildController:
         raise Exception(res.text)
 
     @verify_credentials
-    def compute(self, name: str):
-        res = requests.post(f'{self.account.hq}/build/compute', json=dict(name=name), headers=self.account.headers)
+    def compute(self, test_id: str):
+        res = requests.post(f'{self.account.hq}/build/compute', json=dict(id=test_id), headers=self.account.headers)
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
