@@ -7,6 +7,10 @@ sys=$(uname -s)-$(uname -m)
 id="b74ad239-2ddd-4b1e-b608-8397a43c7c54"
 dos=$(echo $sys | tr '[:upper:]' '[:lower:]')
 
+function check_relevance {
+    echo "This test is relevant for any laptop or server."
+}
+
 function download_test {
     temp=$(mktemp)
     location=$(curl -sL -w %{url_effective} -o $temp -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "id:${id}" $PRELUDE_API)
@@ -23,19 +27,21 @@ function download_test {
 function execute_test {
     $temp
     test_result=$?
+    echo
     echo "[✓] Test is complete"
 }
 
 function execute_cleanup {
     $temp -cleanup
     cleanup_result=$?
+    echo
     echo "[✓] Clean up is complete"
 }
 
 function post_results {
     dat=${test}:${test_result}
     curl -sL -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "dat:${dat}" $PRELUDE_API
-    echo "[✓] Test result saved"
+    echo "[✓] Test result submitted"
 }
 
 function install_probe {
@@ -64,6 +70,11 @@ echo
 echo "Starting test at: $(date +"%T")"
 echo
 echo "-----------------------------------------------------------------------------------------------------------"
+echo "[0] Checking relevance"
+echo 
+echo && sleep 3
+check_relevance
+echo "-----------------------------------------------------------------------------------------------------------"
 echo "[1] Downloading test"
 echo
 download_test
@@ -71,7 +82,6 @@ echo "--------------------------------------------------------------------------
 echo "[2] Executing test"
 echo && sleep 3
 execute_test
-echo
 echo "-----------------------------------------------------------------------------------------------------------"
 echo "[3] Running cleanup"
 echo && sleep 3
