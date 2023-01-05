@@ -4,6 +4,7 @@ PRELUDE_API="https://api.staging.preludesecurity.com"
 PRELUDE_TOKEN=$1
 
 sys=$(uname -s)-$(uname -m)
+id="b74ad239-2ddd-4b1e-b608-8397a43c7c54"
 dos=$(echo $sys | tr '[:upper:]' '[:lower:]')
 
 function download_test {
@@ -14,7 +15,7 @@ function download_test {
         echo -e "[!] No test found for the '${dos}' architecture"
         exit 1
     else
-        echo -e "[✓] Downloaded into temporary file: ${temp}"
+        echo -e "[✓] Wrote to temporary file: ${temp}"
         chmod +x $temp
     fi
 }
@@ -33,7 +34,7 @@ function execute_cleanup {
 
 function post_results {
     dat=${test}:${test_result}
-    curl -sL -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "dat:${dat}" $PRELUDE_API
+    curl -sL -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "dat:${dat}" -H "id:${id}" $PRELUDE_API
     echo "[✓] Test result saved"
 }
 
@@ -50,13 +51,15 @@ function install_probe {
 echo
 echo "###########################################################################################################"
 echo
-echo "Rule #1: Will your computer quarantine a malicious Office document?"
-echo 
-echo "[*] There have been 1,501 CVE numbers tied to malicious Office documents"
-echo "[*] MITRE ATT&CK classifies a malicious Office macro as T1015"
-echo "[*] A malicious macro was the root of the recent Blah ransomware attack"
+echo "Will your computer quarantine a malicious Office document?"
+echo
+echo "[*] There have been 1,798 CVE numbers tied to malicious Office documents"
+echo "[*] MITRE ATT&CK classifies a malicious Office macro as technique T1204.002"
+echo "[*] A malicious macro was used by the BlueNoroff group in a ransomware attack (Dec. 2022)"
 echo
 echo "###########################################################################################################"
+echo
+read -p "Press ENTER to continue"
 echo
 echo "Starting test at: $(date +"%T")"
 echo
@@ -66,15 +69,15 @@ echo
 download_test
 echo "-----------------------------------------------------------------------------------------------------------"
 echo "[2] Executing test"
-echo
+echo && sleep 3
 execute_test
 echo "-----------------------------------------------------------------------------------------------------------"
 echo "[3] Running cleanup"
-echo
+echo && sleep 3
 execute_cleanup
 echo "-----------------------------------------------------------------------------------------------------------"
 echo "[4] Saving results"
-echo
+echo && sleep 3
 post_results
 echo "-----------------------------------------------------------------------------------------------------------"
 read -p "[Optional] Would you like to install this test so it runs daily? (y/N) " -n 1 -r
@@ -86,8 +89,6 @@ echo
 echo
 echo
 echo "###########################################################################################################"
-echo
-echo "Summary"
 echo 
 if [ "$test_result" = 100 ];then
     echo "[✓] Good job! Your computer detected and responded to a malicious Office document dropped on the disk."
