@@ -14,7 +14,7 @@ export type RequestOptions = Omit<RequestInit, "method" | "body">;
 export interface Test {
   account_id: string;
   id: string;
-  name: string;
+  filename: string;
   rule: string;
   vst: string[];
 }

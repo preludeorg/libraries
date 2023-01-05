@@ -27,8 +27,8 @@ def clone(controller):
     """ Download all tests to your local environment """
     Path('prelude').mkdir(exist_ok=True)
     for test in controller.list_tests():
-        code = controller.download_test(name=test['name'])
-        with open(f'prelude/{test["name"]}', 'wb') as test_code:
+        code = controller.download_test(filename=test['filename'])
+        with open(f'prelude/{test["filename"]}', 'wb') as test_code:
             test_code.write(code)
         click.secho(f'Cloned {test["id"]}')
     click.secho('Project cloned successfully', fg=Colors.GREEN.value)
@@ -52,10 +52,10 @@ def create_test(controller, rule):
 
     controller.create_test(test_id=test_id, rule=rule)
     template = pkg_resources.read_text(templates, 'template.go')
-    template = template.replace('$NAME', basename)
+    template = template.replace('$FILENAME', basename)
     template = template.replace('$RULE', rule)
     template = template.replace('$CREATED', str(datetime.now()))
-    controller.upload_test(name=basename, code=template)
+    controller.upload_test(filename=basename, code=template)
 
     with open(basename, 'w') as test_code:
         test_code.write(template)
@@ -80,7 +80,7 @@ def delete_test(controller, test_id):
 def save_test(controller, path):
     """ Upload a security test on disk """
     with open(path, 'r') as source_code:
-        controller.upload_test(name=Path(path).name, code=source_code.read())
+        controller.upload_test(filename=Path(path).name, code=source_code.read())
         click.secho(f'Uploaded {path}', fg=Colors.GREEN.value)
 
 
@@ -94,9 +94,9 @@ def create_url(controller, vst):
 
 
 @build.command('compute')
-@click.argument('name')
+@click.argument('test')
 @click.pass_obj
 @handle_api_error
-def compute(controller, name):
-    """ Create a VST from a test name """
-    print_json(data=controller.compute(name=name))
+def compute(controller, test):
+    """ Create a VST from a test """
+    print_json(data=controller.compute(test_id=test))
