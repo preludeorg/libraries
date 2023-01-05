@@ -91,7 +91,7 @@ echo
 echo
 echo "###########################################################################################################"
 echo
-if [ "$test_result" = 101 ];then
+if [ "$test_result" = 100 ];then
     echo "[✓] Good job! Your computer detected and responded to a malicious Office document dropped on the disk."
 else
     echo "[!] Your computer was unable to detect a malicious Office document dropped on the disk."
