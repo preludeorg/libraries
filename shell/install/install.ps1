@@ -8,7 +8,7 @@ param(
   [String]$probeName="raindrop"
 )
 
-$PRELUDE_API="https://detect.dev.prelude.org"
+$PRELUDE_API="https://api.preludesecurity.com"
 
 function LogError {
     param([string]$errStr)
