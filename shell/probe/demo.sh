@@ -9,7 +9,7 @@ dos=$(echo $sys | tr '[:upper:]' '[:lower:]')
 
 function download_test {
     temp=$(mktemp)
-    location=$(curl -sL -w %{url_effective} -o $temp -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" $PRELUDE_API)
+    location=$(curl -sL -w %{url_effective} -o $temp -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "id:${id}" $PRELUDE_API)
     test=$(echo $location | grep -o '[0-9a-f]\{8\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{12\}')
     if [ -z "$test" ];then
         echo -e "[!] No test found for the '${dos}' architecture"
@@ -34,7 +34,7 @@ function execute_cleanup {
 
 function post_results {
     dat=${test}:${test_result}
-    curl -sL -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "dat:${dat}" -H "id:${id}" $PRELUDE_API
+    curl -sL -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "dat:${dat}" $PRELUDE_API
     echo "[✓] Test result saved"
 }
 
@@ -71,6 +71,7 @@ echo "--------------------------------------------------------------------------
 echo "[2] Executing test"
 echo && sleep 3
 execute_test
+echo
 echo "-----------------------------------------------------------------------------------------------------------"
 echo "[3] Running cleanup"
 echo && sleep 3
