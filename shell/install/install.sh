@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Defaults
-PRELUDE_API="https://detect.prelude.org"
+PRELUDE_API="https://api.preludesecurity.com"
 PRELUDE_ACCOUNT_ID=""
 PRELUDE_ACCOUNT_SECRET=""
 PROBE_NAME="nocturnal"

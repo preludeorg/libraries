@@ -19,7 +19,7 @@ class Probe:
 
     @staticmethod
     def service(dat=''):
-        api = os.environ.get('PRELUDE_API', 'https://detect.prelude.org')
+        api = os.environ.get('PRELUDE_API', 'https://api.preludesecurity.com')
         headers = dict(token=os.environ.get('PRELUDE_TOKEN'), dos=DOS, dat=dat)
         with request.urlopen(request.Request(api, headers=headers)) as rs:
             authority = urlparse(rs.url).netloc
