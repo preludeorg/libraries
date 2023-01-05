@@ -89,13 +89,12 @@ echo
 echo
 echo
 echo "###########################################################################################################"
-echo 
+echo
 if [ "$test_result" = 100 ];then
     echo "[✓] Good job! Your computer detected and responded to a malicious Office document dropped on the disk."
 else
     echo "[!] Your computer was unable to detect a malicious Office document dropped on the disk."
-    echo "[!] This puts the machine at risk from a variety of computer attacks, including many tied to CVE exploits such as blah."
-    echo "[!] We advise you reach out to support@prelude.org for help selecting an appropriate endpoint defense."
+    echo "[!] Reach out to support@prelude.org for help selecting an appropriate endpoint defense."
 fi
 echo
 echo "[*] Learn about more tests you can run: https://docs.prelude.org/docs/rules"
