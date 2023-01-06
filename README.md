@@ -33,7 +33,7 @@ A Software Development Kit (SDK) allows you to build your own tooling against th
 | Name  |  Runtime | SDK option | Supported (DOS)
 | ------------- | ------------- | ------------- | -------------
 | [Moonlight](https://github.com/preludeorg/libraries/tree/master/swift/probe) | Swift | No | darwin-x86_64, darwin-arm64
-| [Hades](https://github.com/preludeorg/libraries/tree/master/go/probe) | Go | Yes | windows-x86_64, linux-x86_64, darwin-x86_64, darwin-arm64
-| [Presto](https://github.com/preludeorg/libraries/tree/master/python/probe) | Python | Yes | windows-x86_64, linux-x86_64, darwin-x86_64, darwin-arm64
+| [Hades](https://github.com/preludeorg/libraries/tree/master/go/probe) | Go | Yes | windows-x86_64, linux-x86_64, linux-arm64, darwin-x86_64, darwin-arm64
+| [Presto](https://github.com/preludeorg/libraries/tree/master/python/probe) | Python | Yes | windows-x86_64, linux-x86_64, linux-arm64, darwin-x86_64, darwin-arm64
 | [Raindrop](https://github.com/preludeorg/libraries/tree/master/shell/probe) | PowerShell | No | windows-x86_64
-| [Nocturnal](https://github.com/preludeorg/libraries/tree/master/shell/probe) | Bash | No | linux-x86_64, darwin-x86_64, darwin-arm64
+| [Nocturnal](https://github.com/preludeorg/libraries/tree/master/shell/probe) | Bash | No | linux-x86_64, linux-arm64,darwin-x86_64, darwin-arm64
