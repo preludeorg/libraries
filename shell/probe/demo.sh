@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PRELUDE_API="https://api.staging.preludesecurity.com"
+PRELUDE_API="https://api.preludesecurity.com"
 PRELUDE_TOKEN=$1
 
 sys=$(uname -s)-$(uname -m)
