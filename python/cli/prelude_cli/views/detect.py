@@ -94,8 +94,8 @@ def describe_activity(controller, days):
 
     report = Table()
     report.add_column('date')
-    report.add_column('test')
     report.add_column('rule')
+    report.add_column('test')
     report.add_column('endpoint')
     report.add_column('code', style='magenta')
     report.add_column('status')
@@ -103,8 +103,8 @@ def describe_activity(controller, days):
     for record in raw:
         report.add_row(
             record['date'], 
-            record['test'],
             tests[record['test']], 
+            record['test'],
             record['endpoint_id'], 
             str(record['status']),
             Lookup(record['status']).name
