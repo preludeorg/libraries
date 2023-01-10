@@ -1,10 +1,24 @@
 import click
+
 from prelude_cli.views.shared import handle_api_error
+from prelude_sdk.controllers.build_controller import BuildController
 from prelude_sdk.controllers.detect_controller import DetectController
 from prelude_sdk.models.codes import Colors, RunCode
+
 from rich import print_json
 from rich.console import Console
 from rich.table import Table
+from enum import Enum
+
+
+class Lookup(Enum):
+    Error = 1
+    Passed = 100
+    Failed = 101
+    Timeout = 102
+    CleanupError = 103
+    NotRelevant = 104
+    Quarantined = 105
 
 
 @click.group()
@@ -75,14 +89,26 @@ def describe_activity(controller, days):
     """ View my Detect results """
     raw = controller.describe_activity(days=days)
 
+    build = BuildController(account=controller.account)
+    tests = {row['id']: row['rule'] for row in build.list_tests()}
+
     report = Table()
     report.add_column('date')
     report.add_column('test')
+    report.add_column('rule')
     report.add_column('endpoint')
-    report.add_column('status', style='magenta')
+    report.add_column('code', style='magenta')
+    report.add_column('status')
 
     for record in raw:
-        report.add_row(record['date'], record['test'], record['endpoint_id'], str(record['status']))
+        report.add_row(
+            record['date'], 
+            record['test'],
+            tests[record['test']], 
+            record['endpoint_id'], 
+            str(record['status']),
+            Lookup(record['status']).name
+        )
 
     console = Console()
     console.print(report)
