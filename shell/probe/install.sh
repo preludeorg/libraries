@@ -5,7 +5,12 @@ PRELUDE_ACCOUNT_ID=""
 PRELUDE_ACCOUNT_SECRET=""
 PROBE_NAME="nocturnal"
 ENDPOINT_TOKEN=""
-DOS="$(uname | awk '{print tolower($0)}')-$(uname -m)"
+
+arch=$(uname -m)
+if [ $arch = "aarch64" ];then
+  arch="arm64"
+fi
+DOS="$(uname | awk '{print tolower($0)}')-$arch"
 
 function usage {
     echo
