@@ -2,7 +2,11 @@
 
 PRELUDE_API="https://api.preludesecurity.com"
 
-sys=$(uname -s)-$(uname -m)
+arch=$(uname -m)
+if [ $arch = "aarch64" ];then
+  arch="arm64"
+fi
+sys=$(uname -s)-$arch
 dos=$(echo $sys | tr '[:upper:]' '[:lower:]')
 
 while :
