@@ -46,7 +46,7 @@ function Architecture {
 function RegisterEndpoint {
     LogMessage "Provisioning Detect Endpoint Token..."
     $data = @{"id"=$env:computername;"tag"="windows"} | ConvertTo-Json
-    $response = Invoke-WebRequest -Method POST -Uri $PRELUDE_API/account/endpoint -Headers @{"account"=$preludeAccountId;"token"=$preludeAccountSecret} -ContentType "application/json" -Body $data
+    $response = Invoke-WebRequest -Method POST -Uri $PRELUDE_API/detect/endpoint -Headers @{"account"=$preludeAccountId;"token"=$preludeAccountSecret} -ContentType "application/json" -Body $data
     if($response.StatusCode -ne 200) {
         LogError "Endpoint failed to register! $($response.StatusDescription)"
         Exit 1

@@ -43,9 +43,9 @@ done
 
 register_new_endpoint() {
     echo "[+] Provisioning Detect Endpoint Token..."
-    local _token_url="${PRELUDE_API}/account/endpoint"
+    local _token_url="${PRELUDE_API}/detect/endpoint"
     _hostname=$(hostname)
-    ENDPOINT_TOKEN=$(curl -s -X POST -H "account:${PRELUDE_ACCOUNT_ID}" -H "token:${PRELUDE_ACCOUNT_SECRET}" -H "Content-Type: application/json" -d "{\"id\":\"${_hostname}\",\"tag\":\"darwin\"}"  "${_token_url}")
+    ENDPOINT_TOKEN=$(curl -sfS -X POST -H "account:${PRELUDE_ACCOUNT_ID}" -H "token:${PRELUDE_ACCOUNT_SECRET}" -H "Content-Type: application/json" -d "{\"id\":\"${_hostname}\",\"tag\":\"darwin\"}"  "${_token_url}")
     export ENDPOINT_TOKEN
 }
 
