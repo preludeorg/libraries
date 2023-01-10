@@ -83,9 +83,8 @@ Test: Will your computer quarantine a malicious Office document?
 
 Malicious files are used to gain entry and conduct cyberattacks against corporate systems through seemingly
 innocuous email attachments or direct downloads. For example - a malicious macro was used by the BlueNoroff
-group in a ransomware attack (Dec. 2022) [link]
+group in a ransomware attack (Dec. 2022)
 
-[+] CVE mappings: ABC, BCD, CDE, and XXX others [link]
 [+] ATT&CK mappings: T1204.002
 
 ###########################################################################################################
