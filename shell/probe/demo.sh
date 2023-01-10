@@ -12,9 +12,7 @@ id="b74ad239-2ddd-4b1e-b608-8397a43c7c54"
 dos=$(echo $sys | tr '[:upper:]' '[:lower:]')
 
 function check_relevance {
-    echo "This test is designed to be relevant for any workstation or server"
-    echo
-    echo -e "${GREEN}[✓] Result: The test is relevant for your machine${NC}"
+    echo -e "${GREEN}[✓] Result: Success - server or workstation detected${NC}"
 }
 
 function download_test {
@@ -48,7 +46,6 @@ function post_results {
     max=$(( $test_result > $cleanup_result ? $test_result : $cleanup_result ))
     dat=${test}:${max}
     curl -sfSL -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "dat:${dat}" $PRELUDE_API
-    echo -e "${GREEN}[✓] Test result submitted${NC}"
 }
 
 function install_probe {
@@ -76,9 +73,8 @@ echo "Test: Will your computer quarantine a malicious Office document?"
 echo
 echo "Malicious files are used to gain entry and conduct cyberattacks against corporate systems through seemingly"
 echo "innocuous email attachments or direct downloads. For example - a malicious macro was used by the BlueNoroff"
-echo "group in a ransomware attack (Dec. 2022) [link]"
+echo "group in a ransomware attack (Dec. 2022)"
 echo
-echo "[+] CVE mappings: ABC, BCD, CDE, and XXX others [link]"
 echo "[+] ATT&CK mappings: T1204.002"
 echo
 echo "###########################################################################################################"
@@ -103,9 +99,6 @@ echo "--------------------------------------------------------------------------
 echo "[3] Running cleanup"
 echo && sleep 3
 execute_cleanup
-echo "-----------------------------------------------------------------------------------------------------------"
-echo "[4] Saving results"
-echo && sleep 3
 post_results
 echo "-----------------------------------------------------------------------------------------------------------"
 read -p "[Optional] Would you like to install this test so it runs daily? (y/N) " -n 1 -r

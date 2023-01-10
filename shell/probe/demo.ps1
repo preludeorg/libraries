@@ -23,8 +23,7 @@ $Headers = @{
 }
 
 function CheckRelevance {
-    Write-Host "`r`nThis test is designed to be relevant for any workstation or server"
-    Write-Host -ForegroundColor Green "`r`n[✓] Result: The test is relevant for your machine"
+    Write-Host -ForegroundColor Green "`r`n[✓] Result: Success - server or workstation detected"
 }
 
 function DownloadTest {
@@ -53,14 +52,7 @@ function ExecuteCleanup {
 function PostResults {
     param([string]$testresult)
     $Headers.dat = $TEST_ID + ":" + $testresult
-    try {
-        Invoke-WebRequest -URI $PRELUDE_API -Headers $Headers -MaximumRedirection 1 | Out-Null
-    } catch {
-        $StatusCode = $_.Exception.Response.StatusCode.value__
-        Write-Host -ForegroundColor Red "`r`n[!] Failed to submit results. Http response code: $StatusCode"
-        return
-    }
-    Write-Host -ForegroundColor Green "`r`n[✓] Test result submitted"
+    Invoke-WebRequest -URI $PRELUDE_API -Headers $Headers -MaximumRedirection 1 | Out-Null
 }
 
 function InstallProbe {
@@ -124,9 +116,6 @@ Start-Sleep -Seconds 3
 $cleanresult = ExecuteCleanup
 Remove-Item $TempFile -Force
 
-Write-Host "-----------------------------------------------------------------------------------------------------------
-[4] Saving results"
-Start-Sleep -Seconds 3
 $Status = ($testresult, $cleanresult | Measure-Object -Maximum).Maximum
 PostResults $Status
 
