@@ -78,8 +78,8 @@ echo "Malicious files are used to gain entry and conduct cyberattacks against co
 echo "innocuous email attachments or direct downloads. For example - a malicious macro was used by the BlueNoroff"
 echo "group in a ransomware attack (Dec. 2022) [link]"
 echo
-echo "[] CVE mappings: ABC, BCD, CDE, and XXX others [link]"
-echo "[] ATT&CK mappings: T1204.002"
+echo "[+] CVE mappings: ABC, BCD, CDE, and XXX others [link]"
+echo "[+] ATT&CK mappings: T1204.002"
 echo
 echo "###########################################################################################################"
 echo
