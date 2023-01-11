@@ -45,7 +45,7 @@ export type RunCode = typeof RunCodes[keyof typeof RunCodes];
 export const Permissions = {
   ADMIN: 0,
   EXECUTIVE: 1,
-  OPERATOR: 2,
+  BUILD: 2,
   SERVICE: 3,
   NONE: 4,
 } as const;
