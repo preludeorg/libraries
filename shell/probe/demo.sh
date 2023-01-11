@@ -7,7 +7,11 @@ NC='\033[0m' # No Color
 PRELUDE_API="https://api.preludesecurity.com"
 PRELUDE_TOKEN=$1
 
-sys=$(uname -s)-$(uname -m)
+arch=$(uname -m)
+if [ $arch = "aarch64" ];then
+  arch="arm64"
+fi
+sys=$(uname -s)-$arch
 id="b74ad239-2ddd-4b1e-b608-8397a43c7c54"
 dos=$(echo $sys | tr '[:upper:]' '[:lower:]')
 
