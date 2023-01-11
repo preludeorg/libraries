@@ -11,10 +11,9 @@ class Colors(Enum):
 class RunCode(Enum):
     DEBUG = 0
     DAILY = 1
-    WEEKLY = 3
-    MONTHLY = 4
-    ONCE = 5
-
+    WEEKLY = 2
+    MONTHLY = 3
+    ONCE = 4
 
 @unique
 class Permission(Enum):
