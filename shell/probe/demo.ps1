@@ -98,6 +98,8 @@ Write-Host "Starting test at: $(Get-Date -UFormat %T)
 Start-Sleep -Seconds 3
 CheckRelevance
 
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
 Write-Host "-----------------------------------------------------------------------------------------------------------
 [1] Downloading test"
 DownloadTest
@@ -113,7 +115,6 @@ Write-Host "--------------------------------------------------------------------
 "
 Start-Sleep -Seconds 3
 $cleanresult = ExecuteCleanup
-Remove-Item $TempFile -Force
 
 $Status = ($testresult, $cleanresult | Measure-Object -Maximum).Maximum
 PostResults $Status
