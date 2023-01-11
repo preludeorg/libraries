@@ -20,29 +20,6 @@ function LogMessage {
     Write-Host "[+] $str"
 }
 
-function Platform {
-    if (-not (Test-Path variable:IsWindows) -or $IsWindows) {
-        return "windows"
-    } else {
-        LogError "Platform not supported"
-        Exit 1
-    }
-}
-
-function Architecture {
-    # See https://learn.microsoft.com/en-us/dotnet/api/microsoft.powershell.commands.cpuarchitecture?view=powershellsdk-1.1.0
-    switch((Get-WMIObject -Class Win32_Processor).Architecture) {
-        0 {return "x86_64"}
-        9 {return "x86_64"}
-        5 {return "arm64"}
-        default {
-            LogError "Architecture not supported"
-            Exit 1
-        }
-    }
-
-}
-
 function RegisterEndpoint {
     LogMessage "Provisioning Detect Endpoint Token..."
     $data = @{"id"=$env:computername;"tag"="windows"} | ConvertTo-Json
@@ -92,7 +69,7 @@ if(Test-Path -path $probePath -PathType Leaf) {
 }
 [void](New-Item -Path $parentDir -ItemType Directory -Force)
 LogMessage "Determining OS"
-$dos="$(Platform)-$(Architecture)"
+$dos = "windows-" + $Env:PROCESSOR_ARCHITECTURE
 $token=RegisterEndpoint
 DownloadProbe $token $dos $probePath
 StartTask $token $parentDir $probePath

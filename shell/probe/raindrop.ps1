@@ -38,13 +38,7 @@ function Run {
 $Address = if ($Env:PRELUDE_API) { $Env:PRELUDE_API } else { "https://api.preludesecurity.com/" }
 $Token = if ($Env:PRELUDE_TOKEN) { $Env:PRELUDE_TOKEN } else { "" }
 $CA = if ($Env:PRELUDE_CA) { $Env:PRELUDE_CA } else { "" }
-
-if ($Env:PROCESSOR_ARCHITECTURE -eq 'AMD64') {
-    $Arch = 'x86_64'
-} else {
-    $Arch = 'arm64'
-}
-$Dos = "windows-" + $Arch
+$Dos = "windows-" + $Env:PROCESSOR_ARCHITECTURE
 
 while ($true) {
     Run

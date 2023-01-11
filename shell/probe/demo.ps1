@@ -7,12 +7,7 @@ param(
 $PRELUDE_API="https://api.preludesecurity.com"
 $TEST_ID="b74ad239-2ddd-4b1e-b608-8397a43c7c54"
 
-if ($Env:PROCESSOR_ARCHITECTURE -eq 'AMD64') {
-    $arch = 'x86_64'
-} else {
-    $arch = 'arm64'
-}
-$dos = "windows-" + $arch
+$dos = "windows-" + $Env:PROCESSOR_ARCHITECTURE
 
 $TempFile = [System.IO.Path]::GetTempFileName() | Rename-Item -NewName { [System.IO.Path]::ChangeExtension($_, "exe") } -PassThru
 
