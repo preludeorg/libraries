@@ -45,7 +45,7 @@ def register_endpoint(controller, name, tags=''):
 @click.option('--run_code',
               help='provide a run_code',
               default='daily',
-              type=click.Choice(['daily', 'monthly', 'once', 'debug'], case_sensitive=False))
+              type=click.Choice(['daily', 'weekly', 'monthly', 'once', 'debug'], case_sensitive=False))
 @click.pass_obj
 @handle_api_error
 def activate_test(controller, test, run_code, tags):
