@@ -114,19 +114,7 @@ $cleanresult = ExecuteCleanup
 $Status = ($testresult, $cleanresult | Measure-Object -Maximum).Maximum
 PostResults $Status
 
-Write-Host "-----------------------------------------------------------------------------------------------------------"
-
-$msg = "[Optional] Would you like to install this test so it runs daily? (y/n)"
-do {
-    $response = Read-Host -Prompt $msg
-    if ($response -eq 'y') {
-        InstallProbe
-    }
-} until ($response -eq 'n' -or $response -eq 'y')
-
 Write-Host "
-###########################################################################################################
-
 ###########################################################################################################
 "
 
@@ -139,8 +127,18 @@ host, you can use the artifacts above to try to understand why your defenses fai
 }
 
 Write-Host "
-[*] To view your results for this test and others, run additional tests, or learn about conducting continuous security
-tests across your infrastructure, return to platform.preludesecurity.com.
-
 ###########################################################################################################
+"
+
+$msg = "[Optional] Would you like to install the probe on this endpoint? This will allow you to run this test, and others, on a continuous schedule (y/n)"
+do {
+    $response = Read-Host -Prompt $msg
+    if ($response -eq 'y') {
+        InstallProbe
+        $extra = "and enable continuous scheduling for this test"
+    }
+} until ($response -eq 'n' -or $response -eq 'y')
+
+Write-Host "
+[*] Return to the Prelude Platform to view your results $extra
 "

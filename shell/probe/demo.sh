@@ -100,15 +100,6 @@ echo "[3] Running cleanup"
 echo && sleep 3
 execute_cleanup
 post_results
-echo "-----------------------------------------------------------------------------------------------------------"
-read -p "[Optional] Would you like to install this test so it runs daily? (y/N) " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]];then
-    echo
-    install_probe
-fi
-echo 
-echo "###########################################################################################################"
 echo
 echo "###########################################################################################################"
 echo
@@ -122,8 +113,16 @@ else
     echo -e "in your logs${NC}"
 fi
 echo
-echo "[*] To view your results for this test and others, run additional tests, or learn about conducting continuous"
-echo "security tests across your infrastructure, return to platform.preludesecurity.com"
-echo
 echo "###########################################################################################################"
+echo
+read -p "[Optional] Would you like to install the probe on this endpoint? This will allow you to run this test, and \
+others, on a continuous schedule (y/n)" -n 1 -r
+if [[ $REPLY =~ ^[Yy]$ ]];then
+    echo
+    install_probe
+    extra_msg="and enable continuous scheduling for this test"
+fi
+echo
+echo
+echo "[*] Return to the Prelude Platform to view your results $extra_msg"
 echo
