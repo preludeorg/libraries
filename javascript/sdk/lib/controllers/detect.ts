@@ -72,11 +72,15 @@ export default class DetectController {
   }
 
   /** Get all probes associated to an Account */
-  async listProbes(options: RequestOptions = {}) {
-    const response = await this.#client.requestWithAuth("/detect/probes", {
-      method: "GET",
-      ...options,
-    });
+  async listProbes(days: number = 7, options: RequestOptions = {}) {
+    const searchParams = new URLSearchParams({ days: days.toString() });
+    const response = await this.#client.requestWithAuth(
+      `/detect/probes?${searchParams.toString()}`,
+      {
+        method: "GET",
+        ...options,
+      }
+    );
 
     return (await response.json()) as Probe[];
   }
