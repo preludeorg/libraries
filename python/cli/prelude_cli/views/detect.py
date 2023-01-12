@@ -93,22 +93,35 @@ def describe_activity(controller, days):
     tests = {row['id']: row['rule'] for row in build.list_tests()}
 
     report = Table()
-    report.add_column('date')
+    report.add_column('timpstamp')
+    report.add_column('result ID')
     report.add_column('rule')
     report.add_column('test')
     report.add_column('endpoint')
     report.add_column('code', style='magenta')
     report.add_column('status')
+    report.add_column('observed')
 
     for record in raw:
         report.add_row(
             record['date'], 
+            record['id'], 
             tests[record['test']], 
             record['test'],
             record['endpoint_id'], 
             str(record['status']),
-            Lookup(record['status']).name
+            Lookup(record['status']).name,
+            'yes' if record.get('observed') else '-'
         )
 
     console = Console()
     console.print(report)
+
+@detect.command('observe')
+@click.argument('result')
+@click.option('--value', help='Mark 1 for observed', default=1, type=int)
+@click.pass_obj
+@handle_api_error
+def observe(controller, result, value):
+    """ Mark a result as observed """
+    controller.observe(row_id=result, value=value)
