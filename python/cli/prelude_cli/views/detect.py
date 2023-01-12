@@ -93,7 +93,7 @@ def describe_activity(controller, days):
     tests = {row['id']: row['rule'] for row in build.list_tests()}
 
     report = Table()
-    report.add_column('timpstamp')
+    report.add_column('timestamp')
     report.add_column('result ID')
     report.add_column('rule')
     report.add_column('test')
