@@ -7,7 +7,7 @@ param(
   [Parameter(HelpMessage="Probe name")]
   [String]$probeName="raindrop",
   [Parameter(HelpMessage="Endpoint id")]
-  [String]$endpointId=$env:computernames
+  [String]$endpointId=$env:computername
 )
 
 $PRELUDE_API="https://api.preludesecurity.com"
