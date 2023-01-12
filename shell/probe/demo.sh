@@ -32,7 +32,11 @@ function execute_test {
     $temp
     test_result=$?
     echo
-    echo -e "${GREEN}[✓] Test is complete${NC}"
+    if [ "$test_result" = 100 ];then
+        echo -e "${GREEN}[✓] Malicious file was caught${NC}"
+    else
+        echo -e "${RED}[!] Malicious file was not caught${NC}"
+    fi
 }
 
 function execute_cleanup {
