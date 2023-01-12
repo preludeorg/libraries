@@ -1,5 +1,5 @@
 import Client from "../client";
-import type { ComputeResult, RequestOptions, Test } from "../types";
+import type {ComputeResult, Range, RequestOptions, Test} from "../types";
 
 export default class BuildController {
   #client: Client;
@@ -63,10 +63,10 @@ export default class BuildController {
     return (await response.json()) as { url: string };
   }
 
-  async computeProxy(id: string, options: RequestOptions = {}) {
+  async computeProxy(id: string, range?: Range, options: RequestOptions = {}) {
     const response = await this.#client.requestWithAuth(`/build/compute`, {
       method: "POST",
-      body: JSON.stringify({ id }),
+      body: JSON.stringify({ id, range }),
       ...options,
     });
 

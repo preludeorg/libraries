@@ -24,6 +24,11 @@ export interface User {
   permission: Permission;
 }
 
+export interface Range {
+  url: string;
+  token: string;
+}
+
 export interface CreatedUser {
   token: string;
 }
