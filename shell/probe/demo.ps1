@@ -17,8 +17,12 @@ $Headers = @{
     'id' = $TEST_ID
 }
 
+$symbols = [PSCustomObject] @{
+    CHECKMARK = ([char]8730)
+}
+
 function CheckRelevance {
-    Write-Host -ForegroundColor Green "`r`n[✓] Result: Success - server or workstation detected"
+    Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Result: Success - server or workstation detected"
 }
 
 function DownloadTest {
@@ -29,18 +33,22 @@ function DownloadTest {
         Write-Host -ForegroundColor Red "`r`n[!] Failed to download test. Http response code: $StatusCode"
         Exit 1
     }
-    Write-Host -ForegroundColor Green "`r`n[✓] Wrote to temporary file: $TempFile"
+    Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Wrote to temporary file: $TempFile"
 }
 
 function ExecuteTest {
     & $TempFile
-    Write-Host -ForegroundColor Green "`r`n[✓] Test is complete"
+    if ($LASTEXITCODE -eq 100 ) {
+        Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Malicious file was caught"
+    } else {
+        Write-Host -ForegroundColor Red "`r`n[!] Malicious file was not caught"
+    }
     return $LASTEXITCODE
 }
 
 function ExecuteCleanup {
     & $TempFile clean
-    Write-Host -ForegroundColor Green "`r`n[✓] Clean up is complete"
+    Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Clean up is complete"
     return $LASTEXITCODE
 }
 
@@ -114,24 +122,12 @@ $cleanresult = ExecuteCleanup
 $Status = ($testresult, $cleanresult | Measure-Object -Maximum).Maximum
 PostResults $Status
 
-Write-Host "-----------------------------------------------------------------------------------------------------------"
-
-$msg = "[Optional] Would you like to install this test so it runs daily? (y/n)"
-do {
-    $response = Read-Host -Prompt $msg
-    if ($response -eq 'y') {
-        InstallProbe
-    }
-} until ($response -eq 'n' -or $response -eq 'y')
-
 Write-Host "
-###########################################################################################################
-
 ###########################################################################################################
 "
 
 if ($Status -eq 100 ) {
-    Write-Host "[✓] Good job! Your computer detected and responded to a malicious Office document dropped on the disk" -ForegroundColor Green
+    Write-Host "[$($symbols.CHECKMARK)] Good job! Your computer detected and responded to a malicious Office document dropped on the disk" -ForegroundColor Green
 } else {
     Write-Host "[!] This test was able to verify the existence of this vulnerability on your machine, as well as drop a malicious
 Office document on the disk. If you have security controls in place that you suspect should have protected your
@@ -139,8 +135,18 @@ host, you can use the artifacts above to try to understand why your defenses fai
 }
 
 Write-Host "
-[*] To view your results for this test and others, run additional tests, or learn about conducting continuous security
-tests across your infrastructure, return to platform.preludesecurity.com.
-
 ###########################################################################################################
 "
+
+$msg = "[Optional] Would you like to install the probe on this endpoint? This will allow you to run this test, and others, on a continuous schedule (y/n)"
+do {
+    $response = Read-Host -Prompt $msg
+    if ($response -eq 'y') {
+        InstallProbe
+        $extra = "and enable continuous scheduling for this test"
+    }
+} until ($response -eq 'n' -or $response -eq 'y')
+
+Write-Host "
+[*] Return to the Prelude Platform to view your results $extra
+" 
