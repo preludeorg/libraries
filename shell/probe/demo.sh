@@ -4,7 +4,7 @@ GREEN='\033[1;32m'
 RED='\033[1;31m'
 NC='\033[0m' # No Color
 
-PRELUDE_API="https://api.preludesecurity.com"
+PRELUDE_API=${PRELUDE_API:="https://api.preludesecurity.com"}
 PRELUDE_TOKEN=$1
 
 sys=$(uname -s)-$(uname -m)
