@@ -92,6 +92,7 @@ configured to restrict malicious behavior from happening
 Rule: Malicious files should quarantine when written to disk
 Test: Will your computer quarantine a malicious Office document?
 
+[+] Applicable CVE(s): CVE-2017-0199 
 [+] ATT&CK mappings: T1204.002
 
 ###########################################################################################################

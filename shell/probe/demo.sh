@@ -83,6 +83,7 @@ echo
 echo "Rule: Malicious files should quarantine when written to disk"
 echo "Test: Will your computer quarantine a malicious Office document?"
 echo
+echo "[+] Applicable CVE(s): CVE-2017-0199"
 echo "[+] ATT&CK mappings: T1204.002"
 echo
 echo "###########################################################################################################"
