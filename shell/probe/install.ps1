@@ -25,7 +25,12 @@ function LogMessage {
 function RegisterEndpoint {
     LogMessage "Provisioning Detect Endpoint Token..."
     $data = @{"id"=$endpointId;"tag"="windows"} | ConvertTo-Json
-    $response = Invoke-WebRequest -Method POST -Uri $PRELUDE_API/detect/endpoint -Headers @{"account"=$preludeAccountId;"token"=$preludeAccountSecret} -ContentType "application/json" -Body $data
+    $RequestParams = @{"Method"="POST";"Uri"=$PRELUDE_API/detect/endpoint;"Headers"=@{"account"=$preludeAccountId;"token"=$preludeAccountSecret};"ContentType"="application/json";"Body"=$data}
+    if ($Proxy) {
+        $RequestParams.add("Proxy", $Proxy)
+        $RequestParams.add("ProxyUseDefaultCredentials", $true)
+    }
+    $response = Invoke-RestMethod @RequestParams
     if($response.StatusCode -ne 200) {
         LogError "Endpoint failed to register! $($response.StatusDescription)"
         Exit 1
@@ -36,8 +41,13 @@ function RegisterEndpoint {
 function DownloadProbe {
     param ([string]$token, [string]$dos, [string]$out)
     LogMessage "Downloading Probe..."
-    try { 
-        [void](Invoke-WebRequest -Method GET -Uri $PRELUDE_API/download/$probeName -Headers @{"token"=$token;"dos"=$dos} -OutFile $out -PassThru)
+    try {
+        $RequestParams = @{"Method"="GET";"Uri"=$PRELUDE_API/download/$probeName;"Headers"=@{"token"=$token;"dos"=$dos};"OutFile"=$out;"PassThru"=$true}
+        if ($Proxy) {
+            $RequestParams.add("Proxy", $Proxy)
+            $RequestParams.add("ProxyUseDefaultCredentials", $true)
+        }
+        [void](Invoke-RestMethod @RequestParams)
     } catch [System.Net.WebException] { 
         LogError "Detect failed to download! $($_.ErrorDetails)"
         Exit 1
@@ -72,6 +82,13 @@ if(Test-Path -path $probePath -PathType Leaf) {
 [void](New-Item -Path $parentDir -ItemType Directory -Force)
 LogMessage "Determining OS"
 $dos = "windows-" + $Env:PROCESSOR_ARCHITECTURE
+$SystemProxy = [System.Net.WebRequest]::GetSystemWebProxy()
+if ($SystemProxy) {
+    $SystemProxy.Credentials = [System.Net.CredentialCache]::DefaultCredentials;
+    if (($SystemProxy.GetProxy($Address)) -notcontains $Address) {
+        $Proxy = $SystemProxy.GetProxy($Address)
+    }
+}
 $token=RegisterEndpoint
 DownloadProbe $token $dos $probePath
 StartTask $token $parentDir $probePath

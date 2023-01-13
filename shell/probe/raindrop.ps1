@@ -9,7 +9,12 @@ function Run {
         'dat' = $Dat
     }
     try {
-        $Response = Invoke-WebRequest -URI $Address -Headers $Headers -MaximumRedirection 1 -OutFile $TempFile -PassThru
+        $RequestParams=@{"Uri"=$Address;"Method"="Get";"UseDefaultCredentials"=$true;"Headers"=$Headers;"MaximumRedirection"=1;"OutFile"=$TempFile;"PassThru"=$true};
+        if ($Proxy) {
+            $RequestParams.add("Proxy", $Proxy)
+            $RequestParams.add("ProxyUseDefaultCredentials", $true)
+        }
+        $Response=Invoke-RestMethod @RequestParams
     } catch {
         $StatusCode = $_.Exception.Response.StatusCode.value__
         Write-Output "ERROR: Failed to reach Prelude Service. " + $StatusCode
@@ -39,6 +44,13 @@ $Address = if ($Env:PRELUDE_API) { $Env:PRELUDE_API } else { "https://api.prelud
 $Token = if ($Env:PRELUDE_TOKEN) { $Env:PRELUDE_TOKEN } else { "" }
 $CA = if ($Env:PRELUDE_CA) { $Env:PRELUDE_CA } else { "" }
 $Dos = "windows-" + $Env:PROCESSOR_ARCHITECTURE
+$SystemProxy = [System.Net.WebRequest]::GetSystemWebProxy()
+if ($SystemProxy) {
+    $SystemProxy.Credentials = [System.Net.CredentialCache]::DefaultCredentials;
+    if (($SystemProxy.GetProxy($Address)) -notcontains $Address) {
+        $Proxy = $SystemProxy.GetProxy($Address)
+    }
+}
 
 while ($true) {
     Run
