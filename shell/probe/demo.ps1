@@ -39,9 +39,9 @@ function DownloadTest {
 function ExecuteTest {
     & $TempFile
     if ($LASTEXITCODE -eq 100 ) {
-        Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Malicious file was caught"
+        Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Result: control test passed"
     } else {
-        Write-Host -ForegroundColor Red "`r`n[!] Malicious file was not caught"
+        Write-Host -ForegroundColor Red "`r`n[!] Result: control test failed"
     }
     return $LASTEXITCODE
 }
@@ -81,12 +81,16 @@ Write-Host "
 
 Welcome to Prelude!
 
-Rule: Malicious files should quarantine when written to disk
-Test: Will your computer quarantine a malicious Office document?
-
 Malicious files are used to gain entry and conduct cyberattacks against corporate systems through seemingly
 innocuous email attachments or direct downloads. For example - a malicious macro was used by the BlueNoroff
 group in a ransomware attack (Dec. 2022)
+
+Rules are specific defensive practices that are meant to protect you from certain types of malicious behavior.
+Prelude runs tests designed to challenge the effectiveness of these defenses and check if your system is
+configured to restrict malicious behavior from happening
+
+Rule: Malicious files should quarantine when written to disk
+Test: Will your computer quarantine a malicious Office document?
 
 [+] ATT&CK mappings: T1204.002
 
@@ -131,7 +135,7 @@ if ($Status -eq 100 ) {
 } else {
     Write-Host "[!] This test was able to verify the existence of this vulnerability on your machine, as well as drop a malicious
 Office document on the disk. If you have security controls in place that you suspect should have protected your
-host, you can use the artifacts above to try to understand why your defenses failed in your logs." -ForegroundColor Red
+host, please review the logs" -ForegroundColor Red
 }
 
 Write-Host "

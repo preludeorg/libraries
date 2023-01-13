@@ -33,9 +33,9 @@ function execute_test {
     test_result=$?
     echo
     if [ "$test_result" = 100 ];then
-        echo -e "${GREEN}[✓] Malicious file was caught${NC}"
+        echo -e "${GREEN}[✓] Result: control test passed${NC}"
     else
-        echo -e "${RED}[!] Malicious file was not caught${NC}"
+        echo -e "${RED}[!] Result: control test failed${NC}"
     fi
 }
 
@@ -72,12 +72,16 @@ echo "##########################################################################
 echo
 echo "Welcome to Prelude!"
 echo
-echo "Rule: Malicious files should quarantine when written to disk"
-echo "Test: Will your computer quarantine a malicious Office document?"
-echo
 echo "Malicious files are used to gain entry and conduct cyberattacks against corporate systems through seemingly"
 echo "innocuous email attachments or direct downloads. For example - a malicious macro was used by the BlueNoroff"
 echo "group in a ransomware attack (Dec. 2022)"
+echo
+echo "Rules are specific defensive practices that are meant to protect you from certain types of malicious behavior."
+echo "Prelude runs tests designed to challenge the effectiveness of these defenses and check if your system is"
+echo "configured to restrict malicious behavior from happening"
+echo
+echo "Rule: Malicious files should quarantine when written to disk"
+echo "Test: Will your computer quarantine a malicious Office document?"
 echo
 echo "[+] ATT&CK mappings: T1204.002"
 echo
@@ -113,14 +117,13 @@ if [ "$test_result" = 100 ];then
 else
     echo -e "${RED}[!] This test was able to verify the existence of this vulnerability on your machine, as well as drop"
     echo "a malicious Office document on the disk. If you have security controls in place that you suspect should"
-    echo "have protected your host, you can use the artifacts above to try to understand why your defenses failed"
-    echo -e "in your logs${NC}"
+    echo -e "have protected your host, please review the logs${NC}"
 fi
 echo
 echo "###########################################################################################################"
 echo
 read -p "[Optional] Would you like to install the probe on this endpoint? This will allow you to run this test, and \
-others, on a continuous schedule (y/n)" -n 1 -r
+others, on a continuous schedule (y/n) " -n 1 -r
 if [[ $REPLY =~ ^[Yy]$ ]];then
     echo
     install_probe
