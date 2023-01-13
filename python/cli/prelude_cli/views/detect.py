@@ -19,6 +19,11 @@ class Lookup(Enum):
     CleanupError = 103
     NotRelevant = 104
     Quarantined = 105
+    Unexpected = 256
+
+    @classmethod
+    def _missing_(cls, value):
+        return Lookup.Unexpected
 
 
 @click.group()
