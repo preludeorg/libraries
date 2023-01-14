@@ -30,6 +30,8 @@ A Software Development Kit (SDK) allows you to build your own tooling against th
 
 ## Probe compatibility 
 
+> A DOS is a platform and architecture combination
+
 | Name  |  Runtime | SDK option | Supported (DOS)
 | ------------- | ------------- | ------------- | -------------
 | [Moonlight](https://github.com/preludeorg/libraries/tree/master/swift/probe) | Swift | No | darwin-x86_64, darwin-arm64
