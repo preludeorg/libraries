@@ -10,7 +10,7 @@ param(
   [String]$endpointId=$env:computername
 )
 
-$PRELUDE_API="https://api.preludesecurity.com"
+$PRELUDE_API=if ($Env:PRELUDE_API) { $Env:PRELUDE_API } else { "https://api.preludesecurity.com" }
 
 function LogError {
     param([string]$errStr)
