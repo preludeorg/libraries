@@ -25,12 +25,12 @@ function LogMessage {
 function RegisterEndpoint {
     LogMessage "Provisioning Detect Endpoint Token..."
     $data = @{"id"=$endpointId;"tag"="windows"} | ConvertTo-Json
-    $RequestParams = @{"Method"="POST";"Uri"=$PRELUDE_API/detect/endpoint;"Headers"=@{"account"=$preludeAccountId;"token"=$preludeAccountSecret};"ContentType"="application/json";"Body"=$data}
+    $RequestParams = @{Method="POST"; Uri="$PRELUDE_API/detect/endpoint"; Headers=@{"account"=$preludeAccountId;"token"=$preludeAccountSecret}; ContentType="application/json"; Body=$data}
     if ($Proxy) {
         $RequestParams.add("Proxy", $Proxy)
         $RequestParams.add("ProxyUseDefaultCredentials", $true)
     }
-    $response = Invoke-RestMethod @RequestParams
+    $response = Invoke-WebRequest @RequestParams
     if($response.StatusCode -ne 200) {
         LogError "Endpoint failed to register! $($response.StatusDescription)"
         Exit 1
@@ -42,12 +42,12 @@ function DownloadProbe {
     param ([string]$token, [string]$dos, [string]$out)
     LogMessage "Downloading Probe..."
     try {
-        $RequestParams = @{"Method"="GET";"Uri"=$PRELUDE_API/download/$probeName;"Headers"=@{"token"=$token;"dos"=$dos};"OutFile"=$out;"PassThru"=$true}
+        $RequestParams = @{Method="GET"; Uri="$PRELUDE_API/download/$probeName"; Headers=@{"token"=$token;"dos"=$dos}; OutFile=$out; PassThru=$true}
         if ($Proxy) {
             $RequestParams.add("Proxy", $Proxy)
             $RequestParams.add("ProxyUseDefaultCredentials", $true)
         }
-        [void](Invoke-RestMethod @RequestParams)
+        [void](Invoke-WebRequest @RequestParams)
     } catch [System.Net.WebException] { 
         LogError "Detect failed to download! $($_.ErrorDetails)"
         Exit 1
@@ -85,8 +85,8 @@ $dos = "windows-" + $Env:PROCESSOR_ARCHITECTURE
 $SystemProxy = [System.Net.WebRequest]::GetSystemWebProxy()
 if ($SystemProxy) {
     $SystemProxy.Credentials = [System.Net.CredentialCache]::DefaultCredentials;
-    if (($SystemProxy.GetProxy($Address)) -notcontains $Address) {
-        $Proxy = $SystemProxy.GetProxy($Address)
+    if (($SystemProxy.GetProxy($PRELUDE_API)) -notcontains $PRELUDE_API) {
+        $Proxy = $SystemProxy.GetProxy($PRELUDE_API)
     }
 }
 $token=RegisterEndpoint
