@@ -25,9 +25,22 @@ function Run {
     }
 
     & $TempFile
-    $TestExit = $LASTEXITCODE
+    Start-Sleep 2
+    if(Test-Path -Path $TempFile){
+        $TestExit = $LASTEXITCODE
+    }
+    else{
+        $TestExit = 105
+    }
+
     & $TempFile clean
-    $CleanExit = $LASTEXITCODE
+    Start-Sleep 2
+    if(Test-Path -Path $TempFile){
+        $CleanExit = $LASTEXITCODE
+    }
+    else{
+        $CleanExit = 105
+    }
 
     $Status = $Test + ":" + ($TestExit, $CleanExit | Measure-Object -Maximum).Maximum
 
