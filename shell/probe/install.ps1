@@ -11,7 +11,8 @@ param(
 )
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-$PRELUDE_API=if ($Env:PRELUDE_API) { $Env:PRELUDE_API } else { "https://api.preludesecurity.com" }
+$api = [Environment]::GetEnvironmentVariable("PRELUDE_API", "User")
+$PRELUDE_API=if ($api) { $api } else { "https://api.preludesecurity.com" }
 
 function LogError {
     param([string]$errStr)
