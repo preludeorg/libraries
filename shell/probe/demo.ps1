@@ -60,7 +60,11 @@ function ExecuteTest {
 function ExecuteCleanup {
     try {
         $p = Start-Process -FilePath $TempFile -ArgumentList "clean" -Wait -NoNewWindow -PassThru
-        Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Clean up is complete"
+        if ($p.ExitCode -eq 100 ) {
+            Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Clean up is complete"
+        } else {
+            Write-Host -ForegroundColor Red "`r`n[!] Clean up failed"
+        }
         return $p.ExitCode
     } catch [System.InvalidOperationException] {
         Write-Host -ForegroundColor Red $_
@@ -153,12 +157,14 @@ Write-Host "
 ###########################################################################################################
 "
 
-if ($Status -in 100,127 ) {
-    Write-Host "[$($symbols.CHECKMARK)] Good job! Your computer detected and responded to a malicious Office document dropped on the disk" -ForegroundColor Green
-} else {
-    Write-Host "[!] This test was able to verify the existence of this vulnerability on your machine, as well as drop a malicious
+if ($Status -in 100,9,17,18,105,127 ) {
+    Write-Host -ForegroundColor Green "[$($symbols.CHECKMARK)] Good job! Your computer detected and responded to a malicious Office document dropped on the disk"
+} elseif ($Status -eq 101) {
+    Write-Host -ForegroundColor Red "[!] This test was able to verify the existence of this vulnerability on your machine, as well as drop a malicious
 Office document on the disk. If you have security controls in place that you suspect should have protected your
-host, please review the logs" -ForegroundColor Red
+host, please review the logs"
+} else {
+    Write-Host -ForegroundColor Red "[!] This test encountered an unexpected error during execution. Please try again"
 }
 
 Write-Host "
