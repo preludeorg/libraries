@@ -53,7 +53,7 @@ function StartTask {
     Stop-ScheduledTask -TaskName $name -ErrorAction SilentlyContinue
     Unregister-ScheduledTask -TaskName $name -ErrorAction SilentlyContinue -Confirm:$false
 
-    $action = New-ScheduledTaskAction -Id $id -Execute "powershell.exe" -Argument "-File $($location)" -Argument $location -WorkingDirectory $wd
+    $action = New-ScheduledTaskAction -Id $id -Execute "powershell.exe" -Argument "-File $($location)" -WorkingDirectory $wd
     $trigger = New-ScheduledTaskTrigger -AtStartup
     $principal = New-ScheduledTaskPrincipal -LogonType S4U -UserId "$env:UserDomain\$env:UserName"
     $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -DontStopOnIdleEnd -ExecutionTimeLimit '00:00:00'
