@@ -4,6 +4,7 @@ param(
     [String]$preludeToken
 )
 
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $PRELUDE_API=if ($Env:PRELUDE_API) { $Env:PRELUDE_API } else { "https://api.preludesecurity.com" }
 $TEST_ID="b74ad239-2ddd-4b1e-b608-8397a43c7c54"
 
@@ -105,8 +106,6 @@ Write-Host "Starting test at: $(Get-Date -UFormat %T)
 [0] Conducting relevance test"
 Start-Sleep -Seconds 3
 CheckRelevance
-
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 Write-Host "-----------------------------------------------------------------------------------------------------------
 [1] Downloading test"

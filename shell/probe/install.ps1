@@ -10,6 +10,7 @@ param(
   [String]$endpointId=$env:computername
 )
 
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $PRELUDE_API=if ($Env:PRELUDE_API) { $Env:PRELUDE_API } else { "https://api.preludesecurity.com" }
 
 function LogError {
