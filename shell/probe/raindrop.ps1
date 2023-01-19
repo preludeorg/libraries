@@ -35,6 +35,7 @@ function Run {
     Run -Dat $Status
 }
 
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $Address = if ($Env:PRELUDE_API) { $Env:PRELUDE_API } else { "https://api.preludesecurity.com/" }
 $Token = if ($Env:PRELUDE_TOKEN) { $Env:PRELUDE_TOKEN } else { "" }
 $CA = if ($Env:PRELUDE_CA) { $Env:PRELUDE_CA } else { "" }
