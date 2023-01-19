@@ -73,6 +73,7 @@ if(Test-Path -path $probePath -PathType Leaf) {
 LogMessage "Determining OS"
 $dos = "windows-" + $Env:PROCESSOR_ARCHITECTURE
 $token=RegisterEndpoint
+$Env:PRELUDE_TOKEN = $token
 DownloadProbe $token $dos $probePath
 StartTask $token $parentDir $probePath
 Write-Host "[=] Detect setup complete"
