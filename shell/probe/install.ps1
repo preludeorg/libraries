@@ -10,9 +10,15 @@ param(
   [String]$endpointId=$env:computername
 )
 
+function FromEnv { param ([string]$envVar, [string]$default)
+    $envVal = [Environment]::GetEnvironmentVariable($envVar, "Process")
+    if($envVal) return $envVal
+    $envVal = [Environment]::GetEnvironmentVariable($envVar, "User")
+    return if ($envVal) { $envVal } else { $default }
+}
+
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-$api = [Environment]::GetEnvironmentVariable("PRELUDE_API", "User")
-$PRELUDE_API=if ($api) { $api } else { "https://api.preludesecurity.com" }
+$PRELUDE_API = FromEnv "PRELUDE_API" "https://api.preludesecurity.com"
 
 function LogError {
     param([string]$errStr)

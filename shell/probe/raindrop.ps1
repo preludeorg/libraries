@@ -35,8 +35,9 @@ function Run {
     Run -Dat $Status
 }
 
-function FromEnv {
-    param ([string]$envVar, [string]$default)
+function FromEnv { param ([string]$envVar, [string]$default)
+    $envVal = [Environment]::GetEnvironmentVariable($envVar, "Process")
+    if($envVal) return $envVal
     $envVal = [Environment]::GetEnvironmentVariable($envVar, "User")
     return if ($envVal) { $envVal } else { $default }
 }
