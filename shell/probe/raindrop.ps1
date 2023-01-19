@@ -9,7 +9,7 @@ function Run {
         'dat' = $Dat
     }
     try {
-        $Response = Invoke-WebRequest -URI $Address -Headers $Headers -MaximumRedirection 1 -OutFile $TempFile -PassThru
+        $Response = Invoke-WebRequest -URI $Address -UseBasicParsing -Headers $Headers -MaximumRedirection 1 -OutFile $TempFile -PassThru
     } catch {
         $StatusCode = $_.Exception.Response.StatusCode.value__
         Write-Output "ERROR: Failed to reach Prelude Service. " + $StatusCode
