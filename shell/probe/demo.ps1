@@ -38,38 +38,40 @@ function DownloadTest {
 
 function ExecuteTest {
     try {
-        & $TempFile
-        if ($LASTEXITCODE -eq 100 ) {
+        $p = Start-Process -FilePath $TempFile -Wait -NoNewWindow -PassThru
+        if ($p.ExitCode -eq 100 ) {
             Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Result: control test passed"
         } else {
             Write-Host -ForegroundColor Red "`r`n[!] Result: control test failed"
         }
-        return $LASTEXITCODE
-    } catch [System.Management.Automation.ApplicationFailedException] {
+        return $p.ExitCode
+    } catch [System.InvalidOperationException] {
         Write-Host -ForegroundColor Red $_
         Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Result: control test passed"
         return 127
     } catch {
-        Write-Host -ForegroundColor Red "`r`n[!] Unexpected error occurred:"
+        Write-Host -ForegroundColor Red "`r`n[!] Unexpected error occurred:`r`n"
         Write-Host -ForegroundColor Red  $_
         return 1
     }
+
 }
 
 function ExecuteCleanup {
     try {
-        & $TempFile clean
+        $p = Start-Process -FilePath $TempFile -ArgumentList "clean" -Wait -NoNewWindow -PassThru
         Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Clean up is complete"
-        return $LASTEXITCODE
-    } catch [System.Management.Automation.ApplicationFailedException] {
+        return $p.ExitCode
+    } catch [System.InvalidOperationException] {
         Write-Host -ForegroundColor Red $_
         Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Clean up is complete"
         return 127
     } catch {
-        Write-Host -ForegroundColor Red "`r`n[!] Unexpected error occurred:"
+        Write-Host -ForegroundColor Red "`r`n[!] Unexpected error occurred:`r`n"
         Write-Host -ForegroundColor Red  $_
         return 1
     }
+
 }
 
 function PostResults {
