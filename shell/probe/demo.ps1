@@ -27,7 +27,7 @@ function CheckRelevance {
 
 function DownloadTest {
     try {
-        Invoke-WebRequest -URI $PRELUDE_API -Headers $Headers -MaximumRedirection 1 -OutFile $TempFile -PassThru | Out-Null
+        Invoke-WebRequest -URI $PRELUDE_API -UseBasicParsing -Headers $Headers -MaximumRedirection 1 -OutFile $TempFile -PassThru | Out-Null
     } catch {
         $StatusCode = $_.Exception.Response.StatusCode.value__
         Write-Host -ForegroundColor Red "`r`n[!] Failed to download test. Http response code: $StatusCode"
@@ -55,7 +55,7 @@ function ExecuteCleanup {
 function PostResults {
     param([string]$testresult)
     $Headers.dat = $TEST_ID + ":" + $testresult
-    Invoke-WebRequest -URI $PRELUDE_API -Headers $Headers -MaximumRedirection 1 | Out-Null
+    Invoke-WebRequest -URI $PRELUDE_API -UseBasicParsing -Headers $Headers -MaximumRedirection 1 | Out-Null
 }
 
 function InstallProbe {
@@ -63,7 +63,7 @@ function InstallProbe {
     $temp = [System.IO.Path]::GetTempFileName() | Rename-Item -NewName { [System.IO.Path]::ChangeExtension($_, "ps1") } -PassThru
 
     try {
-        Invoke-WebRequest -URI $PRELUDE_API/download/install -Headers $Headers -MaximumRedirection 1 -OutFile $temp -PassThru | Out-Null
+        Invoke-WebRequest -URI $PRELUDE_API/download/install -UseBasicParsing -Headers $Headers -MaximumRedirection 1 -OutFile $temp -PassThru | Out-Null
     } catch {
         $StatusCode = $_.Exception.Response.StatusCode.value__
         Write-Host -ForegroundColor Red "`r`n[!] Failed to download installation script. Http response code: $StatusCode"
