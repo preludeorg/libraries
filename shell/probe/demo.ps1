@@ -37,19 +37,39 @@ function DownloadTest {
 }
 
 function ExecuteTest {
-    & $TempFile
-    if ($LASTEXITCODE -eq 100 ) {
+    try {
+        & $TempFile
+        if ($LASTEXITCODE -eq 100 ) {
+            Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Result: control test passed"
+        } else {
+            Write-Host -ForegroundColor Red "`r`n[!] Result: control test failed"
+        }
+        return $LASTEXITCODE
+    } catch [System.Management.Automation.ApplicationFailedException] {
+        Write-Host -ForegroundColor Red $_
         Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Result: control test passed"
-    } else {
-        Write-Host -ForegroundColor Red "`r`n[!] Result: control test failed"
+        return 127
+    } catch {
+        Write-Host -ForegroundColor Red "`r`n[!] Unexpected error occurred:"
+        Write-Host -ForegroundColor Red  $_
+        return 1
     }
-    return $LASTEXITCODE
 }
 
 function ExecuteCleanup {
-    & $TempFile clean
-    Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Clean up is complete"
-    return $LASTEXITCODE
+    try {
+        & $TempFile clean
+        Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Clean up is complete"
+        return $LASTEXITCODE
+    } catch [System.Management.Automation.ApplicationFailedException] {
+        Write-Host -ForegroundColor Red $_
+        Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Clean up is complete"
+        return 127
+    } catch {
+        Write-Host -ForegroundColor Red "`r`n[!] Unexpected error occurred:"
+        Write-Host -ForegroundColor Red  $_
+        return 1
+    }
 }
 
 function PostResults {
@@ -92,7 +112,7 @@ configured to restrict malicious behavior from happening
 Rule: Malicious files should quarantine when written to disk
 Test: Will your computer quarantine a malicious Office document?
 
-[+] Applicable CVE(s): CVE-2017-0199 
+[+] Applicable CVE(s): CVE-2017-0199
 [+] ATT&CK mappings: T1204.002
 
 ###########################################################################################################
@@ -131,7 +151,7 @@ Write-Host "
 ###########################################################################################################
 "
 
-if ($Status -eq 100 ) {
+if ($Status -in 100,127 ) {
     Write-Host "[$($symbols.CHECKMARK)] Good job! Your computer detected and responded to a malicious Office document dropped on the disk" -ForegroundColor Green
 } else {
     Write-Host "[!] This test was able to verify the existence of this vulnerability on your machine, as well as drop a malicious
@@ -154,4 +174,5 @@ do {
 
 Write-Host "
 [*] Return to the Prelude Platform to view your results $extra
-" 
+"
+
