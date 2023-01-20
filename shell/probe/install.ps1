@@ -82,7 +82,8 @@ if(Test-Path -path $probePath -PathType Leaf) {
 LogMessage "Determining OS"
 $dos = "windows-" + $Env:PROCESSOR_ARCHITECTURE
 $token=RegisterEndpoint
-[System.Environment]::SetEnvironmentVariable("PRELUDE_TOKEN", $token, "User")
+[Environment]::SetEnvironmentVariable("PRELUDE_TOKEN", $token, "User")
+[Environment]::SetEnvironmentVariable("PRELUDE_API", $PRELUDE_API, "Process")
 DownloadProbe $token $dos $probePath
 StartTask $token $parentDir $probePath
 Write-Host "[=] Detect setup complete"
