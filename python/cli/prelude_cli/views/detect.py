@@ -86,9 +86,12 @@ def delete_endpoint(controller, endpoint_id):
 @handle_api_error
 def queue(controller):
     """ List all tests in your active queue """
+    build = BuildController(account=controller.account)
+    tests = {row['id']: row['rule'] for row in build.list_tests()}
     active = controller.print_queue()
     for q in active:
         q['run_code'] = RunCode(q['run_code']).name
+        q['rule'] = tests[q['test']]
     print_json(data=active)
 
 
