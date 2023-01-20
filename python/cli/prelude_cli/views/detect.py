@@ -49,7 +49,7 @@ def register_endpoint(controller, name, tags=''):
 @click.option('--tags', help='only enable for these tags')
 @click.option('--run_code',
               help='provide a run_code',
-              default='daily',
+              default='daily', show_default=True,
               type=click.Choice(['daily', 'weekly', 'monthly', 'once', 'debug'], case_sensitive=False))
 @click.pass_obj
 @handle_api_error
@@ -75,7 +75,10 @@ def deactivate_test(controller, test):
 @handle_api_error
 def queue(controller):
     """ List all tests in your active queue """
-    print_json(data=controller.print_queue())
+    active = controller.print_queue()
+    for q in active:
+        q['run_code'] = RunCode(q['run_code']).name
+    print_json(data=active)
 
 
 @detect.command('list-probes')
