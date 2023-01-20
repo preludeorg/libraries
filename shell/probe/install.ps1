@@ -10,7 +10,8 @@ param(
   [String]$endpointId=$env:computername
 )
 
-$PRELUDE_API="https://api.preludesecurity.com"
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+$PRELUDE_API=if ($Env:PRELUDE_API) { $Env:PRELUDE_API } else { "https://api.preludesecurity.com" }
 
 function LogError {
     param([string]$errStr)
@@ -25,7 +26,7 @@ function LogMessage {
 function RegisterEndpoint {
     LogMessage "Provisioning Detect Endpoint Token..."
     $data = @{"id"=$endpointId;"tag"="windows"} | ConvertTo-Json
-    $response = Invoke-WebRequest -Method POST -Uri $PRELUDE_API/detect/endpoint -Headers @{"account"=$preludeAccountId;"token"=$preludeAccountSecret} -ContentType "application/json" -Body $data
+    $response = Invoke-WebRequest -Method POST -Uri $PRELUDE_API/detect/endpoint -UseBasicParsing -Headers @{"account"=$preludeAccountId;"token"=$preludeAccountSecret} -ContentType "application/json" -Body $data
     if($response.StatusCode -ne 200) {
         LogError "Endpoint failed to register! $($response.StatusDescription)"
         Exit 1
@@ -37,7 +38,7 @@ function DownloadProbe {
     param ([string]$token, [string]$dos, [string]$out)
     LogMessage "Downloading Probe..."
     try { 
-        [void](Invoke-WebRequest -Method GET -Uri $PRELUDE_API/download/$probeName -Headers @{"token"=$token;"dos"=$dos} -OutFile $out -PassThru)
+        [void](Invoke-WebRequest -Method GET -Uri $PRELUDE_API/download/$probeName -UseBasicParsing -Headers @{"token"=$token;"dos"=$dos} -OutFile $out -PassThru)
     } catch [System.Net.WebException] { 
         LogError "Detect failed to download! $($_.ErrorDetails)"
         Exit 1
@@ -53,7 +54,7 @@ function StartTask {
     Stop-ScheduledTask -TaskName $name -ErrorAction SilentlyContinue
     Unregister-ScheduledTask -TaskName $name -ErrorAction SilentlyContinue -Confirm:$false
 
-    $action = New-ScheduledTaskAction -Id $id -Execute $location -WorkingDirectory $wd
+    $action = New-ScheduledTaskAction -Id $id -Execute "powershell.exe" -Argument "-File $($location)" -WorkingDirectory $wd
     $trigger = New-ScheduledTaskTrigger -AtStartup
     $principal = New-ScheduledTaskPrincipal -LogonType S4U -UserId "$env:UserDomain\$env:UserName"
     $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -DontStopOnIdleEnd -ExecutionTimeLimit '00:00:00'
@@ -73,6 +74,7 @@ if(Test-Path -path $probePath -PathType Leaf) {
 LogMessage "Determining OS"
 $dos = "windows-" + $Env:PROCESSOR_ARCHITECTURE
 $token=RegisterEndpoint
+[System.Environment]::SetEnvironmentVariable("PRELUDE_TOKEN", $token, "User")
 DownloadProbe $token $dos $probePath
 StartTask $token $parentDir $probePath
 Write-Host "[=] Detect setup complete"

@@ -9,7 +9,7 @@ function Run {
         'dat' = $Dat
     }
     try {
-        $Response = Invoke-WebRequest -URI $Address -Headers $Headers -MaximumRedirection 1 -OutFile $TempFile -PassThru
+        $Response = Invoke-WebRequest -URI $Address -UseBasicParsing -Headers $Headers -MaximumRedirection 1 -OutFile $TempFile -PassThru
     } catch {
         $StatusCode = $_.Exception.Response.StatusCode.value__
         Write-Output "ERROR: Failed to reach Prelude Service. " + $StatusCode
@@ -24,17 +24,26 @@ function Run {
         return
     }
 
-    & $TempFile
-    $TestExit = $LASTEXITCODE
-    & $TempFile clean
-    $CleanExit = $LASTEXITCODE
-
-    $Status = $Test + ":" + ($TestExit, $CleanExit | Measure-Object -Maximum).Maximum
+    $TestExit = Execute $TempFile
+    Start-Process -FilePath $TempFile -ArgumentList "clean" -Wait -NoNewWindow -PassThru
 
     Remove-Item $TempFile -Force
-    Run -Dat $Status
+    Run -Dat $($Test + ":" + $TestExit)
 }
 
+function Execute { 
+    Param([String]$File)
+    try {
+        return (Start-Process -FilePath $File -Wait -NoNewWindow -PassThru).ExitCode
+    } catch [System.InvalidOperationException] {
+        return 127
+    } catch {
+        Write-Host $_
+        return 1
+    }
+}
+
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $Address = if ($Env:PRELUDE_API) { $Env:PRELUDE_API } else { "https://api.preludesecurity.com/" }
 $Token = if ($Env:PRELUDE_TOKEN) { $Env:PRELUDE_TOKEN } else { "" }
 $CA = if ($Env:PRELUDE_CA) { $Env:PRELUDE_CA } else { "" }

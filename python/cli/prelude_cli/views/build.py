@@ -1,8 +1,9 @@
 import importlib.resources as pkg_resources
 import uuid
+import re
 
 from datetime import datetime
-from pathlib import Path
+from pathlib import Path, PurePath
 
 import click
 import prelude_cli.templates as templates
@@ -11,6 +12,9 @@ from prelude_sdk.models.codes import Colors
 from rich import print_json
 
 from prelude_sdk.controllers.build_controller import BuildController
+
+
+UUID = re.compile('[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}')
 
 
 @click.group()
@@ -25,11 +29,14 @@ def build(ctx):
 @handle_api_error
 def clone(controller):
     """ Download all tests to your local environment """
-    Path('prelude').mkdir(exist_ok=True)
     for test in controller.list_tests():
-        code = controller.download_test(filename=test['filename'])
-        with open(f'prelude/{test["filename"]}', 'wb') as test_code:
-            test_code.write(code)
+        my_test = PurePath('prelude', test['id'])
+        Path(my_test).mkdir(parents=True, exist_ok=True)
+        for attach in test['attachments']:
+            if Path(attach).suffix:
+                code = controller.download(test_id=test['id'], filename=attach)
+                with open(PurePath(my_test, attach), 'wb') as f:
+                    f.write(code)
         click.secho(f'Cloned {test["id"]}')
     click.secho('Project cloned successfully', fg=Colors.GREEN.value)
 
@@ -52,10 +59,9 @@ def create_test(controller, rule):
 
     controller.create_test(test_id=test_id, rule=rule)
     template = pkg_resources.read_text(templates, 'template.go')
-    template = template.replace('$FILENAME', basename)
     template = template.replace('$RULE', rule)
     template = template.replace('$CREATED', str(datetime.now()))
-    controller.upload_test(filename=basename, code=template)
+    controller.upload(test_id=test_id, filename=basename, code=template)
 
     with open(basename, 'w') as test_code:
         test_code.write(template)
@@ -75,12 +81,19 @@ def delete_test(controller, test_id):
 
 @build.command('upload')
 @click.argument('path', type=click.Path(exists=True))
+@click.option('--test', help='test identifier for this attachment', default=None, type=str)
 @click.pass_obj
 @handle_api_error
-def save_test(controller, path):
-    """ Upload a security test on disk """
+def upload_attachment(controller, path, test):
+    """ Upload a security test or test attachment from disk """
+    def test_id():
+        match = UUID.search(path)
+        if match:
+            return match.group(0)
+        raise FileNotFoundError('Must specify a test ID or include it in the filename')
+
     with open(path, 'r') as source_code:
-        controller.upload_test(filename=Path(path).name, code=source_code.read())
+        controller.upload(test_id=test or test_id(), filename=Path(path).name, code=source_code.read())
         click.secho(f'Uploaded {path}', fg=Colors.GREEN.value)
 
 

@@ -49,7 +49,7 @@ def register_endpoint(controller, name, tags=''):
 @click.option('--tags', help='only enable for these tags')
 @click.option('--run_code',
               help='provide a run_code',
-              default='daily',
+              default='daily', show_default=True,
               type=click.Choice(['daily', 'weekly', 'monthly', 'once', 'debug'], case_sensitive=False))
 @click.pass_obj
 @handle_api_error
@@ -70,12 +70,29 @@ def deactivate_test(controller, test):
     click.secho(f'Disabled {test}', fg=Colors.GREEN.value)
 
 
+@detect.command('delete-endpoint')
+@click.argument('endpoint_id')
+@click.confirmation_option(prompt='Are you sure?')
+@click.pass_obj
+@handle_api_error
+def delete_endpoint(controller, endpoint_id):
+    """Delete a probe/endpoint"""
+    controller.delete_endpoint(ident=endpoint_id)
+    click.secho(f'Deleted {endpoint_id}', fg=Colors.GREEN.value)
+
+
 @detect.command('list-queue')
 @click.pass_obj
 @handle_api_error
 def queue(controller):
     """ List all tests in your active queue """
-    print_json(data=controller.print_queue())
+    build = BuildController(account=controller.account)
+    tests = {row['id']: row['rule'] for row in build.list_tests()}
+    active = controller.print_queue()
+    for q in active:
+        q['run_code'] = RunCode(q['run_code']).name
+        q['rule'] = tests[q['test']]
+    print_json(data=active)
 
 
 @detect.command('list-probes')
@@ -98,22 +115,35 @@ def describe_activity(controller, days):
     tests = {row['id']: row['rule'] for row in build.list_tests()}
 
     report = Table()
-    report.add_column('date')
+    report.add_column('timestamp')
+    report.add_column('result ID')
     report.add_column('rule')
     report.add_column('test')
     report.add_column('endpoint')
     report.add_column('code', style='magenta')
     report.add_column('status')
+    report.add_column('observed')
 
     for record in raw:
         report.add_row(
             record['date'], 
+            record['id'], 
             tests[record['test']], 
             record['test'],
             record['endpoint_id'], 
             str(record['status']),
-            Lookup(record['status']).name
+            Lookup(record['status']).name,
+            'yes' if record.get('observed') else '-'
         )
 
     console = Console()
     console.print(report)
+
+@detect.command('observe')
+@click.argument('result')
+@click.option('--value', help='Mark 1 for observed', default=1, type=int)
+@click.pass_obj
+@handle_api_error
+def observe(controller, result, value):
+    """ Mark a result as observed """
+    controller.observe(row_id=result, value=value)

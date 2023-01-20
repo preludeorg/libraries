@@ -36,24 +36,32 @@ export default class BuildController {
     });
   }
 
-  async downloadTest(filename: string, options: RequestOptions = {}) {
+  async download(
+    testId: string,
+    filename: string,
+    options: RequestOptions = {}
+  ) {
     const response = await this.#client.requestWithAuth(
-      `/build/source/${filename}`,
+      `/build/attachment/${testId}/${filename}`,
       options
     );
     return response.text();
   }
 
-  async uploadTest(
+  async upload(
+    testId: string,
     filename: string,
     code: string,
     options: RequestOptions = {}
   ) {
-    await this.#client.requestWithAuth(`/build/source/${filename}`, {
-      method: "POST",
-      body: JSON.stringify({ code }),
-      ...options,
-    });
+    await this.#client.requestWithAuth(
+      `/build/attachment/${testId}/${filename}`,
+      {
+        method: "POST",
+        body: JSON.stringify({ code }),
+        ...options,
+      }
+    );
   }
 
   async createURL(vst: string, options: RequestOptions = {}) {

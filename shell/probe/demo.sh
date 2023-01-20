@@ -32,23 +32,23 @@ function execute_test {
     $temp
     test_result=$?
     echo
-    if [ "$test_result" = 100 ];then
+    if ( echo "100 9 17 18 105 127" | grep -w -q $test_result );then
         echo -e "${GREEN}[✓] Result: control test passed${NC}"
-    else
+    elif [ $test_result -eq 101 ];then
         echo -e "${RED}[!] Result: control test failed${NC}"
+    else
+        echo -e "${RED}[!] An unexpected error occurred${NC}"
     fi
 }
 
 function execute_cleanup {
     $temp -cleanup
-    cleanup_result=$?
     echo
     echo -e "${GREEN}[✓] Clean up is complete${NC}"
 }
 
 function post_results {
-    max=$(( $test_result > $cleanup_result ? $test_result : $cleanup_result ))
-    dat=${test}:${max}
+    dat=${test}:${$test_result}
     curl -sfSL -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "dat:${dat}" $PRELUDE_API
 }
 
@@ -112,13 +112,15 @@ post_results
 echo
 echo "###########################################################################################################"
 echo
-if [ "$test_result" = 100 ];then
+if ( echo "100 9 17 18 105 127" | grep -w -q $test_result );then
     echo -e "${GREEN}[✓] Good job! Your computer detected and responded to a malicious Office document dropped on "
     echo -e "the disk${NC}"
-else
+elif [ $test_result -eq 101 ];then
     echo -e "${RED}[!] This test was able to verify the existence of this vulnerability on your machine, as well as drop"
     echo "a malicious Office document on the disk. If you have security controls in place that you suspect should"
     echo -e "have protected your host, please review the logs${NC}"
+else
+    echo -e "${RED}[!] This test encountered an unexpected error during execution. Please try again${NC}"
 fi
 echo
 echo "###########################################################################################################"
