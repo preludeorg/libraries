@@ -66,7 +66,7 @@ function ExecuteCleanup {
         }
     } catch [System.InvalidOperationException] {
         Write-Host -ForegroundColor Red $_
-        Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Clean up is complete"
+        Write-Host -ForegroundColor Red "`r`n[!] Clean up failed"
     } catch {
         Write-Host -ForegroundColor Red "`r`n[!] Unexpected error occurred:`r`n"
         Write-Host -ForegroundColor Red  $_
@@ -142,7 +142,11 @@ Write-Host "--------------------------------------------------------------------
 [3] Running cleanup
 "
 Start-Sleep -Seconds 3
-ExecuteCleanup
+if ($TestResult -eq 127) {
+    Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Clean up is complete"
+} else {
+    ExecuteCleanup
+}
 
 PostResults $TestResult
 
