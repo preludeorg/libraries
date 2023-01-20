@@ -2,12 +2,11 @@
 
 A probe written in Go.
 
-Hades can run as either a standalone script or be installed into another app as a library (SDK). 
 
 ## Quick start | Standalone
 
 Compile Hades for each supported operating system:
-```
+```bash
 GOOS=darwin go build -ldflags="-s -w" -o hades main.go;
 GOOS=linux go build -ldflags="-s -w" -o hades main.go;
 GOOS=windows go build -ldflags="-s -w" -o hades.exe main.go;
@@ -20,27 +19,4 @@ Start the probe:
 ```bash
 export PRELUDE_TOKEN=<TOKEN>
 ./hades
-```
-
-## Quick start | SDK
-
-```bash
-go get github.com/preludeorg/libraries/go/probe
-```
-
-Include Hades in a project with:
-
-```golang
-package main
-
-import (
-    hades "github.com/preludeorg/libraries/go/probe/pkg/service"
-)
-
-func main() {
-    ps := hades.CreateService()
-    if err := ps.Register(); err == nil {
-        ps.Start()
-    }
-}
 ```
