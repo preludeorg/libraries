@@ -70,6 +70,17 @@ def deactivate_test(controller, test):
     click.secho(f'Disabled {test}', fg=Colors.GREEN.value)
 
 
+@detect.command('delete-endpoint')
+@click.argument('endpoint_id')
+@click.confirmation_option(prompt='Are you sure?')
+@click.pass_obj
+@handle_api_error
+def delete_endpoint(controller, endpoint_id):
+    """Delete a probe/endpoint"""
+    controller.delete_endpoint(ident=endpoint_id)
+    click.secho(f'Deleted {endpoint_id}', fg=Colors.GREEN.value)
+
+
 @detect.command('list-queue')
 @click.pass_obj
 @handle_api_error
