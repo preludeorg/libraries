@@ -29,14 +29,14 @@ class BuildController:
             raise Exception(res.text)
 
     @verify_credentials
-    def download_attachment(self, test_id, filename):
+    def download(self, test_id, filename):
         res = requests.get(f'{self.account.hq}/build/attachment/{test_id}/{filename}', headers=self.account.headers)
         if res.status_code == 200:
             return res.content
         raise Exception(res.text)
 
     @verify_credentials
-    def upload_attachment(self, test_id, filename, code):
+    def upload(self, test_id, filename, code):
         res = requests.post(f'{self.account.hq}/build/attachment/{test_id}/{filename}', json=dict(code=code), headers=self.account.headers)
         if not res.status_code == 200:
             raise Exception(res.text)

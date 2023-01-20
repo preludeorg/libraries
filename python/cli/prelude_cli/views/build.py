@@ -32,7 +32,7 @@ def clone(controller):
     Path('prelude').mkdir(exist_ok=True)
     for test in controller.list_tests():
         for attach in test['attachments']:
-            code = controller.download_attachment(test_id=test['id'], filename=attach)
+            code = controller.download(test_id=test['id'], filename=attach)
             with open(f'prelude/{attach}', 'wb') as f:
                 f.write(code)
         click.secho(f'Cloned {test["id"]}')
@@ -59,7 +59,7 @@ def create_test(controller, rule):
     template = pkg_resources.read_text(templates, 'template.go')
     template = template.replace('$RULE', rule)
     template = template.replace('$CREATED', str(datetime.now()))
-    controller.upload_attachment(test_id=test_id, filename=basename, code=template)
+    controller.upload(test_id=test_id, filename=basename, code=template)
 
     with open(basename, 'w') as test_code:
         test_code.write(template)
@@ -91,7 +91,7 @@ def upload_attachment(controller, path):
 
     identifier = test_id or test_id()
     with open(path, 'r') as source_code:
-        controller.upload_attachment(test_id=identifier, filename=Path(path).name, code=source_code.read())
+        controller.upload(test_id=identifier, filename=Path(path).name, code=source_code.read())
         click.secho(f'Uploaded {path}', fg=Colors.GREEN.value)
 
 
