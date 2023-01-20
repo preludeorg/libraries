@@ -1,18 +1,13 @@
-name: Staging Deploy (install / demo / nocturnal / raindrop scripts)
+name: Prod Deploy (install / demo / nocturnal / raindrop scripts)
 
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - 'shell/probe/**'
   release:
     types:
       - published
   workflow_dispatch:
 
 env: 
-  ENVIRONMENT: staging
+  ENVIRONMENT: prod
   S3_BUCKET: ${{ secrets.BUCKET_NAME }}
   AWS_REGION: ${{ secrets.BUCKET_REGION }}
 
@@ -20,9 +15,9 @@ jobs:
   build_ubuntu:
 
     runs-on: ubuntu-latest
-    environment: staging
+    environment: prod
 
-    name: Staging Deploy (install / demo / nocturnal / raindrop scripts)
+    name: Prod Deploy (install / demo / nocturnal / raindrop scripts)
 
     steps:
       - name: Check out code. 
