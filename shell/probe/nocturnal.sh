@@ -20,14 +20,12 @@ do
 
             if test -f "$temp";then
                 $temp
-                res1=$?
+                res=$?
                 $temp -cleanup
-                res2=$?
-                max=$(( $res1 > $res2 ? $res1 : $res2 ))
             else
-                max=9
+                res=9
             fi
-            curl -sL -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "dat:${test}:${max}" $PRELUDE_API
+            curl -sL -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "dat:${test}:${res}" $PRELUDE_API
         fi
     fi
 done
