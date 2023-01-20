@@ -45,7 +45,7 @@ struct Service {
                     print("ERROR: During clean")
                     return
                 }
-                engage(dat: "\(name.prefix(36)):\(max(test, cleanup))")
+                engage(dat: "\(name.prefix(36)):\(test)")
             }
         }.resume()
     }
