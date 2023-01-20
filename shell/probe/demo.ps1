@@ -38,19 +38,40 @@ function DownloadTest {
 }
 
 function ExecuteTest {
-    & $TempFile
-    if ($LASTEXITCODE -eq 100 ) {
+    try {
+        $p = Start-Process -FilePath $TempFile -Wait -NoNewWindow -PassThru
+        if ($p.ExitCode -in 100,9,17,18,105,127 ) {
+            Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Result: control test passed"
+        } else {
+            Write-Host -ForegroundColor Red "`r`n[!] Result: control test failed"
+        }
+        return $p.ExitCode
+    } catch [System.InvalidOperationException] {
+        Write-Host -ForegroundColor Red $_
         Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Result: control test passed"
-    } else {
-        Write-Host -ForegroundColor Red "`r`n[!] Result: control test failed"
+        return 127
+    } catch {
+        Write-Host -ForegroundColor Red "`r`n[!] Unexpected error occurred:`r`n"
+        Write-Host -ForegroundColor Red  $_
+        return 1
     }
-    return $LASTEXITCODE
 }
 
 function ExecuteCleanup {
-    & $TempFile clean
-    Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Clean up is complete"
-    return $LASTEXITCODE
+    try {
+        $p = Start-Process -FilePath $TempFile -ArgumentList "clean" -Wait -NoNewWindow -PassThru
+        if ($p.ExitCode -eq 100 ) {
+            Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Clean up is complete"
+        } else {
+            Write-Host -ForegroundColor Red "`r`n[!] Clean up failed"
+        }
+    } catch [System.InvalidOperationException] {
+        Write-Host -ForegroundColor Red $_
+        Write-Host -ForegroundColor Red "`r`n[!] Clean up failed"
+    } catch {
+        Write-Host -ForegroundColor Red "`r`n[!] Unexpected error occurred:`r`n"
+        Write-Host -ForegroundColor Red  $_
+    }
 }
 
 function PostResults {
@@ -74,7 +95,6 @@ function InstallProbe {
     $account_id = Read-Host -Prompt "Enter your Prelude Account ID"
     $account_token = Read-Host -Prompt "Enter your Prelude Account token"
     & $temp $account_id $account_token
-    Remove-Item $TempFile -Force
 }
 
 Write-Host "
@@ -93,7 +113,7 @@ configured to restrict malicious behavior from happening
 Rule: Malicious files should quarantine when written to disk
 Test: Will your computer quarantine a malicious Office document?
 
-[+] Applicable CVE(s): CVE-2017-0199 
+[+] Applicable CVE(s): CVE-2017-0199
 [+] ATT&CK mappings: T1204.002
 
 ###########################################################################################################
@@ -115,27 +135,32 @@ Write-Host "--------------------------------------------------------------------
 [2] Executing test
 "
 Start-Sleep -Seconds 3
-$testresult = ExecuteTest
+$TestResult = ExecuteTest
 
 Write-Host "-----------------------------------------------------------------------------------------------------------
 [3] Running cleanup
 "
 Start-Sleep -Seconds 3
-$cleanresult = ExecuteCleanup
+if ($TestResult -eq 127) {
+    Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Clean up is complete"
+} else {
+    ExecuteCleanup
+}
 
-$Status = ($testresult, $cleanresult | Measure-Object -Maximum).Maximum
-PostResults $Status
+PostResults $TestResult
 
 Write-Host "
 ###########################################################################################################
 "
 
-if ($Status -eq 100 ) {
-    Write-Host "[$($symbols.CHECKMARK)] Good job! Your computer detected and responded to a malicious Office document dropped on the disk" -ForegroundColor Green
-} else {
-    Write-Host "[!] This test was able to verify the existence of this vulnerability on your machine, as well as drop a malicious
+if ($TestResult -in 100,9,17,18,105,127 ) {
+    Write-Host -ForegroundColor Green "[$($symbols.CHECKMARK)] Good job! Your computer detected and responded to a malicious Office document dropped on the disk"
+} elseif ($TestResult -eq 101) {
+    Write-Host -ForegroundColor Red "[!] This test was able to verify the existence of this vulnerability on your machine, as well as drop a malicious
 Office document on the disk. If you have security controls in place that you suspect should have protected your
-host, please review the logs" -ForegroundColor Red
+host, please review the logs"
+} else {
+    Write-Host -ForegroundColor Red "[!] This test encountered an unexpected error during execution. Please try again"
 }
 
 Write-Host "
@@ -153,4 +178,5 @@ do {
 
 Write-Host "
 [*] Return to the Prelude Platform to view your results $extra
-" 
+"
+
