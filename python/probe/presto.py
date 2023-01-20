@@ -37,8 +37,8 @@ class Probe:
                 os.close(fd)
                 os.chmod(name, os.stat(name).st_mode | stat.S_IEXEC)
                 test = subprocess.run([name], timeout=2)
-                clean = subprocess.run([name, 'clean'], timeout=2)
-                return f'{pack[0]}:{max(test.returncode, clean.returncode)}'
+                subprocess.run([name, 'clean'], timeout=2)
+                return f'{pack[0]}:{test.returncode}'
             except subprocess.TimeoutExpired:
                 return f'{pack[0]}:102'
             except Exception:

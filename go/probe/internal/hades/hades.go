@@ -96,8 +96,8 @@ func (p *Probe) save(data []byte) (*os.File, error) {
 
 func (p *Probe) run(exe *os.File) int {
 	test := runWithTimeout(exe.Name(), p.commandTimout)
-	cleanup := runWithTimeout(exe.Name(), p.commandTimout, "clean")
-	return util.Max(test, cleanup)
+	runWithTimeout(exe.Name(), p.commandTimout, "clean")
+	return test
 }
 
 func runWithTimeout(executable string, timeout time.Duration, args ...string) int {
