@@ -18,6 +18,14 @@ class DetectController:
         raise Exception(res.text)
 
     @verify_credentials
+    def delete_endpoint(self, ident: str):
+        """ Delete an endpoint from your account """
+        params = dict(id=ident)
+        res = requests.delete(f'{self.account.hq}/detect/endpoint', headers=self.account.headers, json=params)
+        if res.status_code != 200:
+            raise Exception(res.text)
+
+    @verify_credentials
     def describe_activity(self, days=7):
         """ Get report for an Account """
         params = dict(days=days)
