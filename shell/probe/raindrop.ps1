@@ -24,15 +24,23 @@ function Run {
         return
     }
 
-    & $TempFile
-    $TestExit = $LASTEXITCODE
-    & $TempFile clean
-    $CleanExit = $LASTEXITCODE
-
-    $Status = $Test + ":" + ($TestExit, $CleanExit | Measure-Object -Maximum).Maximum
+    $TestExit = Execute $TempFile
+    Start-Process -FilePath $TempFile -ArgumentList "clean" -Wait -NoNewWindow -PassThru
 
     Remove-Item $TempFile -Force
-    Run -Dat $Status
+    Run -Dat $($Test + ":" + $TestExit)
+}
+
+function Execute { 
+    Param([String]$File)
+    try {
+        return (Start-Process -FilePath $File -Wait -NoNewWindow -PassThru).ExitCode
+    } catch [System.InvalidOperationException] {
+        return 127
+    } catch {
+        Write-Host $_
+        return 1
+    }
 }
 
 $Address = if ($Env:PRELUDE_API) { $Env:PRELUDE_API } else { "https://api.preludesecurity.com/" }

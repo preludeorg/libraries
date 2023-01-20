@@ -54,7 +54,6 @@ function ExecuteTest {
         Write-Host -ForegroundColor Red  $_
         return 1
     }
-
 }
 
 function ExecuteCleanup {
@@ -65,17 +64,13 @@ function ExecuteCleanup {
         } else {
             Write-Host -ForegroundColor Red "`r`n[!] Clean up failed"
         }
-        return $p.ExitCode
     } catch [System.InvalidOperationException] {
         Write-Host -ForegroundColor Red $_
         Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Clean up is complete"
-        return 127
     } catch {
         Write-Host -ForegroundColor Red "`r`n[!] Unexpected error occurred:`r`n"
         Write-Host -ForegroundColor Red  $_
-        return 1
     }
-
 }
 
 function PostResults {
@@ -142,24 +137,23 @@ Write-Host "--------------------------------------------------------------------
 [2] Executing test
 "
 Start-Sleep -Seconds 3
-$testresult = ExecuteTest
+$TestResult = ExecuteTest
 
 Write-Host "-----------------------------------------------------------------------------------------------------------
 [3] Running cleanup
 "
 Start-Sleep -Seconds 3
-$cleanresult = ExecuteCleanup
+ExecuteCleanup
 
-$Status = ($testresult, $cleanresult | Measure-Object -Maximum).Maximum
-PostResults $Status
+PostResults $TestResult
 
 Write-Host "
 ###########################################################################################################
 "
 
-if ($Status -in 100,9,17,18,105,127 ) {
+if ($TestResult -in 100,9,17,18,105,127 ) {
     Write-Host -ForegroundColor Green "[$($symbols.CHECKMARK)] Good job! Your computer detected and responded to a malicious Office document dropped on the disk"
-} elseif ($Status -eq 101) {
+} elseif ($TestResult -eq 101) {
     Write-Host -ForegroundColor Red "[!] This test was able to verify the existence of this vulnerability on your machine, as well as drop a malicious
 Office document on the disk. If you have security controls in place that you suspect should have protected your
 host, please review the logs"
