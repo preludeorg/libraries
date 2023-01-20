@@ -39,7 +39,7 @@ function DownloadTest {
 function ExecuteTest {
     try {
         $p = Start-Process -FilePath $TempFile -Wait -NoNewWindow -PassThru
-        if ($p.ExitCode -eq 100 ) {
+        if ($p.ExitCode -in 100,9,17,18,105,127 ) {
             Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Result: control test passed"
         } else {
             Write-Host -ForegroundColor Red "`r`n[!] Result: control test failed"
