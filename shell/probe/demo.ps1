@@ -94,7 +94,6 @@ function InstallProbe {
     $account_id = Read-Host -Prompt "Enter your Prelude Account ID"
     $account_token = Read-Host -Prompt "Enter your Prelude Account token"
     & $temp $account_id $account_token
-    Remove-Item $TempFile -Force
 }
 
 Write-Host "
