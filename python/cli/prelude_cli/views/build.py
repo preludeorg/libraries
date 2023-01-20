@@ -3,7 +3,7 @@ import uuid
 import re
 
 from datetime import datetime
-from pathlib import Path
+from pathlib import Path, PurePath
 
 import click
 import prelude_cli.templates as templates
@@ -29,12 +29,14 @@ def build(ctx):
 @handle_api_error
 def clone(controller):
     """ Download all tests to your local environment """
-    Path('prelude').mkdir(exist_ok=True)
     for test in controller.list_tests():
+        my_test = PurePath('prelude', test['id'])
+        Path(my_test).mkdir(parents=True, exist_ok=True)
         for attach in test['attachments']:
-            code = controller.download(test_id=test['id'], filename=attach)
-            with open(f'prelude/{attach}', 'wb') as f:
-                f.write(code)
+            if Path(attach).suffix:
+                code = controller.download(test_id=test['id'], filename=attach)
+                with open(PurePath(my_test, attach), 'wb') as f:
+                    f.write(code)
         click.secho(f'Cloned {test["id"]}')
     click.secho('Project cloned successfully', fg=Colors.GREEN.value)
 
@@ -79,9 +81,10 @@ def delete_test(controller, test_id):
 
 @build.command('upload')
 @click.argument('path', type=click.Path(exists=True))
+@click.option('--test', help='test identifier for this attachment', default=None, type=str)
 @click.pass_obj
 @handle_api_error
-def upload_attachment(controller, path):
+def upload_attachment(controller, path, test):
     """ Upload a security test or test attachment from disk """
     def test_id():
         match = UUID.search(path)
@@ -89,9 +92,8 @@ def upload_attachment(controller, path):
             return match.group(0)
         raise FileNotFoundError('Must specify a test ID or include it in the filename')
 
-    identifier = test_id or test_id()
     with open(path, 'r') as source_code:
-        controller.upload(test_id=identifier, filename=Path(path).name, code=source_code.read())
+        controller.upload(test_id=test or test_id(), filename=Path(path).name, code=source_code.read())
         click.secho(f'Uploaded {path}', fg=Colors.GREEN.value)
 
 
