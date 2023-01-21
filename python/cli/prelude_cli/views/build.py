@@ -108,12 +108,12 @@ def upload_attachment(controller, path, test):
 
 
 @build.command('url')
-@click.argument('vst')
+@click.argument('attachment')
 @click.pass_obj
 @handle_api_error
-def create_url(controller, vst):
-    """ Generate a download URL from a VST name """
-    print_json(data=controller.create_url(vst=vst))
+def create_url(controller, attachment):
+    """ Generate a download URL from an attachment """
+    print_json(data=controller.create_url(attachment=attachment))
 
 
 @build.command('compute')
