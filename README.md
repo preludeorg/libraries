@@ -26,16 +26,16 @@ A [probe](https://docs.prelude.org/docs/probes) is an ephemeral endpoint process
 
 ### SDK
 
-A Software Development Kit (SDK) allows you to build your own tooling against the Prelude Service API. Additionally, some probes have [SDK implementations](https://docs.prelude.org/docs/probes#sdk-probes) allowing you to deploy them from inside your own applications.
+A Software Development Kit (SDK) allows you to build your own tooling against the Prelude Service API. 
 
 ## Probe compatibility 
 
 > A DOS is a platform and architecture combination
 
-| Name  |  Runtime | SDK option | Supported (DOS)
+| Name  |  Runtime | Supported (DOS)
 | ------------- | ------------- | ------------- | -------------
-| [Moonlight](https://github.com/preludeorg/libraries/tree/master/swift/probe) | Swift | No | darwin-x86_64, darwin-arm64
-| [Hades](https://github.com/preludeorg/libraries/tree/master/go/probe) | Go | Yes | windows-x86_64, linux-x86_64, linux-arm64, darwin-x86_64, darwin-arm64
-| [Presto](https://github.com/preludeorg/libraries/tree/master/python/probe) | Python | Yes | windows-x86_64, linux-x86_64, linux-arm64, darwin-x86_64, darwin-arm64
-| [Raindrop](https://github.com/preludeorg/libraries/tree/master/shell/probe) | PowerShell | No | windows-x86_64
-| [Nocturnal](https://github.com/preludeorg/libraries/tree/master/shell/probe) | Bash | No | linux-x86_64, linux-arm64,darwin-x86_64, darwin-arm64
+| [Moonlight](https://github.com/preludeorg/libraries/tree/master/swift/probe) | Swift | darwin-x86_64, darwin-arm64
+| [Hades](https://github.com/preludeorg/libraries/tree/master/go/probe) | Go | windows-x86_64, linux-x86_64, linux-arm64, darwin-x86_64, darwin-arm64
+| [Presto](https://github.com/preludeorg/libraries/tree/master/python/probe) | Python | windows-x86_64, linux-x86_64, linux-arm64, darwin-x86_64, darwin-arm64
+| [Raindrop](https://github.com/preludeorg/libraries/tree/master/shell/probe) | PowerShell | windows-x86_64
+| [Nocturnal](https://github.com/preludeorg/libraries/tree/master/shell/probe) | Bash | linux-x86_64, linux-arm64,darwin-x86_64, darwin-arm64
