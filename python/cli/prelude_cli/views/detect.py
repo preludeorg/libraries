@@ -140,6 +140,17 @@ def describe_activity(controller, days):
     console = Console()
     console.print(report)
 
+
+@detect.command('test-stats')
+@click.argument('test')
+@click.option('--days', help='days to look back', default=30, type=int)
+@click.pass_obj
+@handle_api_error
+def describe_activity(controller, test, days):
+    """ Pull social statistics for a specific test """
+    print_json(data=controller.stats(ident=test, days=days))
+
+
 @detect.command('observe')
 @click.argument('result')
 @click.option('--value', help='Mark 1 for observed', default=1, type=int)
