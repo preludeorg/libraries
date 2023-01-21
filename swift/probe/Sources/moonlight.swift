@@ -94,5 +94,5 @@ let service = Service(
 
 while true {
     service.engage()
-    sleep(43200)
+    sleep(14400)
 }

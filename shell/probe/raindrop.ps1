@@ -56,5 +56,5 @@ $Dos = "windows-" + $Env:PROCESSOR_ARCHITECTURE
 
 while ($true) {
     Run
-    Start-Sleep -Seconds 43200
+    Start-Sleep -Seconds 14400
 }
