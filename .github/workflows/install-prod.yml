@@ -27,8 +27,8 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:
           aws-region: ${{ env.AWS_REGION }}
-          aws-access-key-id: ${{ secrets.STAGING_S3_DEPLOYMENT_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.STAGING_S3_DEPLOYMENT_SECRET_KEY }}
+          aws-access-key-id: ${{ secrets.PROD_S3_DEPLOYMENT_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.PROD_S3_DEPLOYMENT_SECRET_KEY }}
 
       - name: Copy files to the s3 with the AWS CLI
         run: |
