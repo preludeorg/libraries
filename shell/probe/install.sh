@@ -5,7 +5,7 @@ PRELUDE_ACCOUNT_ID=""
 PRELUDE_ACCOUNT_SECRET=""
 PROBE_NAME="nocturnal"
 ENDPOINT_ID=$(hostname)
-ENDPOINT_TOKEN=""
+ENDPOINT_TOKEN=${ENDPOINT_TOKEN:=""}
 DOS="$(uname | awk '{print tolower($0)}')-$(uname -m)"
 
 function usage {
@@ -47,10 +47,13 @@ while getopts ${optstring} arg; do
 done
 
 register_new_endpoint() {
-    echo "[+] Provisioning Detect Endpoint Token..."
-    local _token_url="${PRELUDE_API}/detect/endpoint"
-    ENDPOINT_TOKEN=$(curl -sfS -X POST -H "account:${PRELUDE_ACCOUNT_ID}" -H "token:${PRELUDE_ACCOUNT_SECRET}" -H "Content-Type: application/json" -d "{\"id\":\"${ENDPOINT_ID}\",\"tag\":\"darwin\"}"  "${_token_url}")
-    export ENDPOINT_TOKEN
+    if [[ -z $ENDPOINT_TOKEN ]];
+    then
+        echo "[+] Provisioning Detect Endpoint Token..."
+        local _token_url="${PRELUDE_API}/detect/endpoint"
+        ENDPOINT_TOKEN=$(curl -sfS -X POST -H "account:${PRELUDE_ACCOUNT_ID}" -H "token:${PRELUDE_ACCOUNT_SECRET}" -H "Content-Type: application/json" -d "{\"id\":\"${ENDPOINT_ID}\",\"tag\":\"darwin\"}"  "${_token_url}")
+        export ENDPOINT_TOKEN
+    fi
 }
 
 download_probe () {
