@@ -12,7 +12,7 @@ param(
 
 function FromEnv { param ([string]$envVar, [string]$default)
     $envVal = [Environment]::GetEnvironmentVariable($envVar, "User")
-    return if ($envVal) { $envVal } else { $default }
+    if ($envVal) { return $envVal } else { return $default }
 }
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
