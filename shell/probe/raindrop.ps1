@@ -43,10 +43,15 @@ function Execute {
     }
 }
 
+function FromEnv { param ([string]$envVar, [string]$default)
+    $envVal = [Environment]::GetEnvironmentVariable($envVar, "User")
+    return if ($envVal) { $envVal } else { $default }
+}
+
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-$Address = if ($Env:PRELUDE_API) { $Env:PRELUDE_API } else { "https://api.preludesecurity.com/" }
-$Token = if ($Env:PRELUDE_TOKEN) { $Env:PRELUDE_TOKEN } else { "" }
-$CA = if ($Env:PRELUDE_CA) { $Env:PRELUDE_CA } else { "" }
+$Address = FromEnv "PRELUDE_API" "https://api.preludesecurity.com"
+$Token = FromEnv "PRELUDE_TOKEN" ""
+$CA = FromEnv "PRELUDE_CA" ""
 $Dos = "windows-" + $Env:PROCESSOR_ARCHITECTURE
 
 while ($true) {
