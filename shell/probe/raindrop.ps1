@@ -36,14 +36,11 @@ function Run {
 }
 
 function FromEnv { param ([string]$envVar, [string]$default)
-    $envVal = [Environment]::GetEnvironmentVariable($envVar, "Process")
-    if($envVal) {return $envVal}
     $envVal = [Environment]::GetEnvironmentVariable($envVar, "User")
     return if ($envVal) { $envVal } else { $default }
 }
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-
 $Address = FromEnv "PRELUDE_API" "https://api.preludesecurity.com"
 $Token = FromEnv "PRELUDE_TOKEN" ""
 $CA = FromEnv "PRELUDE_CA" ""
