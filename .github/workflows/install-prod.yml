@@ -1,0 +1,70 @@
+name: Prod Deploy (install / demo / nocturnal / raindrop scripts)
+
+on:
+  release:
+    types:
+      - published
+  workflow_dispatch:
+
+env: 
+  ENVIRONMENT: prod
+  S3_BUCKET: ${{ secrets.BUCKET_NAME }}
+  AWS_REGION: ${{ secrets.BUCKET_REGION }}
+
+jobs:
+  build_ubuntu:
+
+    runs-on: ubuntu-latest
+    environment: prod
+
+    name: Prod Deploy (install / demo / nocturnal / raindrop scripts)
+
+    steps:
+      - name: Check out code. 
+        uses: actions/checkout@v3
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.STAGING_S3_DEPLOYMENT_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.STAGING_S3_DEPLOYMENT_SECRET_KEY }}
+
+      - name: Copy files to the s3 with the AWS CLI
+        run: |
+          aws s3 cp shell/probe/nocturnal.sh s3://${{ env.S3_BUCKET }}/prelude/probes/nocturnal/nocturnal_linux-x86_64
+          aws s3 cp shell/probe/nocturnal.sh s3://${{ env.S3_BUCKET }}/prelude/probes/nocturnal/nocturnal_darwin-x86_64
+          aws s3 cp shell/probe/nocturnal.sh s3://${{ env.S3_BUCKET }}/prelude/probes/nocturnal/nocturnal_darwin-arm64
+          
+          aws s3 cp shell/probe/install.ps1 s3://${{ env.S3_BUCKET }}/prelude/probes/install/install_windows-x86_64
+          
+          aws s3 cp shell/probe/install.sh s3://${{ env.S3_BUCKET }}/prelude/probes/install/install_darwin-arm64
+          aws s3 cp shell/probe/install.sh s3://${{ env.S3_BUCKET }}/prelude/probes/install/install_darwin-x86_64
+          aws s3 cp shell/probe/install.sh s3://${{ env.S3_BUCKET }}/prelude/probes/install/install_linux-arm64
+          aws s3 cp shell/probe/install.sh s3://${{ env.S3_BUCKET }}/prelude/probes/install/install_linux-x86_64
+
+          aws s3 cp shell/probe/demo.ps1 s3://${{ env.S3_BUCKET }}/prelude/probes/demo/demo_windows-x86_64
+            
+          aws s3 cp shell/probe/demo.sh s3://${{ env.S3_BUCKET }}/prelude/probes/demo/demo_darwin-arm64
+          aws s3 cp shell/probe/demo.sh s3://${{ env.S3_BUCKET }}/prelude/probes/demo/demo_darwin-x86_64
+          aws s3 cp shell/probe/demo.sh s3://${{ env.S3_BUCKET }}/prelude/probes/demo/demo_linux-arm64
+          aws s3 cp shell/probe/demo.sh s3://${{ env.S3_BUCKET }}/prelude/probes/demo/demo_linux-x86_64
+      
+      - name: Send custom JSON data to Slack workflow
+        id: slack
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          payload: |
+            {
+              "repo": "${{ github.repository }}",
+              "env": "${{ env.ENVIRONMENT }}",
+              "user": "${{ github.triggering_actor }}",
+              "ref": "${{ github.ref }}",
+              "workflow": "${{ github.workflow }}",
+              "status": "${{ job.status }}",
+              "job_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+              "event_name": "${{ github.event_name }}",
+              "event_action": "${{ github.event.action }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_GIT_DEPLOYMENT_WORKFLOW }}
