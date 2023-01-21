@@ -56,7 +56,7 @@ class Probe:
             except Exception as e:
                 print('[-] %s' % e)
             print('INFO: Done running tests')
-            await asyncio.sleep(43200)
+            await asyncio.sleep(14400)
 
 
 if __name__ == '__main__':

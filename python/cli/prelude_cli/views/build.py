@@ -30,14 +30,15 @@ def build(ctx):
 def clone(controller):
     """ Download all tests to your local environment """
     for test in controller.list_tests():
+        click.secho(f'Cloning {test["id"]}')
         my_test = PurePath('prelude', test['id'])
         Path(my_test).mkdir(parents=True, exist_ok=True)
-        for attach in test['attachments']:
+
+        for attach in controller.attachments(test_id=test['id']):
             if Path(attach).suffix:
                 code = controller.download(test_id=test['id'], filename=attach)
                 with open(PurePath(my_test, attach), 'wb') as f:
                     f.write(code)
-        click.secho(f'Cloned {test["id"]}')
     click.secho('Project cloned successfully', fg=Colors.GREEN.value)
 
 @build.command('list-tests')
@@ -46,6 +47,15 @@ def clone(controller):
 def list_tests(controller):
     """ List all security tests """
     print_json(data=controller.list_tests())
+
+
+@build.command('attachments')
+@click.argument('test_id')
+@click.pass_obj
+@handle_api_error
+def list_attachments(controller, test_id):
+    """ List attachments for a test """
+    print_json(data=controller.attachments(test_id=test_id))
 
 
 @build.command('create-test')
@@ -98,12 +108,12 @@ def upload_attachment(controller, path, test):
 
 
 @build.command('url')
-@click.argument('vst')
+@click.argument('attachment')
 @click.pass_obj
 @handle_api_error
-def create_url(controller, vst):
-    """ Generate a download URL from a VST name """
-    print_json(data=controller.create_url(vst=vst))
+def create_url(controller, attachment):
+    """ Generate a download URL from an attachment """
+    print_json(data=controller.create_url(attachment=attachment))
 
 
 @build.command('compute')

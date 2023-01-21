@@ -10,8 +10,13 @@ param(
   [String]$endpointId=$env:computername
 )
 
+function FromEnv { param ([string]$envVar, [string]$default)
+    $envVal = [Environment]::GetEnvironmentVariable($envVar, "User")
+    if ($envVal) { return $envVal } else { return $default }
+}
+
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-$PRELUDE_API=if ($Env:PRELUDE_API) { $Env:PRELUDE_API } else { "https://api.preludesecurity.com" }
+$PRELUDE_API = FromEnv "PRELUDE_API" "https://api.preludesecurity.com"
 
 function LogError {
     param([string]$errStr)
@@ -74,7 +79,8 @@ if(Test-Path -path $probePath -PathType Leaf) {
 LogMessage "Determining OS"
 $dos = "windows-" + $Env:PROCESSOR_ARCHITECTURE
 $token=RegisterEndpoint
-[System.Environment]::SetEnvironmentVariable("PRELUDE_TOKEN", $token, "User")
+[Environment]::SetEnvironmentVariable("PRELUDE_TOKEN", $token, "User")
+[Environment]::SetEnvironmentVariable("PRELUDE_API", $PRELUDE_API, "User")
 DownloadProbe $token $dos $probePath
 StartTask $token $parentDir $probePath
 Write-Host "[=] Detect setup complete"

@@ -4,8 +4,13 @@ param(
     [String]$preludeToken
 )
 
+function FromEnv { param ([string]$envVar, [string]$default)
+    $envVal = [Environment]::GetEnvironmentVariable($envVar, "User")
+    if ($envVal) { return $envVal } else { return $default }
+}
+
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-$PRELUDE_API=if ($Env:PRELUDE_API) { $Env:PRELUDE_API } else { "https://api.preludesecurity.com" }
+$PRELUDE_API = FromEnv "PRELUDE_API" "https://api.preludesecurity.com"
 $TEST_ID="b74ad239-2ddd-4b1e-b608-8397a43c7c54"
 
 $dos = "windows-" + $Env:PROCESSOR_ARCHITECTURE
