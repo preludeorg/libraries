@@ -69,6 +69,7 @@ def create_test(controller, rule):
 
     controller.create_test(test_id=test_id, rule=rule)
     template = pkg_resources.read_text(templates, 'template.go')
+    template = template.replace('$ID', test_id)
     template = template.replace('$RULE', rule)
     template = template.replace('$CREATED', str(datetime.now()))
     controller.upload(test_id=test_id, filename=basename, code=template)
