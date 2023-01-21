@@ -29,6 +29,13 @@ class BuildController:
             raise Exception(res.text)
 
     @verify_credentials
+    def attachments(self, test_id):
+        res = requests.get(f'{self.account.hq}/build/attachment/{test_id}', headers=self.account.headers)
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
     def download(self, test_id, filename):
         res = requests.get(f'{self.account.hq}/build/attachment/{test_id}/{filename}', headers=self.account.headers)
         if res.status_code == 200:
@@ -42,8 +49,8 @@ class BuildController:
             raise Exception(res.text)
 
     @verify_credentials
-    def create_url(self, vst: str):
-        res = requests.get(f'{self.account.hq}/build/{vst}/url', headers=self.account.headers)
+    def create_url(self, attachment: str):
+        res = requests.get(f'{self.account.hq}/build/{attachment}/url', headers=self.account.headers)
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
