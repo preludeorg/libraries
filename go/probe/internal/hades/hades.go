@@ -39,7 +39,7 @@ func CreateProbe(token, hq string) *Probe {
 		token:         token,
 		hq:            strings.TrimSuffix(hq, "/"),
 		dos:           strings.ToLower(fmt.Sprintf("%s-%s", runtime.GOOS, runtime.GOARCH)),
-		sleep:         43200 * time.Second,
+		sleep:         14400 * time.Second,
 		cwd:           wd,
 		commandTimout: 2 * time.Second,
 	}
@@ -104,7 +104,7 @@ func runWithTimeout(executable string, timeout time.Duration, args ...string) in
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 	command := exec.CommandContext(ctx, executable, args...)
-    command.Stdout, command.Stderr = os.Stdout, os.Stderr
+	command.Stdout, command.Stderr = os.Stdout, os.Stderr
 	command.Run()
 	switch command.ProcessState.ExitCode() {
 	case -1:

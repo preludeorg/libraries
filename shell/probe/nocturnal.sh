@@ -12,7 +12,7 @@ do
     test=$(echo $location | grep -o '[0-9a-f]\{8\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{12\}' | head -n 1)
 
     if [ -z "$test" ];then
-        sleep 43200
+        sleep 14400
     else
         ca=$(echo $location | sed -e 's|^[^/]*//||' -e 's|/.*$||')
         if [ -z "$PRELUDE_CA" ] || ["$PRELUDE_CA" == "$ca"];then
