@@ -69,6 +69,15 @@ class DetectController:
             raise Exception(res.text)
 
     @verify_credentials
+    def stats(self, ident: str, days: int = 30):
+        """ Pull social statistics for a specific test """
+        params = dict(days=days)
+        res = requests.get(f'{self.account.hq}/detect/{ident}/stats', headers=self.account.headers, params=params)
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
     def observe(self, row_id, value):
         """ Mark a result as observed """
         params = dict(row_id=row_id, value=value)
