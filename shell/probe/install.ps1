@@ -7,7 +7,7 @@ param(
   [Parameter(HelpMessage="Probe name")]
   [String]$probeName="raindrop",
   [Parameter(HelpMessage="Endpoint id")]
-  [String]$endpointId="",
+  [String]$endpointId=$env:computername,
   [Parameter(HelpMessage="Endpoint tags")]
   [String[]]$endpointTags=@()
 )
