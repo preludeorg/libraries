@@ -30,6 +30,7 @@ runs:
         aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
 
     - name: Copy files to the s3 with the AWS CLI
+      shell: bash
       run: |
         aws s3 cp shell/probe/nocturnal.sh s3://${{ inputs.s3_bucket }}/prelude/probes/nocturnal/nocturnal_linux-x86_64
         aws s3 cp shell/probe/nocturnal.sh s3://${{ inputs.s3_bucket }}/prelude/probes/nocturnal/nocturnal_darwin-x86_64
