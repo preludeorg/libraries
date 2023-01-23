@@ -1,7 +1,7 @@
 name: Deploy (install / demo / nocturnal / raindrop scripts)
 description: Copy script to s3
 inputs:
-  environmnet:
+  environment:
     description: "Describe the environment for slack webhooks"
   s3_bucket:
     description: 'Where to push probes'
