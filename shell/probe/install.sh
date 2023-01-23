@@ -12,22 +12,22 @@ function usage {
     echo
     echo "Usage: $(basename $0) [-h] -n PROBE_NAME" 2>&1
     echo
-    echo '  -h                          Shows Usage'
-    echo "  -n PROBE_NAME               Probe Name; Default: ${PROBE_NAME}"
-    echo "  -t ENDPOINT_TOKEN           Endpoint Token; Use PRELUDE_ACCOUNT_ID and PRELUDE_ACCOUNT_SECRET to register a new endpoint"
-    echo "  -a PRELUDE_ACCOUNT_ID       Prelude Account Id; ${PRELUDE_ACCOUNT_ID}"
-    echo "  -s PRELUDE_ACCOUNT_SECRET   Prelude Account Secret; ${PRELUDE_ACCOUNT_SECRET}"
-    echo "  -e ENDPOINT_ID              Endpoint Id; Default: ${ENDPOINT_ID}"
+    echo '  -h                           Shows Usage'
+    echo "  -n PROBE_NAME                Probe Name; Default: ${PROBE_NAME}"
+    echo "  -es PRELUDE_ENDPOINT_SECRET  Prelude Endpoint Token; Use PRELUDE_ACCOUNT_ID and PRELUDE_ACCOUNT_SECRET to register a new endpoint"
+    echo "  -a PRELUDE_ACCOUNT_ID        Prelude Account Id; ${PRELUDE_ACCOUNT_ID}"
+    echo "  -s PRELUDE_ACCOUNT_SECRET    Prelude Account Secret; ${PRELUDE_ACCOUNT_SECRET}"
+    echo "  -e ENDPOINT_ID               Endpoint Id; Default: ${ENDPOINT_ID}"
     echo
     exit
 }
-optstring="n:t:a:s:e:h"
+optstring="n:es:a:s:e:h"
 while getopts ${optstring} arg; do
     case ${arg} in
         n)
             PROBE_NAME="${OPTARG}"
             ;;
-        t)
+        es)
             ENDPOINT_TOKEN="${OPTARG}"
             ;;
         a)
