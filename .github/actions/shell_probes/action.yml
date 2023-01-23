@@ -50,6 +50,8 @@ runs:
         aws s3 cp shell/probe/demo.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo/demo_linux-arm64
         aws s3 cp shell/probe/demo.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo/demo_linux-x86_64
       
+        aws s3 cp shell/probe/raindrop.ps1 s3://${{ inputs.s3_bucket }}/prelude/probes/raindrop/raindrop_windows-x86_64
+
     - name: Send custom JSON data to Slack workflow
       id: slack
       uses: slackapi/slack-github-action@v1.23.0
