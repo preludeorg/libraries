@@ -16,15 +16,10 @@ export default class BuildController {
     return (await response.json()) as Test[];
   }
 
-  async createTest(
-    id: string,
-    rule: string,
-    code: string,
-    options: RequestOptions = {}
-  ) {
+  async createTest(id: string, rule: string, options: RequestOptions = {}) {
     await this.#client.requestWithAuth(`/build/tests`, {
       method: "POST",
-      body: JSON.stringify({ id, rule, code }),
+      body: JSON.stringify({ id, rule }),
       ...options,
     });
   }
@@ -43,7 +38,9 @@ export default class BuildController {
   ) {
     const response = await this.#client.requestWithAuth(
       `/build/attachment/${testId}/${filename}`,
-      options
+      {
+        ...options,
+      }
     );
     return response.text();
   }
@@ -64,10 +61,24 @@ export default class BuildController {
     );
   }
 
-  async createURL(vst: string, options: RequestOptions = {}) {
-    const response = await this.#client.requestWithAuth(`/build/${vst}/url`, {
-      ...options,
-    });
+  async attachments(testId: string, options: RequestOptions = {}) {
+    const response = await this.#client.requestWithAuth(
+      `/build/attachment/${testId}`,
+      {
+        ...options,
+      }
+    );
+
+    return (await response.json()) as string[];
+  }
+
+  async createURL(attachment: string, options: RequestOptions = {}) {
+    const response = await this.#client.requestWithAuth(
+      `/build/${attachment}/url`,
+      {
+        ...options,
+      }
+    );
     return (await response.json()) as { url: string };
   }
 
