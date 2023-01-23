@@ -1,4 +1,4 @@
-name: Prod Deploy (install / demo / nocturnal / raindrop scripts)
+name: Prod - shell probes (install / demo / nocturnal / raindrop scripts) deploy
 
 on:
   release:
@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: prod
 
-    name: Prod Deploy (install / demo / nocturnal / raindrop scripts)
+    name: Prod - shell probes (install / demo / nocturnal / raindrop scripts) deploy
 
     steps:
       - name: Check out code. 
