@@ -38,7 +38,7 @@ runs:
         aws-access-key-id: ${{ inputs.aws_access_key_id }}
         aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
 
-    - name: Install aws cli and copy files to the s3 bucket with the AWS CLI
+    - name: Copy files to the s3 bucket with the AWS CLI
       shell: bash
       run: |
         aws s3 cp swift/probe/moonlight_darwin-x86_64 s3://${{ inputs.s3_bucket }}/prelude/probes/moonlight/moonlight_darwin-x86_64
