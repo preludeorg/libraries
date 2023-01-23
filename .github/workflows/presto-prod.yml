@@ -1,4 +1,4 @@
-name: Prod Deploy (presto)
+name: Prod - presto deploy
 
 on:
   release:
@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: prod
 
-    name: Prod Deploy (presto)
+    name: Prod - presto deploy
 
     steps:
       - name: Check out code. 
