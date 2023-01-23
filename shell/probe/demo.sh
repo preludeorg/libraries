@@ -48,23 +48,8 @@ function execute_cleanup {
 }
 
 function post_results {
-    dat=${test}:${$test_result}
+    dat=${test}:${test_result}
     curl -sfSL -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "dat:${dat}" $PRELUDE_API
-}
-
-function install_probe {
-    echo "[+] Downloading installation script"
-    temp=$(mktemp)
-    curl -sfSL -o $temp -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" $PRELUDE_API/download/install
-    test -s "$temp" || {
-        echo -e "${RED}[!] Failed to download installation script${NC}"
-        exit 1
-    }
-    chmod +x $temp
-    echo
-    read -p "Enter your Prelude Account ID: " ACCOUNT_ID
-    read -p "Enter your Prelude Account token: " ACCOUNT_TOKEN
-    sudo $temp -a $ACCOUNT_ID -s $ACCOUNT_TOKEN
 }
 
 echo
@@ -125,14 +110,8 @@ fi
 echo
 echo "###########################################################################################################"
 echo
-read -p "[Optional] Would you like to install the probe on this endpoint? This will allow you to run this test, and \
-others, on a continuous schedule (y/n) " -n 1 -r
-if [[ $REPLY =~ ^[Yy]$ ]];then
-    echo
-    install_probe
-    extra_msg="and enable continuous scheduling for this test"
-fi
+echo "[*] Return to the Prelude Platform to view your results"
 echo
-echo
-echo "[*] Return to the Prelude Platform to view your results $extra_msg"
+echo "[*] If you'd like to run this test, and others, on a continuous schedule, please follow the instructions at"
+echo "https://docs.preludesecurity.com/docs/individual-probe-deployment to install a probe"
 echo
