@@ -7,7 +7,9 @@ param(
   [Parameter(HelpMessage="Probe name")]
   [String]$probeName="raindrop",
   [Parameter(HelpMessage="Endpoint id")]
-  [String]$endpointId=$env:computername
+  [String]$endpointId="",
+  [Parameter(HelpMessage="Endpoint tags")]
+  [String[]]$endpointTags=@()
 )
 
 function FromEnv { param ([string]$envVar, [string]$default)
@@ -30,7 +32,7 @@ function LogMessage {
 
 function RegisterEndpoint {
     LogMessage "Provisioning Detect Endpoint Token..."
-    $data = @{"id"=$endpointId;"tag"="windows"} | ConvertTo-Json
+    $data = @{"id"=$endpointId;"tags"=$endpointTags + ,"windows"} | ConvertTo-Json
     $response = Invoke-WebRequest -Method POST -Uri $PRELUDE_API/detect/endpoint -UseBasicParsing -Headers @{"account"=$preludeAccountId;"token"=$preludeAccountSecret} -ContentType "application/json" -Body $data
     if($response.StatusCode -ne 200) {
         LogError "Endpoint failed to register! $($response.StatusDescription)"
@@ -42,12 +44,12 @@ function RegisterEndpoint {
 function DownloadProbe {
     param ([string]$token, [string]$dos, [string]$out)
     LogMessage "Downloading Probe..."
-    try { 
+    try {
         [void](Invoke-WebRequest -Method GET -Uri $PRELUDE_API/download/$probeName -UseBasicParsing -Headers @{"token"=$token;"dos"=$dos} -OutFile $out -PassThru)
-    } catch [System.Net.WebException] { 
+    } catch [System.Net.WebException] {
         LogError "Detect failed to download! $($_.ErrorDetails)"
         Exit 1
-    } 
+    }
 }
 
 function StartTask {
