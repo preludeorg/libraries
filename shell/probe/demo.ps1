@@ -85,23 +85,6 @@ function PostResults {
     Invoke-WebRequest -URI $PRELUDE_API -UseBasicParsing -Headers $Headers -MaximumRedirection 1 | Out-Null
 }
 
-function InstallProbe {
-    Write-Host "`r`n[+] Downloading installation script"
-    $temp = [System.IO.Path]::GetTempFileName() | Rename-Item -NewName { [System.IO.Path]::ChangeExtension($_, "ps1") } -PassThru
-
-    try {
-        Invoke-WebRequest -URI $PRELUDE_API/download/install -UseBasicParsing -Headers $Headers -MaximumRedirection 1 -OutFile $temp -PassThru | Out-Null
-    } catch {
-        $StatusCode = $_.Exception.Response.StatusCode.value__
-        Write-Host -ForegroundColor Red "`r`n[!] Failed to download installation script. Http response code: $StatusCode"
-        Exit 1
-    }
-
-    $account_id = Read-Host -Prompt "Enter your Prelude Account ID"
-    $account_token = Read-Host -Prompt "Enter your Prelude Account token"
-    & $temp $account_id $account_token
-}
-
 Write-Host "
 ###########################################################################################################
 
@@ -170,18 +153,9 @@ host, please review the logs"
 
 Write-Host "
 ###########################################################################################################
+
+[*] Return to the Prelude Platform to view your results
+
+[*] If you'd like to run this test, and others, on a continuous schedule, please follow the instructions at
+https://docs.preludesecurity.com/docs/individual-probe-deployment to install a probe
 "
-
-$msg = "[Optional] Would you like to install the probe on this endpoint? This will allow you to run this test, and others, on a continuous schedule (y/n)"
-do {
-    $response = Read-Host -Prompt $msg
-    if ($response -eq 'y') {
-        InstallProbe
-        $extra = "and enable continuous scheduling for this test"
-    }
-} until ($response -eq 'n' -or $response -eq 'y')
-
-Write-Host "
-[*] Return to the Prelude Platform to view your results $extra
-"
-
