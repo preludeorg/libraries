@@ -6,25 +6,17 @@ CREATED: $CREATED
 package main
 
 import (
-	"fmt"
-	"os"
+	"github.com/preludeorg/test/endpoint"
 )
 
 func test() {
-	fmt.Println("Run test")
-	os.Exit(100)
+	Endpoint.Stop(100)
 }
 
 func clean() {
-	fmt.Println("Clean up")
-	os.Exit(100)
+	Endpoint.Stop(100)
 }
 
 func main() {
-	args := os.Args[1:]
-	if len(args) > 0 {
-		clean()
-	} else {
-		test()
-	}
+	Endpoint.Start(test, clean)
 }
