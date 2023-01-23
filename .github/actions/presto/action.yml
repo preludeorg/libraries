@@ -32,11 +32,11 @@ runs:
     - name: Copy files to the s3 with the AWS CLI
       shell: bash
       run: |
-        aws s3 cp python/probe/presto.sh s3://${{ inputs.s3_bucket }}/prelude/probes/presto/presto_darwin-arm64
-        aws s3 cp python/probe/presto.sh s3://${{ inputs.s3_bucket }}/prelude/probes/presto/presto_darwin-x86_64
-        aws s3 cp python/probe/presto.sh s3://${{ inputs.s3_bucket }}/prelude/probes/presto/presto_linux-arm64
-        aws s3 cp python/probe/presto.sh s3://${{ inputs.s3_bucket }}/prelude/probes/presto/presto_linux-x86_64
-        aws s3 cp python/probe/presto.sh s3://${{ inputs.s3_bucket }}/prelude/probes/presto/presto_windows-x86_64
+        aws s3 cp python/probe/presto.py s3://${{ inputs.s3_bucket }}/prelude/probes/presto/presto_darwin-arm64
+        aws s3 cp python/probe/presto.py s3://${{ inputs.s3_bucket }}/prelude/probes/presto/presto_darwin-x86_64
+        aws s3 cp python/probe/presto.py s3://${{ inputs.s3_bucket }}/prelude/probes/presto/presto_linux-arm64
+        aws s3 cp python/probe/presto.py s3://${{ inputs.s3_bucket }}/prelude/probes/presto/presto_linux-x86_64
+        aws s3 cp python/probe/presto.py s3://${{ inputs.s3_bucket }}/prelude/probes/presto/presto_windows-x86_64
 
     - name: Send custom JSON data to Slack workflow
       id: slack
