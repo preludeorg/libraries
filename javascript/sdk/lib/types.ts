@@ -70,3 +70,5 @@ export interface Probe {
   tags: string[];
   updated: string;
 }
+
+export interface Stats {}

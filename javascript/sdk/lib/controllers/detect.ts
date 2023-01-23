@@ -5,6 +5,7 @@ import {
   EnableTest,
   Probe,
   RequestOptions,
+  Stats,
 } from "../types";
 
 export default class DetectController {
@@ -83,5 +84,30 @@ export default class DetectController {
     );
 
     return (await response.json()) as Probe[];
+  }
+
+  /** Pull social statistics for a specific test */
+  async stats(test: string, days: number = 30, options: RequestOptions = {}) {
+    const searchParams = new URLSearchParams({ days: days.toString() });
+    const response = await this.#client.requestWithAuth(
+      `/detect/${test}/stats?${searchParams.toString()}`,
+      {
+        method: "GET",
+        ...options,
+      }
+    );
+
+    return (await response.json()) as Stats;
+  }
+
+  /** Mark a result as observed */
+  async observe(rowId: string, value: string, options: RequestOptions = {}) {
+    const response = await this.#client.requestWithAuth(`/detect/observe`, {
+      method: "POST",
+      body: JSON.stringify({ row_id: rowId, value }),
+      ...options,
+    });
+
+    return await response.text();
   }
 }
