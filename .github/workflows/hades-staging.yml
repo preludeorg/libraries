@@ -1,0 +1,38 @@
+name: Staging - hades build and deploy 
+
+on:
+  push:
+    branches:
+      - master
+  release:
+    types:
+      - published
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  go_cross_compile:
+
+    runs-on: ubuntu-latest
+    container:
+      image: golang:bullseye
+
+    environment: staging
+
+    name: Staging - hades build and deploy
+
+    steps:
+      - name: Check out code. 
+        uses: actions/checkout@v3
+
+      - id: shell_probes_composite
+        uses: ./.github/actions/hades
+        with:
+          environment: staging
+          s3_bucket: ${{ secrets.BUCKET_NAME }}
+          aws_region: ${{ secrets.BUCKET_REGION }}
+          aws_access_key_id: ${{ secrets.STAGING_S3_DEPLOYMENT_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.STAGING_S3_DEPLOYMENT_SECRET_KEY  }}
+          slack_workflow_url: ${{ secrets.SLACK_GIT_DEPLOYMENT_WORKFLOW }}

@@ -45,11 +45,11 @@ runs:
       run: |
         apt update
         apt install -y awscli
-        # aws s3 cp hades_linux-x86_64 s3://${{ inputs.s3_bucket }}/prelude/probes/hades/
-        # aws s3 cp hades_linux-arm64 s3://${{ inputs.s3_bucket }}/prelude/probes/hades/
-        # aws s3 cp hades_darwin-x86_64 s3://${{ inputs.s3_bucket }}/prelude/probes/hades/
-        # aws s3 cp hades_darwin-arm64 s3://${{ inputs.s3_bucket }}/prelude/probes/hades/
-        # aws s3 cp hades_windows-x86_64 s3://${{ inputs.s3_bucket }}/prelude/probes/hades/
+        aws s3 cp hades_linux-x86_64 s3://${{ inputs.s3_bucket }}/prelude/probes/hades/
+        aws s3 cp hades_linux-arm64 s3://${{ inputs.s3_bucket }}/prelude/probes/hades/
+        aws s3 cp hades_darwin-x86_64 s3://${{ inputs.s3_bucket }}/prelude/probes/hades/
+        aws s3 cp hades_darwin-arm64 s3://${{ inputs.s3_bucket }}/prelude/probes/hades/
+        aws s3 cp hades_windows-x86_64 s3://${{ inputs.s3_bucket }}/prelude/probes/hades/
       
     - name: Send custom JSON data to Slack workflow
       id: slack
