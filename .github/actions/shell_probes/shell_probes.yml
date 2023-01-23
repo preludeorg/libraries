@@ -1,0 +1,69 @@
+name: Deploy (install / demo / nocturnal / raindrop scripts)
+description: Copy script to s3
+inputs:
+  environmnet:
+    description: "Describe the environment for slack webhooks"
+  s3_bucket:
+    description: 'Where to push probes'
+    required: true
+  aws_region:
+    description: 'Region to set for aws access'
+    required: true
+  aws_access_key_id:
+    description: 'Access key to use'
+    required: true
+  aws_secret_access_key:
+    description: 'Secret key to use'
+    required: true
+  slack_workflow_url:
+    description: 'Where to send the slack webhook'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-region: ${{ input.aws_region }}
+          aws-access-key-id: ${{ input.aws_access_key_id }}
+          aws-secret-access-key: ${{ input.aws_secret_access_key }}
+
+    - name: Copy files to the s3 with the AWS CLI
+        run: |
+          aws s3 cp shell/probe/nocturnal.sh s3://${{ input.s3_bucket }}/prelude/probes/nocturnal/nocturnal_linux-x86_64
+          aws s3 cp shell/probe/nocturnal.sh s3://${{ input.s3_bucket }}/prelude/probes/nocturnal/nocturnal_darwin-x86_64
+          aws s3 cp shell/probe/nocturnal.sh s3://${{ input.s3_bucket }}/prelude/probes/nocturnal/nocturnal_darwin-arm64
+          
+          aws s3 cp shell/probe/install.ps1 s3://${{ input.s3_bucket }}/prelude/probes/install/install_windows-x86_64
+          
+          aws s3 cp shell/probe/install.sh s3://${{ input.s3_bucket }}/prelude/probes/install/install_darwin-arm64
+          aws s3 cp shell/probe/install.sh s3://${{ input.s3_bucket }}/prelude/probes/install/install_darwin-x86_64
+          aws s3 cp shell/probe/install.sh s3://${{ input.s3_bucket }}/prelude/probes/install/install_linux-arm64
+          aws s3 cp shell/probe/install.sh s3://${{ input.s3_bucket }}/prelude/probes/install/install_linux-x86_64
+
+          aws s3 cp shell/probe/demo.ps1 s3://${{ input.s3_bucket }}/prelude/probes/demo/demo_windows-x86_64
+            
+          aws s3 cp shell/probe/demo.sh s3://${{ input.s3_bucket }}/prelude/probes/demo/demo_darwin-arm64
+          aws s3 cp shell/probe/demo.sh s3://${{ input.s3_bucket }}/prelude/probes/demo/demo_darwin-x86_64
+          aws s3 cp shell/probe/demo.sh s3://${{ input.s3_bucket }}/prelude/probes/demo/demo_linux-arm64
+          aws s3 cp shell/probe/demo.sh s3://${{ input.s3_bucket }}/prelude/probes/demo/demo_linux-x86_64
+      
+      - name: Send custom JSON data to Slack workflow
+        id: slack
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          payload: |
+            {
+              "repo": "${{ github.repository }}",
+              "env": "${{ input.environment }}",
+              "user": "${{ github.triggering_actor }}",
+              "ref": "${{ github.ref }}",
+              "workflow": "${{ github.workflow }}",
+              "status": "${{ job.status }}",
+              "job_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+              "event_name": "${{ github.event_name }}",
+              "event_action": "${{ github.event.action }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ input.slack_workflow_url }}
