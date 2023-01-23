@@ -5,7 +5,7 @@ RED='\033[1;31m'
 NC='\033[0m' # No Color
 
 PRELUDE_API=${PRELUDE_API:="https://api.preludesecurity.com"}
-ENDPOINT_TOKEN=$1
+PRELUDE_TOKEN=$1
 
 sys=$(uname -s)-$(uname -m)
 id="b74ad239-2ddd-4b1e-b608-8397a43c7c54"
@@ -17,7 +17,7 @@ function check_relevance {
 
 function download_test {
     temp=$(mktemp)
-    location=$(curl -sfSL -w %{url_effective} -o $temp -H "token:${ENDPOINT_TOKEN}" -H "dos:${dos}" -H "id:${id}" $PRELUDE_API)
+    location=$(curl -sfSL -w %{url_effective} -o $temp -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "id:${id}" $PRELUDE_API)
     test=$(echo $location | grep -o '[0-9a-f]\{8\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{12\}' | head -n 1)
     if [ -z "$test" ];then
         echo -e "${RED}[!] Failed to download test${NC}"
@@ -49,23 +49,19 @@ function execute_cleanup {
 
 function post_results {
     dat=${test}:${test_result}
-    curl -sfSL -H "token:${ENDPOINT_TOKEN}" -H "dos:${dos}" -H "dat:${dat}" $PRELUDE_API
+    curl -sfSL -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "dat:${dat}" $PRELUDE_API
 }
 
 function install_probe {
     echo "[+] Downloading installation script"
     temp=$(mktemp)
-    curl -sfSL -o $temp -H "token:${ENDPOINT_TOKEN}" -H "dos:${dos}" $PRELUDE_API/download/install
+    curl -sfSL -o $temp -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" $PRELUDE_API/download/install
     test -s "$temp" || {
         echo -e "${RED}[!] Failed to download installation script${NC}"
         exit 1
     }
     chmod +x $temp
-    echo
-    export ENDPOINT_TOKEN
-    read -p "Enter your Prelude Account ID: " ACCOUNT_ID
-    read -p "Enter your Prelude Account token: " ACCOUNT_TOKEN
-    sudo $temp -a $ACCOUNT_ID -s $ACCOUNT_TOKEN
+    sudo $temp -t $PRELUDE_TOKEN
 }
 
 echo

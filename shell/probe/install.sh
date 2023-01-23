@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # Defaults
 PRELUDE_API=${PRELUDE_API:="https://api.preludesecurity.com"}
+ENDPOINT_TOKEN=""
 PRELUDE_ACCOUNT_ID=""
 PRELUDE_ACCOUNT_SECRET=""
-PROBE_NAME="nocturnal"
 ENDPOINT_ID=$(hostname)
-ENDPOINT_TOKEN=${ENDPOINT_TOKEN:=""}
+PROBE_NAME="nocturnal"
 DOS="$(uname | awk '{print tolower($0)}')-$(uname -m)"
 
 function usage {
@@ -14,26 +14,30 @@ function usage {
     echo
     echo '  -h                          Shows Usage'
     echo "  -n PROBE_NAME               Probe Name; Default: ${PROBE_NAME}"
-    echo "  -e ENDPOINT_ID              Endpoint Id; Default: ${ENDPOINT_ID}"
+    echo "  -t ENDPOINT_TOKEN           Endpoint Token; Use PRELUDE_ACCOUNT_ID and PRELUDE_ACCOUNT_SECRET to register a new endpoint"
     echo "  -a PRELUDE_ACCOUNT_ID       Prelude Account Id; ${PRELUDE_ACCOUNT_ID}"
     echo "  -s PRELUDE_ACCOUNT_SECRET   Prelude Account Secret; ${PRELUDE_ACCOUNT_SECRET}"
+    echo "  -e ENDPOINT_ID              Endpoint Id; Default: ${ENDPOINT_ID}"
     echo
     exit
 }
-optstring="n:e:a:s:h"
+optstring="n:t:a:s:e:h"
 while getopts ${optstring} arg; do
     case ${arg} in
         n)
             PROBE_NAME="${OPTARG}"
             ;;
-        e)
-            ENDPOINT_ID="${OPTARG}"
+        t)
+            ENDPOINT_TOKEN="${OPTARG}"
             ;;
         a)
             PRELUDE_ACCOUNT_ID="${OPTARG}"
             ;;
         s)
             PRELUDE_ACCOUNT_SECRET="${OPTARG}"
+            ;;
+        e)
+            ENDPOINT_ID="${OPTARG}"
             ;;
         h)
             usage
@@ -182,9 +186,9 @@ install_linux() {
 }
 
 echo "[+] Detect setup started"
-if [[ -z $PRELUDE_ACCOUNT_ID || -z $PRELUDE_ACCOUNT_SECRET ]];
+if [[ -z $ENDPOINT_TOKEN && (-z $PRELUDE_ACCOUNT_ID || -z $PRELUDE_ACCOUNT_SECRET) ]];
 then
-    echo "[!] Failed to provide account credentials. Make sure you provide PRELUDE_ACCOUNT_ID and PRELUDE_ACCOUNT_SECRET"
+    echo "[!] Failed to provide credentials. Make sure you provide ENDPOINT_TOKEN or PRELUDE_ACCOUNT_ID and PRELUDE_ACCOUNT_SECRET"
     usage
 fi
 
