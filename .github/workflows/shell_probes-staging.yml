@@ -26,7 +26,7 @@ jobs:
       - name: Check out code. 
         uses: actions/checkout@v3
       
-      - id: Push to s3
+      - id: shell_probes_composite
         uses: shell_probes/shell_probes@v1
         with:
           environment: staging
