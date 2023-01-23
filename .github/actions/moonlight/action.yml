@@ -1,4 +1,4 @@
-name: Compile and Deploy (Moonlight)
+name: Compile and Deploy (moonlight)
 description: Compile and copy binaries to s3
 inputs:
   environment:
