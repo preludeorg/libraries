@@ -1,0 +1,59 @@
+name: Deploy (presto)
+description: Copy script to s3
+inputs:
+  environment:
+    description: "Describe the environment for slack webhooks"
+  s3_bucket:
+    description: 'Where to push probes'
+    required: true
+  aws_region:
+    description: 'Region to set for aws access'
+    required: true
+  aws_access_key_id:
+    description: 'Access key to use'
+    required: true
+  aws_secret_access_key:
+    description: 'Secret key to use'
+    required: true
+  slack_workflow_url:
+    description: 'Where to send the slack webhook'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1-node16
+      with:
+        aws-region: ${{ inputs.aws_region }}
+        aws-access-key-id: ${{ inputs.aws_access_key_id }}
+        aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
+
+    - name: Copy files to the s3 with the AWS CLI
+      shell: bash
+      run: |
+        aws s3 cp python/probe/presto.sh s3://${{ inputs.s3_bucket }}/prelude/probes/presto/presto_linux-x86_64
+        aws s3 cp python/probe/presto.sh s3://${{ inputs.s3_bucket }}/prelude/probes/presto/presto_darwin-arm64
+        aws s3 cp python/probe/presto.sh s3://${{ inputs.s3_bucket }}/prelude/probes/presto/presto_darwin-x86_64
+        aws s3 cp python/probe/presto.sh s3://${{ inputs.s3_bucket }}/prelude/probes/presto/presto_linux-arm64
+        aws s3 cp python/probe/presto.sh s3://${{ inputs.s3_bucket }}/prelude/probes/presto/presto_linux-x86_64
+        aws s3 cp python/probe/presto.sh s3://${{ inputs.s3_bucket }}/prelude/probes/presto/presto_windows-x86_64
+
+    - name: Send custom JSON data to Slack workflow
+      id: slack
+      uses: slackapi/slack-github-action@v1.23.0
+      with:
+        payload: |
+          {
+            "repo": "${{ github.repository }}",
+            "env": "${{ inputs.environment }}",
+            "user": "${{ github.triggering_actor }}",
+            "ref": "${{ github.ref }}",
+            "workflow": "${{ github.workflow }}",
+            "status": "${{ job.status }}",
+            "job_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+            "event_name": "${{ github.event_name }}",
+            "event_action": "${{ github.event.action }}"
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ inputs.slack_workflow_url }}
