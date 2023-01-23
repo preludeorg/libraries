@@ -32,9 +32,10 @@ runs:
     - name: Copy files to the s3 with the AWS CLI
       shell: bash
       run: |
+        aws s3 cp shell/probe/nocturnal.sh s3://${{ inputs.s3_bucket }}/prelude/probes/nocturnal/nocturnal_linux-arm64
         aws s3 cp shell/probe/nocturnal.sh s3://${{ inputs.s3_bucket }}/prelude/probes/nocturnal/nocturnal_linux-x86_64
-        aws s3 cp shell/probe/nocturnal.sh s3://${{ inputs.s3_bucket }}/prelude/probes/nocturnal/nocturnal_darwin-x86_64
         aws s3 cp shell/probe/nocturnal.sh s3://${{ inputs.s3_bucket }}/prelude/probes/nocturnal/nocturnal_darwin-arm64
+        aws s3 cp shell/probe/nocturnal.sh s3://${{ inputs.s3_bucket }}/prelude/probes/nocturnal/nocturnal_darwin-x86_64
         
         aws s3 cp shell/probe/install.ps1 s3://${{ inputs.s3_bucket }}/prelude/probes/install/install_windows-x86_64
         
