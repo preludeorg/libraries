@@ -7,7 +7,8 @@ PROBE_NAME="nocturnal"
 ENDPOINT_ID=$(hostname)
 ENDPOINT_TAGS=""
 ENDPOINT_TOKEN=""
-DOS="$(uname | awk '{print tolower($0)}')-$(uname -m)"
+sys=$(uname | awk '{print tolower($0)}')
+DOS="$sys-$(uname -m)"
 
 function usage {
     echo
@@ -54,7 +55,7 @@ done
 register_new_endpoint() {
     echo "[+] Provisioning Detect Endpoint Token..."
     local _token_url="${PRELUDE_API}/detect/endpoint"
-    local _tags="$(echo "[\"darwin$ENDPOINT_TAGS\"]" | sed 's/,/\",\"/g')"
+    local _tags="$(echo "[\"$sys$ENDPOINT_TAGS\"]" | sed 's/,/\",\"/g')"
     local _data="{\"id\":\"${ENDPOINT_ID}\",\"tags\":${_tags}}"
     ENDPOINT_TOKEN=$(curl -sfS -X POST -H "account:${PRELUDE_ACCOUNT_ID}" -H "token:${PRELUDE_ACCOUNT_SECRET}" -H "Content-Type: application/json" -d "${_data}"  "${_token_url}")
     export ENDPOINT_TOKEN
