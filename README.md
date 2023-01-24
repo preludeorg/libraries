@@ -12,7 +12,7 @@ pip3 install prelude-cli
 prelude iam create-account
 ```
 
-> Alternatively, if you use [Build](https://build.preludesecurity.com) you can export your credentials from inside the application.
+> Alternatively, if you use [Build](https://platform.preludesecurity.com) you can export your credentials from inside the application.
 
 ## Getting started
 
