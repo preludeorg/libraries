@@ -32,7 +32,7 @@ class Permission(Enum):
     def _missing_(cls, value):
         return Permission.UNKNOWN
 
-
+@unique
 class Lookup(Enum):
     Error = 1
     Passed = 100
