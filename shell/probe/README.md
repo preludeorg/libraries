@@ -4,7 +4,7 @@ Shell probes are intended to be runtime-free executable code that works on most 
 
 ## Quick start
 
-> [Register an endpoint](https://docs.prelude.org/docs/probes#registering-endpoints) to get a token
+> [Register an endpoint](https://docs.preludesecurity.com/docs/probes#registering-endpoints) to get a token
 
 ### Raindrop 
 
