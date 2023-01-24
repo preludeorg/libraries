@@ -7,8 +7,7 @@ PROBE_NAME="nocturnal"
 ENDPOINT_ID=$(hostname)
 ENDPOINT_TAGS=""
 ENDPOINT_TOKEN=""
-sys=$(uname | awk '{print tolower($0)}')
-DOS="$sys-$(uname -m)"
+DOS="$(uname | awk '{print tolower($0)}')-$(uname -m)"
 
 function usage {
     echo
@@ -39,7 +38,7 @@ while getopts ${optstring} arg; do
             PRELUDE_ACCOUNT_SECRET="${OPTARG}"
             ;;
         t)
-            ENDPOINT_TAGS=",${OPTARG}"
+            ENDPOINT_TAGS="${OPTARG}"
             ;;
         h)
             usage
@@ -55,8 +54,11 @@ done
 register_new_endpoint() {
     echo "[+] Provisioning Detect Endpoint Token..."
     local _token_url="${PRELUDE_API}/detect/endpoint"
-    local _tags="$(echo "[\"$sys$ENDPOINT_TAGS\"]" | sed 's/,/\",\"/g')"
-    local _data="{\"id\":\"${ENDPOINT_ID}\",\"tags\":${_tags}}"
+    if [[ $ENDPOINT_TAGS ]];
+    then
+      local _tags=",\"tags\":$(echo "[\"$ENDPOINT_TAGS\"]" | sed 's/,/\",\"/g')"
+    fi
+    local _data="{\"id\":\"${ENDPOINT_ID}\"${_tags}}"
     ENDPOINT_TOKEN=$(curl -sfS -X POST -H "account:${PRELUDE_ACCOUNT_ID}" -H "token:${PRELUDE_ACCOUNT_SECRET}" -H "Content-Type: application/json" -d "${_data}"  "${_token_url}")
     export ENDPOINT_TOKEN
 }
