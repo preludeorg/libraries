@@ -9,12 +9,12 @@ class Colors(Enum):
 
 @unique
 class RunCode(Enum):
+    UNKNOWN = -1
     DEBUG = 0
     DAILY = 1
     WEEKLY = 2
     MONTHLY = 3
     ONCE = 4
-    UNKNOWN = -1
 
     @classmethod
     def _missing_(cls, value):
@@ -22,11 +22,11 @@ class RunCode(Enum):
 
 @unique
 class Permission(Enum):
+    UNKNOWN = -1
     ADMIN = 0
     EXECUTIVE = 1
     BUILD = 2
     SERVICE = 3
-    UNKNOWN = -1
 
     @classmethod
     def _missing_(cls, value):
