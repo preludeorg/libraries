@@ -72,7 +72,7 @@ class DetectController:
     def stats(self, ident: str, days: int = 30):
         """ Pull social statistics for a specific test """
         params = dict(days=days)
-        res = requests.get(f'{self.account.hq}/detect/{ident}/stats', headers=self.account.headers, params=params)
+        res = requests.get(f'{self.account.hq}/detect/{ident}/social', headers=self.account.headers, params=params)
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
