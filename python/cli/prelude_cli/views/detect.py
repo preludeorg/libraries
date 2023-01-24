@@ -141,7 +141,7 @@ def describe_activity(controller, days):
     console.print(report)
 
 
-@detect.command('test-stats')
+@detect.command('stats')
 @click.argument('test')
 @click.option('--days', help='days to look back', default=30, type=int)
 @click.pass_obj
