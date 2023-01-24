@@ -14,4 +14,4 @@ prelude --help
 
 ## Documentation
 
-https://docs.prelude.org/v2/docs/prelude-cli
+https://docs.preludesecurity.com/docs/prelude-cli
