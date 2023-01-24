@@ -154,6 +154,5 @@ host, please review the logs"
 Write-Host "
 ###########################################################################################################
 
-[*] Return to https://platform.preludesecurity.com to view your results. You will also find instructions on how
-to install a probe which can run this test, and others, on a continuous schedule
+[*] Return to https://platform.preludesecurity.com to view your results
 "

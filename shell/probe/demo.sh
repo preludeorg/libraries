@@ -110,6 +110,5 @@ fi
 echo
 echo "###########################################################################################################"
 echo
-echo "[*] Return to https://platform.preludesecurity.com to view your results. You will also find instructions on how"
-echo "to install a probe which can run this test, and others, on a continuous schedule"
+echo "[*] Return to https://platform.preludesecurity.com to view your results"
 echo
