@@ -3,7 +3,7 @@ import click
 from prelude_cli.views.shared import handle_api_error
 from prelude_sdk.controllers.build_controller import BuildController
 from prelude_sdk.controllers.detect_controller import DetectController
-from prelude_sdk.models.codes import Colors, RunCode, Lookup
+from prelude_sdk.models.codes import Colors, RunCode, ExitCode
 
 from rich import print_json
 from rich.console import Console
@@ -117,7 +117,7 @@ def describe_activity(controller, days):
             record['test'],
             record['endpoint_id'], 
             str(record['status']),
-            Lookup(record['status']).name,
+            ExitCode(record['status']).name,
             'yes' if record.get('observed') else '-'
         )
 

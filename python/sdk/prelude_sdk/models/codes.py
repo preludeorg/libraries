@@ -33,13 +33,13 @@ class Permission(Enum):
         return Permission.UNKNOWN
 
 @unique
-class Lookup(Enum):
+class ExitCode(Enum):
     OTHER = -1
     ERROR = 1
     MALFORMED_VST = 2
     PROCESS_KILLED = 9
-    PASSED = 100
-    FAILED = 101
+    OK = 100
+    NOT_OK = 101
     TIMEOUT = 102
     CLEANUP_ERR = 103
     NOT_RELEVANT = 104
@@ -50,4 +50,4 @@ class Lookup(Enum):
 
     @classmethod
     def _missing_(cls, value):
-        return Lookup.OTHER
+        return ExitCode.OTHER
