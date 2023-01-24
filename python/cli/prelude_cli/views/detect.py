@@ -3,27 +3,11 @@ import click
 from prelude_cli.views.shared import handle_api_error
 from prelude_sdk.controllers.build_controller import BuildController
 from prelude_sdk.controllers.detect_controller import DetectController
-from prelude_sdk.models.codes import Colors, RunCode
+from prelude_sdk.models.codes import Colors, RunCode, Lookup
 
 from rich import print_json
 from rich.console import Console
 from rich.table import Table
-from enum import Enum
-
-
-class Lookup(Enum):
-    Error = 1
-    Passed = 100
-    Failed = 101
-    Timeout = 102
-    CleanupError = 103
-    NotRelevant = 104
-    Quarantined = 105
-    Unexpected = 256
-
-    @classmethod
-    def _missing_(cls, value):
-        return Lookup.Unexpected
 
 
 @click.group()
