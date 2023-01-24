@@ -34,17 +34,20 @@ class Permission(Enum):
 
 @unique
 class Lookup(Enum):
+    OTHER = -1
     ERROR = 1
+    MALFORMED_VST = 2
+    PROCESS_KILLED = 9
     PASSED = 100
     FAILED = 101
     TIMEOUT = 102
-    CLEANUP_ERROR = 103
+    CLEANUP_ERR = 103
     NOT_RELEVANT = 104
     QUARANTINED = 105
-    INCOMPATIBLE = 126
+    INCOMPATIBLE_HOST = 126
     QUARANTINED_VST = 127
     UNEXPECTED = 256
 
     @classmethod
     def _missing_(cls, value):
-        return Lookup.UNEXPECTED
+        return Lookup.OTHER
