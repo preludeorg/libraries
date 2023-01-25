@@ -129,7 +129,7 @@ Write-Host "--------------------------------------------------------------------
 [3] Running cleanup
 "
 Start-Sleep -Seconds 3
-if ($TestResult -eq 127) {
+if ($TestResult -in 100,9,17,18,105,127) {
     Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Clean up is complete"
 } else {
     ExecuteCleanup

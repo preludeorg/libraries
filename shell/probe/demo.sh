@@ -43,8 +43,13 @@ function execute_test {
 
 function execute_cleanup {
     $temp -cleanup
+    cleanup_result=$?
     echo
-    echo -e "${GREEN}[✓] Clean up is complete${NC}"
+    if [ $cleanup_result -eq 100 ];then
+        echo -e "${GREEN}[✓] Clean up is complete${NC}"
+    else
+        echo -e "${RED}[!] Clean up failed${NC}"
+    fi
 }
 
 function post_results {
@@ -92,7 +97,12 @@ execute_test
 echo "-----------------------------------------------------------------------------------------------------------"
 echo "[3] Running cleanup"
 echo && sleep 3
-execute_cleanup
+if ( echo "100 9 17 18 105 127" | grep -w -q $test_result );then
+    echo
+    echo -e "${GREEN}[✓] Clean up is complete${NC}"
+else
+    execute_cleanup
+fi
 post_results
 echo
 echo "###########################################################################################################"
