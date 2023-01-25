@@ -35,6 +35,8 @@ function Execute {
     Param([String]$File)
     try {
         return (Start-Process -FilePath $File -Wait -NoNewWindow -PassThru).ExitCode
+    } catch [System.UnauthorizedAccessException] {
+        return 126
     } catch [System.InvalidOperationException] {
         return 127
     } catch {
