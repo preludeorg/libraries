@@ -39,6 +39,7 @@ runs:
         aws s3 cp python/probe/presto.py s3://${{ inputs.s3_bucket }}/prelude/probes/presto/presto_windows-x86_64
 
     - name: Send custom JSON data to Slack workflow
+      if: always()
       id: slack
       uses: slackapi/slack-github-action@v1.23.0
       with:
