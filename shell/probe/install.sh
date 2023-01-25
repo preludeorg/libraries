@@ -86,6 +86,8 @@ install_darwin_plist () {
         <dict>
             <key>PRELUDE_TOKEN</key>
             <string>${ENDPOINT_TOKEN}</string>
+            <key>PRELUDE_API</key>
+            <string>${PRELUDE_API}</string>
         </dict>
         <key>ProgramArguments</key>
         <array>
@@ -146,6 +148,7 @@ Description=Prelude Detect Moonlight Probe
 Type=simple
 User=${_running_user}
 Environment=PRELUDE_TOKEN=${ENDPOINT_TOKEN}
+Environment=PRELUDE_API=${PRELUDE_API}
 WorkingDirectory=${_app_dir}
 ExecStart=${_app_dir}/${PROBE_NAME}
 Restart=on-failure
