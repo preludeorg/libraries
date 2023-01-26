@@ -102,8 +102,9 @@ install_darwin_plist () {
     </dict>
 </plist>
 EOF
-    launchctl unload -w "${_plist_file_path}" 2>/dev/null
-    launchctl load -w "${_plist_file_path}"
+    local uid=$(id -u $USER)
+    launchctl bootout gui/$uid $_plist_file_path 2>/dev/null
+    sudo launchctl bootstrap gui/$uid $_plist_file_path
 }
 
 install_darwin() {
