@@ -60,18 +60,18 @@ function post_results {
 echo
 echo "###########################################################################################################"
 echo
-echo "Welcome to Prelude!"
+echo "Will your computer quarantine a malicious Office document?"
 echo
 echo "Malicious files are used to gain entry and conduct cyberattacks against corporate systems through seemingly"
 echo "innocuous email attachments or direct downloads. For example - a malicious macro was used by the BlueNoroff"
-echo "group in a ransomware attack (Dec. 2022)"
+echo "group in a ransomware attack (Dec. 2022)."
 echo
-echo "Rules are specific defensive practices that are meant to protect you from certain types of malicious behavior."
-echo "Prelude runs tests designed to challenge the effectiveness of these defenses and check if your system is"
-echo "configured to restrict malicious behavior from happening"
+echo "This test will attempt to download a malicious file to your disk (a macro enabled excel file generated with"
+echo "Msfvenom) in order to see how your machine will respond. Since downloading malicious files increases your risk"
+echo "by opening you up to further attack, the ability to detect and quarantine any potentially harmful files as"
+echo "quickly as possible is an important part of maintaining a proper security posture."
 echo
-echo "Rule: Malicious files should quarantine when written to disk"
-echo "Test: Will your computer quarantine a malicious Office document?"
+echo "This is a Verified Security Test (VST) Developed by Prelude Research Inc."
 echo
 echo "[+] Applicable CVE(s): CVE-2017-0199"
 echo "[+] ATT&CK mappings: T1204.002"
