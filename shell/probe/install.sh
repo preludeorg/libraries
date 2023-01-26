@@ -54,11 +54,7 @@ done
 register_new_endpoint() {
     echo "[+] Provisioning Detect Endpoint Token..."
     local _token_url="${PRELUDE_API}/detect/endpoint"
-    if [[ $ENDPOINT_TAGS ]];
-    then
-      local _tags=",\"tags\":$(echo "[\"$ENDPOINT_TAGS\"]" | sed 's/,/\",\"/g')"
-    fi
-    local _data="{\"id\":\"${ENDPOINT_ID}\"${_tags}}"
+    local _data="{\"id\":\"${ENDPOINT_ID}\",\"tags\":\"${ENDPOINT_TAGS}\"}"
     ENDPOINT_TOKEN=$(curl -sfS -X POST -H "account:${PRELUDE_ACCOUNT_ID}" -H "token:${PRELUDE_ACCOUNT_SECRET}" -H "Content-Type: application/json" -d "${_data}"  "${_token_url}")
     export ENDPOINT_TOKEN
 }
