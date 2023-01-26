@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 import click
 
 from prelude_cli.views.shared import handle_api_error
@@ -132,7 +134,11 @@ def describe_activity(controller, days):
 @handle_api_error
 def describe_activity(controller, test, days):
     """ Pull social statistics for a specific test """
-    print_json(data=controller.stats(ident=test, days=days))
+    stats = defaultdict(lambda: defaultdict(int))
+    for dos, values in controller.stats(ident=test, days=days).items():
+        for code, count in values.items():
+            stats[dos][ExitCode(int(code)).name] = count
+    print_json(data=stats)
 
 
 @detect.command('observe')
