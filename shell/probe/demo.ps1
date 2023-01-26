@@ -88,18 +88,18 @@ function PostResults {
 Write-Host "
 ###########################################################################################################
 
-Welcome to Prelude!
+Will your computer quarantine a malicious Office document?
 
 Malicious files are used to gain entry and conduct cyberattacks against corporate systems through seemingly
 innocuous email attachments or direct downloads. For example - a malicious macro was used by the BlueNoroff
-group in a ransomware attack (Dec. 2022)
+group in a ransomware attack (Dec. 2022).
 
-Rules are specific defensive practices that are meant to protect you from certain types of malicious behavior.
-Prelude runs tests designed to challenge the effectiveness of these defenses and check if your system is
-configured to restrict malicious behavior from happening
+This test will attempt to download a malicious file to your disk (a macro enabled excel file generated with
+Msfvenom) in order to see how your machine will respond. Since downloading malicious files increases your
+risk by opening you up to further attack, the ability to detect and quarantine any potentially harmful files
+as quickly as possible is an important part of maintaining a proper security posture.
 
-Rule: Malicious files should quarantine when written to disk
-Test: Will your computer quarantine a malicious Office document?
+This is a Verified Security Test (VST) Developed by Prelude Research Inc.
 
 [+] Applicable CVE(s): CVE-2017-0199
 [+] ATT&CK mappings: T1204.002
