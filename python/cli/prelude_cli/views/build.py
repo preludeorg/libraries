@@ -60,11 +60,12 @@ def list_attachments(controller, test_id):
 
 @build.command('create-test')
 @click.argument('rule')
+@click.option('--test', help='test identifier', default=None, type=str)
 @click.pass_obj
 @handle_api_error
-def create_test(controller, rule):
+def create_test(controller, rule, test):
     """ Create a new security test """
-    test_id = str(uuid.uuid4())
+    test_id = test or str(uuid.uuid4())
     basename = f'{test_id}.go'
 
     controller.create_test(test_id=test_id, rule=rule)
