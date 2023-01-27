@@ -8,8 +8,8 @@ param(
   [String]$probeName="raindrop",
   [Parameter(HelpMessage="Endpoint id")]
   [String]$endpointId=$env:computername,
-  [Parameter(HelpMessage="Endpoint tags")]
-  [String[]]$endpointTags=@()
+  [Parameter(HelpMessage="Endpoint tags (as a comma-separated string")]
+  [String]$endpointTags=""
 )
 
 function FromEnv { param ([string]$envVar, [string]$default)
