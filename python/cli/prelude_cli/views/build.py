@@ -64,49 +64,59 @@ def list_attachments(controller, test_id):
 @click.pass_obj
 @handle_api_error
 def create_test(controller, rule, test):
-    """ Create a new security test """
+    """ Create or update a security test """
     test_id = test or str(uuid.uuid4())
-    basename = f'{test_id}.go'
-
     controller.create_test(test_id=test_id, rule=rule)
-    template = pkg_resources.read_text(templates, 'template.go')
-    template = template.replace('$ID', test_id)
-    template = template.replace('$RULE', rule)
-    template = template.replace('$CREATED', str(datetime.now()))
-    controller.upload(test_id=test_id, filename=basename, code=template)
 
-    with open(basename, 'w') as test_code:
-        test_code.write(template)
-        click.secho(f'Created {basename}', fg=Colors.GREEN.value)
+    if not test:
+        basename = f'{test_id}.go'
+        template = pkg_resources.read_text(templates, 'template.go')
+        template = template.replace('$ID', test_id)
+        template = template.replace('$RULE', rule)
+        template = template.replace('$CREATED', str(datetime.now()))
+        controller.upload(test_id=test_id, filename=basename, code=template)
+
+        with open(basename, 'w') as test_code:
+            test_code.write(template)
+            click.secho(f'Created {basename}', fg=Colors.GREEN.value)
 
 
 @build.command('delete-test')
-@click.argument('test_id')
+@click.argument('test')
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
 @handle_api_error
-def delete_test(controller, test_id):
+def delete_test(controller, test):
     """ Delete TEST """
-    controller.delete_test(test_id=test_id)
-    click.secho(f'Deleted {test_id}', fg=Colors.GREEN.value)
+    controller.delete_test(test_id=test)
+    click.secho(f'Deleted {test}', fg=Colors.GREEN.value)
 
 
 @build.command('upload')
 @click.argument('path', type=click.Path(exists=True))
-@click.option('--test', help='test identifier for this attachment', default=None, type=str)
+@click.option('--test', help='test identifier', default=None, type=str)
 @click.pass_obj
 @handle_api_error
 def upload_attachment(controller, path, test):
-    """ Upload a security test or test attachment from disk """
+    """ Upload a test attachment from disk """
     def test_id():
         match = UUID.search(path)
         if match:
             return match.group(0)
-        raise FileNotFoundError('Must specify a test ID or include it in the filename')
+        raise FileNotFoundError('You must supply a test ID or include it in the path')
 
-    with open(path, 'r') as source_code:
-        controller.upload(test_id=test or test_id(), filename=Path(path).name, code=source_code.read())
-        click.secho(f'Uploaded {path}', fg=Colors.GREEN.value)
+    def upload(p: Path):
+        with open(p, 'r') as source_code:
+            controller.upload(test_id=identifier, filename=p.name, code=source_code.read())
+            click.secho(f'Uploaded {path}', fg=Colors.GREEN.value)
+
+    identifier = test or test_id()
+    
+    if Path(path).is_file():
+        upload(p=Path(path))
+    else:
+        for obj in Path(path).rglob('*'):
+            upload(p=Path(obj))
 
 
 @build.command('url')
