@@ -110,4 +110,13 @@ export default class DetectController {
 
     return await response.text();
   }
+
+  /** Delete an endpoint */
+  async deleteProbe(endpoint_id: string, options: RequestOptions = {}) {
+    await this.#client.requestWithAuth(`/detect/endpoint`, {
+      method: "DELETE",
+      body: JSON.stringify({id: endpoint_id}),
+      ...options,
+    });
+  }
 }
