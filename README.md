@@ -30,7 +30,7 @@ A Software Development Kit (SDK) allows you to build your own tooling against th
 
 ## Probe compatibility 
 
-Shell probes are the default choice when using a Prelude [installer](https://docs.preludesecurity.com/docs/individual-probe-deployment#installer). However, other probes are available, depending on your needs.
+Shell probes are the default choice when using a Prelude [installer](https://docs.preludesecurity.com/docs/individual-probe-deployment#installer). However, other probes are available.
 
 > A DOS is a platform and architecture combination
 
