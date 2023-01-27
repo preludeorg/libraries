@@ -17,7 +17,7 @@ export default class DetectController {
 
   /** Register (or re-register) an endpoint to your account */
   async registerEndpoint(
-    { id, tags = [] }: { id: string; tags?: string[] },
+    { id, tags = '' }: { id: string; tags?: string },
     options: RequestOptions = {}
   ) {
     const response = await this.#client.requestWithAuth("/detect/endpoint", {
