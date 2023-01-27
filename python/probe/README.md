@@ -1,3 +1,6 @@
+| :zap:        This probe is deprecated and is example code only   |
+|-----------------------------------------|
+
 # Presto
 
 A probe written in Python. 
