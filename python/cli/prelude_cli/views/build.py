@@ -41,7 +41,7 @@ def clone(controller):
                     f.write(code)
     click.secho('Project cloned successfully', fg=Colors.GREEN.value)
 
-@build.command('list-tests')
+@build.command('tests')
 @click.pass_obj
 @handle_api_error
 def list_tests(controller):
@@ -49,13 +49,13 @@ def list_tests(controller):
     print_json(data=controller.list_tests())
 
 
-@build.command('attachments')
+@build.command('test')
 @click.argument('test_id')
 @click.pass_obj
 @handle_api_error
-def list_attachments(controller, test_id):
-    """ List attachments for a test """
-    print_json(data=controller.attachments(test_id=test_id))
+def get_test(controller, test_id):
+    """ List properties for a test """
+    print_json(data=controller.get_test(test_id=test_id))
 
 
 @build.command('create-test')
