@@ -153,3 +153,13 @@ def describe_activity(controller, test, days):
 def observe(controller, result, value):
     """ Mark a result as observed """
     controller.observe(row_id=result, value=value)
+
+
+@detect.command('search')
+@click.argument('cve')
+@click.pass_obj
+@handle_api_error
+def search(controller, cve):
+    """ Search the NVD for a specific CVE identifier """
+    print("This product uses the NVD API but is not endorsed or certified by the NVD.\n")
+    print_json(data=controller.search(keyword=cve))
