@@ -26,9 +26,9 @@ class DetectController:
             raise Exception(res.text)
 
     @verify_credentials
-    def describe_activity(self, days=7):
+    def describe_activity(self, start: str, finish: str):
         """ Get report for an Account """
-        params = dict(days=days)
+        params = dict(start=start, finish=finish)
         res = requests.get(f'{self.account.hq}/detect/activity', headers=self.account.headers, params=params)
         if res.status_code == 200:
             return res.json()
