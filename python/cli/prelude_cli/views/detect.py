@@ -1,4 +1,5 @@
 from collections import defaultdict
+from datetime import date, timedelta
 
 import click
 
@@ -91,13 +92,14 @@ def list_probes(controller, days):
 
 
 @detect.command('activity')
-@click.option('--days', help='days to look back', default=7, type=int)
+@click.option('--days', help='days to look back', default=30, type=int)
 @click.option('--json', '-j', is_flag=True, help='Print data as JSON')
 @click.pass_obj
 @handle_api_error
 def describe_activity(controller, days, json):
     """ View my Detect results """
-    raw = controller.describe_activity(days=days)
+    start = (date.today() - timedelta(days=days)).isoformat()
+    raw = controller.describe_activity(start=start, finish=date.today().isoformat())
 
     if json:
         print_json(data=raw)
