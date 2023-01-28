@@ -138,7 +138,7 @@ def describe_activity(controller, days, json):
 @click.option('--days', help='days to look back', default=30, type=int)
 @click.pass_obj
 @handle_api_error
-def describe_activity(controller, test, days):
+def social_statistics(controller, test, days):
     """ Pull social statistics for a specific test """
     stats = defaultdict(lambda: defaultdict(int))
     for dos, values in controller.stats(ident=test, days=days).items():
