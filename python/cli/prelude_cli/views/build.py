@@ -34,7 +34,7 @@ def clone(controller):
         my_test = PurePath('prelude', test['id'])
         Path(my_test).mkdir(parents=True, exist_ok=True)
 
-        for attach in controller.attachments(test_id=test['id']):
+        for attach in controller.get_test(test_id=test['id']).get('attachments'):
             if Path(attach).suffix:
                 code = controller.download(test_id=test['id'], filename=attach)
                 with open(PurePath(my_test, attach), 'wb') as f:
