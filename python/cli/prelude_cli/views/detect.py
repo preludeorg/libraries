@@ -67,7 +67,7 @@ def delete_endpoint(controller, endpoint_id):
     click.secho(f'Deleted {endpoint_id}', fg=Colors.GREEN.value)
 
 
-@detect.command('list-queue')
+@detect.command('queue')
 @click.pass_obj
 @handle_api_error
 def queue(controller):
@@ -81,7 +81,7 @@ def queue(controller):
     print_json(data=active)
 
 
-@detect.command('list-probes')
+@detect.command('probes')
 @click.option('--days', help='days to look back', default=7, type=int)
 @click.pass_obj
 @handle_api_error
