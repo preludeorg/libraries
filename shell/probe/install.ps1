@@ -17,7 +17,7 @@ function FromEnv { param ([string]$envVar, [string]$default)
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $PRELUDE_API = FromEnv "PRELUDE_API" "https://api.preludesecurity.com"
-$appDir = FromEnv "PRELUDE_DIR" (Join-Path ([System.Environment]::ExpandEnvironmentVariables("%LOCALAPPDATA%")) "prelude")
+$appDir = FromEnv "PRELUDE_DIR" ([System.Environment]::ExpandEnvironmentVariables("%LOCALAPPDATA%"))
 function LogError {
     param([string]$errStr)
     Write-Host "[!] $errStr" -ForegroundColor Red
