@@ -193,6 +193,13 @@
               await service.detect.listProbes()
             );
 
+            console.log("Print Queue", await service.detect.printQueue());
+
+            console.log(
+              "Stats",
+              await service.detect.stats("39de298a-911d-4a3b-aed4-1e8281010a9a")
+            );
+
             console.log(
               "Activity",
               await service.detect.describeActivity({

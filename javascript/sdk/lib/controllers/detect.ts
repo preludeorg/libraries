@@ -1,10 +1,10 @@
 import Client from "../client";
 import {
-  AccountQueue,
   Activity,
   DateRange,
   EnableTest,
   Probe,
+  Queue,
   RequestOptions,
   RuleList,
   SearchResults,
@@ -38,7 +38,7 @@ export default class DetectController {
       ...options,
     });
 
-    return (await response.json()) as AccountQueue[];
+    return (await response.json()) as Queue[];
   }
 
   /** Enable a test so endpoints will start running it */
@@ -99,7 +99,7 @@ export default class DetectController {
   async stats(test: string, days: number = 30, options: RequestOptions = {}) {
     const searchParams = new URLSearchParams({ days: days.toString() });
     const response = await this.#client.requestWithAuth(
-      `/detect/${test}/stats?${searchParams.toString()}`,
+      `/detect/${test}/social?${searchParams.toString()}`,
       {
         method: "GET",
         ...options,

@@ -26,7 +26,12 @@ export interface CreatedUser {
   token: string;
 }
 
-export interface AccountQueue {}
+export interface Queue {
+  test: string;
+  run_code: RunCode;
+  tag: string[] | null;
+  started: string;
+}
 
 export const RunCodes = {
   DEBUG: 0,
@@ -57,6 +62,7 @@ export interface ComputeResult {
     duration: string;
   }[];
 }
+
 export interface EnableTest {
   test: string;
   runCode: RunCode;
@@ -69,16 +75,20 @@ export interface Probe {
   updated: string;
 }
 
-export interface Stats {}
-
 export interface SearchResults {}
+
+const StatusCodes = [
+  100, 9, 17, 18, 105, 127, 101, 1, 2, 15, 102, 103, 126, 256,
+] as const;
+
+export type StatusCode = typeof StatusCodes[number];
 
 export interface Activity {
   date: string;
   endpoint_id: string;
   id: string;
-  observed: number;
-  status: number;
+  observed: 0 | 1;
+  status: StatusCode;
   test: string;
 }
 
@@ -99,3 +109,13 @@ export interface DateRange {
   start?: string;
   finish?: string;
 }
+
+export type Platform =
+  | "darwin-arm64"
+  | "darwin-x86_64"
+  | "linux-x86_64"
+  | "linux-arm64"
+  | "windows-x86_64"
+  | "windows-arm64";
+export type StatusCodeAsStr = `${StatusCode}`;
+export type Stats = Record<Platform, Record<StatusCodeAsStr, number>>;
