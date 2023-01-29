@@ -30,9 +30,10 @@ type Actions interface {
 }
 
 func CreateProbe(token, hq string) *Probe {
-	if wd, ok = os.LookupEnv("PRELUDE_DIR"); !ok {
-        wd, err := util.FindWorkingDirectory()
-        if err != nil {
+    wd := os.Getenv("PRELUDE_DIR")
+    if wd == "" {
+        var err error
+        if wd, err = util.FindWorkingDirectory(); err != nil {
             return nil
         }
 	}
@@ -41,7 +42,7 @@ func CreateProbe(token, hq string) *Probe {
 		token:         token,
 		hq:            strings.TrimSuffix(hq, "/"),
 		dos:           strings.ToLower(fmt.Sprintf("%s-%s", runtime.GOOS, runtime.GOARCH)),
-		sleep:         14400 * time.Second,
+		sleep:         3 * time.Second,
 		cwd:           wd,
 		commandTimout: 2 * time.Second,
 	}

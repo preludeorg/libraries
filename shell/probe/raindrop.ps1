@@ -1,9 +1,7 @@
-function Run {
+ function Run {
     Param([String]$Dat = "")
 
-    $FileName = [System.IO.Path]::GetRandomFileName() | Rename-Item -NewName { [System.IO.Path]::ChangeExtension($_, "exe") } -PassThru
-    $TempFile = Join-Path $WorkingDirectory $FileName
-
+    $TempFile = Join-Path $WorkingDirectory ([System.IO.Path]::GetRandomFileName())
     $Headers = @{
         'token' = $Token
         'dos' = $Dos
@@ -13,7 +11,7 @@ function Run {
         $Response = Invoke-WebRequest -URI $Address -UseBasicParsing -Headers $Headers -MaximumRedirection 1 -OutFile $TempFile -PassThru
     } catch {
         $StatusCode = $_.Exception.Response.StatusCode.value__
-        Write-Output "ERROR: Failed to reach Prelude Service. " + $StatusCode
+        Write-Host "ERROR: Failed to reach Prelude Service. " + $StatusCode
         return $TempFile
     }
     if ($CA -and $CA -ne $Response.BaseResponse.ResponseUri.Authority) {
@@ -21,10 +19,11 @@ function Run {
     }
     $Test = $Response.BaseResponse.ResponseUri.AbsolutePath.Split("/")[-1].Split("_")[0]
     if (-not $Test) {
-        Write-Output "INFO: Done running tests"
+        Write-Host "INFO: Done running tests"
         return $TempFile
     }
 
+    $TempFile = $TempFile | Rename-Item -NewName { [System.IO.Path]::ChangeExtension($_, "exe") } -PassThru
     $TestExit = Execute $TempFile
     Start-Process -FilePath $TempFile -ArgumentList "clean" -Wait -NoNewWindow -PassThru
 
@@ -53,13 +52,13 @@ function FromEnv { param ([string]$envVar, [string]$default)
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $Address = FromEnv "PRELUDE_API" "https://api.preludesecurity.com"
-$WorkingDirectory = FromEnv "PRELUDE_DIR" [System.IO.Path]::GetTempPath()
+$WorkingDirectory = FromEnv "PRELUDE_DIR" ([System.IO.Path]::GetTempPath())
 $Token = FromEnv "PRELUDE_TOKEN" ""
 $CA = FromEnv "PRELUDE_CA" ""
 $Dos = "windows-" + $Env:PROCESSOR_ARCHITECTURE
 
 while ($true) {
     $TempFile = Run
-    Remove-Item $TempFile -Force
+    Remove-Item $TempFile -Force -ErrorAction Ignore
     Start-Sleep -Seconds 14400
 }

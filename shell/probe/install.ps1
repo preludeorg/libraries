@@ -17,7 +17,7 @@ function FromEnv { param ([string]$envVar, [string]$default)
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $PRELUDE_API = FromEnv "PRELUDE_API" "https://api.preludesecurity.com"
-$appDir = FromEnv "PRELUDE_DIR" (Join-Path [System.Environment]::ExpandEnvironmentVariables("%LOCALAPPDATA%") "prelude")
+$appDir = FromEnv "PRELUDE_DIR" (Join-Path ([System.Environment]::ExpandEnvironmentVariables("%LOCALAPPDATA%")) "prelude")
 function LogError {
     param([string]$errStr)
     Write-Host "[!] $errStr" -ForegroundColor Red
@@ -71,7 +71,7 @@ function StartTask {
 
 LogMessage "Detect setup started"
 $probePath=($appDir | Join-Path -ChildPath $probeName) + ".ps1"
-if(-Not Test-Path -path $appDir) {
+if(-Not (Test-Path -path $appDir)) {
     [void](New-Item -Path $appDir -ItemType Directory -Force)
 } else if(Test-Path -path $probePath -PathType Leaf) {
     Remove-Item $probePath

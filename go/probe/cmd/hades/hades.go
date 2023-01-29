@@ -6,9 +6,8 @@ import (
 )
 
 func main() {
-	var ok bool
-	var hq string
-	if hq, ok = os.LookupEnv("PRELUDE_API"); !ok {
+	hq := os.Getenv("PRELUDE_API")
+	if hq == "" {
 		hq = "https://api.preludesecurity.com"
 	}
 	probe := hades.CreateProbe(os.Getenv("PRELUDE_TOKEN"), hq)
