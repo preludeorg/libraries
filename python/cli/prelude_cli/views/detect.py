@@ -164,4 +164,4 @@ def observe(controller, result, value):
 def search(controller, cve):
     """ Search the NVD for a specific CVE identifier """
     print("This product uses the NVD API but is not endorsed or certified by the NVD.\n")
-    print_json(data=controller.search(keyword=cve))
+    print_json(data=controller.search(identifier=cve))
