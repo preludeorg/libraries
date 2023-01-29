@@ -200,6 +200,8 @@
               await service.detect.stats("39de298a-911d-4a3b-aed4-1e8281010a9a")
             );
 
+            console.log("Search", await service.detect.search("CVE-2017-0199"));
+
             console.log(
               "Activity",
               await service.detect.describeActivity({

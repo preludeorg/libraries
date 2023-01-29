@@ -75,7 +75,13 @@ export interface Probe {
   updated: string;
 }
 
-export interface SearchResults {}
+export interface SearchResults {
+  info: {
+    published: string;
+    description: string;
+  };
+  tests: string[];
+}
 
 const StatusCodes = [
   100, 9, 17, 18, 105, 127, 101, 1, 2, 15, 102, 103, 126, 256,
