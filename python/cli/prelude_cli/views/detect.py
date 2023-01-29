@@ -74,11 +74,11 @@ def delete_endpoint(controller, endpoint_id):
 def queue(controller):
     """ List all tests in your active queue """
     build = BuildController(account=controller.account)
-    tests = {row['id']: row['rule'] for row in build.list_tests()}
+    tests = {row['id']: row['name'] for row in build.list_tests()}
     active = controller.print_queue()
     for q in active:
         q['run_code'] = RunCode(q['run_code']).name
-        q['rule'] = tests[q['test']]
+        q['name'] = tests[q['test']]
     print_json(data=active)
 
 
@@ -105,12 +105,12 @@ def describe_activity(controller, days, json):
         print_json(data=raw)
     else:
         build = BuildController(account=controller.account)
-        tests = {row['id']: row['rule'] for row in build.list_tests()}
+        tests = {row['id']: row['name'] for row in build.list_tests()}
 
         report = Table()
         report.add_column('timestamp')
         report.add_column('result ID')
-        report.add_column('rule')
+        report.add_column('name')
         report.add_column('test')
         report.add_column('endpoint')
         report.add_column('code', style='magenta')
