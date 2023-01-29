@@ -1,5 +1,5 @@
 from collections import defaultdict
-from datetime import date, timedelta, timezone
+from datetime import datetime, timedelta, timezone
 
 import click
 
@@ -98,8 +98,8 @@ def list_probes(controller, days):
 @handle_api_error
 def describe_activity(controller, days, json):
     """ View my Detect results """
-    start = (date.today(timezone.utc) - timedelta(days=days)).isoformat()
-    raw = controller.describe_activity(start=start, finish=date.today().isoformat())
+    start = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+    raw = controller.describe_activity(start=start, finish=datetime.now().isoformat())
 
     if json:
         print_json(data=raw)
