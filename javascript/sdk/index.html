@@ -86,6 +86,8 @@
 
           service.setCredentials(credentials);
 
+          console.log("DETECT SEARCH", await service.detect.search("hi"));
+
           console.log("List Tests", await service.build.listTests());
 
           const testId = uuid.v4();
@@ -99,22 +101,39 @@
             await service.build.listTests()
           );
 
+          console.log(
+            "Get Test after CREATE",
+            await service.build.getTest(testId)
+          );
+
           const testName = `${testId}.go`;
 
           console.log(
-            "DOWNLOAD Test code",
-            await service.build.downloadTest(testName)
+            "UPLOAD Test code",
+            await service.build.upload(testId, testName, code)
           );
 
           console.log(
-            "UPLOAD Test code",
-            await service.build.uploadTest(testName, code)
+            "Get Test after UPLOAD",
+            await service.build.getTest(testId)
+          );
+
+          console.log(
+            "DOWNLOAD Test code",
+            await service.build.download(testId, testName, {
+              headers: { "Content-Type": "" },
+            })
           );
 
           const compute = await service.build.computeProxy(testName);
 
           console.log(
-            "CREATE URL for Variant",
+            "Get Test after COMPUTE",
+            await service.build.getTest(testId)
+          );
+
+          console.log(
+            "CREATE URL for Test",
             await service.build.createURL(compute[0].name)
           );
 

@@ -1,5 +1,5 @@
 import Client from "../client";
-import type { ComputeResult, RequestOptions, Test } from "../types";
+import type { ComputeResult, RequestOptions, Test, TestData } from "../types";
 
 export default class BuildController {
   #client: Client;
@@ -17,9 +17,9 @@ export default class BuildController {
   }
 
   async createTest(id: string, rule: string, options: RequestOptions = {}) {
-    await this.#client.requestWithAuth(`/build/tests`, {
+    await this.#client.requestWithAuth(`/build/tests/${id}`, {
       method: "POST",
-      body: JSON.stringify({ id, rule }),
+      body: JSON.stringify({ rule }),
       ...options,
     });
   }
@@ -31,13 +31,24 @@ export default class BuildController {
     });
   }
 
+  async getTest(testId: string, options: RequestOptions = {}) {
+    const response = await this.#client.requestWithAuth(
+      `/build/tests/${testId}`,
+      {
+        ...options,
+      }
+    );
+
+    return (await response.json()) as TestData;
+  }
+
   async download(
     testId: string,
     filename: string,
     options: RequestOptions = {}
   ) {
     const response = await this.#client.requestWithAuth(
-      `/build/attachment/${testId}/${filename}`,
+      `/build/tests/${testId}/${filename}`,
       {
         ...options,
       }
@@ -51,25 +62,11 @@ export default class BuildController {
     code: string,
     options: RequestOptions = {}
   ) {
-    await this.#client.requestWithAuth(
-      `/build/attachment/${testId}/${filename}`,
-      {
-        method: "POST",
-        body: JSON.stringify({ code }),
-        ...options,
-      }
-    );
-  }
-
-  async attachments(testId: string, options: RequestOptions = {}) {
-    const response = await this.#client.requestWithAuth(
-      `/build/attachment/${testId}`,
-      {
-        ...options,
-      }
-    );
-
-    return (await response.json()) as string[];
+    await this.#client.requestWithAuth(`/build/tests/${testId}/${filename}`, {
+      method: "POST",
+      body: JSON.stringify({ code }),
+      ...options,
+    });
   }
 
   async createURL(attachment: string, options: RequestOptions = {}) {
