@@ -16,10 +16,10 @@ export default class BuildController {
     return (await response.json()) as Test[];
   }
 
-  async createTest(id: string, rule: string, options: RequestOptions = {}) {
+  async createTest(id: string, name: string, options: RequestOptions = {}) {
     await this.#client.requestWithAuth(`/build/tests/${id}`, {
       method: "POST",
-      body: JSON.stringify({ rule }),
+      body: JSON.stringify({ name }),
       ...options,
     });
   }
@@ -51,6 +51,10 @@ export default class BuildController {
       `/build/tests/${testId}/${filename}`,
       {
         ...options,
+        headers: {
+          "Content-Type": "",
+          ...(options.headers ?? {}),
+        },
       }
     );
     return response.text();

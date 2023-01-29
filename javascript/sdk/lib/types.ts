@@ -14,7 +14,7 @@ export type RequestOptions = Omit<RequestInit, "method" | "body">;
 export interface Test {
   account_id: string;
   id: string;
-  rule: string;
+  name: string;
 }
 
 export interface User {
@@ -26,7 +26,12 @@ export interface CreatedUser {
   token: string;
 }
 
-export interface AccountQueue {}
+export interface Queue {
+  test: string;
+  run_code: RunCode;
+  tag: string[] | null;
+  started: string;
+}
 
 export const RunCodes = {
   DEBUG: 0,
@@ -57,6 +62,7 @@ export interface ComputeResult {
     duration: string;
   }[];
 }
+
 export interface EnableTest {
   test: string;
   runCode: RunCode;
@@ -69,16 +75,27 @@ export interface Probe {
   updated: string;
 }
 
-export interface Stats {}
+export interface SearchResults {
+  info: {
+    published: string;
+    description: string;
+  };
+  tests: string[];
+}
 
-export interface SearchResults {}
+export const PassCodes = [100, 9, 17, 18, 105, 127] as const;
+export const FailCodes = [101] as const;
+export const ErrorCodes = [1, 2, 15, 102, 103, 126, 256] as const;
+
+const StatusCodes = [...PassCodes, ...FailCodes, ...ErrorCodes] as const;
+export type StatusCode = typeof StatusCodes[number];
 
 export interface Activity {
   date: string;
   endpoint_id: string;
   id: string;
-  observed: number;
-  status: number;
+  observed: 0 | 1;
+  status: StatusCode;
   test: string;
 }
 
@@ -86,3 +103,26 @@ export interface TestData {
   attachments: string[];
   mappings: string[];
 }
+
+export interface Rule {
+  label: string;
+  published: string;
+  description: string;
+}
+
+export type RuleList = Record<string, Rule>;
+
+export interface DateRange {
+  start?: string;
+  finish?: string;
+}
+
+export type Platform =
+  | "darwin-arm64"
+  | "darwin-x86_64"
+  | "linux-x86_64"
+  | "linux-arm64"
+  | "windows-x86_64"
+  | "windows-arm64";
+export type StatusCodeAsStr = `${StatusCode}`;
+export type Stats = Record<Platform, Record<StatusCodeAsStr, number>>;

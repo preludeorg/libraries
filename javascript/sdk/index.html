@@ -9,12 +9,21 @@
 
   <body>
     <h1 class="text-xl py-2 ml-2">Testing SDK: (See Source)</h1>
-    <button
-      id="run"
-      class="ml-2 mb-2 bg-slate-900 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 text-white font-semibold h-8 px-6 rounded-lg w-full flex items-center justify-center sm:w-auto dark:bg-sky-500 dark:highlight-white/20 dark:hover:bg-sky-400"
-    >
-      Run Test
-    </button>
+    <div class="flex flex-row gap-2">
+      <button
+        id="run-build"
+        class="ml-2 mb-2 bg-slate-900 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 text-white font-semibold h-8 px-6 rounded-lg w-full flex items-center justify-center sm:w-auto dark:bg-sky-500 dark:highlight-white/20 dark:hover:bg-sky-400"
+      >
+        Run Build Test
+      </button>
+
+      <button
+        id="run-detect"
+        class="ml-2 mb-2 bg-slate-900 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 text-white font-semibold h-8 px-6 rounded-lg w-full flex items-center justify-center sm:w-auto dark:bg-sky-500 dark:highlight-white/20 dark:hover:bg-sky-400"
+      >
+        Run Detect Test
+      </button>
+    </div>
     <pre
       id="log"
       class="whitespace-pre-wrap break-words w-3/4 bg-gray-100 p-2 min-h-full text-sm"
@@ -71,92 +80,141 @@
       import * as Prelude from "/lib/main.ts";
       import * as uuid from "https://jspm.dev/uuid";
 
-      document.getElementById("run").addEventListener("click", async () => {
-        try {
-          const host = "https://api.staging.preludesecurity.com";
+      async function setupAccount() {
+        document.getElementById("log").innerHTML = "";
 
-          console.log("Using host", host);
-          const service = new Prelude.Service({
-            host,
-          });
+        const host = "https://api.staging.preludesecurity.com";
 
-          const credentials = await service.iam.newAccount("user_handle");
+        console.log("Using host", host);
+        const service = new Prelude.Service({
+          host,
+        });
 
-          console.log("CREATE account", { credentials });
+        const credentials = await service.iam.newAccount("user_handle");
 
-          service.setCredentials(credentials);
+        console.log("CREATE account", { credentials });
 
-          console.log("DETECT SEARCH", await service.detect.search("hi"));
+        service.setCredentials(credentials);
 
-          console.log("List Tests", await service.build.listTests());
+        return service;
+      }
 
-          const testId = uuid.v4();
-          console.log(
-            "CREATE new test",
-            await service.build.createTest(testId, "This is a test", code)
-          );
-
-          console.log(
-            "List Tests after CREATE",
-            await service.build.listTests()
-          );
-
-          console.log(
-            "Get Test after CREATE",
-            await service.build.getTest(testId)
-          );
-
-          const testName = `${testId}.go`;
-
-          console.log(
-            "UPLOAD Test code",
-            await service.build.upload(testId, testName, code)
-          );
-
-          console.log(
-            "Get Test after UPLOAD",
-            await service.build.getTest(testId)
-          );
-
-          console.log(
-            "DOWNLOAD Test code",
-            await service.build.download(testId, testName, {
-              headers: { "Content-Type": "" },
-            })
-          );
-
-          const compute = await service.build.computeProxy(testName);
-
-          console.log(
-            "Get Test after COMPUTE",
-            await service.build.getTest(testId)
-          );
-
-          console.log(
-            "CREATE URL for Test",
-            await service.build.createURL(compute[0].name)
-          );
-
-          console.log("DELETE Test", await service.build.deleteTest(testId));
-
-          console.log(
-            "List Tests after DELETE",
-            await service.build.listTests()
-          );
-
-          console.log("PURGE ACCOUNT", await service.iam.purgeAccount());
+      document
+        .getElementById("run-build")
+        .addEventListener("click", async () => {
+          let service;
 
           try {
-            await service.build.listTests();
-          } catch (e) {
-            console.log("List Tests after PURGE", e.message);
-          }
+            service = await setupAccount();
+            console.log("List Tests", await service.build.listTests());
 
-          console.log("DONE!");
-        } catch (e) {
-          console.log("Error", e.message);
-        }
-      });
+            const testId = uuid.v4();
+            console.log(
+              "CREATE new test",
+              await service.build.createTest(testId, "This is a test", code)
+            );
+
+            console.log(
+              "List Tests after CREATE",
+              await service.build.listTests()
+            );
+
+            console.log(
+              "Get Test after CREATE",
+              await service.build.getTest(testId)
+            );
+
+            const testName = `${testId}.go`;
+
+            console.log(
+              "UPLOAD Test code",
+              await service.build.upload(testId, testName, code)
+            );
+
+            console.log(
+              "Get Test after UPLOAD",
+              await service.build.getTest(testId)
+            );
+
+            console.log(
+              "DOWNLOAD Test code",
+              await service.build.download(testId, testName)
+            );
+
+            const compute = await service.build.computeProxy(testName);
+
+            console.log(
+              "Get Test after COMPUTE",
+              await service.build.getTest(testId)
+            );
+
+            console.log(
+              "CREATE URL for Test",
+              await service.build.createURL(compute[0].name)
+            );
+
+            console.log("DELETE Test", await service.build.deleteTest(testId));
+
+            console.log(
+              "List Tests after DELETE",
+              await service.build.listTests()
+            );
+
+            console.log("DONE!");
+          } catch (e) {
+            console.log("Error", e.message);
+          } finally {
+            console.log("PURGE ACCOUNT", await service.iam.purgeAccount());
+          }
+        });
+
+      document
+        .getElementById("run-detect")
+        .addEventListener("click", async () => {
+          let service;
+
+          try {
+            service = await setupAccount();
+
+            console.log("List Rule", await service.detect.listRules());
+
+            console.log("List Probes", await service.detect.listProbes());
+
+            console.log(
+              "Register Endpoint",
+              await service.detect.registerEndpoint({
+                id: "test-endpoint",
+                tags: "test,js",
+              })
+            );
+
+            console.log(
+              "List Probes after create",
+              await service.detect.listProbes()
+            );
+
+            console.log("Print Queue", await service.detect.printQueue());
+
+            console.log(
+              "Stats",
+              await service.detect.stats("39de298a-911d-4a3b-aed4-1e8281010a9a")
+            );
+
+            console.log("Search", await service.detect.search("CVE-2017-0199"));
+
+            console.log(
+              "Activity",
+              await service.detect.describeActivity({
+                start: "2023-01-10",
+                finish: "2023-01-15",
+              })
+            );
+          } catch (e) {
+            console.log("Error", e.message);
+          } finally {
+            console.log("PURGE ACCOUNT", await service.iam.purgeAccount());
+          }
+        });
     </script>
   </body>
 </html>
