@@ -59,20 +59,20 @@ def get_test(controller, test_id):
 
 
 @build.command('create-test')
-@click.argument('rule')
+@click.argument('name')
 @click.option('--test', help='test identifier', default=None, type=str)
 @click.pass_obj
 @handle_api_error
-def create_test(controller, rule, test):
+def create_test(controller, name, test):
     """ Create or update a security test """
     test_id = test or str(uuid.uuid4())
-    controller.create_test(test_id=test_id, rule=rule)
+    controller.create_test(test_id=test_id, name=name)
 
     if not test:
         basename = f'{test_id}.go'
         template = pkg_resources.read_text(templates, 'template.go')
         template = template.replace('$ID', test_id)
-        template = template.replace('$RULE', rule)
+        template = template.replace('$NAME', name)
         template = template.replace('$CREATED', str(datetime.now()))
         controller.upload(test_id=test_id, filename=basename, code=template)
 

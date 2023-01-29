@@ -1,6 +1,6 @@
 /*
 ID: $ID
-RULE: $RULE
+NAME: $NAME
 CREATED: $CREATED
 */
 package main
