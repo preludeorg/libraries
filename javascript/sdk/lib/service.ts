@@ -12,7 +12,11 @@ export class Service {
   detect: DetectController;
 
   constructor(config: ServiceConfig) {
-    this.#client = new Client(config.host, config.credentials);
+    this.#client = new Client(
+      config.host,
+      config.credentials,
+      config.requestInterceptor
+    );
 
     this.build = new BuildController(this.#client);
     this.iam = new IAMController(this.#client);

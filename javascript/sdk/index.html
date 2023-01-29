@@ -88,6 +88,10 @@
         console.log("Using host", host);
         const service = new Prelude.Service({
           host,
+          requestInterceptor: (request) => {
+            request.headers.set("_product", "js-sdk-test");
+            return request;
+          },
         });
 
         const credentials = await service.iam.newAccount("user_handle");
