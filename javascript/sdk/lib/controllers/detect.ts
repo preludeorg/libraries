@@ -5,6 +5,7 @@ import {
   EnableTest,
   Probe,
   RequestOptions,
+  RuleList,
   SearchResults,
   Stats,
 } from "../types";
@@ -137,5 +138,15 @@ export default class DetectController {
     );
 
     return (await response.json()) as SearchResults;
+  }
+
+  /** Return all Verified Security Rules */
+  async listRules(options: RequestOptions = {}) {
+    const response = await this.#client.requestWithAuth(`/detect/rules`, {
+      method: "GET",
+      ...options,
+    });
+
+    return (await response.json()) as RuleList;
   }
 }

@@ -14,7 +14,7 @@ export type RequestOptions = Omit<RequestInit, "method" | "body">;
 export interface Test {
   account_id: string;
   id: string;
-  rule: string;
+  name: string;
 }
 
 export interface User {
@@ -86,3 +86,11 @@ export interface TestData {
   attachments: string[];
   mappings: string[];
 }
+
+export interface Rule {
+  label: string;
+  published: string;
+  description: string;
+}
+
+export type RuleList = Record<string, Rule>;
