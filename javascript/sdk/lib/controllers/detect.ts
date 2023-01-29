@@ -2,6 +2,7 @@ import Client from "../client";
 import {
   AccountQueue,
   Activity,
+  DateRange,
   EnableTest,
   Probe,
   RequestOptions,
@@ -62,11 +63,13 @@ export default class DetectController {
 
   /** Get report for an Account */
   async describeActivity(
-    start: string,
-    finish: string,
+    { start, finish }: DateRange = {},
     options: RequestOptions = {}
   ) {
-    const searchParams = new URLSearchParams({ start, finish });
+    const searchParams = new URLSearchParams();
+    if (start) searchParams.set("start", start);
+    if (finish) searchParams.set("finish", finish);
+
     const response = await this.#client.requestWithAuth(
       `/detect/activity?${searchParams.toString()}`,
       {

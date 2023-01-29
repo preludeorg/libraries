@@ -94,3 +94,8 @@ export interface Rule {
 }
 
 export type RuleList = Record<string, Rule>;
+
+export interface DateRange {
+  start?: string;
+  finish?: string;
+}
