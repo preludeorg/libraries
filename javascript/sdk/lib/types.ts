@@ -26,8 +26,6 @@ export interface CreatedUser {
   token: string;
 }
 
-export type AccountActivity = Record<string, any>;
-
 export interface AccountQueue {}
 
 export const RunCodes = {
@@ -72,3 +70,19 @@ export interface Probe {
 }
 
 export interface Stats {}
+
+export interface SearchResults {}
+
+export interface Activity {
+  date: string;
+  endpoint_id: string;
+  id: string;
+  observed: number;
+  status: number;
+  test: string;
+}
+
+export interface TestData {
+  attachments: string[];
+  mappings: string[];
+}

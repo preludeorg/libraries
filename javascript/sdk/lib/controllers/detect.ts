@@ -1,10 +1,11 @@
 import Client from "../client";
 import {
-  AccountActivity,
   AccountQueue,
+  Activity,
   EnableTest,
   Probe,
   RequestOptions,
+  SearchResults,
   Stats,
 } from "../types";
 
@@ -17,7 +18,7 @@ export default class DetectController {
 
   /** Register (or re-register) an endpoint to your account */
   async registerEndpoint(
-    { id, tags = '' }: { id: string; tags?: string },
+    { id, tags = "" }: { id: string; tags?: string },
     options: RequestOptions = {}
   ) {
     const response = await this.#client.requestWithAuth("/detect/endpoint", {
@@ -59,8 +60,12 @@ export default class DetectController {
   }
 
   /** Get report for an Account */
-  async describeActivity(days: number = 7, options: RequestOptions = {}) {
-    const searchParams = new URLSearchParams({ days: days.toString() });
+  async describeActivity(
+    start: string,
+    finish: string,
+    options: RequestOptions = {}
+  ) {
+    const searchParams = new URLSearchParams({ start, finish });
     const response = await this.#client.requestWithAuth(
       `/detect/activity?${searchParams.toString()}`,
       {
@@ -69,7 +74,7 @@ export default class DetectController {
       }
     );
 
-    return (await response.json()) as AccountActivity;
+    return (await response.json()) as Activity[];
   }
 
   /** Get all probes associated to an Account */
@@ -115,8 +120,22 @@ export default class DetectController {
   async deleteProbe(endpoint_id: string, options: RequestOptions = {}) {
     await this.#client.requestWithAuth(`/detect/endpoint`, {
       method: "DELETE",
-      body: JSON.stringify({id: endpoint_id}),
+      body: JSON.stringify({ id: endpoint_id }),
       ...options,
     });
+  }
+
+  /** Search the NVD for a keyword  */
+  async search(identifier: string, options: RequestOptions = {}) {
+    const searchParams = new URLSearchParams({ identifier });
+    const response = await this.#client.requestWithAuth(
+      `/detect/search?${searchParams.toString()}`,
+      {
+        method: "GET",
+        ...options,
+      }
+    );
+
+    return (await response.json()) as SearchResults;
   }
 }
