@@ -83,10 +83,11 @@ export interface SearchResults {
   tests: string[];
 }
 
-const StatusCodes = [
-  100, 9, 17, 18, 105, 127, 101, 1, 2, 15, 102, 103, 126, 256,
-] as const;
+export const PassCodes = [100, 9, 17, 18, 105, 127] as const;
+export const FailCodes = [101] as const;
+export const ErrorCodes = [1, 2, 15, 102, 103, 126, 256] as const;
 
+const StatusCodes = [...PassCodes, ...FailCodes, ...ErrorCodes] as const;
 export type StatusCode = typeof StatusCodes[number];
 
 export interface Activity {
