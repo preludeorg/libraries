@@ -30,9 +30,11 @@ type Actions interface {
 }
 
 func CreateProbe(token, hq string) *Probe {
-	wd, err := util.FindWorkingDirectory()
-	if err != nil {
-		return nil
+	if wd, ok = os.LookupEnv("PRELUDE_DIR"); !ok {
+        wd, err := util.FindWorkingDirectory()
+        if err != nil {
+            return nil
+        }
 	}
 	return &Probe{
 		signals:       make(chan bool),

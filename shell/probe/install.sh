@@ -88,6 +88,8 @@ install_darwin_plist () {
             <string>${ENDPOINT_TOKEN}</string>
             <key>PRELUDE_API</key>
             <string>${PRELUDE_API}</string>
+            <key>PRELUDE_DIR</key>
+            <string>${PRELUDE_DIR}</string>
         </dict>
         <key>ProgramArguments</key>
         <array>
@@ -110,7 +112,7 @@ EOF
 install_darwin() {
     local _running_user="${USER}"
     local _plist_path="/Users/${_running_user}/Library/LaunchAgents/com.preludesecurity.detect.plist"
-    local _app_dir="/Users/${_running_user}/.prelude/bin"
+    local _app_dir=${PRELUDE_DIR:="/Users/${_running_user}/.prelude/bin"}
     local _app_tmp="/tmp/prelude"
     _primary_group=$(id -gn)
 
@@ -150,6 +152,7 @@ Type=simple
 User=${_running_user}
 Environment=PRELUDE_TOKEN=${ENDPOINT_TOKEN}
 Environment=PRELUDE_API=${PRELUDE_API}
+Environment=PRELUDE_DIR=${PRELUDE_DIR}
 WorkingDirectory=${_app_dir}
 ExecStart=${_app_dir}/${PROBE_NAME}
 Restart=on-failure
@@ -166,7 +169,7 @@ EOF
 
 install_linux() {
     local _running_user="prelude"
-    local _app_dir="/opt/${_running_user}/.prelude/bin"
+    local _app_dir=${PRELUDE_DIR:="/opt/${_running_user}/.prelude/bin"}
     local _app_tmp="/tmp/prelude"
     _primary_group=$(id -gn)
 

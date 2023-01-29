@@ -17,7 +17,7 @@ function FromEnv { param ([string]$envVar, [string]$default)
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $PRELUDE_API = FromEnv "PRELUDE_API" "https://api.preludesecurity.com"
-
+$appDir = FromEnv "PRELUDE_DIR" (Join-Path [System.Environment]::ExpandEnvironmentVariables("%LOCALAPPDATA%") "prelude")
 function LogError {
     param([string]$errStr)
     Write-Host "[!] $errStr" -ForegroundColor Red
@@ -42,12 +42,12 @@ function RegisterEndpoint {
 function DownloadProbe {
     param ([string]$token, [string]$dos, [string]$out)
     LogMessage "Downloading Probe..."
-    try { 
+    try {
         [void](Invoke-WebRequest -Method GET -Uri $PRELUDE_API/download/$probeName -UseBasicParsing -Headers @{"token"=$token;"dos"=$dos} -OutFile $out -PassThru)
-    } catch [System.Net.WebException] { 
+    } catch [System.Net.WebException] {
         LogError "Detect failed to download! $($_.ErrorDetails)"
         Exit 1
-    } 
+    }
 }
 
 function StartTask {
@@ -70,17 +70,18 @@ function StartTask {
 }
 
 LogMessage "Detect setup started"
-$parentDir=Join-Path ([System.Environment]::ExpandEnvironmentVariables("%LOCALAPPDATA%")) "prelude"
-$probePath=($parentDir | Join-Path -ChildPath $probeName) + ".ps1"
-if(Test-Path -path $probePath -PathType Leaf) {
+$probePath=($appDir | Join-Path -ChildPath $probeName) + ".ps1"
+if(-Not Test-Path -path $appDir) {
+    [void](New-Item -Path $appDir -ItemType Directory -Force)
+} else if(Test-Path -path $probePath -PathType Leaf) {
     Remove-Item $probePath
 }
-[void](New-Item -Path $parentDir -ItemType Directory -Force)
 LogMessage "Determining OS"
 $dos = "windows-" + $Env:PROCESSOR_ARCHITECTURE
 $token=RegisterEndpoint
 [Environment]::SetEnvironmentVariable("PRELUDE_TOKEN", $token, "User")
 [Environment]::SetEnvironmentVariable("PRELUDE_API", $PRELUDE_API, "User")
+[Environment]::SetEnvironmentVariable("PRELUDE_DIR", $PRELUDE_DIR, "User")
 DownloadProbe $token $dos $probePath
-StartTask $token $parentDir $probePath
+StartTask $token $appDir $probePath
 Write-Host "[=] Detect setup complete"
