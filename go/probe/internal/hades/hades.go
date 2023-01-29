@@ -36,16 +36,16 @@ func CreateProbe(token, hq string) *Probe {
         if wd, err = util.FindWorkingDirectory(); err != nil {
             return nil
         }
-	}
-	return &Probe{
-		signals:       make(chan bool),
-		token:         token,
-		hq:            strings.TrimSuffix(hq, "/"),
-		dos:           strings.ToLower(fmt.Sprintf("%s-%s", runtime.GOOS, runtime.GOARCH)),
-		sleep:         3 * time.Second,
-		cwd:           wd,
-		commandTimout: 2 * time.Second,
-	}
+    }
+    return &Probe{
+        signals:       make(chan bool),
+        token:         token,
+        hq:            strings.TrimSuffix(hq, "/"),
+        dos:           strings.ToLower(fmt.Sprintf("%s-%s", runtime.GOOS, runtime.GOARCH)),
+        sleep:         3 * time.Second,
+        cwd:           wd,
+        commandTimout: 2 * time.Second,
+    }
 }
 
 func (p *Probe) Start() {
