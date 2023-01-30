@@ -88,8 +88,6 @@ install_darwin_plist () {
             <string>${ENDPOINT_TOKEN}</string>
             <key>PRELUDE_API</key>
             <string>${PRELUDE_API}</string>
-            <key>PRELUDE_DIR</key>
-            <string>${PRELUDE_DIR}</string>
         </dict>
         <key>ProgramArguments</key>
         <array>
@@ -152,7 +150,6 @@ Type=simple
 User=${_running_user}
 Environment=PRELUDE_TOKEN=${ENDPOINT_TOKEN}
 Environment=PRELUDE_API=${PRELUDE_API}
-Environment=PRELUDE_DIR=${PRELUDE_DIR}
 WorkingDirectory=${_app_dir}
 ExecStart=${_app_dir}/${PROBE_NAME}
 Restart=on-failure

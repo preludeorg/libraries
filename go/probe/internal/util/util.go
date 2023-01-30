@@ -61,35 +61,6 @@ func request(url, method string, data []byte, headers map[string]string) ([]byte
 	return body, resp.StatusCode, resp.Request.URL, nil
 }
 
-func FindWorkingDirectory() (string, error) {
-	cwd, err := os.Getwd()
-	if err != nil {
-		return "", err
-	}
-
-	var wd string
-	err = filepath.WalkDir(cwd, func(path string, d fs.DirEntry, err error) error {
-		if d.IsDir() {
-			f, err := os.CreateTemp(path, "detect")
-			if err != nil {
-				return nil
-			}
-			defer os.Remove(f.Name())
-			_, err = os.Open(f.Name())
-			if err != nil {
-				return nil
-			}
-			wd = path
-			return io.EOF
-		}
-		return nil
-	})
-	if err == io.EOF {
-		return wd, nil
-	}
-	return "", errors.New("unable to find a working directory")
-}
-
 func Max(x, y int) int {
 	if x > y {
 		return x

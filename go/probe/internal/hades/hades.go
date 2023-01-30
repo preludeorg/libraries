@@ -30,13 +30,10 @@ type Actions interface {
 }
 
 func CreateProbe(token, hq string) *Probe {
-    wd := os.Getenv("PRELUDE_DIR")
-    if wd == "" {
-        var err error
-        if wd, err = util.FindWorkingDirectory(); err != nil {
-            return nil
-        }
-    }
+	wd, err := os.Getwd()
+	if err != nil {
+		return nil
+	}
     return &Probe{
         signals:       make(chan bool),
         token:         token,
@@ -76,7 +73,7 @@ func (p *Probe) runTask(data string) {
 }
 
 func (p *Probe) save(data []byte) (*os.File, error) {
-	f, err := os.CreateTemp(p.cwd, "detect")
+	f, err := os.CreateTemp(p.cwd, "detect-vst")
 	if err != nil {
 		return nil, err
 	}

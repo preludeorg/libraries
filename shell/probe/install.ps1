@@ -17,7 +17,7 @@ function FromEnv { param ([string]$envVar, [string]$default)
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $PRELUDE_API = FromEnv "PRELUDE_API" "https://api.preludesecurity.com"
-$appDir = FromEnv "PRELUDE_DIR" ([System.Environment]::ExpandEnvironmentVariables("%LOCALAPPDATA%"))
+$appDir = FromEnv "PRELUDE_DIR" (Join-Path ([System.Environment]::ExpandEnvironmentVariables("%LOCALAPPDATA%")) "prelude")
 function LogError {
     param([string]$errStr)
     Write-Host "[!] $errStr" -ForegroundColor Red
@@ -81,7 +81,6 @@ $dos = "windows-" + $Env:PROCESSOR_ARCHITECTURE
 $token=RegisterEndpoint
 [Environment]::SetEnvironmentVariable("PRELUDE_TOKEN", $token, "User")
 [Environment]::SetEnvironmentVariable("PRELUDE_API", $PRELUDE_API, "User")
-[Environment]::SetEnvironmentVariable("PRELUDE_DIR", $PRELUDE_DIR, "User")
 DownloadProbe $token $dos $probePath
 StartTask $token $appDir $probePath
 Write-Host "[=] Detect setup complete"

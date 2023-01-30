@@ -1,7 +1,5 @@
  function Run {
     Param([String]$Dat = "")
-
-    $TempFile = Join-Path $WorkingDirectory ([System.IO.Path]::GetRandomFileName())
     $Headers = @{
         'token' = $Token
         'dos' = $Dos
@@ -23,7 +21,6 @@
         return $TempFile
     }
 
-    $TempFile = $TempFile | Rename-Item -NewName { [System.IO.Path]::ChangeExtension($_, "exe") } -PassThru
     $TestExit = Execute $TempFile
     Start-Process -FilePath $TempFile -ArgumentList "clean" -Wait -NoNewWindow -PassThru
 
@@ -52,10 +49,10 @@ function FromEnv { param ([string]$envVar, [string]$default)
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $Address = FromEnv "PRELUDE_API" "https://api.preludesecurity.com"
-$WorkingDirectory = FromEnv "PRELUDE_DIR" ([System.IO.Path]::GetTempPath())
 $Token = FromEnv "PRELUDE_TOKEN" ""
 $CA = FromEnv "PRELUDE_CA" ""
 $Dos = "windows-" + $Env:PROCESSOR_ARCHITECTURE
+$TempFile = "detect-vst"
 
 while ($true) {
     $TempFile = Run
