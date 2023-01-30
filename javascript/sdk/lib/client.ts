@@ -7,46 +7,51 @@ function assertValidURL(url: URL) {
     throw new Error(`Invalid URL ${url.toString()}`);
   }
 }
+
+const defaultHeaders: HeadersInit = {
+  "Content-Type": "application/json",
+  _product: "js-sdk",
+};
+
+function combineHeaders(...headers: HeadersInit[]): HeadersInit {
+  return headers.reduce((acc, h) => ({ ...acc, ...h }), {});
+}
+
 export default class Client {
   #host: URL;
   #credentials?: Credentials;
-  #defaultHeaders: HeadersInit;
+  #requestInterceptor?: (request: Request) => Request;
 
-  constructor(host: string, credentials?: Credentials) {
+  constructor(
+    host: string,
+    credentials?: Credentials,
+    requestInterceptor?: (request: Request) => Request
+  ) {
     this.#host = new URL(host);
     assertValidURL(this.#host);
 
     this.#credentials = credentials;
-
-    this.#defaultHeaders = {
-      "Content-Type": "application/json",
-      _product: "js-sdk",
-    };
+    this.#requestInterceptor = requestInterceptor;
   }
 
   setCredentials(credentials: Credentials) {
     this.#credentials = credentials;
   }
 
-  #assertCredentials() {
+  #ensureCredentials() {
     if (typeof this.#credentials?.account !== "string") {
-      throw new Error("Account ID credential not set");
+      throw new Error("Account ID not set");
     }
 
     if (typeof this.#credentials?.token !== "string") {
-      throw new Error("Token credential not set");
+      throw new Error("Token not set");
     }
+
+    return this.#credentials;
   }
 
-  async #fetch(path: string, headers: HeadersInit, options: RequestInit) {
-    const customHeaders = options.headers ?? {};
-    const response = await fetch(new URL(path, this.#host), {
-      ...options,
-      headers: {
-        ...headers,
-        ...customHeaders,
-      },
-    });
+  async #fetch(request: Request, options: RequestInit = {}) {
+    const response = await fetch(request);
 
     if (options.redirect === "manual" && response.status === 302) {
       return response;
@@ -60,15 +65,34 @@ export default class Client {
   }
 
   async request(path: string, options: RequestInit = {}) {
-    return this.#fetch(path, this.#defaultHeaders, options);
+    let req = new Request(new URL(path, this.#host), {
+      ...options,
+      headers: combineHeaders(defaultHeaders, options.headers ?? {}),
+    });
+
+    if (this.#requestInterceptor) {
+      req = this.#requestInterceptor(req);
+    }
+
+    return this.#fetch(req, options);
   }
 
   async requestWithAuth(path: string, options: RequestInit = {}) {
-    this.#assertCredentials();
-    return this.#fetch(
-      path,
-      { ...this.#credentials, ...this.#defaultHeaders },
-      options
-    );
+    const credentials = this.#ensureCredentials();
+
+    let req = new Request(new URL(path, this.#host), {
+      ...options,
+      headers: combineHeaders(
+        defaultHeaders,
+        { ...credentials },
+        options.headers ?? {}
+      ),
+    });
+
+    if (this.#requestInterceptor) {
+      req = this.#requestInterceptor(req);
+    }
+
+    return this.#fetch(req, options);
   }
 }
