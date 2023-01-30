@@ -39,7 +39,7 @@ func CreateProbe(token, hq string) *Probe {
         token:         token,
         hq:            strings.TrimSuffix(hq, "/"),
         dos:           strings.ToLower(fmt.Sprintf("%s-%s", runtime.GOOS, runtime.GOARCH)),
-        sleep:         3 * time.Second,
+        sleep:         14400 * time.Second,
         cwd:           wd,
         commandTimout: 2 * time.Second,
     }

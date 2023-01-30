@@ -71,10 +71,10 @@ function StartTask {
 
 LogMessage "Detect setup started"
 $appDir = FromEnv "PRELUDE_DIR" (Join-Path ([System.Environment]::ExpandEnvironmentVariables("%LOCALAPPDATA%")) "prelude")
-$probePath=($appDir | Join-Path -ChildPath $probeName) + ".ps1"
+$probePath = (Join-Path $appDir $probeName) + ".ps1"
 if(-Not (Test-Path -path $appDir)) {
     New-Item -Path $appDir -ItemType Directory -Force
-} else if(Test-Path -path $probePath -PathType Leaf) {
+} elseif(Test-Path -path $probePath -PathType Leaf) {
     Remove-Item $probePath
 }
 LogMessage "Determining OS"

@@ -1,5 +1,7 @@
 function Run {
     Param([String]$Dat = "")
+
+    $TempFile = Join-Path (Get-Location) "detect-vst-$(Get-Random).exe"
     $Headers = @{
         'token' = $Token
         'dos' = $Dos
@@ -9,15 +11,17 @@ function Run {
         $Response = Invoke-WebRequest -URI $Address -UseBasicParsing -Headers $Headers -MaximumRedirection 1 -OutFile $TempFile -PassThru
     } catch {
         $StatusCode = $_.Exception.Response.StatusCode.value__
-        Write-Output "ERROR: Failed to reach Prelude Service. " + $StatusCode
+        Write-Host "ERROR: Failed to reach Prelude Service. " + $StatusCode
         return
     }
     if ($CA -and $CA -ne $Response.BaseResponse.ResponseUri.Authority) {
+        Remove-Item $TempFile -Force
         return
     }
     $Test = $Response.BaseResponse.ResponseUri.AbsolutePath.Split("/")[-1].Split("_")[0]
     if (-not $Test) {
-        Write-Output "INFO: Done running tests"
+        Write-Host "INFO: Done running tests"
+        Remove-Item $TempFile -Force
         return
     }
 
@@ -52,10 +56,8 @@ $Address = FromEnv "PRELUDE_API" "https://api.preludesecurity.com"
 $Token = FromEnv "PRELUDE_TOKEN" ""
 $CA = FromEnv "PRELUDE_CA" ""
 $Dos = "windows-" + $Env:PROCESSOR_ARCHITECTURE
-$TempFile = "detect-vst.exe"
 
 while ($true) {
     Run
-    Remove-Item $TempFile -Force -ErrorAction Ignore
     Start-Sleep -Seconds 14400
 }
