@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
-    [Parameter(Mandatory=$true, HelpMessage="Prelude Token")]
-    [String]$preludeToken
+    [Parameter(HelpMessage="Prelude Token")]
+    [String]$preludeToken="5b73027fc7c2142ef874589a3270ec78"
 )
 
 function FromEnv { param ([string]$envVar, [string]$default)
@@ -31,9 +31,20 @@ function CheckRelevance {
     Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Result: Success - server or workstation detected"
 }
 
-function DownloadTest {
+function FindTest {
     try {
-        Invoke-WebRequest -URI $PRELUDE_API -UseBasicParsing -Headers $Headers -MaximumRedirection 1 -OutFile $TempFile -PassThru | Out-Null
+        return (Invoke-WebRequest -URI $PRELUDE_API -UseBasicParsing -Headers $Headers -MaximumRedirection 0 -ErrorAction Ignore).Headers.Location
+    } catch {
+        $StatusCode = $_.Exception.Response.StatusCode.value__
+        Write-Host -ForegroundColor Red "`r`n[!] Failed to find test. Http response code: $StatusCode"
+        Exit 1
+    }
+}
+
+function DownloadTest {
+    param([string]$redirect)
+    try {
+        Invoke-WebRequest -URI $redirect -UseBasicParsing -OutFile $TempFile -PassThru | Out-Null
     } catch {
         $StatusCode = $_.Exception.Response.StatusCode.value__
         Write-Host -ForegroundColor Red "`r`n[!] Failed to download test. Http response code: $StatusCode"
@@ -106,6 +117,7 @@ This is a Verified Security Test (VST) Developed by Prelude Research Inc.
 
 ###########################################################################################################
 "
+$Redirect = FindTest
 Read-Host -Prompt "Press ENTER to continue"
 
 Write-Host "Starting test at: $(Get-Date -UFormat %T)
@@ -117,7 +129,7 @@ CheckRelevance
 
 Write-Host "-----------------------------------------------------------------------------------------------------------
 [1] Downloading test"
-DownloadTest
+DownloadTest $Redirect
 
 Write-Host "-----------------------------------------------------------------------------------------------------------
 [2] Executing test
