@@ -41,7 +41,7 @@ struct Service {
                     print("ERROR: During test")
                     return
                 }
-                guard let cleanup = system.run(url: data!, args: ["clean"]) else {
+                guard system.run(url: data!, args: ["clean"]) != nil else {
                     print("ERROR: During clean")
                     return
                 }
