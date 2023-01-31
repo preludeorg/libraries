@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
-    [Parameter(HelpMessage="Prelude Token")]
-    [String]$preludeToken="5b73027fc7c2142ef874589a3270ec78"
+    [Parameter(Mandatory=$true, HelpMessage="Prelude Token")]
+    [String]$preludeToken
 )
 
 function FromEnv { param ([string]$envVar, [string]$default)
