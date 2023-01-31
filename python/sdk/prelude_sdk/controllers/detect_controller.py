@@ -102,3 +102,12 @@ class DetectController:
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
+
+    @verify_credentials
+    def insights(self, start: str, finish: str):
+        """ Get insights learned from Account activity """
+        params = dict(start=start, finish=finish)
+        res = requests.get(f'{self.account.hq}/detect/insights', headers=self.account.headers, params=params)
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
