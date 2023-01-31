@@ -98,8 +98,8 @@ def list_probes(controller, days):
 @handle_api_error
 def describe_activity(controller, days, json):
     """ View my Detect results """
-    start = (datetime.now(timezone.utc) - timedelta(days=days)).strftime('%Y-%m-%d')
-    finish = datetime.now(timezone.utc).strftime('%Y-%m-%d')
+    start = datetime.now(timezone.utc) - timedelta(days=days)
+    finish = datetime.now(timezone.utc)
 
     raw = controller.describe_activity(start=start, finish=finish)
 
