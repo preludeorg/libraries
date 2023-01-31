@@ -174,3 +174,15 @@ def search(controller, cve):
 def rules(controller):
     """ Print all Verified Security Rules """
     print_json(data=controller.list_rules())
+
+
+@detect.command('insights')
+@click.option('--days', help='days to look back', default=30, type=int)
+@click.pass_obj
+@handle_api_error
+def calculate_insights(controller, days):
+    """ View insights gleaned from my activity """
+    start = datetime.now(timezone.utc) - timedelta(days=days)
+    finish = datetime.now(timezone.utc)
+
+    print_json(data=controller.insights(start=start, finish=finish))
