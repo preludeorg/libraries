@@ -3,6 +3,7 @@ import {
   Activity,
   DateRange,
   EnableTest,
+  Insight,
   Probe,
   Queue,
   RequestOptions,
@@ -151,5 +152,25 @@ export default class DetectController {
     });
 
     return (await response.json()) as RuleList;
+  }
+
+  /** Get insights learned from Account activity */
+  async insights(
+    { start, finish }: DateRange = {},
+    options: RequestOptions = {}
+  ) {
+    const searchParams = new URLSearchParams();
+    if (start) searchParams.set("start", start);
+    if (finish) searchParams.set("finish", finish);
+
+    const response = await this.#client.requestWithAuth(
+      `/detect/insights?${searchParams.toString()}`,
+      {
+        method: "GET",
+        ...options,
+      }
+    );
+
+    return (await response.json()) as Insight[];
   }
 }
