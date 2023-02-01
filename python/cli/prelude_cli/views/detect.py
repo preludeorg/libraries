@@ -93,46 +93,41 @@ def list_probes(controller, days):
 
 @detect.command('activity')
 @click.option('--days', help='days to look back', default=30, type=int)
-@click.option('--json', '-j', is_flag=True, help='Print data as JSON')
 @click.pass_obj
 @handle_api_error
-def describe_activity(controller, days, json):
+def describe_activity(controller, days):
     """ View my Detect results """
     start = datetime.now(timezone.utc) - timedelta(days=days)
     finish = datetime.now(timezone.utc)
 
     raw = controller.describe_activity(start=start, finish=finish)
+    build = BuildController(account=controller.account)
+    tests = {row['id']: row['name'] for row in build.list_tests()}
 
-    if json:
-        print_json(data=raw)
-    else:
-        build = BuildController(account=controller.account)
-        tests = {row['id']: row['name'] for row in build.list_tests()}
+    report = Table()
+    report.add_column('timestamp')
+    report.add_column('result ID')
+    report.add_column('name')
+    report.add_column('test')
+    report.add_column('endpoint')
+    report.add_column('code', style='magenta')
+    report.add_column('status')
+    report.add_column('observed')
 
-        report = Table()
-        report.add_column('timestamp')
-        report.add_column('result ID')
-        report.add_column('name')
-        report.add_column('test')
-        report.add_column('endpoint')
-        report.add_column('code', style='magenta')
-        report.add_column('status')
-        report.add_column('observed')
+    for record in raw:
+        report.add_row(
+            record['date'], 
+            record['id'], 
+            tests[record['test']], 
+            record['test'],
+            record['endpoint_id'], 
+            str(record['status']),
+            ExitCode(record['status']).name,
+            'yes' if record.get('observed') else '-'
+        )
 
-        for record in raw:
-            report.add_row(
-                record['date'], 
-                record['id'], 
-                tests[record['test']], 
-                record['test'],
-                record['endpoint_id'], 
-                str(record['status']),
-                ExitCode(record['status']).name,
-                'yes' if record.get('observed') else '-'
-            )
-
-        console = Console()
-        console.print(report)
+    console = Console()
+    console.print(report)
 
 
 @detect.command('social-stats')
