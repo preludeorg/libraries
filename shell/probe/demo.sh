@@ -15,11 +15,19 @@ function check_relevance {
     echo -e "${GREEN}[✓] Result: Success - server or workstation detected${NC}"
 }
 
+function find_test {
+    redirect=$(curl -sfS -w %{redirect_url} -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "id:${id}" $PRELUDE_API)
+    test=$(echo $redirect | grep -o '[0-9a-f]\{8\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{12\}' | head -n 1)
+    if [ -z "$test" ];then
+        echo -e "${RED}[!] Failed to find test${NC}"
+        exit 1
+    fi
+}
+
 function download_test {
     temp=$(mktemp)
-    location=$(curl -sfSL -w %{url_effective} -o $temp -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "id:${id}" $PRELUDE_API)
-    test=$(echo $location | grep -o '[0-9a-f]\{8\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{12\}' | head -n 1)
-    if [ -z "$test" ];then
+    resp=$(curl -w %{http_code} -sfS -o $temp $redirect)
+    if [ $resp -ne 200 ];then
         echo -e "${RED}[!] Failed to download test${NC}"
         exit 1
     else
@@ -78,6 +86,7 @@ echo "[+] ATT&CK mappings: T1204.002"
 echo
 echo "###########################################################################################################"
 echo
+find_test
 read -p "Press ENTER to continue"
 echo
 echo "Starting test at: $(date +"%T")"
