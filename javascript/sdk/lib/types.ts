@@ -128,3 +128,9 @@ export type Platform =
   | "windows-arm64";
 export type StatusCodeAsStr = `${StatusCode}`;
 export type Stats = Record<Platform, Record<StatusCodeAsStr, number>>;
+
+export interface Insight {
+  name: string;
+  test: string;
+  created: string;
+}
