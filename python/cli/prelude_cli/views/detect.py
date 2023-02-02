@@ -91,53 +91,6 @@ def list_probes(controller, days):
     print_json(data=controller.list_probes(days=days))
 
 
-@detect.command('activity')
-@click.option('--days', help='days to look back', default=7, type=int)
-@click.option('--view',
-              help='retrieve a specific result view',
-              default='logs', show_default=True,
-              type=click.Choice(['logs', 'days', 'insights'], case_sensitive=False))
-@click.pass_obj
-@handle_api_error
-def describe_activity(controller, days, view):
-    """ View my Detect results """
-    start = datetime.now(timezone.utc) - timedelta(days=days)
-    finish = datetime.now(timezone.utc)
-
-    build = BuildController(account=controller.account)
-    tests = {row['id']: row['name'] for row in build.list_tests()}
-
-    raw = controller.describe_activity(start=start, finish=finish, view=view)
-    report = Table()
-
-    if view == 'logs':
-        report.add_column('timestamp')
-        report.add_column('result ID')
-        report.add_column('name')
-        report.add_column('test')
-        report.add_column('endpoint')
-        report.add_column('code', style='magenta')
-        report.add_column('status')
-        report.add_column('observed')
-
-        for record in raw:
-            report.add_row(
-                record['date'], 
-                record['id'], 
-                tests[record['test']], 
-                record['test'],
-                record['endpoint_id'], 
-                str(record['status']),
-                ExitCode(record['status']).name,
-                'yes' if record.get('observed') else '-'
-            )
-        console = Console()
-        console.print(report)
-    elif view == 'insights':
-        print_json(data=raw)
-    elif view == 'days':
-        print_json(data=raw)
-
 @detect.command('social-stats')
 @click.argument('test')
 @click.option('--days', help='days to look back', default=30, type=int)
@@ -177,3 +130,72 @@ def search(controller, cve):
 def rules(controller):
     """ Print all Verified Security Rules """
     print_json(data=controller.list_rules())
+
+
+@detect.command('activity')
+@click.option('--days', help='days to look back', default=7, type=int)
+@click.option('--view',
+              help='retrieve a specific result view',
+              default='logs', show_default=True,
+              type=click.Choice(['logs', 'days', 'probes', 'insights'], case_sensitive=False))
+@click.pass_obj
+@handle_api_error
+def describe_activity(controller, days, view):
+    """ View my Detect results """
+    start = datetime.now(timezone.utc) - timedelta(days=days)
+    finish = datetime.now(timezone.utc)
+
+    build = BuildController(account=controller.account)
+    tests = {row['id']: row['name'] for row in build.list_tests()}
+
+    raw = controller.describe_activity(start=start, finish=finish, view=view)
+    report = Table()
+
+    if view == 'logs':
+        report.add_column('timestamp')
+        report.add_column('result ID')
+        report.add_column('name')
+        report.add_column('test')
+        report.add_column('endpoint')
+        report.add_column('code', style='magenta')
+        report.add_column('status')
+        report.add_column('observed')
+
+        for record in raw:
+            report.add_row(
+                record['date'], 
+                record['id'], 
+                tests[record['test']], 
+                record['test'],
+                record['endpoint_id'], 
+                str(record['status']),
+                ExitCode(record['status']).name,
+                'yes' if record.get('observed') else '-'
+            )
+    elif view == 'insights':
+        pass
+    elif view == 'probes':
+        report.add_column('endpoint_id')
+        report.add_column('protected', style='green')
+        report.add_column('unprotected',  style='red')
+        report.add_column('error', style='yellow')
+
+        for endpoint, codes in raw.items():
+            protected, unprotected, error = 0, 0, 0
+            for code in codes:
+                pass
+            report.add_row(endpoint, str(protected), str(unprotected), str(error))
+    elif view == 'days':
+        report.add_column('date')
+        report.add_column('protected', style='green')
+        report.add_column('unprotected',  style='red')
+        report.add_column('error', style='yellow')
+
+        for date, codes in raw.items():
+            protected, unprotected, error = 0, 0, 0
+            for code, count in codes.items():
+                pass
+            report.add_row(date, str(protected), str(unprotected), str(error))
+
+    console = Console()
+    console.print(report)
