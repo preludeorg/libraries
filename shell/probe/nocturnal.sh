@@ -15,7 +15,7 @@ do
         sleep 14400
     else
         ca=$(echo $location | sed -e 's|^[^/]*//||' -e 's|/.*$||')
-        if [ -z "$PRELUDE_CA" ] || ["$PRELUDE_CA" == "$ca"];then
+        if [ -z "$PRELUDE_CA" ] || [ "$PRELUDE_CA" == "$ca" ];then
             chmod +x $temp
 
             if test -f "$temp";then
