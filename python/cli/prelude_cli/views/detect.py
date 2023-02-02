@@ -145,13 +145,13 @@ def describe_activity(controller, days, view):
     start = datetime.now(timezone.utc) - timedelta(days=days)
     finish = datetime.now(timezone.utc)
 
-    build = BuildController(account=controller.account)
-    tests = {row['id']: row['name'] for row in build.list_tests()}
-
     raw = controller.describe_activity(start=start, finish=finish, view=view)
     report = Table()
 
     if view == 'logs':
+        build = BuildController(account=controller.account)
+        tests = {row['id']: row['name'] for row in build.list_tests()}
+
         report.add_column('timestamp')
         report.add_column('result ID')
         report.add_column('name')

@@ -1,4 +1,4 @@
-from enum import Enum, unique
+from enum import Enum
 
 
 class Colors(Enum):
@@ -7,7 +7,6 @@ class Colors(Enum):
     MAGENTA = 'magenta'
 
 
-@unique
 class RunCode(Enum):
     UNKNOWN = -1
     DEBUG = 0
@@ -19,7 +18,7 @@ class RunCode(Enum):
     def _missing_(cls, value):
         return RunCode.UNKNOWN
 
-@unique
+
 class Permission(Enum):
     UNKNOWN = -1
     ADMIN = 0
@@ -31,7 +30,7 @@ class Permission(Enum):
     def _missing_(cls, value):
         return Permission.UNKNOWN
 
-@unique
+
 class ExitCode(Enum):
     OTHER = -1
     ERROR = 1
