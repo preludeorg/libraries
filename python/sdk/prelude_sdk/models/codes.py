@@ -49,3 +49,29 @@ class ExitCode(Enum):
     @classmethod
     def _missing_(cls, value):
         return ExitCode.OTHER
+
+    @property
+    def state(self):
+        x = [k for k in ExitCodeGroup for v in k.value if self.value == v.value]
+        return x[0] if x else ExitCodeGroup.NONE
+
+
+class ExitCodeGroup(Enum):
+    NONE = []
+    PROTECTED = [
+        ExitCode.PROTECTED,
+        ExitCode.QUARANTINED_1,
+        ExitCode.QUARANTINED_2,
+        ExitCode.PROCESS_KILLED,
+        ExitCode.NOT_RELEVANT
+    ]
+    UNPROTECTED = [
+        ExitCode.UNPROTECTED
+    ]
+    ERROR = [
+        ExitCode.ERROR,
+        ExitCode.MALFORMED_VST,
+        ExitCode.TIMEOUT,
+        ExitCode.INCOMPATIBLE_HOST,
+        ExitCode.UNEXPECTED
+    ]

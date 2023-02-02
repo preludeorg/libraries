@@ -6,7 +6,7 @@ import click
 from prelude_cli.views.shared import handle_api_error
 from prelude_sdk.controllers.build_controller import BuildController
 from prelude_sdk.controllers.detect_controller import DetectController
-from prelude_sdk.models.codes import Colors, RunCode, ExitCode
+from prelude_sdk.models.codes import Colors, RunCode, ExitCode, ExitCodeGroup
 
 from rich import print_json
 from rich.console import Console
@@ -180,11 +180,18 @@ def describe_activity(controller, days, view):
         report.add_column('unprotected',  style='red')
         report.add_column('error', style='yellow')
 
-        for endpoint, codes in raw.items():
+        for endpoint, results in raw.items():
             protected, unprotected, error = 0, 0, 0
-            for code in codes:
-                pass
+            for result in results: 
+                state = ExitCode(int(result['status'])).state 
+                if state == ExitCodeGroup.PROTECTED:
+                    protected += 1
+                elif state == ExitCodeGroup.UNPROTECTED:
+                    unprotected += 1
+                elif state == ExitCodeGroup.ERROR:
+                    error += 1
             report.add_row(endpoint, str(protected), str(unprotected), str(error))
+
     elif view == 'days':
         report.add_column('date')
         report.add_column('protected', style='green')
@@ -193,8 +200,14 @@ def describe_activity(controller, days, view):
 
         for date, codes in raw.items():
             protected, unprotected, error = 0, 0, 0
-            for code, count in codes.items():
-                pass
+            for code, count in codes.items(): 
+                state = ExitCode(int(code)).state 
+                if state == ExitCodeGroup.PROTECTED:
+                    protected += count
+                elif state == ExitCodeGroup.UNPROTECTED:
+                    unprotected += count
+                elif state == ExitCodeGroup.ERROR:
+                    error += count
             report.add_row(date, str(protected), str(unprotected), str(error))
 
     console = Console()
