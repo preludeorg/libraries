@@ -92,7 +92,7 @@ def list_probes(controller, days):
 
 
 @detect.command('activity')
-@click.option('--days', help='days to look back', default=30, type=int)
+@click.option('--days', help='days to look back', default=7, type=int)
 @click.option('--view',
               help='retrieve a specific result view',
               default='logs', show_default=True,
