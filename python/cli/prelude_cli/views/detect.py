@@ -93,42 +93,50 @@ def list_probes(controller, days):
 
 @detect.command('activity')
 @click.option('--days', help='days to look back', default=30, type=int)
+@click.option('--view',
+              help='retrieve a specific result view',
+              default='logs', show_default=True,
+              type=click.Choice(['logs', 'days', 'insights'], case_sensitive=False))
 @click.pass_obj
 @handle_api_error
-def describe_activity(controller, days):
+def describe_activity(controller, days, view):
     """ View my Detect results """
     start = datetime.now(timezone.utc) - timedelta(days=days)
     finish = datetime.now(timezone.utc)
 
-    raw = controller.describe_activity(start=start, finish=finish)
     build = BuildController(account=controller.account)
     tests = {row['id']: row['name'] for row in build.list_tests()}
 
+    raw = controller.describe_activity(start=start, finish=finish, view=view)
     report = Table()
-    report.add_column('timestamp')
-    report.add_column('result ID')
-    report.add_column('name')
-    report.add_column('test')
-    report.add_column('endpoint')
-    report.add_column('code', style='magenta')
-    report.add_column('status')
-    report.add_column('observed')
 
-    for record in raw:
-        report.add_row(
-            record['date'], 
-            record['id'], 
-            tests[record['test']], 
-            record['test'],
-            record['endpoint_id'], 
-            str(record['status']),
-            ExitCode(record['status']).name,
-            'yes' if record.get('observed') else '-'
-        )
+    if view == 'logs':
+        report.add_column('timestamp')
+        report.add_column('result ID')
+        report.add_column('name')
+        report.add_column('test')
+        report.add_column('endpoint')
+        report.add_column('code', style='magenta')
+        report.add_column('status')
+        report.add_column('observed')
 
-    console = Console()
-    console.print(report)
-
+        for record in raw:
+            report.add_row(
+                record['date'], 
+                record['id'], 
+                tests[record['test']], 
+                record['test'],
+                record['endpoint_id'], 
+                str(record['status']),
+                ExitCode(record['status']).name,
+                'yes' if record.get('observed') else '-'
+            )
+        console = Console()
+        console.print(report)
+    elif view == 'insights':
+        print_json(data=raw)
+    elif view == 'days':
+        print_json(data=raw)
 
 @detect.command('social-stats')
 @click.argument('test')
@@ -169,15 +177,3 @@ def search(controller, cve):
 def rules(controller):
     """ Print all Verified Security Rules """
     print_json(data=controller.list_rules())
-
-
-@detect.command('insights')
-@click.option('--days', help='days to look back', default=30, type=int)
-@click.pass_obj
-@handle_api_error
-def calculate_insights(controller, days):
-    """ View insights gleaned from my activity """
-    start = datetime.now(timezone.utc) - timedelta(days=days)
-    finish = datetime.now(timezone.utc)
-
-    print_json(data=controller.insights(start=start, finish=finish))

@@ -26,9 +26,9 @@ class DetectController:
             raise Exception(res.text)
 
     @verify_credentials
-    def describe_activity(self, start: str, finish: str):
+    def describe_activity(self, start: str, finish: str, view: str = 'logs'):
         """ Get report for an Account """
-        params = dict(start=start, finish=finish)
+        params = dict(start=start, finish=finish, view=view)
         res = requests.get(f'{self.account.hq}/detect/activity', headers=self.account.headers, params=params)
         if res.status_code == 200:
             return res.json()
@@ -99,15 +99,6 @@ class DetectController:
     def list_rules(self):
         """ Return all Verified Security Rules """
         res = requests.get(f'{self.account.hq}/detect/rules', headers=self.account.headers)
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
-
-    @verify_credentials
-    def insights(self, start: str, finish: str):
-        """ Get insights learned from Account activity """
-        params = dict(start=start, finish=finish)
-        res = requests.get(f'{self.account.hq}/detect/insights', headers=self.account.headers, params=params)
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)

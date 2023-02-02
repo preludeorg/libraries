@@ -14,7 +14,6 @@ class RunCode(Enum):
     DAILY = 1
     WEEKLY = 2
     MONTHLY = 3
-    ONCE = 4
 
     @classmethod
     def _missing_(cls, value):
