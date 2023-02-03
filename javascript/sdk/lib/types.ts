@@ -114,11 +114,6 @@ export interface Rule {
 
 export type RuleList = Record<string, Rule>;
 
-export interface DateRange {
-  start?: string;
-  finish?: string;
-}
-
 export type Platform =
   | "darwin-arm64"
   | "darwin-x86_64"
@@ -133,4 +128,16 @@ export interface Insight {
   name: string;
   test: string;
   created: string;
+}
+
+export interface ActivityQuery {
+  start: string;
+  finish: string;
+  view: "days" | "probes" | "logs" | "insights";
+  test?: string;
+  result_id?: string;
+  endpoint_id?: string;
+  dos?: string;
+  status?: unknown;
+  tags?: string;
 }

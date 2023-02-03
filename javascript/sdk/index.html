@@ -197,6 +197,15 @@
               await service.detect.listProbes()
             );
 
+            console.log(
+              "Probe Activity",
+              await service.detect.describeActivity({
+                start: "2023-01-10",
+                finish: "2023-02-15",
+                view: "probes",
+              })
+            );
+
             console.log("Print Queue", await service.detect.printQueue());
 
             console.log(
