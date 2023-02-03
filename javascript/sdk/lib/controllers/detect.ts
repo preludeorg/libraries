@@ -1,9 +1,8 @@
 import Client from "../client";
 import {
   Activity,
-  DateRange,
+  ActivityQuery,
   EnableTest,
-  Insight,
   Probe,
   Queue,
   RequestOptions,
@@ -64,12 +63,27 @@ export default class DetectController {
 
   /** Get report for an Account */
   async describeActivity(
-    { start, finish }: DateRange = {},
+    {
+      start,
+      finish,
+      view,
+      test,
+      tags,
+      endpoint_id,
+      result_id,
+      dos,
+    }: ActivityQuery,
     options: RequestOptions = {}
   ) {
     const searchParams = new URLSearchParams();
-    if (start) searchParams.set("start", start);
-    if (finish) searchParams.set("finish", finish);
+    searchParams.set("start", start);
+    searchParams.set("finish", finish);
+    searchParams.set("view", view);
+    if (test) searchParams.set("test", test);
+    if (tags) searchParams.set("tags", tags);
+    if (endpoint_id) searchParams.set("endpoint_id", endpoint_id);
+    if (result_id) searchParams.set("result_id", result_id);
+    if (dos) searchParams.set("dos", dos);
 
     const response = await this.#client.requestWithAuth(
       `/detect/activity?${searchParams.toString()}`,
@@ -152,25 +166,5 @@ export default class DetectController {
     });
 
     return (await response.json()) as RuleList;
-  }
-
-  /** Get insights learned from Account activity */
-  async insights(
-    { start, finish }: DateRange = {},
-    options: RequestOptions = {}
-  ) {
-    const searchParams = new URLSearchParams();
-    if (start) searchParams.set("start", start);
-    if (finish) searchParams.set("finish", finish);
-
-    const response = await this.#client.requestWithAuth(
-      `/detect/insights?${searchParams.toString()}`,
-      {
-        method: "GET",
-        ...options,
-      }
-    );
-
-    return (await response.json()) as Insight[];
   }
 }
