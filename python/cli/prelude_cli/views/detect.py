@@ -33,7 +33,7 @@ def register_endpoint(controller, name, tags):
 
 @detect.command('enable-test')
 @click.argument('test')
-@click.option('--tags', help='only enable for these tags')
+@click.option('--tags', help='only enable for these tags (comma-separated list)', type=str, default='')
 @click.option('--run_code',
               help='provide a run_code',
               default='daily', show_default=True,
@@ -42,7 +42,6 @@ def register_endpoint(controller, name, tags):
 @handle_api_error
 def activate_test(controller, test, run_code, tags):
     """ Add TEST to your queue """
-    tags = tags.split(',') if tags else []
     controller.enable_test(ident=test, run_code=RunCode[run_code.upper()].value, tags=tags)
 
 
