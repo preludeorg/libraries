@@ -138,14 +138,25 @@ def rules(controller):
               help='retrieve a specific result view',
               default='logs', show_default=True,
               type=click.Choice(['logs', 'days', 'probes', 'insights'], case_sensitive=False))
+@click.option('--tests', help='a comma-separated list of test IDs to filter on', type=str)
+@click.option('--endpoint_ids', help='a comma-separated list of endpoint IDs to filter on', type=str)
+@click.option('--status', help='a comma-separated list of statuses to filter on', type=str)
 @click.pass_obj
 @handle_api_error
-def describe_activity(controller, days, view):
+def describe_activity(controller, days, view, tests, endpoint_ids, status):
     """ View my Detect results """
-    start = datetime.now(timezone.utc) - timedelta(days=days)
-    finish = datetime.now(timezone.utc)
+    filters = dict(
+        start=datetime.now(timezone.utc) - timedelta(days=days),
+        finish=datetime.now(timezone.utc)
+    )
+    if tests:
+        filters['test'] = tests
+    if endpoint_ids:
+        filters['endpoint_id'] = endpoint_ids
+    if status:
+        filters['status'] = status
 
-    raw = controller.describe_activity(start=start, finish=finish, view=view)
+    raw = controller.describe_activity(view=view, filters=filters)
     report = Table()
 
     if view == 'logs':
