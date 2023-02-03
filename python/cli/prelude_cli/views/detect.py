@@ -176,7 +176,7 @@ def describe_activity(controller, days, view, tests, endpoints, status):
             report.add_row(
                 record['date'], 
                 record['id'], 
-                tests[record['test']], 
+                tests.get(record['test'], 'DELETED'),
                 record['test'],
                 record['endpoint_id'], 
                 str(record['status']),
