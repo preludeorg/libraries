@@ -42,6 +42,7 @@ class ExitCode(Enum):
     CLEANUP_ERROR = 103
     NOT_RELEVANT = 104
     QUARANTINED_1 = 105
+    OUTBOUND_SECURE = 106
     INCOMPATIBLE_HOST = 126
     QUARANTINED_2 = 127
     UNEXPECTED = 256
@@ -63,7 +64,8 @@ class ExitCodeGroup(Enum):
         ExitCode.QUARANTINED_1,
         ExitCode.QUARANTINED_2,
         ExitCode.PROCESS_KILLED,
-        ExitCode.NOT_RELEVANT
+        ExitCode.NOT_RELEVANT,
+        ExitCode.OUTBOUND_SECURE
     ]
     UNPROTECTED = [
         ExitCode.UNPROTECTED
