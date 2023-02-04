@@ -1,16 +1,17 @@
+import click
+
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
-
-import click
+from rich import print_json
+from rich.console import Console
+from rich.table import Table
 
 from prelude_cli.views.shared import handle_api_error
 from prelude_sdk.controllers.build_controller import BuildController
 from prelude_sdk.controllers.detect_controller import DetectController
-from prelude_sdk.models.codes import Colors, RunCode, ExitCode, ExitCodeGroup
+from prelude_sdk.models.codes import RunCode, ExitCode
 
-from rich import print_json
-from rich.console import Console
-from rich.table import Table
+
 
 
 @click.group()
@@ -28,7 +29,7 @@ def detect(ctx):
 def register_endpoint(controller, name, tags):
     """ Register a new endpoint """
     endpoint_token = controller.register_endpoint(name=name, tags=tags)
-    click.secho(f'Endpoint token: {endpoint_token}', fg=Colors.GREEN.value)
+    click.secho(f'Endpoint token: {endpoint_token}', fg='green')
 
 
 @detect.command('enable-test')
@@ -53,7 +54,7 @@ def activate_test(controller, test, run_code, tags):
 def deactivate_test(controller, test):
     """ Remove TEST from your queue """
     controller.disable_test(ident=test)
-    click.secho(f'Disabled {test}', fg=Colors.GREEN.value)
+    click.secho(f'Disabled {test}', fg='green')
 
 
 @detect.command('delete-endpoint')
@@ -64,7 +65,7 @@ def deactivate_test(controller, test):
 def delete_endpoint(controller, endpoint_id):
     """Delete a probe/endpoint"""
     controller.delete_endpoint(ident=endpoint_id)
-    click.secho(f'Deleted {endpoint_id}', fg=Colors.GREEN.value)
+    click.secho(f'Deleted {endpoint_id}', fg='green')
 
 
 @detect.command('queue')
@@ -81,15 +82,6 @@ def queue(controller):
     print_json(data=active)
 
 
-@detect.command('probes')
-@click.option('--days', help='days to look back', default=7, type=int)
-@click.pass_obj
-@handle_api_error
-def list_probes(controller, days):
-    """ List all endpoint probes """
-    print_json(data=controller.list_probes(days=days))
-
-
 @detect.command('social-stats')
 @click.argument('test')
 @click.option('--days', help='days to look back', default=30, type=int)
@@ -100,7 +92,7 @@ def social_statistics(controller, test, days):
     stats = defaultdict(lambda: defaultdict(int))
     for dos, values in controller.stats(ident=test, days=days).items():
         for code, count in values.items():
-            stats[dos][ExitCode(int(code)).name] = count
+            stats[dos][code] = count
     print_json(data=stats)
 
 
@@ -122,6 +114,7 @@ def search(controller, cve):
     """ Search the NVD for a specific CVE identifier """
     print("This product uses the NVD API but is not endorsed or certified by the NVD.\n")
     print_json(data=controller.search(identifier=cve))
+
 
 @detect.command('rules')
 @click.pass_obj
@@ -182,25 +175,19 @@ def describe_activity(controller, days, view, tests, endpoints, status):
                 ExitCode(record['status']).name,
                 'yes' if record.get('observed') else '-'
             )
+
     elif view == 'insights':
         pass
+
     elif view == 'probes':
         report.add_column('endpoint_id')
-        report.add_column('protected', style='green')
-        report.add_column('unprotected',  style='red')
-        report.add_column('error', style='yellow')
+        report.add_column('last seen')
+        report.add_column('status')
+        report.add_column('dos')
+        report.add_column('tags')
 
-        for endpoint, results in raw.items():
-            protected, unprotected, error = 0, 0, 0
-            for result in results: 
-                state = ExitCode(int(result['status'])).state 
-                if state == ExitCodeGroup.PROTECTED:
-                    protected += 1
-                elif state == ExitCodeGroup.UNPROTECTED:
-                    unprotected += 1
-                elif state == ExitCodeGroup.ERROR:
-                    error += 1
-            report.add_row(endpoint, str(protected), str(unprotected), str(error))
+        for result in raw:
+            report.add_row(result['id'], result['date'], result['status'], result['dos'], result['tags'])
 
     elif view == 'days':
         report.add_column('date')
@@ -208,17 +195,8 @@ def describe_activity(controller, days, view, tests, endpoints, status):
         report.add_column('unprotected',  style='red')
         report.add_column('error', style='yellow')
 
-        for date, codes in raw.items():
-            protected, unprotected, error = 0, 0, 0
-            for code, count in codes.items(): 
-                state = ExitCode(int(code)).state 
-                if state == ExitCodeGroup.PROTECTED:
-                    protected += count
-                elif state == ExitCodeGroup.UNPROTECTED:
-                    unprotected += count
-                elif state == ExitCodeGroup.ERROR:
-                    error += count
-            report.add_row(date, str(protected), str(unprotected), str(error))
+        for result in raw:
+            report.add_row(result['date'], result['protected'], result['unprotected'], result['error'])
 
     console = Console()
     console.print(report)

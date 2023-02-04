@@ -1,8 +1,10 @@
 import click
+
+from rich import print_json
+
 from prelude_cli.views.shared import handle_api_error
 from prelude_sdk.controllers.iam_controller import IAMController
-from prelude_sdk.models.codes import Colors, Permission
-from rich import print_json
+from prelude_sdk.models.codes import Permission
 
 
 @click.group()
@@ -20,7 +22,7 @@ def register_account(controller):
     """ Register a new account """
     creds = controller.new_account(handle=click.prompt('Enter a handle'))
     print_json(data=creds)
-    click.secho('Your keychain has been updated to use this account', fg=Colors.GREEN.value)
+    click.secho('Your keychain has been updated to use this account', fg='green')
 
 
 @iam.command('list-users')
@@ -41,7 +43,7 @@ def describe_account(controller):
 def create_user(controller, permission, handle):
     """ Create a new user in your account """
     token = controller.create_user(handle=handle, permission=Permission[permission.upper()].value)
-    click.secho(f'Created new [{permission}] user [{handle}]. Token: {token}', fg=Colors.GREEN.value)
+    click.secho(f'Created new [{permission}] user [{handle}]. Token: {token}', fg='green')
 
 
 @iam.command('delete-user')
@@ -51,7 +53,7 @@ def create_user(controller, permission, handle):
 def delete_user(controller, handle):
     """ Remove a user from your account """
     if controller.delete_user(handle=handle):
-        click.secho(f'Deleted user {handle}', fg=Colors.GREEN.value)
+        click.secho(f'Deleted user {handle}', fg='green')
 
 
 @iam.command('purge')
@@ -61,4 +63,4 @@ def delete_user(controller, handle):
 def purge(controller):
     """ Delete your account """
     controller.purge_account()
-    click.secho('Your account has been deleted', fg=Colors.GREEN.value)
+    click.secho('Your account has been deleted', fg='green')

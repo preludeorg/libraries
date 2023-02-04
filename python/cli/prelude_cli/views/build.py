@@ -1,16 +1,14 @@
-import importlib.resources as pkg_resources
+import click
 import uuid
 import re
+import importlib.resources as pkg_resources
+import prelude_cli.templates as templates
 
 from datetime import datetime
 from pathlib import Path, PurePath
-
-import click
-import prelude_cli.templates as templates
-from prelude_cli.views.shared import handle_api_error
-from prelude_sdk.models.codes import Colors
 from rich import print_json
 
+from prelude_cli.views.shared import handle_api_error
 from prelude_sdk.controllers.build_controller import BuildController
 
 
@@ -39,7 +37,7 @@ def clone(controller):
                 code = controller.download(test_id=test['id'], filename=attach)
                 with open(PurePath(my_test, attach), 'wb') as f:
                     f.write(code)
-    click.secho('Project cloned successfully', fg=Colors.GREEN.value)
+    click.secho('Project cloned successfully', fg='green')
 
 @build.command('tests')
 @click.pass_obj
@@ -78,7 +76,7 @@ def create_test(controller, name, test):
 
         with open(basename, 'w') as test_code:
             test_code.write(template)
-            click.secho(f'Created {basename}', fg=Colors.GREEN.value)
+            click.secho(f'Created {basename}', fg='green')
 
 
 @build.command('delete-test')
@@ -89,7 +87,7 @@ def create_test(controller, name, test):
 def delete_test(controller, test):
     """ Delete TEST """
     controller.delete_test(test_id=test)
-    click.secho(f'Deleted {test}', fg=Colors.GREEN.value)
+    click.secho(f'Deleted {test}', fg='green')
 
 
 @build.command('upload')
@@ -108,7 +106,7 @@ def upload_attachment(controller, path, test):
     def upload(p: Path):
         with open(p, 'r') as source_code:
             controller.upload(test_id=identifier, filename=p.name, code=source_code.read())
-            click.secho(f'Uploaded {path}', fg=Colors.GREEN.value)
+            click.secho(f'Uploaded {path}', fg='green')
 
     identifier = test or test_id()
     

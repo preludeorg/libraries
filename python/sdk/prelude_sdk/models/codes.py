@@ -1,14 +1,8 @@
-from enum import Enum
-
-
-class Colors(Enum):
-    GREEN = 'green'
-    RED = 'red'
-    MAGENTA = 'magenta'
+from enum import Enum 
 
 
 class RunCode(Enum):
-    UNKNOWN = -1
+    INVALID = -1
     DEBUG = 0
     DAILY = 1
     WEEKLY = 2
@@ -16,11 +10,11 @@ class RunCode(Enum):
 
     @classmethod
     def _missing_(cls, value):
-        return RunCode.UNKNOWN
+        return RunCode.INVALID
 
 
 class Permission(Enum):
-    UNKNOWN = -1
+    INVALID = -1
     ADMIN = 0
     EXECUTIVE = 1
     BUILD = 2
@@ -28,11 +22,11 @@ class Permission(Enum):
 
     @classmethod
     def _missing_(cls, value):
-        return Permission.UNKNOWN
+        return Permission.INVALID
 
 
 class ExitCode(Enum):
-    OTHER = -1
+    MISSING = -1
     ERROR = 1
     MALFORMED_VST = 2
     PROCESS_KILLED = 9
@@ -49,16 +43,21 @@ class ExitCode(Enum):
 
     @classmethod
     def _missing_(cls, value):
-        return ExitCode.OTHER
+        return ExitCode.MISSING
 
     @property
     def state(self):
-        x = [k for k in ExitCodeGroup for v in k.value if self.value == v.value]
-        return x[0] if x else ExitCodeGroup.NONE
+        for k in ExitCodeGroup:
+            for v in k.value: 
+                if self.value == v.value:
+                    return k
+        return ExitCodeGroup.NONE
 
 
 class ExitCodeGroup(Enum):
-    NONE = []
+    NONE = [
+        ExitCode.MISSING
+    ]
     PROTECTED = [
         ExitCode.PROTECTED,
         ExitCode.QUARANTINED_1,
@@ -77,3 +76,20 @@ class ExitCodeGroup(Enum):
         ExitCode.INCOMPATIBLE_HOST,
         ExitCode.UNEXPECTED
     ]
+
+
+class Architecture(Enum):
+    none = 'none'
+    arm64 = 'arm64'
+    x86_64 = 'x86_64'
+    aarch64 = 'arm64'
+    amd64 = 'x86_64'
+    x86 = 'x86_64'
+
+    @classmethod
+    def normalize(cls, dos):
+        try:
+            arch = dos.split('-', 1)[-1]
+            return dos[:-len(arch)].lower() + cls[arch.lower()].value
+        except (KeyError, IndexError) as e:
+            return cls.none.value
