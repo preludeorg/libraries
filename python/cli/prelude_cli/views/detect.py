@@ -114,7 +114,7 @@ def rules(controller):
 @click.option('--view',
               help='retrieve a specific result view',
               default='logs', show_default=True,
-              type=click.Choice(['logs', 'days', 'probes', 'social', 'insights'], case_sensitive=False))
+              type=click.Choice(['logs', 'days', 'insights'], case_sensitive=False))
 @click.option('--test', help='comma-separated list of test IDs', type=str)
 @click.option('--tag', help='comma-separated list of tags', type=str)
 @click.option('--endpoint', help='comma-separated list of endpoint IDs', type=str)
@@ -165,26 +165,12 @@ def describe_activity(controller, days, view, test, tag, endpoint, status):
             )
 
     elif view == 'insights':
-        pass
-
-    elif view == 'social':
+        report.add_column('test')
         report.add_column('dos')
-        report.add_column('status')
-        report.add_column('volume')
+        report.add_column('failed', style='red')
 
-        for dos, states in raw.items():
-            for state, volume in states.items():
-                report.add_row(dos, state, str(volume))
-
-    elif view == 'probes':
-        report.add_column('endpoint_id')
-        report.add_column('last seen')
-        report.add_column('status')
-        report.add_column('dos')
-        report.add_column('tags')
-
-        for result in raw:
-            report.add_row(result['id'], result['date'], result['status'], result['dos'], ''.join(result['tags']))
+        for insight in raw:
+            report.add_row(insight['test'], insight['dos'], f'{insight["rate"]}%')
 
     elif view == 'days':
         report.add_column('date')
