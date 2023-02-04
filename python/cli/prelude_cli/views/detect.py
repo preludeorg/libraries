@@ -187,7 +187,7 @@ def describe_activity(controller, days, view, tests, endpoints, status):
         report.add_column('tags')
 
         for result in raw:
-            report.add_row(result['id'], result['date'], result['status'], result['dos'], result['tags'])
+            report.add_row(result['id'], result['date'], result['status'], result['dos'], ''.join(result['tags']))
 
     elif view == 'days':
         report.add_column('date')
@@ -196,7 +196,7 @@ def describe_activity(controller, days, view, tests, endpoints, status):
         report.add_column('error', style='yellow')
 
         for result in raw:
-            report.add_row(result['date'], result['protected'], result['unprotected'], result['error'])
+            report.add_row(result['date'], str(result['protected']), str(result['unprotected']), str(result['error']))
 
     console = Console()
     console.print(report)
