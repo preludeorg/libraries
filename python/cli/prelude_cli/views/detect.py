@@ -92,7 +92,7 @@ def social_statistics(controller, test, days):
     stats = defaultdict(lambda: defaultdict(int))
     for dos, values in controller.stats(ident=test, days=days).items():
         for code, count in values.items():
-            stats[dos][code] = count
+            stats[dos][ExitCode(int(code)).name] = count
     print_json(data=stats)
 
 
