@@ -1,7 +1,6 @@
 import click
-from functools import wraps
 
-from prelude_sdk.models.codes import Colors
+from functools import wraps
 
 
 def handle_api_error(func):
@@ -10,5 +9,5 @@ def handle_api_error(func):
         try:
             return func(*args, **kwargs)
         except Exception as e:
-            click.secho(e.args[0], fg=Colors.RED.value)
+            click.secho(e.args[0], fg='red')
     return handler
