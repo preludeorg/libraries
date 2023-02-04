@@ -35,15 +35,6 @@ class DetectController:
         raise Exception(res.text)
 
     @verify_credentials
-    def list_probes(self, days=7):
-        """ Get all probes associated to an Account """
-        params = dict(days=days)
-        res = requests.get(f'{self.account.hq}/detect/probes', headers=self.account.headers, params=params)
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
-
-    @verify_credentials
     def print_queue(self):
         res = requests.get(f'{self.account.hq}/detect/queue', headers=self.account.headers)
         if res.status_code == 200:
@@ -67,15 +58,6 @@ class DetectController:
         res = requests.delete(f'{self.account.hq}/detect/queue/{ident}', headers=self.account.headers)
         if res.status_code != 200:
             raise Exception(res.text)
-
-    @verify_credentials
-    def stats(self, ident: str, days: int = 30):
-        """ Pull social statistics for a specific test """
-        params = dict(days=days)
-        res = requests.get(f'{self.account.hq}/detect/{ident}/social', headers=self.account.headers, params=params)
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
 
     @verify_credentials
     def observe(self, row_id, value):

@@ -1,6 +1,5 @@
 import click
 
-from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 from rich import print_json
 from rich.console import Console
@@ -9,7 +8,7 @@ from rich.table import Table
 from prelude_cli.views.shared import handle_api_error
 from prelude_sdk.controllers.build_controller import BuildController
 from prelude_sdk.controllers.detect_controller import DetectController
-from prelude_sdk.models.codes import RunCode, ExitCode
+from prelude_sdk.models.codes import RunCode, ExitCode, ExitCodeGroup
 
 
 
@@ -82,20 +81,6 @@ def queue(controller):
     print_json(data=active)
 
 
-@detect.command('social-stats')
-@click.argument('test')
-@click.option('--days', help='days to look back', default=30, type=int)
-@click.pass_obj
-@handle_api_error
-def social_statistics(controller, test, days):
-    """ Pull social statistics for a specific test """
-    stats = defaultdict(lambda: defaultdict(int))
-    for dos, values in controller.stats(ident=test, days=days).items():
-        for code, count in values.items():
-            stats[dos][ExitCode(int(code)).name] = count
-    print_json(data=stats)
-
-
 @detect.command('observe')
 @click.argument('result')
 @click.option('--value', help='Mark 1 for observed', default=1, type=int)
@@ -129,22 +114,22 @@ def rules(controller):
 @click.option('--view',
               help='retrieve a specific result view',
               default='logs', show_default=True,
-              type=click.Choice(['logs', 'days', 'probes', 'insights'], case_sensitive=False))
-@click.option('--tests', help='a comma-separated list of test IDs to filter on', type=str)
-@click.option('--endpoints', help='a comma-separated list of endpoint IDs to filter on', type=str)
-@click.option('--status', help='a comma-separated list of statuses to filter on', type=str)
+              type=click.Choice(['logs', 'days', 'probes', 'social', 'insights'], case_sensitive=False))
+@click.option('--test', help='comma-separated list of test IDs', type=str)
+@click.option('--endpoint', help='comma-separated list of endpoint IDs', type=str)
+@click.option('--status', help='comma-separated list of statuses', type=str)
 @click.pass_obj
 @handle_api_error
-def describe_activity(controller, days, view, tests, endpoints, status):
+def describe_activity(controller, days, view, test, endpoint, status):
     """ View my Detect results """
     filters = dict(
         start=datetime.now(timezone.utc) - timedelta(days=days),
         finish=datetime.now(timezone.utc)
     )
-    if tests:
-        filters['test'] = tests
-    if endpoints:
-        filters['endpoint_id'] = endpoints
+    if test:
+        filters['test'] = test
+    if endpoint:
+        filters['endpoint_id'] = endpoint
     if status:
         filters['status'] = status
 
@@ -179,7 +164,17 @@ def describe_activity(controller, days, view, tests, endpoints, status):
     elif view == 'insights':
         pass
 
+    elif view == 'social':
+        report.add_column('dos')
+        report.add_column('status')
+        report.add_column('volume')
+
+        for dos, states in raw.items():
+            for state, volume in states.items():
+                report.add_row(dos, state, str(volume))
+
     elif view == 'probes':
+        print_json(data=raw)
         report.add_column('endpoint_id')
         report.add_column('last seen')
         report.add_column('status')
@@ -195,8 +190,13 @@ def describe_activity(controller, days, view, tests, endpoints, status):
         report.add_column('unprotected',  style='red')
         report.add_column('error', style='yellow')
 
-        for result in raw:
-            report.add_row(result['date'], str(result['protected']), str(result['unprotected']), str(result['error']))
+        for date, states in raw.items():
+            report.add_row(
+                date, 
+                str(states.get(ExitCodeGroup.PROTECTED.name, 0)), 
+                str(states.get(ExitCodeGroup.UNPROTECTED.name, 0)), 
+                str(states.get(ExitCodeGroup.ERROR.name, 0)), 
+            )
 
     console = Console()
     console.print(report)
