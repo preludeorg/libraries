@@ -109,6 +109,15 @@ def rules(controller):
     print_json(data=controller.list_rules())
 
 
+@detect.command('probes')
+@click.option('--days', help='days to look back', default=7, type=int)
+@click.pass_obj
+@handle_api_error
+def list_probes(controller, days):
+    """ List all endpoint probes """
+    print_json(data=controller.list_probes(days=days))
+
+
 @detect.command('activity')
 @click.option('--days', help='days to look back', default=7, type=int)
 @click.option('--view',
