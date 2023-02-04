@@ -143,7 +143,7 @@ def rules(controller):
 @click.option('--status', help='a comma-separated list of statuses to filter on', type=str)
 @click.pass_obj
 @handle_api_error
-def describe_activity(controller, days, view, tests, tags, endpoints, status):
+def describe_activity(controller, days, view, tests, tag, endpoints, status):
     """ View my Detect results """
     filters = dict(
         start=datetime.now(timezone.utc) - timedelta(days=days),
@@ -151,8 +151,8 @@ def describe_activity(controller, days, view, tests, tags, endpoints, status):
     )
     if tests:
         filters['test'] = tests
-    if tags:
-        filters['tags'] = tags
+    if tag:
+        filters['tag'] = tag
     if endpoints:
         filters['endpoint_id'] = endpoints
     if status:
