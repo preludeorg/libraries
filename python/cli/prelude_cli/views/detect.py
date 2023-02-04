@@ -174,7 +174,6 @@ def describe_activity(controller, days, view, test, endpoint, status):
                 report.add_row(dos, state, str(volume))
 
     elif view == 'probes':
-        print_json(data=raw)
         report.add_column('endpoint_id')
         report.add_column('last seen')
         report.add_column('status')
