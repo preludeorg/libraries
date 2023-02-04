@@ -116,16 +116,19 @@ def rules(controller):
               default='logs', show_default=True,
               type=click.Choice(['logs', 'days', 'probes', 'social', 'insights'], case_sensitive=False))
 @click.option('--test', help='comma-separated list of test IDs', type=str)
+@click.option('--tag', help='comma-separated list of tags', type=str)
 @click.option('--endpoint', help='comma-separated list of endpoint IDs', type=str)
 @click.option('--status', help='comma-separated list of statuses', type=str)
 @click.pass_obj
 @handle_api_error
-def describe_activity(controller, days, view, test, endpoint, status):
+def describe_activity(controller, days, view, test, tag, endpoint, status):
     """ View my Detect results """
     filters = dict(
         start=datetime.now(timezone.utc) - timedelta(days=days),
         finish=datetime.now(timezone.utc)
     )
+    if tag:
+        filters['tag'] = tag
     if test:
         filters['test'] = test
     if endpoint:
