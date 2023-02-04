@@ -132,7 +132,7 @@ def describe_activity(controller, days, view, test, tag, endpoint, status):
     if test:
         filters['test'] = test
     if endpoint:
-        filters['endpoint_id'] = endpoint
+        filters['endpoint'] = endpoint
     if status:
         filters['status'] = status
 
