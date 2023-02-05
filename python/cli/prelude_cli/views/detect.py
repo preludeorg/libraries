@@ -137,26 +137,26 @@ def social_statistics(controller, test, days):
               help='retrieve a specific result view',
               default='logs', show_default=True,
               type=click.Choice(['logs', 'days', 'insights'], case_sensitive=False))
-@click.option('--test', help='comma-separated list of test IDs', type=str)
-@click.option('--tag', help='comma-separated list of tags', type=str)
-@click.option('--endpoint', help='comma-separated list of endpoint IDs', type=str)
-@click.option('--status', help='comma-separated list of statuses', type=str)
+@click.option('--tests', help='comma-separated list of test IDs', type=str)
+@click.option('--tags', help='comma-separated list of tags', type=str)
+@click.option('--endpoints', help='comma-separated list of endpoint IDs', type=str)
+@click.option('--statuses', help='comma-separated list of statuses', type=str)
 @click.pass_obj
 @handle_api_error
-def describe_activity(controller, days, view, test, tag, endpoint, status):
+def describe_activity(controller, days, view, tests, tags, endpoints, statuses):
     """ View my Detect results """
     filters = dict(
         start=datetime.now(timezone.utc) - timedelta(days=days),
         finish=datetime.now(timezone.utc)
     )
-    if tag:
-        filters['tag'] = tag
-    if test:
-        filters['test'] = test
-    if endpoint:
-        filters['endpoint'] = endpoint
-    if status:
-        filters['status'] = status
+    if tags:
+        filters['tags'] = tags
+    if tests:
+        filters['tests'] = tests
+    if endpoints:
+        filters['endpoints'] = endpoints
+    if statuses:
+        filters['statuses'] = statuses
 
     raw = controller.describe_activity(view=view, filters=filters)
     report = Table()
