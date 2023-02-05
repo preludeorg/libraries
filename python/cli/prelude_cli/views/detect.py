@@ -4,13 +4,12 @@ from datetime import datetime, timedelta, timezone
 from rich import print_json
 from rich.console import Console
 from rich.table import Table
+from collections import defaultdict
 
 from prelude_cli.views.shared import handle_api_error
 from prelude_sdk.controllers.build_controller import BuildController
 from prelude_sdk.controllers.detect_controller import DetectController
-from prelude_sdk.models.codes import RunCode, ExitCode, ExitCodeGroup
-
-
+from prelude_sdk.models.codes import RunCode, ExitCodeGroup
 
 
 @click.group()
@@ -118,6 +117,20 @@ def list_probes(controller, days):
     print_json(data=controller.list_probes(days=days))
 
 
+@detect.command('social-stats')
+@click.argument('test')
+@click.option('--days', help='days to look back', default=30, type=int)
+@click.pass_obj
+@handle_api_error
+def social_statistics(controller, test, days):
+    """ Pull social statistics for a specific test """
+    stats = defaultdict(lambda: defaultdict(int))
+    for dos, values in controller.social_stats(ident=test, days=days).items():
+        for state, count in values.items():
+            stats[dos][state] = count
+    print_json(data=stats)
+
+
 @detect.command('activity')
 @click.option('--days', help='days to look back', default=7, type=int)
 @click.option('--view',
@@ -169,7 +182,7 @@ def describe_activity(controller, days, view, test, tag, endpoint, status):
                 record['test'],
                 record['endpoint_id'], 
                 str(record['status']),
-                ExitCode(record['status']).name,
+                record['status'],
                 'yes' if record.get('observed') else '-'
             )
 
