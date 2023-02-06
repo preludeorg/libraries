@@ -190,7 +190,7 @@ def describe_activity(controller, days, view, tests, tags, endpoints, statuses):
         report.add_column('failed (%)', style='red')
         
         for insight in raw:
-            report.add_row(insight['test'], insight['dos'], insight["rate"])
+            report.add_row(insight['test'], insight['dos'], str(insight["rate"]))
 
     elif view == 'days':
         report.add_column('date')
