@@ -1,8 +1,8 @@
 import Client from "../client";
 import {
   Activity,
-  ActivityQuery,
   EnableTest,
+  LogsQuery,
   Probe,
   Queue,
   RequestOptions,
@@ -63,27 +63,19 @@ export default class DetectController {
 
   /** Get report for an Account */
   async describeActivity(
-    {
-      start,
-      finish,
-      view,
-      test,
-      tags,
-      endpoint_id,
-      result_id,
-      dos,
-    }: ActivityQuery,
-    options: RequestOptions = {}
-  ) {
+    query: LogsQuery,
+    options?: RequestOptions
+  ): Promise<Activity[]>;
+  async describeActivity(query: LogsQuery, options: RequestOptions = {}) {
     const searchParams = new URLSearchParams();
-    searchParams.set("start", start);
-    searchParams.set("finish", finish);
-    searchParams.set("view", view);
-    if (test) searchParams.set("test", test);
-    if (tags) searchParams.set("tags", tags);
-    if (endpoint_id) searchParams.set("endpoint_id", endpoint_id);
-    if (result_id) searchParams.set("result_id", result_id);
-    if (dos) searchParams.set("dos", dos);
+    searchParams.set("start", query.start);
+    searchParams.set("finish", query.finish);
+    searchParams.set("view", query.view);
+    if (query.test) searchParams.set("test", query.test);
+    if (query.tags) searchParams.set("tags", query.tags);
+    if (query.endpoint_id) searchParams.set("endpoint_id", query.endpoint_id);
+    if (query.result_id) searchParams.set("result_id", query.result_id);
+    if (query.dos) searchParams.set("dos", query.dos);
 
     const response = await this.#client.requestWithAuth(
       `/detect/activity?${searchParams.toString()}`,
@@ -93,7 +85,7 @@ export default class DetectController {
       }
     );
 
-    return (await response.json()) as Activity[];
+    return await response.json();
   }
 
   /** Get all probes associated to an Account */

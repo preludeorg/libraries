@@ -85,20 +85,63 @@ export interface SearchResults {
   tests: string[];
 }
 
-export const PassCodes = [100, 9, 17, 18, 105, 127, 106] as const;
-export const FailCodes = [101] as const;
-export const ErrorCodes = [1, 2, 15, 102, 103, 126, 256] as const;
+export const ExitCodes = {
+  MISSING: -1,
+  ERROR: 1,
+  MALFORMED_VST: 2,
+  PROCESS_KILLED: 9,
+  PROTECTED: 100,
+  UNPROTECTED: 101,
+  TIMEOUT: 102,
+  CLEANUP_ERROR: 103,
+  NOT_RELEVANT: 104,
+  QUARANTINED_1: 105,
+  OUTBOUND_SECURE: 106,
+  INCOMPATIBLE_HOST: 126,
+  QUARANTINED_2: 127,
+  UNEXPECTED: 256,
+} as const;
 
-const StatusCodes = [...PassCodes, ...FailCodes, ...ErrorCodes] as const;
-export type StatusCode = typeof StatusCodes[number];
+export type ExitCodeName = keyof typeof ExitCodes;
+export type ExitCode = typeof ExitCodes[ExitCodeName];
+export const ExitCodeNames = Object.keys(ExitCodes) as ExitCodeName[];
+export const ExitCodeGroup = {
+  NONE: [ExitCodes.MISSING],
+  PROTECTED: [
+    ExitCodes.PROTECTED,
+    ExitCodes.QUARANTINED_1,
+    ExitCodes.QUARANTINED_2,
+    ExitCodes.PROCESS_KILLED,
+    ExitCodes.NOT_RELEVANT,
+    ExitCodes.OUTBOUND_SECURE,
+  ],
+  UNPROTECTED: [ExitCodes.UNPROTECTED],
+  ERROR: [
+    ExitCodes.ERROR,
+    ExitCodes.MALFORMED_VST,
+    ExitCodes.TIMEOUT,
+    ExitCodes.INCOMPATIBLE_HOST,
+    ExitCodes.UNEXPECTED,
+  ],
+} as const;
+
+export type Platform =
+  | "darwin-arm64"
+  | "darwin-x86_64"
+  | "linux-x86_64"
+  | "linux-arm64"
+  | "windows-x86_64"
+  | "windows-arm64";
 
 export interface Activity {
   date: string;
   endpoint_id: string;
   id: string;
   observed: 0 | 1;
-  status: StatusCode;
+  status: ExitCodeName;
   test: string;
+  dos: Platform;
+  tags: string[] | null;
 }
 
 export interface TestData {
@@ -114,15 +157,7 @@ export interface Rule {
 
 export type RuleList = Record<string, Rule>;
 
-export type Platform =
-  | "darwin-arm64"
-  | "darwin-x86_64"
-  | "linux-x86_64"
-  | "linux-arm64"
-  | "windows-x86_64"
-  | "windows-arm64";
-export type StatusCodeAsStr = `${StatusCode}`;
-export type Stats = Record<Platform, Record<StatusCodeAsStr, number>>;
+export type Stats = Record<Platform, Record<`${ExitCode}`, number>>;
 
 export interface Insight {
   name: string;
@@ -133,11 +168,14 @@ export interface Insight {
 export interface ActivityQuery {
   start: string;
   finish: string;
-  view: "days" | "probes" | "logs" | "insights";
   test?: string;
   result_id?: string;
   endpoint_id?: string;
   dos?: string;
   status?: unknown;
   tags?: string;
+}
+
+export interface LogsQuery extends ActivityQuery {
+  view: "logs";
 }
