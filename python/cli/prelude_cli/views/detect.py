@@ -170,7 +170,6 @@ def describe_activity(controller, days, view, tests, tags, endpoints, statuses):
         report.add_column('name')
         report.add_column('test')
         report.add_column('endpoint')
-        report.add_column('code', style='magenta')
         report.add_column('status')
         report.add_column('observed')
 
@@ -181,7 +180,6 @@ def describe_activity(controller, days, view, tests, tags, endpoints, statuses):
                 tests.get(record['test'], 'DELETED'),
                 record['test'],
                 record['endpoint_id'], 
-                str(record['status']),
                 record['status'],
                 'yes' if record.get('observed') else '-'
             )
