@@ -162,12 +162,8 @@ def describe_activity(controller, days, view, tests, tags, endpoints, statuses):
     report = Table()
 
     if view == 'logs':
-        build = BuildController(account=controller.account)
-        tests = {row['id']: row['name'] for row in build.list_tests()}
-
         report.add_column('timestamp')
         report.add_column('result ID')
-        report.add_column('name')
         report.add_column('test')
         report.add_column('endpoint')
         report.add_column('status')
@@ -177,7 +173,6 @@ def describe_activity(controller, days, view, tests, tags, endpoints, statuses):
             report.add_row(
                 record['date'], 
                 record['id'], 
-                tests.get(record['test'], 'DELETED'),
                 record['test'],
                 record['endpoint_id'], 
                 record['status'],
