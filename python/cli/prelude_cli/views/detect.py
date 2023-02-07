@@ -80,15 +80,12 @@ def queue(controller):
     print_json(data=active)
 
 
-@detect.command('record')
-@click.option('-o', '--key', 
-              help='Mark 1 for observed', 
-              required=True, 
-              type=click.Choice(['observation', 'decision']))
-@click.option('-v', '--value', help='Mark 1 for observed', required=True, type=int)
+@detect.command('observe')
+@click.argument('result')
+@click.option('-v', '--value', help='Mark 1 for observed', default=1, type=int)
 @click.pass_obj
 @handle_api_error
-def record(controller, result, value):
+def observe(controller, result, value):
     """ Mark a result as observed """
     controller.observe(row_id=result, value=value)
 
