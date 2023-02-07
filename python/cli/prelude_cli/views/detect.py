@@ -9,7 +9,7 @@ from collections import defaultdict
 from prelude_cli.views.shared import handle_api_error
 from prelude_sdk.controllers.build_controller import BuildController
 from prelude_sdk.controllers.detect_controller import DetectController
-from prelude_sdk.models.codes import RunCode, ExitCode, ExitCodeGroup
+from prelude_sdk.models.codes import RunCode, ExitCode, ExitCodeGroup, Decision
 
 
 @click.group()
@@ -180,12 +180,20 @@ def describe_activity(controller, days, view, tests, tags, endpoints, statuses):
             )
 
     elif view == 'insights':
+        report.add_column('dhash')
         report.add_column('test')
         report.add_column('dos')
         report.add_column('count', style='red')
+        report.add_column('decision')
         
         for insight in raw:
-            report.add_row(insight['test'], insight['dos'], str(insight["count"]))
+            report.add_row(
+                insight['dhash'],
+                insight['test'], 
+                insight['dos'], 
+                str(insight["count"]), 
+                insight['state']
+            )
 
     elif view == 'probes':
         report.add_column('endpoint_id')

@@ -25,6 +25,16 @@ class Permission(Enum):
         return Permission.INVALID
 
 
+class Decision(Enum):
+    NONE = 0
+    IGNORE = 1
+    ACT = 2
+
+    @classmethod
+    def _missing_(cls, value):
+        return Decision.NONE
+
+
 class ExitCode(Enum):
     MISSING = -1
     ERROR = 1
