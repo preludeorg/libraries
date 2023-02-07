@@ -9,7 +9,7 @@ from collections import defaultdict
 from prelude_cli.views.shared import handle_api_error
 from prelude_sdk.controllers.build_controller import BuildController
 from prelude_sdk.controllers.detect_controller import DetectController
-from prelude_sdk.models.codes import RunCode, ExitCodeGroup
+from prelude_sdk.models.codes import RunCode, ExitCode, ExitCodeGroup
 
 
 @click.group()
@@ -20,7 +20,7 @@ def detect(ctx):
 
 
 @detect.command('create-endpoint')
-@click.option('--tags', help='a comma-separated list of tags for this endpoint', type=str, default='')
+@click.option('-t', '--tags', help='a comma-separated list of tags for this endpoint', type=str, default='')
 @click.argument('name')
 @click.pass_obj
 @handle_api_error
@@ -32,8 +32,8 @@ def register_endpoint(controller, name, tags):
 
 @detect.command('enable-test')
 @click.argument('test')
-@click.option('--tags', help='only enable for these tags (comma-separated list)', type=str, default='')
-@click.option('--run_code',
+@click.option('-t', '--tags', help='only enable for these tags (comma-separated list)', type=str, default='')
+@click.option('-r', '--run_code',
               help='provide a run_code',
               default='daily', show_default=True,
               type=click.Choice(['daily', 'weekly', 'monthly', 'once', 'debug'], case_sensitive=False))
@@ -82,7 +82,7 @@ def queue(controller):
 
 @detect.command('observe')
 @click.argument('result')
-@click.option('--value', help='Mark 1 for observed', default=1, type=int)
+@click.option('-v', '--value', help='Mark 1 for observed', default=1, type=int)
 @click.pass_obj
 @handle_api_error
 def observe(controller, result, value):
@@ -109,7 +109,7 @@ def rules(controller):
 
 
 @detect.command('probes')
-@click.option('--days', help='days to look back', default=7, type=int)
+@click.option('-d', '--days', help='days to look back', default=7, type=int)
 @click.pass_obj
 @handle_api_error
 def list_probes(controller, days):
@@ -119,7 +119,7 @@ def list_probes(controller, days):
 
 @detect.command('social-stats')
 @click.argument('test')
-@click.option('--days', help='days to look back', default=30, type=int)
+@click.option('-d', '--days', help='days to look back', default=30, type=int)
 @click.pass_obj
 @handle_api_error
 def social_statistics(controller, test, days):
@@ -132,11 +132,11 @@ def social_statistics(controller, test, days):
 
 
 @detect.command('activity')
-@click.option('--days', help='days to look back', default=7, type=int)
-@click.option('--view',
+@click.option('-v', '--view',
               help='retrieve a specific result view',
               default='logs', show_default=True,
-              type=click.Choice(['logs', 'days', 'insights'], case_sensitive=False))
+              type=click.Choice(['logs', 'days', 'insights', 'probes']))
+@click.option('-d', '--days', help='days to look back', default=7, type=int)
 @click.option('--tests', help='comma-separated list of test IDs', type=str)
 @click.option('--tags', help='comma-separated list of tags', type=str)
 @click.option('--endpoints', help='comma-separated list of endpoint IDs', type=str)
@@ -175,17 +175,22 @@ def describe_activity(controller, days, view, tests, tags, endpoints, statuses):
                 record['id'], 
                 record['test'],
                 record['endpoint_id'], 
-                record['status'],
+                ExitCode(record['status']).name,
                 'yes' if record.get('observed') else '-'
             )
 
     elif view == 'insights':
         report.add_column('test')
         report.add_column('dos')
-        report.add_column('failed (%)', style='red')
+        report.add_column('count', style='red')
         
         for insight in raw:
-            report.add_row(insight['test'], insight['dos'], str(insight["rate"]))
+            report.add_row(insight['test'], insight['dos'], str(insight["count"]))
+
+    elif view == 'probes':
+        report.add_column('endpoint_id')
+        for probe in raw:
+            report.add_row(probe)
 
     elif view == 'days':
         report.add_column('date')
