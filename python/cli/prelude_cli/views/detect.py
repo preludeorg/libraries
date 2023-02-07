@@ -185,6 +185,7 @@ def describe_activity(controller, days, view, tests, tags, endpoints, statuses):
         report.add_column('dos')
         report.add_column('count', style='red')
         report.add_column('decision')
+        report.add_column('started')
         
         for insight in raw:
             report.add_row(
