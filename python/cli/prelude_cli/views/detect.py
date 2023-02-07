@@ -192,7 +192,8 @@ def describe_activity(controller, days, view, tests, tags, endpoints, statuses):
                 insight['test'], 
                 insight['dos'], 
                 str(insight["count"]), 
-                insight['state']
+                insight['state'],
+                insight['started']
             )
 
     elif view == 'probes':
