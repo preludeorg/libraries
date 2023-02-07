@@ -58,7 +58,7 @@ def get_test(controller, test_id):
 
 @build.command('create-test')
 @click.argument('name')
-@click.option('--test', help='test identifier', default=None, type=str)
+@click.option('-t', '--test', help='test identifier', default=None, type=str)
 @click.pass_obj
 @handle_api_error
 def create_test(controller, name, test):
@@ -92,7 +92,7 @@ def delete_test(controller, test):
 
 @build.command('upload')
 @click.argument('path', type=click.Path(exists=True))
-@click.option('--test', help='test identifier', default=None, type=str)
+@click.option('-t', '--test', help='test identifier', default=None, type=str)
 @click.pass_obj
 @handle_api_error
 def upload_attachment(controller, path, test):
