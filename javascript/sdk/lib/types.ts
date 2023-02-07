@@ -72,6 +72,7 @@ export interface EnableTest {
 }
 
 export interface Probe {
+  state: "PROTECTED" | "UNPROTECTED" | "ERROR" | "REGISTERED" | null;
   endpoint_id: string;
   tags: string[];
   updated: string;
@@ -168,14 +169,24 @@ export interface Insight {
 export interface ActivityQuery {
   start: string;
   finish: string;
-  test?: string;
+  tests?: string;
   result_id?: string;
-  endpoint_id?: string;
-  dos?: string;
-  status?: unknown;
+  endpoints?: string;
+  dos?: Platform;
+  statuses?: string;
   tags?: string;
 }
 
-export interface LogsQuery extends ActivityQuery {
-  view: "logs";
+export type DayResults = Record<
+  string,
+  Record<"ERROR" | "PROTECTED" | "UNPROTECTED", number>
+>;
+
+export interface Decision {
+  count: number;
+  dhash: string;
+  dos: Platform;
+  state: string;
+  test: string;
+  started: string;
 }
