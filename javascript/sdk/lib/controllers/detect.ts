@@ -1,8 +1,10 @@
 import Client from "../client";
 import {
   Activity,
+  ActivityQuery,
+  DayResults,
+  Decision,
   EnableTest,
-  LogsQuery,
   Probe,
   Queue,
   RequestOptions,
@@ -63,17 +65,32 @@ export default class DetectController {
 
   /** Get report for an Account */
   async describeActivity(
-    query: LogsQuery,
+    query: ActivityQuery & { view: "logs" },
     options?: RequestOptions
   ): Promise<Activity[]>;
-  async describeActivity(query: LogsQuery, options: RequestOptions = {}) {
+  async describeActivity(
+    query: ActivityQuery & { view: "days" },
+    options?: RequestOptions
+  ): Promise<DayResults>;
+  async describeActivity(
+    query: ActivityQuery & { view: "insights" },
+    options?: RequestOptions
+  ): Promise<Decision[]>;
+  async describeActivity(
+    query: ActivityQuery & { view: "probes" },
+    options?: RequestOptions
+  ): Promise<string[]>;
+  async describeActivity(
+    query: ActivityQuery & { view: "days" | "logs" | "insights" | "probes" },
+    options: RequestOptions = {}
+  ) {
     const searchParams = new URLSearchParams();
     searchParams.set("start", query.start);
     searchParams.set("finish", query.finish);
     searchParams.set("view", query.view);
-    if (query.test) searchParams.set("test", query.test);
+    if (query.tests) searchParams.set("tests", query.tests);
     if (query.tags) searchParams.set("tags", query.tags);
-    if (query.endpoint_id) searchParams.set("endpoint_id", query.endpoint_id);
+    if (query.endpoints) searchParams.set("endpoints", query.endpoints);
     if (query.result_id) searchParams.set("result_id", query.result_id);
     if (query.dos) searchParams.set("dos", query.dos);
 
