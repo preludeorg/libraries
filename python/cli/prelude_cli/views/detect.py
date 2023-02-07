@@ -84,7 +84,7 @@ def queue(controller):
 @click.argument('result')
 @click.option('-a', '--action',
               help='mark a result with an action',
-              default=0, type=int,
+              default=0,
               type=click.Choice([0, 1, 2]))
 @click.pass_obj
 @handle_api_error
@@ -97,7 +97,7 @@ def observe(controller, result, action):
 @click.argument('dhash')
 @click.option('-a', '--action',
               help='mark a dhash with an action',
-              default=0, type=int,
+              default=0,
               type=click.Choice([0, 1, 2]))
 @click.pass_obj
 @handle_api_error
