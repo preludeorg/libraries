@@ -9,7 +9,7 @@ from collections import defaultdict
 from prelude_cli.views.shared import handle_api_error
 from prelude_sdk.controllers.build_controller import BuildController
 from prelude_sdk.controllers.detect_controller import DetectController
-from prelude_sdk.models.codes import RunCode, ExitCode, ExitCodeGroup
+from prelude_sdk.models.codes import RunCode, ExitCode, ExitCodeGroup, Decision
 
 
 @click.group()
@@ -193,7 +193,7 @@ def describe_activity(controller, days, view, tests, tags, endpoints, statuses):
                 insight['test'], 
                 insight['dos'], 
                 str(insight["count"]), 
-                insight['state'],
+                Decision(insight['state']).name,
                 insight['started']
             )
 
