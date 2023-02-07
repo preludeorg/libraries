@@ -82,12 +82,28 @@ def queue(controller):
 
 @detect.command('observe')
 @click.argument('result')
-@click.option('-v', '--value', help='Mark 1 for observed', default=1, type=int)
+@click.option('-a', '--action',
+              help='mark a result with an action',
+              default=0, type=int,
+              type=click.Choice([0, 1, 2]))
 @click.pass_obj
 @handle_api_error
-def observe(controller, result, value):
-    """ Mark a result as observed """
-    controller.observe(row_id=result, value=value)
+def observe(controller, result, action):
+    """ Mark a result with an action: reported, observed or detected """
+    controller.observe(result_id=result, action=action)
+
+
+@detect.command('decide')
+@click.argument('dhash')
+@click.option('-a', '--action',
+              help='mark a dhash with an action',
+              default=0, type=int,
+              type=click.Choice([0, 1, 2]))
+@click.pass_obj
+@handle_api_error
+def decide(controller, dhash, action):
+    """ Make a decision on a result set (dhash) """
+    controller.decide(dhash=dhash, value=action)
 
 
 @detect.command('search')
