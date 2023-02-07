@@ -60,14 +60,23 @@ class DetectController:
             raise Exception(res.text)
 
     @verify_credentials
-    def observe(self, row_id, value):
+    def observe(self, result_id, action):
         """ Mark a result as observed """
-        params = dict(row_id=row_id, value=value)
+        params = dict(result_id=result_id, action=action)
         res = requests.post(f'{self.account.hq}/detect/observe', headers=self.account.headers, json=params)
         if res.status_code == 200:
             return res.text
         raise Exception(res.text)
 
+    @verify_credentials
+    def decide(self, dhash, action):
+        """ Make a decision on a set of results (dhash) """
+        params = dict(dhash=dhash, action=action)
+        res = requests.post(f'{self.account.hq}/detect/decide', headers=self.account.headers, json=params)
+        if res.status_code == 200:
+            return res.text
+        raise Exception(res.text)
+    
     @verify_credentials
     def search(self, identifier: str):
         """ Search the NVD for a keyword """
