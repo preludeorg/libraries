@@ -67,12 +67,6 @@ struct System {
         task.executableURL = url
         task.arguments = args
         do { try task.run() } catch { print("ERROR: \(error)") }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            if task.isRunning {
-                task.terminate()
-            }
-        }
         task.waitUntilExit()
         return task.terminationStatus
     }
