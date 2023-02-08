@@ -67,14 +67,16 @@ struct System {
         task.executableURL = url
         task.arguments = args
         do { try task.run() } catch { print("ERROR: \(error)") }
-        
+
+        var isTimeout = false
         DispatchQueue.main.asyncAfter(deadline: .now() + 10.0) {
             if task.isRunning {
                 task.terminate()
+                isTimeout = true
             }
         }
         task.waitUntilExit()
-        return task.terminationStatus
+        return isTimeout ? 102 : task.terminationStatus
     }
     func executable(url: URL) {
         let task = Process()
