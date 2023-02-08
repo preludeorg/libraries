@@ -17,7 +17,6 @@ type Probe struct {
 	dos           string
 	sleep         time.Duration
 	cwd           string
-	commandTimout time.Duration
 }
 
 type Actions interface {
@@ -40,7 +39,6 @@ func CreateProbe(token, hq string) *Probe {
 		dos:           strings.ToLower(fmt.Sprintf("%s-%s", runtime.GOOS, runtime.GOARCH)),
 		sleep:         14400 * time.Second,
 		cwd:           wd,
-		commandTimout: 10 * time.Second,
 	}
 }
 
