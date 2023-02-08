@@ -27,8 +27,8 @@ class Permission(Enum):
 
 class Decision(Enum):
     NONE = 0
-    IGNORE = 1
-    ACT = 2
+    DISMISS = 1
+    IMPORTANT = 2
 
     @classmethod
     def _missing_(cls, value):
