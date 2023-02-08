@@ -81,16 +81,16 @@ def queue(controller):
 
 
 @detect.command('decide')
-@click.argument('result')
+@click.argument('dhash')
 @click.option('-a', '--action',
               help='mark a result_id with an action',
               default=0,
               type=click.Choice([0, 1, 2]))
 @click.pass_obj
 @handle_api_error
-def decide(controller, result, action):
-    """ Make a decision based on a root result ID """
-    controller.decide(result_id=result, value=action)
+def decide(controller, dhash, action):
+    """ Make a decision based on a result set """
+    controller.decide(dhash=dhash, value=action)
 
 
 @detect.command('search')
@@ -170,7 +170,7 @@ def describe_activity(controller, days, view, tests, tags, endpoints, statuses):
         report.add_column('test')
         report.add_column('endpoint')
         report.add_column('status')
-        report.add_column('observed')
+        report.add_column('reported')
 
         for record in raw:
             report.add_row(
@@ -179,7 +179,7 @@ def describe_activity(controller, days, view, tests, tags, endpoints, statuses):
                 record['test'],
                 record['endpoint_id'], 
                 ExitCode(record['status']).name,
-                'yes' if record.get('observed') else '-'
+                'yes' if record.get('reported') else '-'
             )
 
     elif view == 'insights':
