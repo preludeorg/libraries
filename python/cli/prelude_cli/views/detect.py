@@ -81,16 +81,16 @@ def queue(controller):
 
 
 @detect.command('decide')
-@click.argument('result')
+@click.argument('dhash')
 @click.option('-a', '--action',
               help='mark a result_id with an action',
               default=0,
               type=click.Choice([0, 1, 2]))
 @click.pass_obj
 @handle_api_error
-def decide(controller, result, action):
-    """ Make a decision based on a root result ID """
-    controller.decide(result_id=result, value=action)
+def decide(controller, dhash, action):
+    """ Make a decision based on a result set """
+    controller.decide(dhash=dhash, value=action)
 
 
 @detect.command('search')
@@ -170,7 +170,6 @@ def describe_activity(controller, days, view, tests, tags, endpoints, statuses):
         report.add_column('test')
         report.add_column('endpoint')
         report.add_column('status')
-        report.add_column('observed')
 
         for record in raw:
             report.add_row(
@@ -178,8 +177,7 @@ def describe_activity(controller, days, view, tests, tags, endpoints, statuses):
                 record['id'], 
                 record['test'],
                 record['endpoint_id'], 
-                ExitCode(record['status']).name,
-                'yes' if record.get('observed') else '-'
+                ExitCode(record['status']).name
             )
 
     elif view == 'insights':
@@ -187,8 +185,7 @@ def describe_activity(controller, days, view, tests, tags, endpoints, statuses):
         report.add_column('test')
         report.add_column('dos')
         report.add_column('count', style='red')
-        report.add_column('decision')
-        report.add_column('started')
+        report.add_column('action')
         
         for insight in raw:
             report.add_row(
@@ -196,8 +193,7 @@ def describe_activity(controller, days, view, tests, tags, endpoints, statuses):
                 insight['test'], 
                 insight['dos'], 
                 str(insight["count"]), 
-                Decision(insight['state']).name,
-                insight['started']
+                Decision(insight['action']).name
             )
 
     elif view == 'probes':
