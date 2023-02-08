@@ -1,5 +1,6 @@
 import Client from "../client";
 import {
+  ActionCode,
   Activity,
   ActivityQuery,
   DayResults,
@@ -133,17 +134,6 @@ export default class DetectController {
     return (await response.json()) as Stats;
   }
 
-  /** Mark a result as observed */
-  async observe(rowId: string, value: string, options: RequestOptions = {}) {
-    const response = await this.#client.requestWithAuth(`/detect/observe`, {
-      method: "POST",
-      body: JSON.stringify({ row_id: rowId, value }),
-      ...options,
-    });
-
-    return await response.text();
-  }
-
   /** Delete an endpoint */
   async deleteProbe(endpoint_id: string, options: RequestOptions = {}) {
     await this.#client.requestWithAuth(`/detect/endpoint`, {
@@ -175,5 +165,20 @@ export default class DetectController {
     });
 
     return (await response.json()) as RuleList;
+  }
+
+  /**  Make a decision based on a result set */
+  async decide(
+    dhash: string,
+    action: ActionCode,
+    options: RequestOptions = {}
+  ) {
+    const response = await this.#client.requestWithAuth(`/detect/decide`, {
+      method: "POST",
+      body: JSON.stringify({ dhash, action }),
+      ...options,
+    });
+
+    return await response.text();
   }
 }
