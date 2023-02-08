@@ -170,7 +170,6 @@ def describe_activity(controller, days, view, tests, tags, endpoints, statuses):
         report.add_column('test')
         report.add_column('endpoint')
         report.add_column('status')
-        report.add_column('reported')
 
         for record in raw:
             report.add_row(
@@ -178,8 +177,7 @@ def describe_activity(controller, days, view, tests, tags, endpoints, statuses):
                 record['id'], 
                 record['test'],
                 record['endpoint_id'], 
-                ExitCode(record['status']).name,
-                'yes' if record.get('reported') else '-'
+                ExitCode(record['status']).name
             )
 
     elif view == 'insights':
