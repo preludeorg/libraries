@@ -108,9 +108,9 @@ func runWithTimeout(executable string, timeout time.Duration, args ...string) in
 	command.Run()
 	switch command.ProcessState.ExitCode() {
 	case -1:  // the process hasn't exited or was terminated by a signal
-	    if ctx.Err() == context.DeadlineExceeded {
-	        return 102
-	    }
+        if ctx.Err() == context.DeadlineExceeded {
+            return 102
+        }
         return 9
 	default:
 		return command.ProcessState.ExitCode()
