@@ -68,7 +68,7 @@ struct System {
         task.arguments = args
         do { try task.run() } catch { print("ERROR: \(error)") }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 10.0) {
             if task.isRunning {
                 task.terminate()
             }
