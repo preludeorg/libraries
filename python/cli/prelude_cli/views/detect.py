@@ -187,8 +187,7 @@ def describe_activity(controller, days, view, tests, tags, endpoints, statuses):
         report.add_column('test')
         report.add_column('dos')
         report.add_column('count', style='red')
-        report.add_column('decision')
-        report.add_column('started')
+        report.add_column('action')
         
         for insight in raw:
             report.add_row(
@@ -196,8 +195,7 @@ def describe_activity(controller, days, view, tests, tags, endpoints, statuses):
                 insight['test'], 
                 insight['dos'], 
                 str(insight["count"]), 
-                Decision(insight['state']).name,
-                insight['started']
+                Decision(insight['action']).name
             )
 
     elif view == 'probes':
