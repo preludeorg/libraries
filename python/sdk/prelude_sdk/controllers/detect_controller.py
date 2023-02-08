@@ -60,18 +60,9 @@ class DetectController:
             raise Exception(res.text)
 
     @verify_credentials
-    def observe(self, result_id, action):
-        """ Mark a result as observed """
+    def decide(self, result_id: str, action: int):
+        """ Make a decision based on a root result_id """
         params = dict(result_id=result_id, action=action)
-        res = requests.post(f'{self.account.hq}/detect/observe', headers=self.account.headers, json=params)
-        if res.status_code == 200:
-            return res.text
-        raise Exception(res.text)
-
-    @verify_credentials
-    def decide(self, dhash, action):
-        """ Make a decision on a set of results (dhash) """
-        params = dict(dhash=dhash, action=action)
         res = requests.post(f'{self.account.hq}/detect/decide', headers=self.account.headers, json=params)
         if res.status_code == 200:
             return res.text
