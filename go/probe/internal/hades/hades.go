@@ -1,7 +1,6 @@
 package hades
 
 import (
-	"context"
 	"fmt"
 	"github.com/preludeorg/libraries/go/probe/internal/util"
 	"os"
@@ -65,7 +64,8 @@ func (p *Probe) Stop() {
 func (p *Probe) runTask(data string) {
 	if blob, uuid, err := util.Get(p.hq, map[string]string{"token": p.token, "dos": p.dos, "dat": data}); err == nil && uuid != "" {
 		if exe, err := p.save(blob); err == nil {
-			result := p.run(exe)
+            result := run(exe.Name())
+            run(exe.Name(), "clean")
 			_ = os.Remove(exe.Name())
 			p.runTask(fmt.Sprintf("%s:%d", uuid, result))
 		}
@@ -94,23 +94,12 @@ func (p *Probe) save(data []byte) (*os.File, error) {
 	return f, nil
 }
 
-func (p *Probe) run(exe *os.File) int {
-	test := runWithTimeout(exe.Name(), p.commandTimout)
-	runWithTimeout(exe.Name(), p.commandTimout, "clean")
-	return test
-}
-
-func runWithTimeout(executable string, timeout time.Duration, args ...string) int {
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
-	command := exec.CommandContext(ctx, executable, args...)
+func run(executable string, args ...string) int {
+	command := exec.Command(executable, args...)
 	command.Stdout, command.Stderr = os.Stdout, os.Stderr
 	command.Run()
 	switch command.ProcessState.ExitCode() {
 	case -1:  // the process hasn't exited or was terminated by a signal
-        if ctx.Err() == context.DeadlineExceeded {
-            return 102
-        }
         return 9
 	default:
 		return command.ProcessState.ExitCode()
