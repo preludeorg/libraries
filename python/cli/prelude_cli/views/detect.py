@@ -26,8 +26,8 @@ def detect(ctx):
 @handle_api_error
 def register_endpoint(controller, name, tags):
     """ Register a new endpoint """
-    endpoint_token = controller.register_endpoint(name=name, tags=tags)
-    click.secho(f'Endpoint token: {endpoint_token}', fg='green')
+    token = controller.register_endpoint(name=name, tags=tags)
+    click.secho(f'Your token: {token}', fg='green')
 
 
 @detect.command('enable-test')
