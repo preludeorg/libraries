@@ -143,10 +143,11 @@ def social_statistics(controller, test, days):
 @click.option('--tests', help='comma-separated list of test IDs', type=str)
 @click.option('--tags', help='comma-separated list of tags', type=str)
 @click.option('--endpoints', help='comma-separated list of endpoint IDs', type=str)
+@click.option('--dos', help='comma-separated list of DOS', type=str)
 @click.option('--statuses', help='comma-separated list of statuses', type=str)
 @click.pass_obj
 @handle_api_error
-def describe_activity(controller, days, view, tests, tags, endpoints, statuses):
+def describe_activity(controller, days, view, tests, tags, endpoints, dos, statuses):
     """ View my Detect results """
     filters = dict(
         start=datetime.now(timezone.utc) - timedelta(days=days),
@@ -160,6 +161,8 @@ def describe_activity(controller, days, view, tests, tags, endpoints, statuses):
         filters['endpoints'] = endpoints
     if statuses:
         filters['statuses'] = statuses
+    if dos:
+        filters['dos'] = dos
 
     raw = controller.describe_activity(view=view, filters=filters)
     report = Table()
