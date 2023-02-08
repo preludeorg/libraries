@@ -111,7 +111,7 @@ func runWithTimeout(executable string, timeout time.Duration, args ...string) in
 	    if ctx.Err() == context.DeadlineExceeded {
 	        return 102
 	    }
-		return 9
+        return 9
 	default:
 		return command.ProcessState.ExitCode()
 	}
