@@ -126,6 +126,15 @@ export const ExitCodeGroup = {
   ],
 } as const;
 
+export const ActionCodes = {
+  NONE: 0,
+  IGNORE: 1,
+  IMPORTANT: 2,
+} as const;
+
+export type ActionCodeName = keyof typeof ActionCodes;
+export type ActionCode = typeof ActionCodes[ActionCodeName];
+
 export type Platform =
   | "darwin-arm64"
   | "darwin-x86_64"
@@ -139,7 +148,7 @@ export interface Activity {
   endpoint_id: string;
   id: string;
   observed: 0 | 1;
-  status: ExitCodeName;
+  status: ExitCode;
   test: string;
   dos: Platform;
   tags: string[] | null;
@@ -186,7 +195,6 @@ export interface Decision {
   count: number;
   dhash: string;
   dos: Platform;
-  state: string;
+  state: ActionCode;
   test: string;
-  started: string;
 }
