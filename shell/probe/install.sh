@@ -69,12 +69,12 @@ download_probe () {
         echo "[!] Detect failed to download!" >&2
         exit 1
     }
+    chmod +x "${_tmp_dir}/${PROBE_NAME}"
 }
 
 install_darwin_plist () {
     local _plist_file_path=$1
-    local _user=$2
-    local _app_dir=$3
+    local _app_dir=$2
     echo "[+] Generate PLIST"
 
     [[ ! -d "$(dirname $_plist_file_path)" ]] && mkdir -p "$(dirname $_plist_file_path)"
@@ -85,9 +85,7 @@ install_darwin_plist () {
 <plist version="1.0">
     <dict>
         <key>Label</key>
-        <string>Prelude Detect</string>
-        <key>UserName</key>
-        <string>${_user}</string>
+        <string>com.preludesecurity.detect</string>
         <key>EnvironmentVariables</key>
         <dict>
             <key>PRELUDE_TOKEN</key>
@@ -113,22 +111,14 @@ EOF
 }
 
 install_darwin() {
-    local _running_user="${USER}"
-    local _plist_path="/Users/${_running_user}/Library/LaunchAgents/com.preludesecurity.detect.plist"
-    local _app_dir="/Users/${_running_user}/.prelude/bin"
-    local _app_tmp="/tmp/prelude"
-    _primary_group=$(id -gn)
+    local _plist_path="/Library/LaunchDaemons/com.preludesecurity.detect.plist"
+    local _app_dir="/Library/PrivilegedHelperTools"
 
-    mkdir -p "${_app_tmp}"
-    echo "[*] Standing up as user: ${_running_user}"
-    install -o "${_running_user}" -g "${_primary_group}" -m 750 -d "${_app_dir}"
     register_new_endpoint
-    download_probe "$_app_tmp"
-    install -o "${_running_user}" -g "${_primary_group}" -m 755 "${_app_tmp}/${PROBE_NAME}" "${_app_dir}/${PROBE_NAME}"
-    install_darwin_plist "$_plist_path" "$_running_user" "$_app_dir"
+    download_probe "$_app_dir"
+    install_darwin_plist "$_plist_path" "$_app_dir"
     unset ENDPOINT_TOKEN
     echo "[*] Cleaning up tmp directory"
-    rm -rf "${_app_tmp}"
 }
 
 setup_prelude_user () {
