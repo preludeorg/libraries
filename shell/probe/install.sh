@@ -63,13 +63,13 @@ download_probe () {
     local _tmp_dir=$1
     local _probe_url="${PRELUDE_API}/download/${PROBE_NAME}"
     echo "[+] Downloading Probe..."
-    curl -o "${_tmp_dir}/${PROBE_NAME}" -sfS -X GET -L -H "token:${ENDPOINT_TOKEN}" -H"dos:${DOS}" "${_probe_url}"
+    sudo curl -o "${_tmp_dir}/${PROBE_NAME}" -sfS -X GET -L -H "token:${ENDPOINT_TOKEN}" -H"dos:${DOS}" "${_probe_url}"
 
     test -r "${_tmp_dir}/${PROBE_NAME}" || {
         echo "[!] Detect failed to download!" >&2
         exit 1
     }
-    chmod +x "${_tmp_dir}/${PROBE_NAME}"
+    sudo chmod +x "${_tmp_dir}/${PROBE_NAME}"
 }
 
 install_darwin_plist () {
@@ -79,7 +79,7 @@ install_darwin_plist () {
 
     [[ ! -d "$(dirname $_plist_file_path)" ]] && mkdir -p "$(dirname $_plist_file_path)"
 
-    cat << EOF | tee "${_plist_file_path}" >/dev/null
+    cat << EOF | sudo tee "${_plist_file_path}" >/dev/null
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
