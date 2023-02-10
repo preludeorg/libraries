@@ -97,7 +97,7 @@ install_darwin_plist () {
         </dict>
         <key>ProgramArguments</key>
         <array>
-            <string>${_app_dir}/${PROBE_NAME}</string>
+            <string>${_app_dir}/com.preludesecurity.detect</string>
         </array>
         <key>KeepAlive</key>
         <true/>
@@ -118,17 +118,22 @@ install_darwin() {
     local _running_user="${USER}"
     local _plist_path="/Library/LaunchAgents/com.preludesecurity.detect.plist"
     local _app_dir="/Users/${_running_user}/.prelude/bin"
-    local _app_tmp="/tmp/prelude"
     local _primary_group=$(id -gn)
 
+    local _app_tmp="/tmp/prelude"
     mkdir -p "${_app_tmp}"
+    download_probe "$_app_tmp"
+
     echo "[*] Standing up as user: ${_running_user}"
     install -o "${_running_user}" -g "${_primary_group}" -m 750 -d "${_app_dir}"
+    install -o "${_running_user}" -g "${_primary_group}" -m 755 "${_app_tmp}/${PROBE_NAME}" "${_app_dir}/com.preludesecurity.detect"
+
     register_new_endpoint
-    download_probe "$_app_dir"
     install_darwin_plist "$_plist_path" "$_running_user" "$_app_dir"
     unset ENDPOINT_TOKEN
+    
     echo "[*] Cleaning up tmp directory"
+    rm -rf "${_app_tmp}"
 }
 
 setup_prelude_user () {
