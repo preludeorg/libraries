@@ -110,8 +110,9 @@ install_darwin_plist () {
 EOF
 
     echo "[+] Registering service"
-    launchctl bootout gui/503 $_plist_file_path 2>/dev/null
-    launchctl bootstrap gui/503 $_plist_file_path
+    local uid=$(id -u $USER)
+    launchctl bootout gui/$uid $_plist_file_path 2>/dev/null
+    launchctl bootstrap gui/$uid $_plist_file_path
 }
 
 install_darwin() {
