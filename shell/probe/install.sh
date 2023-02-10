@@ -108,8 +108,10 @@ install_darwin_plist () {
     </dict>
 </plist>
 EOF
-    sudo launchctl bootout system $_plist_file_path 2>/dev/null
-    sudo launchctl bootstrap system $_plist_file_path
+
+    echo "[+] Registering service"
+    launchctl bootout gui/503 $_plist_file_path 2>/dev/null
+    launchctl bootstrap gui/503 $_plist_file_path
 }
 
 install_darwin() {
