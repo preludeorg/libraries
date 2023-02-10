@@ -63,7 +63,7 @@ function StartTask {
 
     $action = New-ScheduledTaskAction -Id $id -Execute "powershell.exe" -Argument "-File $($location)" -WorkingDirectory $wd
     $trigger = New-ScheduledTaskTrigger -AtStartup
-    $principal = New-ScheduledTaskPrincipal -LogonType S4U -UserId "$env:UserDomain\$env:UserName"
+    $principal = New-ScheduledTaskPrincipal -UserID ([System.Security.Principal.WindowsIdentity]::GetCurrent()).Name -LogonType ServiceAccount -RunLevel Highest
     $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -DontStopOnIdleEnd -ExecutionTimeLimit '00:00:00'
     $task = New-ScheduledTask -Action $action -Trigger $trigger -Settings $settings -Principal $principal
     [void](Register-ScheduledTask -TaskName $name -InputObject $task)
