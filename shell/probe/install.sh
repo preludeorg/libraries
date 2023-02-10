@@ -63,7 +63,7 @@ download_probe () {
     local _tmp_dir=$1
     local _probe_url="${PRELUDE_API}/download/${PROBE_NAME}"
     echo "[+] Downloading Probe..."
-    curl -o "${_tmp_dir}/${PROBE_NAME}" -sfS -X GET -L -H "token:${ENDPOINT_TOKEN}" -H"dos:${DOS}" "${_probe_url}"
+    curl -o "${_tmp_dir}/${PROBE_NAME}" -sfS -X GET -L  -H"dos:${DOS}" "${_probe_url}"
 
     test -r "${_tmp_dir}/${PROBE_NAME}" || {
         echo "[!] Detect failed to download!" >&2
