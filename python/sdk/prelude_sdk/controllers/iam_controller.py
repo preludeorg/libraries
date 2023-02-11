@@ -53,9 +53,9 @@ class IAMController:
         raise Exception(res.text)
 
     @verify_credentials
-    def attach_proxy(self, name: str, api: str, user: str, token: str, secret: str = ''):
+    def attach_proxy(self, name: str, api: str, user: str, secret: str = ''):
         """ Attach a proxy to your Detect account """
-        params = dict(name=name, api=api, user=user, token=token, secret=secret)
+        params = dict(name=name, api=api, user=user, secret=secret)
         res = requests.post(f'{self.account.hq}/iam/proxy', headers=self.account.headers, json=params)
         if res.status_code == 200:
             return res.text

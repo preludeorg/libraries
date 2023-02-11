@@ -62,13 +62,12 @@ def delete_user(controller, handle):
 @click.argument('name')
 @click.option('--api', required=True, help='API endpoint of the proxy')
 @click.option('--user', required=True, help='user identifier')
-@click.option('--token', required=True, help='authorization token to perform actions')
 @click.option('--secret', default='', help='secret for OAUTH use cases')
 @click.pass_obj
 @handle_api_error
-def attach_proxy(controller, name, api, user, token, secret):
+def attach_proxy(controller, name, api, user, secret):
     """ Attach an EDR or SIEM to Detect """
-    controller.attach_proxy(name=name, api=api, user=user, token=token, secret=secret)
+    controller.attach_proxy(name=name, api=api, user=user, secret=secret)
     click.secho(f'Attached "{name}" to your Detect account', fg='green')
 
 
