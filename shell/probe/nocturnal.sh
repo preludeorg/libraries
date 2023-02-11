@@ -8,7 +8,7 @@ dos=$(echo $sys | tr '[:upper:]' '[:lower:]')
 while :
 do
     temp=$(mktemp)
-    location=$(curl -sL -w %{url_effective} -o $temp -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" $PRELUDE_API)
+    location=$(curl -sL -w %{url_effective} -o $temp -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "dat:${dat}" $PRELUDE_API)
     test=$(echo $location | grep -o '[0-9a-f]\{8\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{12\}' | head -n 1)
 
     if [ -z "$test" ];then
@@ -20,12 +20,11 @@ do
 
             if test -f "$temp";then
                 $temp
-                res=$?
+                dat="${test}:$?"
                 $temp -cleanup
             else
-                res=9
+                dat="${test}:9"
             fi
-            curl -sL -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "dat:${test}:${res}" $PRELUDE_API
         fi
     fi
 done
