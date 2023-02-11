@@ -25,13 +25,14 @@ def register_account(controller):
     click.secho('Your keychain has been updated to use this account', fg='green')
 
 
-@iam.command('list-users')
+@iam.command('account')
 @click.pass_obj
 @handle_api_error
 def describe_account(controller):
-    """ List all users in your account """
-    users = {user["handle"]: Permission(user["permission"]).name for user in controller.get_users()}
-    print_json(data=users)
+    """ Get account details """
+    acct = controller.get_account()
+    users = {user["handle"]: Permission(user["permission"]).name for user in acct['users']}
+    print_json(data=dict(whoami=acct['whoami'], users=users, proxies=acct['proxies']))
 
 
 @iam.command('create-user')
@@ -47,6 +48,7 @@ def create_user(controller, permission, handle):
 
 
 @iam.command('delete-user')
+@click.confirmation_option(prompt='Are you sure?')
 @click.argument('handle')
 @click.pass_obj
 @handle_api_error
@@ -54,6 +56,31 @@ def delete_user(controller, handle):
     """ Remove a user from your account """
     if controller.delete_user(handle=handle):
         click.secho(f'Deleted user {handle}', fg='green')
+
+
+@iam.command('attach-proxy')
+@click.argument('name')
+@click.option('--api', required=True, help='API endpoint of the proxy')
+@click.option('--user', required=True, help='user identifier')
+@click.option('--token', required=True, help='authorization token to perform actions')
+@click.option('--secret', default='', help='secret for OAUTH use cases')
+@click.pass_obj
+@handle_api_error
+def attach_proxy(controller, name, api, user, token, secret):
+    """ Attach an EDR or SIEM to Detect """
+    controller.attach_proxy(name=name, api=api, user=user, token=token, secret=secret)
+    click.secho(f'Attached "{name}" to your Detect account', fg='green')
+
+
+@iam.command('detach-proxy')
+@click.confirmation_option(prompt='Are you sure?')
+@click.argument('name')
+@click.pass_obj
+@handle_api_error
+def attach_proxy(controller, name):
+    """ Detach an existing proxy from your account """
+    controller.detach_proxy(name=name)
+    click.secho(f'Detached "{name}" from your Detect account', fg='red')
 
 
 @iam.command('purge')
