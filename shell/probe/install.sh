@@ -110,16 +110,16 @@ install_darwin_plist () {
 EOF
 
     echo "[+] Registering service"
-    local uid=$(id -u $USER)
+    local uid=$(id -u $SUDO_USER)
     launchctl bootout gui/$uid $_plist_file_path 2>/dev/null
     launchctl bootstrap gui/$uid $_plist_file_path
 }
 
 install_darwin() {
-    local _running_user="${USER}"
+    local _running_user="${SUDO_USER}"
     local _plist_path="/Library/LaunchAgents/com.preludesecurity.detect.plist"
     local _app_dir="/Users/${_running_user}/.prelude/bin"
-    local _primary_group=$(id -gn)
+    local _primary_group=$(id -gn $_running_user)
 
     local _app_tmp="/tmp/prelude"
     mkdir -p "${_app_tmp}"
@@ -132,7 +132,7 @@ install_darwin() {
     register_new_endpoint
     install_darwin_plist "$_plist_path" "$_running_user" "$_app_dir"
     unset ENDPOINT_TOKEN
-    
+
     echo "[*] Cleaning up tmp directory"
     rm -rf "${_app_tmp}"
 }
