@@ -48,6 +48,7 @@ def create_user(controller, permission, handle):
 
 
 @iam.command('delete-user')
+@click.confirmation_option(prompt='Are you sure?')
 @click.argument('handle')
 @click.pass_obj
 @handle_api_error
@@ -72,6 +73,7 @@ def attach_proxy(controller, name, api, user, token, secret):
 
 
 @iam.command('detach-proxy')
+@click.confirmation_option(prompt='Are you sure?')
 @click.argument('name')
 @click.pass_obj
 @handle_api_error
