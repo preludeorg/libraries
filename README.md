@@ -1,6 +1,6 @@
 # Prelude Libraries
 
-Prelude maintains a collection of open-source libraries that interact with our products, [Build](https://docs.preludesecurity.com/docs/build) and [Detect](https://docs.preludesecurity.com/docs/the-basics).
+Prelude maintains a collection of open-source libraries that interact with [Detect](https://docs.preludesecurity.com/docs/the-basics).
 
 You must have a [Prelude Account](https://docs.preludesecurity.com/docs/prelude-account) to use these libraries. 
 
