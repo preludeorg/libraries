@@ -28,8 +28,8 @@ class IAMController:
         return res.text
 
     @verify_credentials
-    def get_users(self):
-        res = requests.get(f'{self.account.hq}/iam/user', headers=self.account.headers)
+    def get_account(self):
+        res = requests.get(f'{self.account.hq}/iam/account', headers=self.account.headers)
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
@@ -50,4 +50,22 @@ class IAMController:
         res = requests.delete(f'{self.account.hq}/iam/user', json=dict(handle=handle), headers=self.account.headers)
         if res.status_code == 200:
             return True
+        raise Exception(res.text)
+
+    @verify_credentials
+    def attach_proxy(self, name: str, api: str, user: str, token: str, secret: str = ''):
+        """ Attach a proxy to your Detect account """
+        params = dict(name=name, api=api, user=user, token=token, secret=secret)
+        res = requests.post(f'{self.account.hq}/iam/proxy', headers=self.account.headers, json=params)
+        if res.status_code == 200:
+            return res.text
+        raise Exception(res.text)
+
+    @verify_credentials
+    def detach_proxy(self, name: str):
+        """ Detach a proxy from your Detect account """
+        params = dict(name=name)
+        res = requests.delete(f'{self.account.hq}/iam/proxy', headers=self.account.headers, json=params)
+        if res.status_code == 200:
+            return res.text
         raise Exception(res.text)
