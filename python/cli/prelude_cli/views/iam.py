@@ -32,7 +32,7 @@ def describe_account(controller):
     """ Get account details """
     acct = controller.get_account()
     users = {user["handle"]: Permission(user["permission"]).name for user in acct['users']}
-    print_json(data=dict(whoami=acct['whoami'], users=users, proxies=acct['proxies']))
+    print_json(data=dict(whoami=acct['whoami'], users=users, controls=acct['controls']))
 
 
 @iam.command('create-user')
