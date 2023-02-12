@@ -174,10 +174,20 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos, statu
         report.add_column('dos')
         report.add_column('test')
         report.add_column('tag')
-        report.add_column('rate (%)', style='red')
+        report.add_column('protected', style='green')
+        report.add_column('unprotected',  style='red')
+        report.add_column('error', style='yellow')
     
         for ins in raw:
-            report.add_row(ins['dos'], ins['test'], ins['tag'], str(ins["rate"]))
+            vol = ins['volume']
+            report.add_row(
+                ins['dos'], 
+                ins['test'], 
+                ins['tag'], 
+                str(vol["protected"]),
+                str(vol["unprotected"]),
+                str(vol["error"])
+            )
 
     elif view == 'probes':
         report.add_column('endpoint_id')
@@ -188,7 +198,7 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos, statu
         report.add_column('date')
         report.add_column('protected', style='green')
         report.add_column('unprotected',  style='red')
-        report.add_column('error (#)', style='yellow')
+        report.add_column('error', style='yellow')
 
         for date, states in raw.items():
             report.add_row(
@@ -202,7 +212,7 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos, statu
         report.add_column('dos')
         report.add_column('protected', style='green')
         report.add_column('unprotected',  style='red')
-        report.add_column('error (#)', style='yellow')
+        report.add_column('error', style='yellow')
 
         for dos, states in raw.items():
             report.add_row(
