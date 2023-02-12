@@ -58,27 +58,27 @@ def delete_user(controller, handle):
         click.secho(f'Deleted user {handle}', fg='green')
 
 
-@iam.command('attach-proxy')
+@iam.command('attach-control')
 @click.argument('name')
-@click.option('--api', required=True, help='API endpoint of the proxy')
+@click.option('--api', required=True, help='API endpoint of the control')
 @click.option('--user', required=True, help='user identifier')
 @click.option('--secret', default='', help='secret for OAUTH use cases')
 @click.pass_obj
 @handle_api_error
-def attach_proxy(controller, name, api, user, secret):
+def attach_control(controller, name, api, user, secret):
     """ Attach an EDR or SIEM to Detect """
-    controller.attach_proxy(name=name, api=api, user=user, secret=secret)
+    controller.attach_control(name=name, api=api, user=user, secret=secret)
     click.secho(f'Attached "{name}" to your Detect account', fg='green')
 
 
-@iam.command('detach-proxy')
+@iam.command('detach-control')
 @click.confirmation_option(prompt='Are you sure?')
 @click.argument('name')
 @click.pass_obj
 @handle_api_error
-def attach_proxy(controller, name):
-    """ Detach an existing proxy from your account """
-    controller.detach_proxy(name=name)
+def attach_control(controller, name):
+    """ Detach an existing control from your account """
+    controller.detach_control(name=name)
     click.secho(f'Detached "{name}" from your Detect account', fg='red')
 
 

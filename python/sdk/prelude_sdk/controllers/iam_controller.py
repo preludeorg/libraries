@@ -53,19 +53,19 @@ class IAMController:
         raise Exception(res.text)
 
     @verify_credentials
-    def attach_proxy(self, name: str, api: str, user: str, secret: str = ''):
-        """ Attach a proxy to your Detect account """
+    def attach_control(self, name: str, api: str, user: str, secret: str = ''):
+        """ Attach a control to your Detect account """
         params = dict(name=name, api=api, user=user, secret=secret)
-        res = requests.post(f'{self.account.hq}/iam/proxy', headers=self.account.headers, json=params)
+        res = requests.post(f'{self.account.hq}/iam/control', headers=self.account.headers, json=params)
         if res.status_code == 200:
             return res.text
         raise Exception(res.text)
 
     @verify_credentials
-    def detach_proxy(self, name: str):
-        """ Detach a proxy from your Detect account """
+    def detach_control(self, name: str):
+        """ Detach a control from your Detect account """
         params = dict(name=name)
-        res = requests.delete(f'{self.account.hq}/iam/proxy', headers=self.account.headers, json=params)
+        res = requests.delete(f'{self.account.hq}/iam/control', headers=self.account.headers, json=params)
         if res.status_code == 200:
             return res.text
         raise Exception(res.text)
