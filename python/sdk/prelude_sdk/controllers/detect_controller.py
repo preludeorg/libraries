@@ -58,15 +58,6 @@ class DetectController:
         res = requests.delete(f'{self.account.hq}/detect/queue/{ident}', headers=self.account.headers)
         if res.status_code != 200:
             raise Exception(res.text)
-
-    @verify_credentials
-    def decide(self, dhash: str, action: int):
-        """ Make a decision based on a result set """
-        params = dict(dhash=dhash, action=action)
-        res = requests.post(f'{self.account.hq}/detect/decide', headers=self.account.headers, json=params)
-        if res.status_code == 200:
-            return res.text
-        raise Exception(res.text)
     
     @verify_credentials
     def search(self, identifier: str):
