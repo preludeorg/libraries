@@ -175,7 +175,9 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos, statu
         report.add_column('test')
         report.add_column('tag')
         report.add_column('rate (%)', style='red')
-        report.add_row(raw['dos'], raw['test'], raw['tag'], str(raw["rate"]))
+    
+        for ins in raw:
+            report.add_row(ins['dos'], ins['test'], ins['tag'], str(ins["rate"]))
 
     elif view == 'probes':
         report.add_column('endpoint_id')
