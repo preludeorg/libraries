@@ -9,7 +9,7 @@ from collections import defaultdict
 from prelude_cli.views.shared import handle_api_error
 from prelude_sdk.controllers.build_controller import BuildController
 from prelude_sdk.controllers.detect_controller import DetectController
-from prelude_sdk.models.codes import RunCode, ExitCode, ExitCodeGroup, Decision
+from prelude_sdk.models.codes import RunCode, ExitCode, ExitCodeGroup
 
 
 @click.group()
@@ -80,19 +80,6 @@ def queue(controller):
     print_json(data=active)
 
 
-@detect.command('decide')
-@click.argument('dhash')
-@click.option('-a', '--action',
-              help='mark a result_id with an action',
-              default=0,
-              type=click.Choice([0, 1, 2]))
-@click.pass_obj
-@handle_api_error
-def decide(controller, dhash, action):
-    """ Make a decision based on a result set """
-    controller.decide(dhash=dhash, value=action)
-
-
 @detect.command('search')
 @click.argument('cve')
 @click.pass_obj
@@ -138,7 +125,7 @@ def social_statistics(controller, test, days):
 @click.option('-v', '--view',
               help='retrieve a specific result view',
               default='logs', show_default=True,
-              type=click.Choice(['logs', 'days', 'insights', 'probes']))
+              type=click.Choice(['logs', 'days', 'insights', 'probes', 'dos', 'rules']))
 @click.option('-d', '--days', help='days to look back', default=7, type=int)
 @click.option('--tests', help='comma-separated list of test IDs', type=str)
 @click.option('--tags', help='comma-separated list of tags', type=str)
@@ -184,19 +171,17 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos, statu
             )
 
     elif view == 'insights':
-        report.add_column('dhash')
-        report.add_column('test')
         report.add_column('dos')
-        report.add_column('count', style='red')
-        report.add_column('action')
+        report.add_column('test')
+        report.add_column('tag')
+        report.add_column('rate', style='red')
         
         for insight in raw:
             report.add_row(
-                insight['dhash'],
+                insight['dos'],
                 insight['test'], 
-                insight['dos'], 
-                str(insight["count"]), 
-                Decision(insight['action']).name
+                insight['tag'], 
+                str(insight["rate"])
             )
 
     elif view == 'probes':
@@ -213,6 +198,34 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos, statu
         for date, states in raw.items():
             report.add_row(
                 date, 
+                str(states.get(ExitCodeGroup.PROTECTED.name, 0)), 
+                str(states.get(ExitCodeGroup.UNPROTECTED.name, 0)), 
+                str(states.get(ExitCodeGroup.ERROR.name, 0)), 
+            )
+
+    elif view == 'dos':
+        report.add_column('dos')
+        report.add_column('protected', style='green')
+        report.add_column('unprotected',  style='red')
+        report.add_column('error', style='yellow')
+
+        for dos, states in raw.items():
+            report.add_row(
+                dos,
+                str(states.get(ExitCodeGroup.PROTECTED.name, 0)), 
+                str(states.get(ExitCodeGroup.UNPROTECTED.name, 0)), 
+                str(states.get(ExitCodeGroup.ERROR.name, 0)), 
+            )
+
+    elif view == 'rules':
+        report.add_column('rule')
+        report.add_column('protected', style='green')
+        report.add_column('unprotected',  style='red')
+        report.add_column('error', style='yellow')
+
+        for rule, states in raw.items():
+            report.add_row(
+                rule,
                 str(states.get(ExitCodeGroup.PROTECTED.name, 0)), 
                 str(states.get(ExitCodeGroup.UNPROTECTED.name, 0)), 
                 str(states.get(ExitCodeGroup.ERROR.name, 0)), 

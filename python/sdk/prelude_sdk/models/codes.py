@@ -25,16 +25,6 @@ class Permission(Enum):
         return Permission.INVALID
 
 
-class Decision(Enum):
-    NONE = 0
-    DISMISS = 1
-    IMPORTANT = 2
-
-    @classmethod
-    def _missing_(cls, value):
-        return Decision.NONE
-
-
 class ExitCode(Enum):
     MISSING = -1
     ERROR = 1
@@ -88,7 +78,7 @@ class ExitCodeGroup(Enum):
     ]
 
 
-class Architecture(Enum):
+class DOS(Enum):
     none = 'none'
     arm64 = 'arm64'
     x86_64 = 'x86_64'
@@ -97,7 +87,7 @@ class Architecture(Enum):
     x86 = 'x86_64'
 
     @classmethod
-    def normalize(cls, dos):
+    def normalize(cls, dos: str):
         try:
             arch = dos.split('-', 1)[-1]
             return dos[:-len(arch)].lower() + cls[arch.lower()].value
