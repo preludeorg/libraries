@@ -156,7 +156,6 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos, statu
 
     if view == 'logs':
         report.add_column('timestamp')
-        report.add_column('result ID')
         report.add_column('test')
         report.add_column('endpoint')
         report.add_column('status')
@@ -164,7 +163,6 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos, statu
         for record in raw:
             report.add_row(
                 record['date'], 
-                record['id'], 
                 record['test'],
                 record['endpoint_id'], 
                 ExitCode(record['status']).name
