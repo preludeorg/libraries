@@ -160,6 +160,7 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos, statu
         report.add_column('endpoint')
         report.add_column('status')
 
+        raw.reverse()
         for record in raw:
             report.add_row(
                 record['date'], 
