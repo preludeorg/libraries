@@ -110,9 +110,9 @@ install_darwin_plist () {
 EOF
 
     echo "[+] Registering service"
-    local uid=$(id -u $SUDO_USER)
-    launchctl bootout gui/$uid $_plist_file_path 2>/dev/null
-    launchctl bootstrap gui/$uid $_plist_file_path
+    local uid=$(id -u ${_user})
+    launchctl bootout user/$uid $_plist_file_path 2>/dev/null
+    launchctl bootstrap user/$uid $_plist_file_path
 }
 
 install_darwin() {
@@ -126,7 +126,7 @@ install_darwin() {
     download_probe "$_app_tmp"
 
     echo "[*] Standing up as user: ${_running_user}"
-    install -o "${_running_user}" -g "${_primary_group}" -m 750 -d "${_app_dir}"
+    install -o "${_running_user}" -g "${_primary_group}" -m 755 -d "${_app_dir}"
     install -o "${_running_user}" -g "${_primary_group}" -m 755 "${_app_tmp}/${PROBE_NAME}" "${_app_dir}/com.preludesecurity.detect"
 
     register_new_endpoint
