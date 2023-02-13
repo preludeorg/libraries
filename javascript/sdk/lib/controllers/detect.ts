@@ -76,7 +76,7 @@ export default class DetectController {
   async describeActivity(
     query: ActivityQuery & { view: "insights" },
     options?: RequestOptions
-  ): Promise<Decision[]>;
+  ): Promise<Decision>;
   async describeActivity(
     query: ActivityQuery & { view: "probes" },
     options?: RequestOptions
