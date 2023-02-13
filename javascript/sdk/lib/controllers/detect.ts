@@ -76,7 +76,7 @@ export default class DetectController {
   async describeActivity(
     query: ActivityQuery & { view: "insights" },
     options?: RequestOptions
-  ): Promise<Decision[]>;
+  ): Promise<Decision>;
   async describeActivity(
     query: ActivityQuery & { view: "probes" },
     options?: RequestOptions
@@ -165,20 +165,5 @@ export default class DetectController {
     });
 
     return (await response.json()) as RuleList;
-  }
-
-  /**  Make a decision based on a result set */
-  async decide(
-    dhash: string,
-    action: ActionCode,
-    options: RequestOptions = {}
-  ) {
-    const response = await this.#client.requestWithAuth(`/detect/decide`, {
-      method: "POST",
-      body: JSON.stringify({ dhash, action }),
-      ...options,
-    });
-
-    return await response.text();
   }
 }

@@ -24,6 +24,12 @@ export interface User {
   permission: Permission;
 }
 
+export interface Account {
+  whoami: string;
+  controls: unknown[];
+  users: User[];
+}
+
 export interface CreatedUser {
   token: string;
 }
@@ -188,13 +194,16 @@ export interface ActivityQuery {
 
 export type DayResults = Record<
   string,
-  Record<"ERROR" | "PROTECTED" | "UNPROTECTED", number>
+  {
+    PROTECTED?: number;
+    UNPROTECTED?: number;
+    ERROR?: number;
+  }
 >;
 
 export interface Decision {
-  count: number;
-  dhash: string;
-  dos: Platform;
-  state: ActionCode;
-  test: string;
+  dos: string | null;
+  rate: 0;
+  tag: string | null;
+  test: string | null;
 }

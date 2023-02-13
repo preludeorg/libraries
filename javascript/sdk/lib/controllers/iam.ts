@@ -1,10 +1,10 @@
 import Client from "../client";
 import type {
+  Account,
   CreatedUser,
   Credentials,
   Permission,
   RequestOptions,
-  User,
 } from "../types";
 
 export default class IAMController {
@@ -35,13 +35,13 @@ export default class IAMController {
     };
   }
 
-  async getUsers(options: RequestOptions = {}) {
-    const response = await this.#client.requestWithAuth("/iam/user", {
+  async getAccount(options: RequestOptions = {}) {
+    const response = await this.#client.requestWithAuth("/iam/account", {
       method: "GET",
       ...options,
     });
 
-    return (await response.json()) as User[];
+    return (await response.json()) as Account;
   }
 
   async createUser(
