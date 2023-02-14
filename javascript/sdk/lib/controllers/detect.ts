@@ -1,6 +1,5 @@
 import Client from "../client";
 import {
-  ActionCode,
   Activity,
   ActivityQuery,
   DayResults,
