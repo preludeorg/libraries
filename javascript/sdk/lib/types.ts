@@ -24,9 +24,16 @@ export interface User {
   permission: Permission;
 }
 
+export interface Control {
+  name: string;
+  api?: string;
+  username?: string;
+  secret?: string;
+}
+
 export interface Account {
   whoami: string;
-  controls: unknown[];
+  controls: Control[];
   users: User[];
 }
 
@@ -177,19 +184,13 @@ export type RuleList = Record<string, Rule>;
 
 export type Stats = Record<Platform, Record<`${ExitCode}`, number>>;
 
-export interface Insight {
-  name: string;
-  test: string;
-  created: string;
-}
-
 export interface ActivityQuery {
   start: string;
   finish: string;
   tests?: string;
   result_id?: string;
   endpoints?: string;
-  dos?: Platform;
+  dos?: string;
   statuses?: string;
   tags?: string;
 }
@@ -203,9 +204,18 @@ export type DayResults = Record<
   }
 >;
 
-export interface Decision {
+export interface Insight {
   dos: string | null;
-  rate: 0;
   tag: string | null;
   test: string | null;
+  volume: { error: number; protected: number; unprotected: number };
 }
+
+export type RuleVolume = Record<
+  string,
+  {
+    PROTECTED?: number;
+    UNPROTECTED?: number;
+    ERROR?: number;
+  }
+>;
