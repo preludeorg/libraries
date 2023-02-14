@@ -93,3 +93,19 @@ class DetectController:
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
+
+    @verify_credentials
+    def recommendations(self):
+        """ List all security recommendations for your account """
+        res = requests.get(f'{self.account.hq}/detect/recommendations', headers=self.account.headers)
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def create_recommendation(self, title: str, description: str):
+        """ Create a new security recommendation """
+        params = dict(title=title, description=description)
+        res = requests.post(f'{self.account.hq}/detect/recommendations', headers=self.account.headers, json=params)
+        if res.status_code != 200:
+            raise Exception(res.text)
