@@ -5,7 +5,7 @@ import {
   DayResults,
   Decision,
   EnableTest,
-  Probe,
+  Probes,
   Queue,
   RequestOptions,
   RuleList,
@@ -80,7 +80,7 @@ export default class DetectController {
   async describeActivity(
     query: ActivityQuery & { view: "probes" },
     options?: RequestOptions
-  ): Promise<Record<string, Probe>>;
+  ): Promise<Probes>;
   async describeActivity(
     query: ActivityQuery & { view: "days" | "logs" | "insights" | "probes" },
     options: RequestOptions = {}

@@ -84,6 +84,8 @@ export interface Probe {
   dos: Platform;
 }
 
+export type Probes = Record<string, Probe>;
+
 export interface SearchResults {
   info: {
     published: string;
