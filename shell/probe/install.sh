@@ -119,7 +119,8 @@ EOF
 
 install_darwin() {
     local _running_user="${SUDO_USER}"
-    local _plist_path="/Users/${_running_user}/Library/LaunchAgents/com.preludesecurity.detect.plist"
+    local _plist_dir="/Users/${_running_user}/Library/LaunchAgents"
+    local _plist_path="${_plist_dir}/com.preludesecurity.detect.plist"
     local _app_dir="/Users/${_running_user}/.prelude/bin"
     local _primary_group=$(id -gn $_running_user)
 
@@ -132,6 +133,8 @@ install_darwin() {
     install -o "${_running_user}" -g "${_primary_group}" -m 755 "${_app_tmp}/${PROBE_NAME}" "${_app_dir}/com.preludesecurity.detect"
 
     register_new_endpoint
+
+    mkdir -p "${_plist_dir}"
     install_darwin_plist "$_plist_path" "$_running_user" "$_app_dir"
     unset ENDPOINT_TOKEN
 
