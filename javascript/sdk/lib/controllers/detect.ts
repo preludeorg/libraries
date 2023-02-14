@@ -1,15 +1,15 @@
 import Client from "../client";
 import {
-  ActionCode,
   Activity,
   ActivityQuery,
   DayResults,
-  Decision,
   EnableTest,
+  Insight,
   Probe,
   Queue,
   RequestOptions,
   RuleList,
+  RuleVolume,
   SearchResults,
   Stats,
 } from "../types";
@@ -76,13 +76,19 @@ export default class DetectController {
   async describeActivity(
     query: ActivityQuery & { view: "insights" },
     options?: RequestOptions
-  ): Promise<Decision>;
+  ): Promise<Insight[]>;
   async describeActivity(
     query: ActivityQuery & { view: "probes" },
     options?: RequestOptions
   ): Promise<string[]>;
   async describeActivity(
-    query: ActivityQuery & { view: "days" | "logs" | "insights" | "probes" },
+    query: ActivityQuery & { view: "rules" },
+    options?: RequestOptions
+  ): Promise<RuleVolume>;
+  async describeActivity(
+    query: ActivityQuery & {
+      view: "days" | "logs" | "insights" | "probes" | "rules";
+    },
     options: RequestOptions = {}
   ) {
     const searchParams = new URLSearchParams();

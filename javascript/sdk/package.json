@@ -1,6 +1,6 @@
 {
   "name": "@theprelude/sdk",
-  "version": "0.9.40",
+  "version": "0.9.41",
   "type": "module",
   "files": [
     "dist"
