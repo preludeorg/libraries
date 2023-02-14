@@ -81,7 +81,7 @@ export interface Probe {
   state: "PROTECTED" | "UNPROTECTED" | "ERROR" | "REGISTERED" | null;
   tags: string[];
   updated: string;
-  dos: Platform;
+  dos?: Platform;
 }
 
 export type Probes = Record<string, Probe>;
