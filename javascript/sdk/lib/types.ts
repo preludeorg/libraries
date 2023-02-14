@@ -82,6 +82,7 @@ export interface Probe {
   endpoint_id: string;
   tags: string[];
   updated: string;
+  dos: Platform;
 }
 
 export interface SearchResults {
