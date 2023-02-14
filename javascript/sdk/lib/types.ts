@@ -79,7 +79,6 @@ export interface EnableTest {
 
 export interface Probe {
   state: "PROTECTED" | "UNPROTECTED" | "ERROR" | "REGISTERED" | null;
-  endpoint_id: string;
   tags: string[];
   updated: string;
   dos: Platform;
