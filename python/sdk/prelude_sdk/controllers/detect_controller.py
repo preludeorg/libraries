@@ -77,15 +77,6 @@ class DetectController:
         raise Exception(res.text)
 
     @verify_credentials
-    def list_probes(self, days=7):
-        """ Get all probes associated to an Account """
-        params = dict(days=days)
-        res = requests.get(f'{self.account.hq}/detect/probes', headers=self.account.headers, params=params)
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
-
-    @verify_credentials
     def social_stats(self, ident: str, days: int = 30):
         """ Pull social statistics for a specific test """
         params = dict(days=days)

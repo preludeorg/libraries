@@ -98,15 +98,6 @@ def rules(controller):
     print_json(data=controller.list_rules())
 
 
-@detect.command('probes')
-@click.option('-d', '--days', help='days to look back', default=7, type=int)
-@click.pass_obj
-@handle_api_error
-def list_probes(controller, days):
-    """ List all endpoint probes """
-    print_json(data=controller.list_probes(days=days))
-
-
 @detect.command('social-stats')
 @click.argument('test')
 @click.option('-d', '--days', help='days to look back', default=30, type=int)
@@ -190,8 +181,17 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos, statu
 
     elif view == 'probes':
         report.add_column('endpoint_id')
-        for probe in raw:
-            report.add_row(probe)
+        report.add_column('state')
+        report.add_column('dos')
+        report.add_column('last seen')
+
+        for name, props in raw.items():
+            report.add_row(
+                name,
+                props.get('state'),
+                props.get('dos'),
+                props.get('updated')
+            )
 
     elif view == 'days':
         report.add_column('date')
