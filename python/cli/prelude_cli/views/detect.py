@@ -98,13 +98,13 @@ def rules(controller):
     print_json(data=controller.list_rules())
 
 
-@detect.command('probes')
+@detect.command('endpoints')
 @click.pass_obj
 @click.option('-d', '--days', help='days to look back', default=30, type=int)
 @handle_api_error
 def tags(controller, days):
-    """ List all probes associated to your account """
-    print_json(data=controller.list_probes(days=days))
+    """ List all endpoints associated to your account """
+    print_json(data=controller.list_endpoints(days=days))
 
 
 @detect.command('social-stats')

@@ -26,6 +26,15 @@ class DetectController:
             raise Exception(res.text)
 
     @verify_credentials
+    def list_endpoints(self, days: int = 30):
+        """ List all endpoints on your account """
+        params = dict(days=days)
+        res = requests.get(f'{self.account.hq}/detect/endpoint', headers=self.account.headers, params=params)
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
     def describe_activity(self, filters: dict, view: str = 'logs'):
         """ Get report for an Account """
         params = dict(view=view, **filters)
@@ -81,15 +90,6 @@ class DetectController:
         """ Pull social statistics for a specific test """
         params = dict(days=days)
         res = requests.get(f'{self.account.hq}/detect/{ident}/social', headers=self.account.headers, params=params)
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
-
-    @verify_credentials
-    def list_probes(self, days: int = 30):
-        """ List all probes on your account """
-        params = dict(days=days)
-        res = requests.get(f'{self.account.hq}/detect/endpoint', headers=self.account.headers, params=params)
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
