@@ -121,6 +121,25 @@ def social_statistics(controller, test, days):
     print_json(data=stats)
 
 
+@detect.command('recommendations')
+@click.pass_obj
+@handle_api_error
+def recommendation(controller):
+    """ Print all security recommendations """
+    print_json(data=controller.recommendations())
+
+
+@detect.command('add-recommendation')
+@click.argument('title')
+@click.argument('description')
+@click.pass_obj
+@handle_api_error
+def add_recommendation(controller, title, description):
+    """ Create a new security recommendation """
+    controller.create_recommendation(title=title, description=description)
+    click.secho('Successfully submitted recommendation', fg='green')
+
+
 @detect.command('activity')
 @click.option('-v', '--view',
               help='retrieve a specific result view',
