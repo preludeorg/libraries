@@ -191,7 +191,7 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos, statu
     elif view == 'probes':
         report.add_column('endpoint_id')
         for endpoint_id in raw:
-            report.add_row(endpoint_id )
+            report.add_row(endpoint_id)
 
     elif view == 'days':
         report.add_column('date')
