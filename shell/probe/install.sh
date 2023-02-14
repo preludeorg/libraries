@@ -105,6 +105,8 @@ install_darwin_plist () {
         <true/>
         <key>StartInterval</key>
         <integer>30</integer>
+        <key>LimitLoadToSessionType</key>
+        <string>Background</string>
     </dict>
 </plist>
 EOF
@@ -117,7 +119,7 @@ EOF
 
 install_darwin() {
     local _running_user="${SUDO_USER}"
-    local _plist_path="/Library/LaunchAgents/com.preludesecurity.detect.plist"
+    local _plist_path="/Users/${_running_user}/LaunchAgents/com.preludesecurity.detect.plist"
     local _app_dir="/Users/${_running_user}/.prelude/bin"
     local _primary_group=$(id -gn $_running_user)
 
