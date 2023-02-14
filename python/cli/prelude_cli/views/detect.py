@@ -98,6 +98,15 @@ def rules(controller):
     print_json(data=controller.list_rules())
 
 
+@detect.command('tags')
+@click.pass_obj
+@handle_api_error
+def tags(controller):
+    """  """
+    print_json(data=controller.list_tags())
+
+
+
 @detect.command('social-stats')
 @click.argument('test')
 @click.option('-d', '--days', help='days to look back', default=30, type=int)

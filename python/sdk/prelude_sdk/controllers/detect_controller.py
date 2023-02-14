@@ -84,3 +84,11 @@ class DetectController:
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
+
+    @verify_credentials
+    def list_tags(self):
+        """  """
+        res = requests.get(f'{self.account.hq}/detect/tags', headers=self.account.headers)
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
