@@ -19,6 +19,7 @@ class Permission(Enum):
     EXECUTIVE = 1
     BUILD = 2
     SERVICE = 3
+    PRELUDE = 4
 
     @classmethod
     def _missing_(cls, value):
