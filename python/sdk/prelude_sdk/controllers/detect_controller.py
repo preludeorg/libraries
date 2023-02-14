@@ -86,9 +86,10 @@ class DetectController:
         raise Exception(res.text)
 
     @verify_credentials
-    def list_tags(self):
-        """  """
-        res = requests.get(f'{self.account.hq}/detect/tags', headers=self.account.headers)
+    def list_probes(self, days: int = 30):
+        """ List all probes on your account """
+        params = dict(days=days)
+        res = requests.get(f'{self.account.hq}/detect/endpoint', headers=self.account.headers, params=params)
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
