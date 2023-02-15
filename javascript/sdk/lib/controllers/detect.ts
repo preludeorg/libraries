@@ -5,7 +5,7 @@ import {
   DayResults,
   EnableTest,
   Insight,
-  Probes,
+  Probe,
   Queue,
   RequestOptions,
   RuleList,
@@ -81,7 +81,7 @@ export default class DetectController {
   async describeActivity(
     query: ActivityQuery & { view: "probes" },
     options?: RequestOptions
-  ): Promise<Probes>;
+  ): Promise<string[]>;
   async describeActivity(
     query: ActivityQuery & { view: "rules" },
     options?: RequestOptions
@@ -158,5 +158,19 @@ export default class DetectController {
     });
 
     return (await response.json()) as RuleList;
+  }
+
+  /** Get all probes associated to an Account */
+  async listProbes(days: number = 7, options: RequestOptions = {}) {
+    const searchParams = new URLSearchParams({ days: days.toString() });
+    const response = await this.#client.requestWithAuth(
+      `/detect/endpoint?${searchParams.toString()}`,
+      {
+        method: "GET",
+        ...options,
+      }
+    );
+
+    return (await response.json()) as Probe[];
   }
 }
