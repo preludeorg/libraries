@@ -210,6 +210,13 @@ export interface Insight {
   volume: { error: number; protected: number; unprotected: number };
 }
 
+export interface Recommendation {
+  title: string;
+  description: string;
+  handle: string;
+  created: string;
+}
+
 export type RuleVolume = Record<
   string,
   {

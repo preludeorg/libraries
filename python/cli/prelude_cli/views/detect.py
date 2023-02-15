@@ -98,6 +98,15 @@ def rules(controller):
     print_json(data=controller.list_rules())
 
 
+@detect.command('endpoints')
+@click.pass_obj
+@click.option('-d', '--days', help='days to look back', default=30, type=int)
+@handle_api_error
+def endpoints(controller, days):
+    """ List all endpoints associated to your account """
+    print_json(data=controller.list_endpoints(days=days))
+
+
 @detect.command('social-stats')
 @click.argument('test')
 @click.option('-d', '--days', help='days to look back', default=30, type=int)
@@ -110,6 +119,25 @@ def social_statistics(controller, test, days):
         for state, count in values.items():
             stats[dos][ExitCode(int(state)).name] = count
     print_json(data=stats)
+
+
+@detect.command('recommendations')
+@click.pass_obj
+@handle_api_error
+def recommendation(controller):
+    """ Print all security recommendations """
+    print_json(data=controller.recommendations())
+
+
+@detect.command('add-recommendation')
+@click.argument('title')
+@click.argument('description')
+@click.pass_obj
+@handle_api_error
+def add_recommendation(controller, title, description):
+    """ Create a new security recommendation """
+    controller.create_recommendation(title=title, description=description)
+    click.secho('Successfully submitted recommendation', fg='green')
 
 
 @detect.command('activity')
@@ -181,17 +209,8 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos, statu
 
     elif view == 'probes':
         report.add_column('endpoint_id')
-        report.add_column('state')
-        report.add_column('dos')
-        report.add_column('last seen')
-
-        for name, props in raw.items():
-            report.add_row(
-                name,
-                props.get('state'),
-                props.get('dos'),
-                props.get('updated')
-            )
+        for endpoint_id in raw:
+            report.add_row(endpoint_id)
 
     elif view == 'days':
         report.add_column('date')
