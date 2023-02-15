@@ -217,3 +217,10 @@ export type RuleVolume = Record<
     ERROR?: number;
   }
 >;
+
+export interface Recommendation {
+  title: string;
+  description: string;
+  handle: string;
+  created: string;
+}
