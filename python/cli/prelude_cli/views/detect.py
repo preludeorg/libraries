@@ -214,16 +214,14 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos, statu
 
     elif view == 'days':
         report.add_column('date')
-        report.add_column('protected', style='green')
-        report.add_column('unprotected',  style='red')
-        report.add_column('error', style='yellow')
+        report.add_column('total')
+        report.add_column('unprotected')
 
-        for date, states in raw.items():
+        for date, counts in raw.items():
             report.add_row(
                 date, 
-                str(states.get(ExitCodeGroup.PROTECTED.name, 0)), 
-                str(states.get(ExitCodeGroup.UNPROTECTED.name, 0)), 
-                str(states.get(ExitCodeGroup.ERROR.name, 0)), 
+                str(counts.get('total', 0)),
+                str(counts.get('unprotected', 0))
             )
 
     elif view == 'dos':
