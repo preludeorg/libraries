@@ -89,6 +89,7 @@ export interface Probe {
   endpoint_id: string;
   tags: string[];
   updated: string;
+  dos?: Platform;
 }
 
 export interface SearchResults {
@@ -209,6 +210,13 @@ export interface Insight {
   volume: { error: number; protected: number; unprotected: number };
 }
 
+export interface Recommendation {
+  title: string;
+  description: string;
+  handle: string;
+  created: string;
+}
+
 export type RuleVolume = Record<
   string,
   {
@@ -217,10 +225,3 @@ export type RuleVolume = Record<
     ERROR?: number;
   }
 >;
-
-export interface Recommendation {
-  title: string;
-  description: string;
-  handle: string;
-  created: string;
-}

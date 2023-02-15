@@ -65,11 +65,12 @@ export default class DetectController {
     });
   }
 
-  /** Get report for an Account */
+  /** Get logs for an Account */
   async describeActivity(
     query: ActivityQuery & { view: "logs" },
     options?: RequestOptions
   ): Promise<Activity[]>;
+  /** Get daily activity for an Account */
   async describeActivity(
     query: ActivityQuery & { view: "days" },
     options?: RequestOptions
@@ -111,20 +112,6 @@ export default class DetectController {
     );
 
     return await response.json();
-  }
-
-  /** Get all probes associated to an Account */
-  async listProbes(days: number = 7, options: RequestOptions = {}) {
-    const searchParams = new URLSearchParams({ days: days.toString() });
-    const response = await this.#client.requestWithAuth(
-      `/detect/probes?${searchParams.toString()}`,
-      {
-        method: "GET",
-        ...options,
-      }
-    );
-
-    return (await response.json()) as Probe[];
   }
 
   /** Pull social statistics for a specific test */
@@ -172,6 +159,20 @@ export default class DetectController {
     });
 
     return (await response.json()) as RuleList;
+  }
+
+  /** Get all probes associated to an Account */
+  async listProbes(days: number = 7, options: RequestOptions = {}) {
+    const searchParams = new URLSearchParams({ days: days.toString() });
+    const response = await this.#client.requestWithAuth(
+      `/detect/endpoint?${searchParams.toString()}`,
+      {
+        method: "GET",
+        ...options,
+      }
+    );
+
+    return (await response.json()) as Probe[];
   }
 
   async getRecommendations(options: RequestOptions = {}) {
