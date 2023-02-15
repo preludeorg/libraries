@@ -7,6 +7,7 @@ import {
   Insight,
   Probe,
   Queue,
+  Recommendation,
   RequestOptions,
   RuleList,
   RuleVolume,
@@ -171,5 +172,17 @@ export default class DetectController {
     });
 
     return (await response.json()) as RuleList;
+  }
+
+  async getRecommendations(options: RequestOptions = {}) {
+    const response = await this.#client.requestWithAuth(
+      `/detect/recommendations`,
+      {
+        method: "GET",
+        ...options,
+      }
+    );
+
+    return (await response.json()) as Recommendation[];
   }
 }
