@@ -31,7 +31,8 @@ def register_account(controller):
 def describe_account(controller):
     """ Get account details """
     acct = controller.get_account()
-    users = {user["handle"]: Permission(user["permission"]).name for user in acct['users']}
+    users = {user["handle"]: dict(permission=Permission(user["permission"]).name, expiries=user['expires'])
+             for user in acct['users']}
     print_json(data=dict(whoami=acct['whoami'], users=users, controls=acct['controls']))
 
 
