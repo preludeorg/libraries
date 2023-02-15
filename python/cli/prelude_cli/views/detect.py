@@ -151,7 +151,7 @@ def add_recommendation(controller, title, description):
 @click.option('--endpoints', help='comma-separated list of endpoint IDs', type=str)
 @click.option('--dos', help='comma-separated list of DOS', type=str)
 @click.option('--statuses', help='comma-separated list of statuses', type=str)
-@click.option('-i', '--show-test-id', help='show test id instead of test names', is_flag=True, type=bool, default=False)
+@click.option('-e', '--expand', help='show test id instead of test names', is_flag=True, type=bool, default=False)
 @click.pass_obj
 @handle_api_error
 def describe_activity(controller, days, view, tests, tags, endpoints, dos, statuses, show_test_id):
