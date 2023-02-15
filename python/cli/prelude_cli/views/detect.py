@@ -151,14 +151,16 @@ def add_recommendation(controller, title, description):
 @click.option('--endpoints', help='comma-separated list of endpoint IDs', type=str)
 @click.option('--dos', help='comma-separated list of DOS', type=str)
 @click.option('--statuses', help='comma-separated list of statuses', type=str)
+@click.option('-i', '--show-test-id', help='show test id instead of test names', is_flag=True, type=bool, default=False)
 @click.pass_obj
 @handle_api_error
-def describe_activity(controller, days, view, tests, tags, endpoints, dos, statuses):
+def describe_activity(controller, days, view, tests, tags, endpoints, dos, statuses, show_test_id):
     """ View my Detect results """
     filters = dict(
         start=datetime.now(timezone.utc) - timedelta(days=days),
         finish=datetime.now(timezone.utc)
     )
+
     if tests:
         filters['tests'] = tests
     if tags:
@@ -172,8 +174,18 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos, statu
 
     raw = controller.describe_activity(view=view, filters=filters)
     report = Table()
+    build_tests = dict()
 
-    if view == 'logs':
+    def get_test(test_id):
+        if show_test_id or not test_id:
+            return test_id
+        if not build_tests:
+            build = BuildController(account=controller.account)
+            build_tests.update({test['id']: test['name'] for test in build.list_tests()})
+        return build_tests[test_id]
+
+    def view_logs():
+
         report.add_column('timestamp')
         report.add_column('test')
         report.add_column('endpoint')
@@ -182,37 +194,38 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos, statu
         raw.reverse()
         for record in raw:
             report.add_row(
-                record['date'], 
-                record['test'],
-                record['endpoint_id'], 
+                record['date'],
+                get_test(record['test']),
+                record['endpoint_id'],
                 ExitCode(record['status']).name
             )
+            print(build_tests)
 
-    elif view == 'insights':
+    def view_insights():
         report.add_column('dos')
         report.add_column('test')
         report.add_column('tag')
         report.add_column('protected', style='green')
         report.add_column('unprotected',  style='red')
         report.add_column('error', style='yellow')
-    
+
         for ins in raw:
             vol = ins['volume']
             report.add_row(
-                ins['dos'], 
-                ins['test'], 
-                ins['tag'], 
+                ins['dos'],
+                get_test(ins['test']),
+                ins['tag'],
                 str(vol["protected"]),
                 str(vol["unprotected"]),
                 str(vol["error"])
             )
 
-    elif view == 'probes':
+    def view_probes():
         report.add_column('endpoint_id')
         for endpoint_id in raw:
             report.add_row(endpoint_id)
 
-    elif view == 'days':
+    def view_days():
         report.add_column('date')
         report.add_column('protected', style='green')
         report.add_column('unprotected',  style='red')
@@ -220,13 +233,13 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos, statu
 
         for date, states in raw.items():
             report.add_row(
-                date, 
-                str(states.get(ExitCodeGroup.PROTECTED.name, 0)), 
-                str(states.get(ExitCodeGroup.UNPROTECTED.name, 0)), 
-                str(states.get(ExitCodeGroup.ERROR.name, 0)), 
+                date,
+                str(states.get(ExitCodeGroup.PROTECTED.name, 0)),
+                str(states.get(ExitCodeGroup.UNPROTECTED.name, 0)),
+                str(states.get(ExitCodeGroup.ERROR.name, 0)),
             )
 
-    elif view == 'dos':
+    def view_dos():
         report.add_column('dos')
         report.add_column('protected', style='green')
         report.add_column('unprotected',  style='red')
@@ -235,12 +248,12 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos, statu
         for dos, states in raw.items():
             report.add_row(
                 dos,
-                str(states.get(ExitCodeGroup.PROTECTED.name, 0)), 
-                str(states.get(ExitCodeGroup.UNPROTECTED.name, 0)), 
-                str(states.get(ExitCodeGroup.ERROR.name, 0)), 
+                str(states.get(ExitCodeGroup.PROTECTED.name, 0)),
+                str(states.get(ExitCodeGroup.UNPROTECTED.name, 0)),
+                str(states.get(ExitCodeGroup.ERROR.name, 0)),
             )
 
-    elif view == 'rules':
+    def view_rules():
         report.add_column('rule')
         report.add_column('protected', style='green')
         report.add_column('unprotected',  style='red')
@@ -249,10 +262,18 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos, statu
         for rule, states in raw.items():
             report.add_row(
                 rule,
-                str(states.get(ExitCodeGroup.PROTECTED.name, 0)), 
-                str(states.get(ExitCodeGroup.UNPROTECTED.name, 0)), 
-                str(states.get(ExitCodeGroup.ERROR.name, 0)), 
+                str(states.get(ExitCodeGroup.PROTECTED.name, 0)),
+                str(states.get(ExitCodeGroup.UNPROTECTED.name, 0)),
+                str(states.get(ExitCodeGroup.ERROR.name, 0)),
             )
 
+    dict(
+        logs=view_logs,
+        insights=view_insights,
+        probes=view_probes,
+        days=view_days,
+        dos=view_dos,
+        rules=view_rules
+    )[view]()
     console = Console()
     console.print(report)
