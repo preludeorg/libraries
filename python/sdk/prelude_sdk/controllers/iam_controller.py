@@ -35,10 +35,10 @@ class IAMController:
         raise Exception(res.text)
 
     @verify_credentials
-    def create_user(self, permission, handle):
+    def create_user(self, permission, handle, expires):
         res = requests.post(
             url=f'{self.account.hq}/iam/user',
-            json=dict(permission=permission, handle=handle),
+            json=dict(permission=permission, handle=handle, expires=expires),
             headers=self.account.headers
         )
         if res.status_code == 200:

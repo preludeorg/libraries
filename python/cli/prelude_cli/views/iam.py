@@ -39,13 +39,14 @@ def describe_account(controller):
 @iam.command('create-user')
 @click.option('-p', '--permission', help='provide a permission level', default=[p.name for p in Permission][-1],
               type=click.Choice([p.name for p in Permission], case_sensitive=False), show_default=True)
+@click.option('-e', '--expires', help='provide an expiration timestamp; defaults to 1 year', type=int)
 @click.argument('handle')
 @click.pass_obj
 @handle_api_error
-def create_user(controller, permission, handle):
+def create_user(controller, permission, handle, expires):
     """ Create a new user in your account """
-    token = controller.create_user(handle=handle, permission=Permission[permission.upper()].value)
-    click.secho(f'Created new [{permission}] user [{handle}]. Token: {token}', fg='green')
+    resp = controller.create_user(handle=handle, permission=Permission[permission.upper()].value, expires=expires)
+    click.secho(f'Created new [{permission}] user [{handle}]. Token: {resp["token"]}. Expiration: {resp["expires"]}', fg='green')
 
 
 @iam.command('delete-user')
