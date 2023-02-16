@@ -175,6 +175,7 @@ export default class DetectController {
     return (await response.json()) as Probe[];
   }
 
+  /** Return a list of recommendations associated to an Account */
   async getRecommendations(options: RequestOptions = {}) {
     const response = await this.#client.requestWithAuth(
       `/detect/recommendations`,
