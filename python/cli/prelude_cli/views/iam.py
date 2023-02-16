@@ -39,7 +39,7 @@ def describe_account(controller):
 @iam.command('create-user')
 @click.option('-p', '--permission', help='provide a permission level', default=[p.name for p in Permission][-1],
               type=click.Choice([p.name for p in Permission], case_sensitive=False), show_default=True)
-@click.option('-e', '--expires', help='provide an expiration timestamp; defaults to 1 year', type=int)
+@click.option('-e', '--expires', help='provide an expiration date (YYYY-MM-DD); defaults to 1 year', type=str)
 @click.argument('handle')
 @click.pass_obj
 @handle_api_error
