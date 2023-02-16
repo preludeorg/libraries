@@ -144,7 +144,7 @@ def add_recommendation(controller, title, description):
 @click.option('-v', '--view',
               help='retrieve a specific result view',
               default='logs', show_default=True,
-              type=click.Choice(['logs', 'days', 'insights', 'probes', 'dos', 'rules']))
+              type=click.Choice(['logs', 'days', 'insights', 'probes', 'rules']))
 @click.option('-d', '--days', help='days to look back', default=7, type=int)
 @click.option('--tests', help='comma-separated list of test IDs', type=str)
 @click.option('--tags', help='comma-separated list of tags', type=str)
@@ -221,20 +221,6 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos, statu
         for date, states in raw.items():
             report.add_row(
                 date, 
-                str(states.get(ExitCodeGroup.PROTECTED.name, 0)), 
-                str(states.get(ExitCodeGroup.UNPROTECTED.name, 0)), 
-                str(states.get(ExitCodeGroup.ERROR.name, 0)), 
-            )
-
-    elif view == 'dos':
-        report.add_column('dos')
-        report.add_column('protected', style='green')
-        report.add_column('unprotected',  style='red')
-        report.add_column('error', style='yellow')
-
-        for dos, states in raw.items():
-            report.add_row(
-                dos,
                 str(states.get(ExitCodeGroup.PROTECTED.name, 0)), 
                 str(states.get(ExitCodeGroup.UNPROTECTED.name, 0)), 
                 str(states.get(ExitCodeGroup.ERROR.name, 0)), 
