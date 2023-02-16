@@ -100,11 +100,10 @@ def rules(controller):
 
 @detect.command('endpoints')
 @click.pass_obj
-@click.option('-d', '--days', help='days to look back', default=30, type=int)
 @handle_api_error
-def endpoints(controller, days):
+def endpoints(controller):
     """ List all endpoints associated to your account """
-    print_json(data=controller.list_endpoints(days=days))
+    print_json(data=controller.list_endpoints())
 
 
 @detect.command('social-stats')
