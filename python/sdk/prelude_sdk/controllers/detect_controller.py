@@ -77,14 +77,6 @@ class DetectController:
         raise Exception(res.text)
 
     @verify_credentials
-    def list_rules(self):
-        """ Return all Verified Security Rules """
-        res = requests.get(f'{self.account.hq}/detect/rules', headers=self.account.headers)
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
-
-    @verify_credentials
     def social_stats(self, ident: str, days: int = 30):
         """ Pull social statistics for a specific test """
         params = dict(days=days)
