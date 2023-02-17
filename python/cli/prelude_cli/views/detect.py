@@ -90,14 +90,6 @@ def search(controller, cve):
     print_json(data=controller.search(identifier=cve))
 
 
-@detect.command('rules')
-@click.pass_obj
-@handle_api_error
-def rules(controller):
-    """ Print all Verified Security Rules """
-    print_json(data=controller.list_rules())
-
-
 @detect.command('endpoints')
 @click.pass_obj
 @handle_api_error
@@ -208,36 +200,38 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos, statu
 
     elif view == 'probes':
         report.add_column('endpoint_id')
-        for endpoint_id in raw:
-            report.add_row(endpoint_id)
+        report.add_column('dos')
+        report.add_column('state')
+        report.add_column('tags')
+
+        for ep in raw:
+            tags = ",".join(ep.get('tags'))
+            report.add_row(ep.get('endpoint_id'), ep.get('dos'), ep.get('state'), tags)
 
     elif view == 'days':
         report.add_column('date')
-        report.add_column('protected', style='green')
         report.add_column('unprotected',  style='red')
-        report.add_column('error', style='yellow')
+        report.add_column('volume', style='green')
 
-        for date, states in raw.items():
+        for day in raw:
             report.add_row(
-                date, 
-                str(states.get(ExitCodeGroup.PROTECTED.name, 0)), 
-                str(states.get(ExitCodeGroup.UNPROTECTED.name, 0)), 
-                str(states.get(ExitCodeGroup.ERROR.name, 0)), 
+                day.get('date'), 
+                str(day.get(ExitCodeGroup.UNPROTECTED.name, 0)), 
+                str(day.get('count', 0))
             )
 
     elif view == 'rules':
         report.add_column('rule')
-        report.add_column('protected', style='green')
-        report.add_column('unprotected',  style='red')
-        report.add_column('error', style='yellow')
+        report.add_column('unprotected', style='red')
+        report.add_column('volume', style='green')
 
-        for rule, states in raw.items():
-            report.add_row(
-                rule,
-                str(states.get(ExitCodeGroup.PROTECTED.name, 0)), 
-                str(states.get(ExitCodeGroup.UNPROTECTED.name, 0)), 
-                str(states.get(ExitCodeGroup.ERROR.name, 0)), 
-            )
+        for rule in raw:
+            if rule.get('rule'):
+                report.add_row(
+                    rule['rule'].get('description'),
+                    str(rule.get(ExitCodeGroup.UNPROTECTED.name, 0)), 
+                    str(rule.get('count', 0))
+                )
 
     console = Console()
     console.print(report)
