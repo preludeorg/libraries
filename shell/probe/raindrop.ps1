@@ -1,34 +1,36 @@
 function Run {
     Param([String]$Dat = "")
-
-    $TempFile = [System.IO.Path]::GetTempFileName() | Rename-Item -NewName { [System.IO.Path]::ChangeExtension($_, "exe") } -PassThru
-
-    $Headers = @{
-        'token' = $Token
-        'dos' = $Dos
-        'dat' = $Dat
-    }
     try {
-        $Response = Invoke-WebRequest -URI $Address -UseBasicParsing -Headers $Headers -MaximumRedirection 1 -OutFile $TempFile -PassThru
-    } catch {
-        $StatusCode = $_.Exception.Response.StatusCode.value__
-        Write-Output "ERROR: Failed to reach Prelude Service. " + $StatusCode
-        return
-    }
-    if ($CA -and $CA -ne $Response.BaseResponse.ResponseUri.Authority) {
-        return
-    }
-    $Test = $Response.BaseResponse.ResponseUri.AbsolutePath.Split("/")[-1].Split("_")[0]
-    if (-not $Test) {
-        Write-Output "INFO: Done running tests"
-        return
-    }
+        $TempFile = [System.IO.Path]::GetTempFileName() | Rename-Item -NewName { [System.IO.Path]::ChangeExtension($_, "exe") } -PassThru
 
-    $TestExit = Execute $TempFile
-    Start-Process -FilePath $TempFile -ArgumentList "clean" -Wait -NoNewWindow -PassThru
+        $Headers = @{
+            'token' = $Token
+            'dos' = $Dos
+            'dat' = $Dat
+        }
+        try {
+            $Response = Invoke-WebRequest -URI $Address -UseBasicParsing -Headers $Headers -MaximumRedirection 1 -OutFile $TempFile -PassThru
+        } catch {
+            $StatusCode = $_.Exception.Response.StatusCode.value__
+            Write-Output "ERROR: Failed to reach Prelude Service. " + $StatusCode
+            return
+        }
+        if ($CA -and $CA -ne $Response.BaseResponse.ResponseUri.Authority) {
+            return
+        }
+        $Test = $Response.BaseResponse.ResponseUri.AbsolutePath.Split("/")[-1].Split("_")[0]
+        if (-not $Test) {
+            Write-Output "INFO: Done running tests"
+            return
+        }
 
-    Remove-Item $TempFile -Force
-    Run -Dat $($Test + ":" + $TestExit)
+        $TestCode = Execute $TempFile
+        Start-Process -FilePath $TempFile -ArgumentList "clean" -Wait -NoNewWindow -PassThru
+        Run -Dat $($Test + ":" + $TestCode)
+    }
+    finally {
+        Remove-Item $TempFile -Force
+    }
 }
 
 function Execute { 
@@ -45,9 +47,9 @@ function Execute {
     }
 }
 
-function FromEnv { param ([string]$envVar, [string]$default)
-    $envVal = [Environment]::GetEnvironmentVariable($envVar, "User")
-    if ($envVal) { return $envVal } else { return $default }
+function FromEnv { param ([string]$EnvVar, [string]$Default)
+    $EnvVal = [Environment]::GetEnvironmentVariable($EnvVar, "User")
+    if ($EnvVal) { return $EnvVal } else { return $Default }
 }
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
