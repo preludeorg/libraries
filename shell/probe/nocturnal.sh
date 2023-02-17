@@ -8,8 +8,12 @@ dos=$(echo $sys | tr '[:upper:]' '[:lower:]')
 while :
 do
     temp=$(mktemp)
-    location=$(curl -sL -w %{url_effective} -o $temp -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "dat:${dat}" $PRELUDE_API)
-    test=$(echo $location | grep -o '[0-9a-f]\{8\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{12\}' | head -n 1)
+    output=$(curl -sfSL -w "%{http_code}%{url_effective}" -o $temp -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "dat:${dat}" $PRELUDE_API)
+    if ( echo "401 403" | grep -w -q ${output:0:3} );then
+      sleep 86400
+      continue
+    fi
+    test=$(echo ${output:3} | grep -o '[0-9a-f]\{8\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{12\}' | head -n 1)
 
     if [ -z "$test" ];then
         sleep 14400

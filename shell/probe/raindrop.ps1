@@ -13,6 +13,10 @@ function Run {
     } catch {
         $StatusCode = $_.Exception.Response.StatusCode.value__
         Write-Output "ERROR: Failed to reach Prelude Service. " + $StatusCode
+        if ($StatusCode -in 401,403) {
+            Start-Sleep -Seconds 72000
+            return
+        }
         return
     }
     if ($CA -and $CA -ne $Response.BaseResponse.ResponseUri.Authority) {

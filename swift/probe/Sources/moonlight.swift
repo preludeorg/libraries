@@ -24,6 +24,9 @@ struct Service {
             guard let response = response as? HTTPURLResponse, (200 ..< 400) ~= response.statusCode else {
                 if let httpResponse = response as? HTTPURLResponse {
                     print("WARN: Request denied (\(httpResponse.statusCode))")
+                    if [401, 403].contains(httpResponse.statusCode) {
+                        sleep(72000)
+                    }
                 }
                 return
             }

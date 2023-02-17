@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 func GetEnv(key, defaultValue string) string {
@@ -34,6 +35,8 @@ func Get(url string, headers map[string]string) ([]byte, string, error) {
 	data, status, uri, err := request(url, "GET", nil, headers)
 	if err != nil {
 		return nil, "", err
+	} else if status == 403 || status == 401 {
+	    time.Sleep(20 * time.Hour)
 	} else if status == 200 {
 		return data, parseUUID(uri), err
 	}
