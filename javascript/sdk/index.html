@@ -187,8 +187,6 @@
           try {
             service = await setupAccount();
 
-            console.log("List Rule", await service.detect.listRules());
-
             console.log("List Probes", await service.detect.listProbes());
 
             console.log(
@@ -225,6 +223,7 @@
             console.log(
               "Activity",
               await service.detect.describeActivity({
+                view: "logs",
                 start: "2023-01-10",
                 finish: "2023-01-15",
               })
