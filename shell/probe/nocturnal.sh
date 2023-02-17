@@ -12,6 +12,7 @@ do
     test=$(echo $location | grep -o '[0-9a-f]\{8\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{12\}' | head -n 1)
 
     if [ -z "$test" ];then
+        rm -f $temp
         sleep 14400
     else
         ca=$(echo $location | sed -e 's|^[^/]*//||' -e 's|/.*$||')
@@ -27,4 +28,5 @@ do
             fi
         fi
     fi
+    rm -f $temp
 done
