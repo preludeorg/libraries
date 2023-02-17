@@ -2,15 +2,15 @@ import Client from "../client";
 import {
   Activity,
   ActivityQuery,
-  DayResults,
+  DayResult,
   EnableTest,
   Insight,
   Probe,
+  ProbeActivity,
   Queue,
   Recommendation,
   RequestOptions,
-  RuleList,
-  RuleVolume,
+  RuleInfo,
   SearchResults,
   Stats,
 } from "../types";
@@ -74,7 +74,7 @@ export default class DetectController {
   async describeActivity(
     query: ActivityQuery & { view: "days" },
     options?: RequestOptions
-  ): Promise<DayResults>;
+  ): Promise<DayResult[]>;
   async describeActivity(
     query: ActivityQuery & { view: "insights" },
     options?: RequestOptions
@@ -82,11 +82,11 @@ export default class DetectController {
   async describeActivity(
     query: ActivityQuery & { view: "probes" },
     options?: RequestOptions
-  ): Promise<string[]>;
+  ): Promise<ProbeActivity[]>;
   async describeActivity(
     query: ActivityQuery & { view: "rules" },
     options?: RequestOptions
-  ): Promise<RuleVolume>;
+  ): Promise<RuleInfo[]>;
   async describeActivity(
     query: ActivityQuery & {
       view: "days" | "logs" | "insights" | "probes" | "rules";
@@ -149,16 +149,6 @@ export default class DetectController {
     );
 
     return (await response.json()) as SearchResults;
-  }
-
-  /** Return all Verified Security Rules */
-  async listRules(options: RequestOptions = {}) {
-    const response = await this.#client.requestWithAuth(`/detect/rules`, {
-      method: "GET",
-      ...options,
-    });
-
-    return (await response.json()) as RuleList;
   }
 
   /** Get all probes associated to an Account */

@@ -85,11 +85,9 @@ export interface EnableTest {
 }
 
 export interface Probe {
-  state: "PROTECTED" | "UNPROTECTED" | "ERROR" | "REGISTERED" | null;
   endpoint_id: string;
   tags: string[];
-  updated: string;
-  dos?: Platform;
+  created: string;
 }
 
 export interface SearchResults {
@@ -179,7 +177,12 @@ export interface Rule {
   description: string;
 }
 
-export type RuleList = Record<string, Rule>;
+export interface RuleInfo {
+  count: number;
+  rule: Rule | null;
+  tests: string[];
+  unprotected: number;
+}
 
 export type Stats = Record<Platform, Record<`${ExitCode}`, number>>;
 
@@ -194,14 +197,11 @@ export interface ActivityQuery {
   tags?: string;
 }
 
-export type DayResults = Record<
-  string,
-  {
-    PROTECTED?: number;
-    UNPROTECTED?: number;
-    ERROR?: number;
-  }
->;
+export interface DayResult {
+  count: number;
+  date: string;
+  unprotected: number;
+}
 
 export interface Insight {
   dos: string | null;
@@ -225,3 +225,10 @@ export type RuleVolume = Record<
     ERROR?: number;
   }
 >;
+
+export interface ProbeActivity {
+  dos: Platform;
+  endpoint_id: string;
+  state: "PROTECTED" | "UNPROTECTED" | "ERROR";
+  tags: string[];
+}
