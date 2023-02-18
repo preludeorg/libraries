@@ -182,7 +182,6 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos, statu
     elif view == 'insights':
         report.add_column('dos')
         report.add_column('test')
-        report.add_column('tag')
         report.add_column('protected', style='green')
         report.add_column('unprotected',  style='red')
         report.add_column('error', style='yellow')
@@ -192,7 +191,6 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos, statu
             report.add_row(
                 ins['dos'], 
                 ins['test'], 
-                ins['tag'], 
                 str(vol["protected"]),
                 str(vol["unprotected"]),
                 str(vol["error"])
