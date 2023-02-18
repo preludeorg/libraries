@@ -216,7 +216,7 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos, statu
         for day in raw:
             report.add_row(
                 day.get('date'), 
-                str(day.get(ExitCodeGroup.UNPROTECTED.name, 0)), 
+                str(day.get('unprotected', 0)), 
                 str(day.get('count', 0))
             )
 
@@ -225,13 +225,14 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos, statu
         report.add_column('unprotected', style='red')
         report.add_column('volume', style='green')
 
-        for rule in raw:
-            if rule.get('rule'):
-                report.add_row(
-                    rule['rule'].get('description'),
-                    str(rule.get(ExitCodeGroup.UNPROTECTED.name, 0)), 
-                    str(rule.get('count', 0))
-                )
+        for entry in raw:
+            rule = entry.get('rule')
+            usage = entry.get('usage')
+            report.add_row(
+                rule.get('label'),
+                str(usage.get('unprotected', 0)), 
+                str(usage.get('count', 0))
+            )
 
     console = Console()
     console.print(report)
