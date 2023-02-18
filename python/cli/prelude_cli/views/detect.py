@@ -219,6 +219,7 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos, statu
             )
 
     elif view == 'rules':
+        report.add_column('VSR')
         report.add_column('rule')
         report.add_column('unprotected', style='red')
         report.add_column('volume', style='green')
@@ -227,7 +228,8 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos, statu
             rule = entry.get('rule')
             usage = entry.get('usage')
             report.add_row(
-                rule.get('label'),
+                rule.get('id'),
+                rule.get('label').replace('_', ' ').lower(),
                 str(usage.get('unprotected', 0)), 
                 str(usage.get('count', 0))
             )
