@@ -1,6 +1,7 @@
 import click
 
 from rich import print_json
+from datetime import datetime, timedelta, timezone
 
 from prelude_cli.views.shared import handle_api_error
 from prelude_sdk.controllers.iam_controller import IAMController
@@ -31,20 +32,27 @@ def register_account(controller):
 def describe_account(controller):
     """ Get account details """
     acct = controller.get_account()
-    users = {user["handle"]: Permission(user["permission"]).name for user in acct['users']}
+    users = {user["handle"]: dict(permission=Permission(user["permission"]).name, expiries=user['expires'])
+              for user in acct['users']}
     print_json(data=dict(whoami=acct['whoami'], users=users, controls=acct['controls']))
 
 
 @iam.command('create-user')
+@click.option('-d', '--days', help='days this account should remain active', default=365, type=int)
 @click.option('-p', '--permission', help='provide a permission level', default=[p.name for p in Permission][-1],
               type=click.Choice([p.name for p in Permission], case_sensitive=False), show_default=True)
 @click.argument('handle')
 @click.pass_obj
 @handle_api_error
-def create_user(controller, permission, handle):
+def create_user(controller, permission, handle, days):
     """ Create a new user in your account """
-    token = controller.create_user(handle=handle, permission=Permission[permission.upper()].value)
-    click.secho(f'Created new [{permission}] user [{handle}]. Token: {token}', fg='green')
+    expires = datetime.now(timezone.utc) + timedelta(days=days)
+    resp = controller.create_user(
+        handle=handle, 
+        permission=Permission[permission.upper()].value, 
+        expires=expires
+    )
+    click.secho(f'Created new [{permission}] user "{handle}". Token: {resp["token"]}', fg='green')
 
 
 @iam.command('delete-user')
