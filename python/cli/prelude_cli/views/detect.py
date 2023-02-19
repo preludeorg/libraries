@@ -151,8 +151,8 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos, statu
     # setup conversion
 
     build = BuildController(account=controller.account)
-    tests = {row['id']: row['name'] for row in build.list_tests()}
-    conversion = lambda i: tests.get(i, 'DELETED') if convert else i
+    my_tests = {row['id']: row['name'] for row in build.list_tests()}
+    conversion = lambda i: my_tests.get(i, 'DELETED') if convert else i
 
     # establish filters
 
