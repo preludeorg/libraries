@@ -136,6 +136,7 @@ def add_recommendation(controller, title, description):
               help='retrieve a specific result view',
               default='logs', show_default=True,
               type=click.Choice(['logs', 'days', 'insights', 'probes', 'rules']))
+@click.option('-c', '--convert', help='convert test IDs to names', is_flag=True, type=bool, default=False)
 @click.option('-d', '--days', help='days to look back', default=7, type=int)
 @click.option('--tests', help='comma-separated list of test IDs', type=str)
 @click.option('--tags', help='comma-separated list of tags', type=str)
@@ -144,8 +145,17 @@ def add_recommendation(controller, title, description):
 @click.option('--statuses', help='comma-separated list of statuses', type=str)
 @click.pass_obj
 @handle_api_error
-def describe_activity(controller, days, view, tests, tags, endpoints, dos, statuses):
+def describe_activity(controller, days, view, tests, tags, endpoints, dos, statuses, convert):
     """ View my Detect results """
+
+    # setup conversion
+
+    build = BuildController(account=controller.account)
+    tests = {row['id']: row['name'] for row in build.list_tests()}
+    conversion = lambda i: tests.get(i, 'DELETED') if convert else i
+
+    # establish filters
+
     filters = dict(
         start=datetime.now(timezone.utc) - timedelta(days=days),
         finish=datetime.now(timezone.utc)
@@ -161,6 +171,8 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos, statu
     if dos:
         filters['dos'] = dos
 
+    # build reports
+
     raw = controller.describe_activity(view=view, filters=filters)
     report = Table()
 
@@ -174,7 +186,7 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos, statu
         for record in raw:
             report.add_row(
                 record['date'], 
-                record['test'],
+                conversion(record['test']),
                 record['endpoint_id'], 
                 ExitCode(record['status']).name
             )
@@ -190,7 +202,7 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos, statu
             vol = ins['volume']
             report.add_row(
                 ins['dos'], 
-                ins['test'], 
+                conversion(ins['test']), 
                 str(vol["protected"]),
                 str(vol["unprotected"]),
                 str(vol["error"])
