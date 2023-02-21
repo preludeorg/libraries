@@ -39,7 +39,7 @@ def describe_account(controller):
 
 @iam.command('create-user')
 @click.option('-d', '--days', help='days this account should remain active', default=365, type=int)
-@click.option('-p', '--permission', help='provide a permission level', default=[p.name for p in Permission][-1],
+@click.option('-p', '--permission', help='provide a permission level', default=Permission.SERVICE.name,
               type=click.Choice([p.name for p in Permission], case_sensitive=False), show_default=True)
 @click.argument('handle')
 @click.pass_obj
