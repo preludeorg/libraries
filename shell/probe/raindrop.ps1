@@ -26,11 +26,11 @@ function Run {
 
         $TestCode = Execute $TempFile
         Start-Process -FilePath $TempFile -ArgumentList "clean" -Wait -NoNewWindow -PassThru
-        Run -Dat $($Test + ":" + $TestCode)
     }
     finally {
         Remove-Item $TempFile -Force
     }
+    Run -Dat $($Test + ":" + $TestCode)
 }
 
 function Execute { 
