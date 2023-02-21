@@ -177,11 +177,15 @@ export interface Rule {
   description: string;
 }
 
-export interface RuleInfo {
-  count: number;
-  rule: Rule | null;
+export interface RuleUsage {
   tests: string[];
+  count: number;
   unprotected: number;
+}
+
+export interface RuleInfo {
+  rule: Rule | null;
+  usage: RuleUsage;
 }
 
 export type Stats = Record<Platform, Record<`${ExitCode}`, number>>;
