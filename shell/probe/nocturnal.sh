@@ -27,6 +27,6 @@ do
                 dat="${test}:9"
             fi
         fi
+        rm -f $temp
     fi
-    rm -f $temp
 done
