@@ -133,3 +133,23 @@ def create_url(controller, attachment):
 def compute(controller, test):
     """ Create a VST from a test """
     print_json(data=controller.compute(test_id=test))
+
+
+@build.command('map')
+@click.argument('test')
+@click.argument('identifier')
+@click.pass_obj
+@handle_api_error
+def map(controller, test, identifier):
+    """ Map an identifier to a test """
+    print_json(data=controller.map(test_id=test, x=identifier))
+
+
+@build.command('unmap')
+@click.argument('test')
+@click.argument('identifier')
+@click.pass_obj
+@handle_api_error
+def unmap(controller, test, identifier):
+    """ Unmap an identifier from a test """
+    print_json(data=controller.unmap(test_id=test, x=identifier))

@@ -61,3 +61,15 @@ class BuildController:
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
+
+    @verify_credentials
+    def map(self, test_id: str, x: str):
+        res = requests.post(f'{self.account.hq}/build/tests/{test_id}/{x}', json=dict(id=test_id), headers=self.account.headers)
+        if not res.status_code == 200:
+            raise Exception(res.text)
+
+    @verify_credentials
+    def unmap(self, test_id: str, x: str):
+        res = requests.delete(f'{self.account.hq}/build/tests/{test_id}/{x}', json=dict(id=test_id), headers=self.account.headers)
+        if not res.status_code == 200:
+            raise Exception(res.text)
