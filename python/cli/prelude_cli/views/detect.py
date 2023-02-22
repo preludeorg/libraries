@@ -1,6 +1,6 @@
 import click
 
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, time
 from rich import print_json
 from rich.console import Console
 from rich.table import Table
@@ -157,8 +157,8 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos, statu
     # establish filters
 
     filters = dict(
-        start=datetime.now(timezone.utc) - timedelta(days=days),
-        finish=datetime.now(timezone.utc)
+        start=datetime.combine(datetime.utcnow() - timedelta(days=days), time.min),
+        finish=datetime.combine(datetime.utcnow(), time.max)
     )
     if tests:
         filters['tests'] = tests

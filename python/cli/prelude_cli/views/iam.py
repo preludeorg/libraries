@@ -46,7 +46,7 @@ def describe_account(controller):
 @handle_api_error
 def create_user(controller, permission, handle, days):
     """ Create a new user in your account """
-    expires = datetime.now(timezone.utc) + timedelta(days=days)
+    expires = datetime.utcnow() + timedelta(days=days)
     resp = controller.create_user(
         handle=handle, 
         permission=Permission[permission.upper()].value, 

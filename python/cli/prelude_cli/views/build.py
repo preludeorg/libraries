@@ -71,7 +71,7 @@ def create_test(controller, name, test):
         template = pkg_resources.read_text(templates, 'template.go')
         template = template.replace('$ID', test_id)
         template = template.replace('$NAME', name)
-        template = template.replace('$CREATED', str(datetime.now()))
+        template = template.replace('$CREATED', str(datetime.utcnow()))
         controller.upload(test_id=test_id, filename=basename, code=template)
 
         with open(basename, 'w') as test_code:
