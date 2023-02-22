@@ -30,7 +30,8 @@ class ExitCode(Enum):
     MISSING = -1
     ERROR = 1
     MALFORMED_VST = 2
-    PROCESS_KILLED = 9
+    PROCESS_KILLED_1 = 9
+    PROCESS_KILLED_2 = 15
     PROTECTED = 100
     UNPROTECTED = 101
     TIMEOUT = 102
@@ -64,9 +65,11 @@ class ExitCodeGroup(Enum):
         ExitCode.PROTECTED,
         ExitCode.QUARANTINED_1,
         ExitCode.QUARANTINED_2,
-        ExitCode.PROCESS_KILLED,
+        ExitCode.PROCESS_KILLED_1,
+        ExitCode.PROCESS_KILLED_2,
         ExitCode.NOT_RELEVANT,
-        ExitCode.OUTBOUND_SECURE
+        ExitCode.OUTBOUND_SECURE,
+        ExitCode.EXPLOIT_PREVENTED
     ]
     UNPROTECTED = [
         ExitCode.UNPROTECTED
