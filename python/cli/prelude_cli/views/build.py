@@ -1,12 +1,12 @@
-import click
-import uuid
 import re
-import importlib.resources as pkg_resources
+import uuid
+import click
 import prelude_cli.templates as templates
+import importlib.resources as pkg_resources
 
+from rich import print_json
 from datetime import datetime
 from pathlib import Path, PurePath
-from rich import print_json
 
 from prelude_cli.views.shared import handle_api_error
 from prelude_sdk.controllers.build_controller import BuildController

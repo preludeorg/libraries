@@ -1,5 +1,6 @@
 import requests
 
+from prelude_sdk.spinner import Spinner
 from prelude_sdk.models.account import verify_credentials
 
 
@@ -10,66 +11,86 @@ class BuildController:
 
     @verify_credentials
     def list_tests(self):
-        res = requests.get(f'{self.account.hq}/build/tests', headers=self.account.headers)
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        """ List all tests available to an account """
+        with Spinner():
+            res = requests.get(f'{self.account.hq}/build/tests', headers=self.account.headers)
+            if res.status_code == 200:
+                return res.json()
+            raise Exception(res.text)
 
     @verify_credentials
     def create_test(self, test_id, name):
-        data = dict(name=name)
-        res = requests.post(f'{self.account.hq}/build/tests/{test_id}', json=data, headers=self.account.headers)
-        if not res.status_code == 200:
-            raise Exception(res.text)
+        """ Create or update a test """
+        with Spinner():
+            data = dict(name=name)
+            res = requests.post(f'{self.account.hq}/build/tests/{test_id}', json=data, headers=self.account.headers)
+            if not res.status_code == 200:
+                raise Exception(res.text)
 
     @verify_credentials
     def delete_test(self, test_id):
-        res = requests.delete(f'{self.account.hq}/build/tests/{test_id}', headers=self.account.headers)
-        if not res.status_code == 200:
-            raise Exception(res.text)
+        """ Delete an existing test """
+        with Spinner():
+            res = requests.delete(f'{self.account.hq}/build/tests/{test_id}', headers=self.account.headers)
+            if not res.status_code == 200:
+                raise Exception(res.text)
 
     @verify_credentials
     def get_test(self, test_id):
-        res = requests.get(f'{self.account.hq}/build/tests/{test_id}', headers=self.account.headers)
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        """ Get properties of an existing test """
+        with Spinner():
+            res = requests.get(f'{self.account.hq}/build/tests/{test_id}', headers=self.account.headers)
+            if res.status_code == 200:
+                return res.json()
+            raise Exception(res.text)
 
     @verify_credentials
     def download(self, test_id, filename):
-        res = requests.get(f'{self.account.hq}/build/tests/{test_id}/{filename}', headers=self.account.headers)
-        if res.status_code == 200:
-            return res.content
-        raise Exception(res.text)
+        """ Clone a test file or attachment"""
+        with Spinner():
+            res = requests.get(f'{self.account.hq}/build/tests/{test_id}/{filename}', headers=self.account.headers)
+            if res.status_code == 200:
+                return res.content
+            raise Exception(res.text)
 
     @verify_credentials
     def upload(self, test_id, filename, code):
-        res = requests.post(f'{self.account.hq}/build/tests/{test_id}/{filename}', json=dict(code=code), headers=self.account.headers)
-        if not res.status_code == 200:
-            raise Exception(res.text)
+        """ Upload a test or attachment """
+        with Spinner():
+            res = requests.post(f'{self.account.hq}/build/tests/{test_id}/{filename}', json=dict(code=code), headers=self.account.headers)
+            if not res.status_code == 200:
+                raise Exception(res.text)
 
     @verify_credentials
     def create_url(self, attachment: str):
-        res = requests.get(f'{self.account.hq}/build/{attachment}/url', headers=self.account.headers)
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        """ Get a presigned URL to a VST """
+        with Spinner():
+            res = requests.get(f'{self.account.hq}/build/{attachment}/url', headers=self.account.headers)
+            if res.status_code == 200:
+                return res.json()
+            raise Exception(res.text)
 
     @verify_credentials
     def compute(self, test_id: str):
-        res = requests.post(f'{self.account.hq}/build/compute', json=dict(id=test_id), headers=self.account.headers)
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        """ Compile a test and get presigned URLs for each DOS """
+        with Spinner():
+            res = requests.post(f'{self.account.hq}/build/compute', json=dict(id=test_id), headers=self.account.headers)
+            if res.status_code == 200:
+                return res.json()
+            raise Exception(res.text)
 
     @verify_credentials
     def map(self, test_id: str, x: str):
-        res = requests.post(f'{self.account.hq}/build/tests/{test_id}/map/{x}', json=dict(id=test_id), headers=self.account.headers)
-        if not res.status_code == 200:
-            raise Exception(res.text)
+        """ Add a classification property to a test """
+        with Spinner():
+            res = requests.post(f'{self.account.hq}/build/tests/{test_id}/map/{x}', json=dict(id=test_id), headers=self.account.headers)
+            if not res.status_code == 200:
+                raise Exception(res.text)
 
     @verify_credentials
     def unmap(self, test_id: str, x: str):
-        res = requests.delete(f'{self.account.hq}/build/tests/{test_id}/map/{x}', json=dict(id=test_id), headers=self.account.headers)
-        if not res.status_code == 200:
-            raise Exception(res.text)
+        """ Remove a classification property from a test """
+        with Spinner():
+            res = requests.delete(f'{self.account.hq}/build/tests/{test_id}/map/{x}', json=dict(id=test_id), headers=self.account.headers)
+            if not res.status_code == 200:
+                raise Exception(res.text)

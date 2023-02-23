@@ -1,15 +1,15 @@
 import click
 
-from datetime import datetime, timedelta, time
 from rich import print_json
-from rich.console import Console
 from rich.table import Table
+from rich.console import Console
 from collections import defaultdict
+from datetime import datetime, timedelta, time
 
 from prelude_cli.views.shared import handle_api_error
+from prelude_sdk.models.codes import RunCode, ExitCode
 from prelude_sdk.controllers.build_controller import BuildController
 from prelude_sdk.controllers.detect_controller import DetectController
-from prelude_sdk.models.codes import RunCode, ExitCode
 
 
 @click.group()
