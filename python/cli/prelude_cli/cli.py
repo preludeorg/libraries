@@ -7,7 +7,7 @@ from prelude_sdk.models.account import Account
 
 
 def complete_profile(ctx, param, incomplete):
-    return [x for x in Account().read_keychain_config()]
+    return [x for x in Account().read_keychain_config() if x.startswith(incomplete)]
 
 
 @click.group()
