@@ -44,12 +44,12 @@ runs:
         aws s3 cp shell/probe/install.sh s3://${{ inputs.s3_bucket }}/prelude/probes/install/install_linux-arm64
         aws s3 cp shell/probe/install.sh s3://${{ inputs.s3_bucket }}/prelude/probes/install/install_linux-x86_64
 
-        aws s3 cp shell/probe/demo.ps1 s3://${{ inputs.s3_bucket }}/prelude/probes/demo/demo_windows-x86_64
+        aws s3 cp shell/demo/demo2.ps1 s3://${{ inputs.s3_bucket }}/prelude/probes/demo/demo2_windows-x86_64
           
-        aws s3 cp shell/probe/demo.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo/demo_darwin-arm64
-        aws s3 cp shell/probe/demo.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo/demo_darwin-x86_64
-        aws s3 cp shell/probe/demo.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo/demo_linux-arm64
-        aws s3 cp shell/probe/demo.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo/demo_linux-x86_64
+        aws s3 cp shell/demo/demo2.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo/demo2_darwin-arm64
+        aws s3 cp shell/demo/demo2.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo/demo2_darwin-x86_64
+        aws s3 cp shell/demo/demo2.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo/demo2_linux-arm64
+        aws s3 cp shell/demo/demo2.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo/demo2_linux-x86_64
       
         aws s3 cp shell/probe/raindrop.ps1 s3://${{ inputs.s3_bucket }}/prelude/probes/raindrop/raindrop_windows-x86_64
 
