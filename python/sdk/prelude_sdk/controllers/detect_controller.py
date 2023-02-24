@@ -48,7 +48,7 @@ class DetectController:
             raise Exception(res.text)
 
     @verify_credentials
-    def print_queue(self):
+    def list_queue(self):
         with Spinner():
             res = requests.get(f'{self.account.hq}/detect/queue', headers=self.account.headers)
             if res.status_code == 200:

@@ -1,11 +1,11 @@
 import click
 
 from rich import print_json
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 
+from prelude_sdk.models.codes import Permission
 from prelude_cli.views.shared import handle_api_error
 from prelude_sdk.controllers.iam_controller import IAMController
-from prelude_sdk.models.codes import Permission
 
 
 @click.group()

@@ -73,7 +73,7 @@ def queue(controller):
     """ List all tests in your active queue """
     build = BuildController(account=controller.account)
     tests = {row['id']: row['name'] for row in build.list_tests()}
-    active = controller.print_queue()
+    active = controller.list_queue()
     for q in active:
         q['run_code'] = RunCode(q['run_code']).name
         q['name'] = tests[q['test']]
