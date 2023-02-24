@@ -11,7 +11,31 @@ function FromEnv { param ([string]$envVar, [string]$default)
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $PRELUDE_API = FromEnv "PRELUDE_API" "https://api.preludesecurity.com"
+
 $TEST_ID="b74ad239-2ddd-4b1e-b608-8397a43c7c54"
+$TEST_INTRO="
+Will your computer quarantine a malicious Office document?
+
+Malicious files are used to gain entry and conduct cyberattacks against corporate systems through seemingly
+innocuous email attachments or direct downloads. For example - a malicious macro was used by the BlueNoroff
+group in a ransomware attack (Dec. 2022).
+
+This test will attempt to download a malicious file to your disk (a macro enabled excel file generated with
+Msfvenom) in order to see how your machine will respond. Since downloading malicious files increases your
+risk by opening you up to further attack, the ability to detect and quarantine any potentially harmful files
+as quickly as possible is an important part of maintaining a proper security posture.
+
+This is a Verified Security Test (VST) Developed by Prelude Research Inc.
+
+[+] Applicable CVE(s): CVE-2017-0199
+[+] ATT&CK mappings: T1204.002
+"
+$TEST_SUCCESS="Your computer detected and responded to a malicious Office document dropped on the disk"
+$TEST_FAILURE="This test was able to verify the existence of this vulnerability on your machine, as well as drop a malicious
+Office document on the disk. If you have security controls in place that you suspect should have protected your
+host, please review the logs"
+
+
 
 $dos = "windows-" + $Env:PROCESSOR_ARCHITECTURE
 
@@ -99,21 +123,7 @@ function PostResults {
 Write-Host "
 ###########################################################################################################
 
-Will your computer quarantine a malicious Office document?
-
-Malicious files are used to gain entry and conduct cyberattacks against corporate systems through seemingly
-innocuous email attachments or direct downloads. For example - a malicious macro was used by the BlueNoroff
-group in a ransomware attack (Dec. 2022).
-
-This test will attempt to download a malicious file to your disk (a macro enabled excel file generated with
-Msfvenom) in order to see how your machine will respond. Since downloading malicious files increases your
-risk by opening you up to further attack, the ability to detect and quarantine any potentially harmful files
-as quickly as possible is an important part of maintaining a proper security posture.
-
-This is a Verified Security Test (VST) Developed by Prelude Research Inc.
-
-[+] Applicable CVE(s): CVE-2017-0199
-[+] ATT&CK mappings: T1204.002
+$(TEST_INTRO)
 
 ###########################################################################################################
 "
@@ -154,11 +164,9 @@ Write-Host "
 "
 
 if ($TestResult -in 100,9,17,18,105,127 ) {
-    Write-Host -ForegroundColor Green "[$($symbols.CHECKMARK)] Good job! Your computer detected and responded to a malicious Office document dropped on the disk"
+    Write-Host -ForegroundColor Green "[$($symbols.CHECKMARK)] Good job! $(TEST_SUCCESS)"
 } elseif ($TestResult -eq 101) {
-    Write-Host -ForegroundColor Red "[!] This test was able to verify the existence of this vulnerability on your machine, as well as drop a malicious
-Office document on the disk. If you have security controls in place that you suspect should have protected your
-host, please review the logs"
+    Write-Host -ForegroundColor Red "[!] $(TEST_FAILURE)"
 } else {
     Write-Host -ForegroundColor Red "[!] This test encountered an unexpected error during execution. Please try again"
 }
