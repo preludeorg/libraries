@@ -7,13 +7,13 @@ dos=$(echo $sys | tr '[:upper:]' '[:lower:]')
 
 while :
 do
+    temp=$(mktemp)
     redirect=$(curl -sfS -w %{redirect_url} -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "dat:${dat}" $PRELUDE_API)
     test=$(echo $redirect | grep -o '[0-9a-f]\{8\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{12\}' | head -n 1)
 
     if [ -z "$test" ];then
         sleep 14400
     else
-        temp=$(mktemp)
         resp=$(curl -sfS -w %{http_code} -o $temp $redirect)
         if [ $resp -ne 200 ];then
             sleep 14400
