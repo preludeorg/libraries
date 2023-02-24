@@ -8,15 +8,36 @@ PRELUDE_API=${PRELUDE_API:="https://api.preludesecurity.com"}
 PRELUDE_TOKEN=$1
 
 sys=$(uname -s)-$(uname -m)
-id="b74ad239-2ddd-4b1e-b608-8397a43c7c54"
 dos=$(echo $sys | tr '[:upper:]' '[:lower:]')
+
+test_id="b74ad239-2ddd-4b1e-b608-8397a43c7c54"
+test_intro=$'Will your computer quarantine a malicious Office document?
+
+Malicious files are used to gain entry and conduct cyberattacks against corporate systems through seemingly
+innocuous email attachments or direct downloads. For example - a malicious macro was used by the BlueNoroff
+group in a ransomware attack (Dec. 2022).
+
+This test will attempt to download a malicious file to your disk (a macro enabled excel file generated with
+Msfvenom) in order to see how your machine will respond. Since downloading malicious files increases your risk
+by opening you up to further attack, the ability to detect and quarantine any potentially harmful files as
+quickly as possible is an important part of maintaining a proper security posture.
+
+This is a Verified Security Test (VST) Developed by Prelude Research Inc.
+
+[+] Applicable CVE(s): CVE-2017-0199
+[+] ATT&CK mappings: T1204.002'
+test_success=$'Your computer detected and responded to a malicious Office document dropped on
+the disk${NC}'
+test_failure=$'This test was able to verify the existence of this vulnerability on your machine, as well as drop
+a malicious Office document on the disk. If you have security controls in place that you suspect should
+have protected your host, please review the logs${NC}'
 
 function check_relevance {
     echo -e "${GREEN}[✓] Result: Success - server or workstation detected${NC}"
 }
 
 function find_test {
-    redirect=$(curl -sfS -w %{redirect_url} -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "id:${id}" $PRELUDE_API)
+    redirect=$(curl -sfS -w %{redirect_url} -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "id:${test_id}" $PRELUDE_API)
     test=$(echo $redirect | grep -o '[0-9a-f]\{8\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{12\}' | head -n 1)
     if [ -z "$test" ];then
         echo -e "${RED}[!] Failed to find test${NC}"
@@ -68,21 +89,7 @@ function post_results {
 echo
 echo "###########################################################################################################"
 echo
-echo "Will your computer quarantine a malicious Office document?"
-echo
-echo "Malicious files are used to gain entry and conduct cyberattacks against corporate systems through seemingly"
-echo "innocuous email attachments or direct downloads. For example - a malicious macro was used by the BlueNoroff"
-echo "group in a ransomware attack (Dec. 2022)."
-echo
-echo "This test will attempt to download a malicious file to your disk (a macro enabled excel file generated with"
-echo "Msfvenom) in order to see how your machine will respond. Since downloading malicious files increases your risk"
-echo "by opening you up to further attack, the ability to detect and quarantine any potentially harmful files as"
-echo "quickly as possible is an important part of maintaining a proper security posture."
-echo
-echo "This is a Verified Security Test (VST) Developed by Prelude Research Inc."
-echo
-echo "[+] Applicable CVE(s): CVE-2017-0199"
-echo "[+] ATT&CK mappings: T1204.002"
+echo "$test_intro"
 echo
 echo "###########################################################################################################"
 echo
@@ -117,12 +124,9 @@ echo
 echo "###########################################################################################################"
 echo
 if ( echo "100 9 17 18 105 127" | grep -w -q $test_result );then
-    echo -e "${GREEN}[✓] Good job! Your computer detected and responded to a malicious Office document dropped on "
-    echo -e "the disk${NC}"
+    echo -e "${GREEN}[✓] Good job! "${test_success}""
 elif [ $test_result -eq 101 ];then
-    echo -e "${RED}[!] This test was able to verify the existence of this vulnerability on your machine, as well as drop"
-    echo "a malicious Office document on the disk. If you have security controls in place that you suspect should"
-    echo -e "have protected your host, please review the logs${NC}"
+    echo -e "${RED}[!] "${test_failure}""
 else
     echo -e "${RED}[!] This test encountered an unexpected error during execution. Please try again${NC}"
 fi
