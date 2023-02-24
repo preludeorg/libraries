@@ -13,8 +13,7 @@ function FromEnv { param ([string]$envVar, [string]$default)
 $PRELUDE_API = FromEnv "PRELUDE_API" "https://api.preludesecurity.com"
 
 $TEST_ID="b74ad239-2ddd-4b1e-b608-8397a43c7c54"
-$TEST_INTRO="
-Will your computer quarantine a malicious Office document?
+$TEST_INTRO="Will your computer quarantine a malicious Office document?
 
 Malicious files are used to gain entry and conduct cyberattacks against corporate systems through seemingly
 innocuous email attachments or direct downloads. For example - a malicious macro was used by the BlueNoroff
@@ -28,14 +27,11 @@ as quickly as possible is an important part of maintaining a proper security pos
 This is a Verified Security Test (VST) Developed by Prelude Research Inc.
 
 [+] Applicable CVE(s): CVE-2017-0199
-[+] ATT&CK mappings: T1204.002
-"
+[+] ATT&CK mappings: T1204.002"
 $TEST_SUCCESS="Your computer detected and responded to a malicious Office document dropped on the disk"
 $TEST_FAILURE="This test was able to verify the existence of this vulnerability on your machine, as well as drop a malicious
 Office document on the disk. If you have security controls in place that you suspect should have protected your
 host, please review the logs"
-
-
 
 $dos = "windows-" + $Env:PROCESSOR_ARCHITECTURE
 
