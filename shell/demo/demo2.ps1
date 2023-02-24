@@ -26,7 +26,7 @@ so the ability to quickly detect and quarantine any potentially harmful files is
 This is a Verified Security Test (VST) Developed by Prelude Research Inc.
 
 [+] Applicable CVE(s): CVE-2021-21974
-[+] ATT&CK mappings: T1486
+[+] ATT&CK mappings: T1486"
 $TEST_SUCCESS="Your computer detected and responded to a malicious ELF binary dropped on the disk"
 $TEST_FAILURE="This test was able to verify the existence of this vulnerability on your machine, as well as drop a malicious
 ELF binary on the disk. If you have security controls in place that you suspect should have protected your
