@@ -119,7 +119,7 @@ function PostResults {
 Write-Host "
 ###########################################################################################################
 
-$(TEST_INTRO)
+$($TEST_INTRO)
 
 ###########################################################################################################
 "
@@ -160,9 +160,9 @@ Write-Host "
 "
 
 if ($TestResult -in 100,9,17,18,105,127 ) {
-    Write-Host -ForegroundColor Green "[$($symbols.CHECKMARK)] Good job! $(TEST_SUCCESS)"
+    Write-Host -ForegroundColor Green "[$($symbols.CHECKMARK)] Good job! $($TEST_SUCCESS)"
 } elseif ($TestResult -eq 101) {
-    Write-Host -ForegroundColor Red "[!] $(TEST_FAILURE)"
+    Write-Host -ForegroundColor Red "[!] $($TEST_FAILURE)"
 } else {
     Write-Host -ForegroundColor Red "[!] This test encountered an unexpected error during execution. Please try again"
 }
