@@ -1,3 +1,4 @@
+import os
 import uuid
 import click
 import socket
@@ -14,8 +15,8 @@ from collections import OrderedDict
 from simple_term_menu import TerminalMenu
 from datetime import datetime, timedelta, time
 
-from prelude_sdk.models.codes import RunCode, ExitCode
 from prelude_sdk.controllers.iam_controller import IAMController
+from prelude_sdk.models.codes import RunCode, ExitCode, Permission
 from prelude_sdk.controllers.build_controller import BuildController
 from prelude_sdk.controllers.detect_controller import DetectController
 
@@ -155,7 +156,7 @@ class DeployProbe:
         tags = menu.chosen_menu_entries or []
         token = self.wiz.detect.register_endpoint(name=endpoint_id, tags=",".join(tags))
         print('> Probes: https://github.com/preludeorg/libraries/tree/master/shell/probe')
-        print(Padding(f'Start any probe executable with token {token}', 1))
+        print(Padding(f'Start any probe executable with token "{token}"', 1))
 
 
 class DeleteProbe:
@@ -614,6 +615,78 @@ class Build:
                 break
 
 
+class CreateUser:
+
+    def __init__(self, wiz: Wizard):
+        self.wiz = wiz
+
+    def enter(self):
+        print('All users share an account ID but have unique access tokens')
+        handle = Prompt.ask('Enter a user handle', default=os.getlogin())
+        menu = [p.name for p in Permission]
+        answer = TerminalMenu(menu).show()
+
+        expires = datetime.utcnow() + timedelta(days=365)
+        print(f'Creating "{handle}" with {Permission(answer)}')
+        self.wiz.iam.create_user(handle=handle, permission=answer, expires=expires)
+
+
+class DeleteUser:
+
+    def __init__(self, wiz: Wizard):
+        self.wiz = wiz
+
+    def enter(self):
+        account = self.wiz.iam.get_account()
+        menu = TerminalMenu(
+            [user['handle'] for user in account['users']],
+            multi_select=True,
+            show_multi_select_hint=True
+        )
+        menu.show()
+
+        for handle in menu.chosen_menu_entries:
+            print(f'Deleting "{handle}"')
+            self.wiz.iam.delete_user(handle=handle)
+
+
+class IAM:
+
+    SPLASH="""
+```javascript
+export const Permissions = {
+  ADMIN: 0,  // full access 
+  EXECUTIVE: 1, // read-only to dashboard
+  BUILD: 2,  // read-only to dashboard + developer hub
+  SERVICE: 3, // register new endpoints
+  PRELUDE: 4  // read-only access to the activity API
+  NONE: 5,
+} as const;
+```  
+    """
+
+    def __init__(self, wiz: Wizard):
+        self.wiz = wiz
+
+    def enter(self):
+        self.wiz.splash(self.SPLASH, helper='Prelude accounts can contain multiple users with different permissions')
+
+        menu = OrderedDict()
+        menu['Create user'] = CreateUser
+        menu['Delete user'] = DeleteUser
+        menu['Attach defensive control'] = None
+        menu['Detach defensive control'] = None
+        menu['Delete account'] = None
+
+        while True:
+            try:
+                index = TerminalMenu(menu.keys()).show()
+                answer = list(menu.items())
+                answer[index][1](self.wiz).enter()
+            except Exception:
+                break
+
+            
 @click.command()
 @click.pass_obj
 def interactive(account):
@@ -628,7 +701,7 @@ def interactive(account):
     menu['Schedule tests'] = Schedule(wizard)
     menu['View results'] = Results(wizard)
     menu['Developer hub'] = Build(wizard)
-    menu['Manage account'] = None
+    menu['Manage account'] = IAM(wizard)
     menu['Open executive dashboard'] = None
 
     while True:
