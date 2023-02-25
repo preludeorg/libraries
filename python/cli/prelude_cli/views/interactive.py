@@ -497,16 +497,19 @@ class DownloadTests:
             show_multi_select_hint=True
         )
         menu.show()
-        for test in menu.chosen_menu_entries:
-            test_id = self.wiz.convert(test, reverse=True)
-            basename = f'{test_id}.go'
-            code = self.wiz.build.download(test_id=test_id, filename=basename)
-            workspace = PurePath(Path.home(), '.prelude', 'workspace', test_id)
-            print(workspace)
 
+        for name in menu.chosen_menu_entries:
+            test_id = self.wiz.convert(name, reverse=True)
+            workspace = PurePath(Path.home(), '.prelude', 'workspace', test_id)
             Path(workspace).mkdir(parents=True, exist_ok=True)
-            with open(PurePath(workspace, basename), 'wb') as test_code:
-                test_code.write(code)
+            test = self.wiz.build.get_test(test_id=test_id)
+
+            for attachment in test.get('attachments'):
+                if Path(attachment).suffix:
+                    code = self.wiz.build.download(test_id=test_id, filename=attachment)
+                    with open(PurePath(workspace, attachment), 'wb') as test_code:
+                        test_code.write(code)
+            print(workspace)
 
 
 class CreateTest:
