@@ -71,13 +71,13 @@ class Wizard:
 
     def load_tests(self):
         try:
-            self.tests = {row['id']: row['name'] for row in self.build.list_tests()}
+            self.tests = {row['id']: row['name'] for row in self.detect.list_tests()}
         except Exception:
             pass
 
     def my_tests(self):
         account_id = self.build.account.headers['account']
-        return {te['id']: te['name'] for te in self.build.list_tests() if te['account_id'] == account_id}
+        return {te['id']: te['name'] for te in self.detect.list_tests() if te['account_id'] == account_id}
     
     def convert(self, i: str, reverse=False):
         if reverse:
