@@ -6,12 +6,12 @@ import prelude_cli.templates as templates
 import importlib.resources as pkg_resources
 
 from rich import print
-from rich.prompt import Prompt
 from rich.console import Console
 from rich.padding import Padding
 from rich.markdown import Markdown
 from pathlib import Path, PurePath
 from collections import OrderedDict
+from rich.prompt import Prompt, Confirm
 from simple_term_menu import TerminalMenu
 from datetime import datetime, timedelta, time
 
@@ -547,7 +547,7 @@ class DeleteTest:
         menu.show()
         for test in menu.chosen_menu_entries:
             test_id = self.wiz.convert(test, reverse=True)
-            print(f'Deleting {test}')
+            print(f'Deleting "{test_id}"')
             self.wiz.build.delete_test(test_id=test_id)
 
 
@@ -573,7 +573,7 @@ class UploadTest:
 
             attachments = list(Path(workspace).glob('*'))
             if not attachments:
-                print(f'{test_id} has no local files')
+                print(f'"{test_id}" has no local files')
                 continue
 
             for fp in attachments:
@@ -650,6 +650,54 @@ class DeleteUser:
             self.wiz.iam.delete_user(handle=handle)
 
 
+class AttachControl:
+
+    def __init__(self, wiz: Wizard):
+        self.wiz = wiz
+
+    def enter(self):
+        menu = ['crowdstrike', 'splunk']
+        answer = TerminalMenu(menu).show()
+        name = menu[answer]
+        api = Prompt.ask('API FQDN', default='https://api.us-2.crowdstrike.com')
+        user = Prompt.ask('User or client ID', default=os.getlogin())
+        secret = Prompt.ask('API token', default='password123')
+        print(f'Attaching "{name}" to your account')
+        self.wiz.iam.attach_control(name=name, api=api, user=user, secret=secret)
+
+
+class DetachControl:
+
+    def __init__(self, wiz: Wizard):
+        self.wiz = wiz
+
+    def enter(self):
+        account = self.wiz.iam.get_account()
+        controls = [ctrl['name'] for ctrl in account['controls']]
+
+        if not controls:
+            print('No controls exist for this account')
+
+        menu = TerminalMenu(controls, multi_select=True, show_multi_select_hint=True)
+        menu.show()
+
+        for name in menu.chosen_menu_entries:
+            print(f'Detaching "{name}" from your account')
+            self.wiz.iam.detach_control(name=name)
+
+
+class DeleteAccount:
+
+    def __init__(self, wiz: Wizard):
+        self.wiz = wiz
+
+    def enter(self):
+        account = self.wiz.iam.get_account()
+        users = [user for user in account['users']]
+        if Confirm.ask(f'Deleting an account is a permanent action which will impact {len(users)} users. Are you sure?'):
+            self.wiz.iam.purge_account()
+
+
 class IAM:
 
     SPLASH="""
@@ -674,9 +722,9 @@ export const Permissions = {
         menu = OrderedDict()
         menu['Create user'] = CreateUser
         menu['Delete user'] = DeleteUser
-        menu['Attach defensive control'] = None
-        menu['Detach defensive control'] = None
-        menu['Delete account'] = None
+        menu['Attach defensive control'] = AttachControl
+        menu['Detach defensive control'] = DetachControl
+        menu['Delete account'] = DeleteAccount
 
         while True:
             try:
