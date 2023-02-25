@@ -469,8 +469,41 @@ EXPLOIT_PREVENTED = 107
                 break
 
 
-def build(wiz):
-    pass
+class Build:
+
+    SPLASH="""
+```bash
+# A sample output from test #b74ad239-2ddd-4b1e-b608-8397a43c7c54
+
+[+] Extracting file for quarantine test
+[+] Pausing for 1 second to gauge defensive reaction
+[-] Malicious file was not caught
+```  
+    """
+
+    def __init__(self, wiz: Wizard):
+        self.wiz = wiz
+
+    def enter(self):
+        self.wiz.splash(self.SPLASH, helper='Verified Security Tests (VST) are production-ready TTPs written in Go')
+
+        menu = OrderedDict()
+        #menu['Browse tests'] = ListTests
+        #menu['Clone test library'] = CloneTests
+        #menu['Create test'] = CreateTest
+        #menu['Delete test'] = DeleteTest
+        #menu['Save test'] = UploadTest
+        #menu['Compile test'] = ComputeTest
+        #menu['Map test'] = MapTest
+        #menu['Unmap test'] = UnmapTest
+
+        while True:
+            try:
+                index = TerminalMenu(menu.keys()).show()
+                answer = list(menu.items())
+                answer[index][1](self.wiz).enter()
+            except Exception:
+                break
 
 
 def iam(wiz):
@@ -494,7 +527,7 @@ def interactive(account):
     menu['Deploy probes'] = Probes(wizard)
     menu['Schedule tests'] = Schedule(wizard)
     menu['View results'] = Results(wizard)
-    menu['Test library'] = build
+    menu['Test library'] = Build(wizard)
     menu['Manage account'] = iam
     menu['Open executive dashboard'] = executive
 
