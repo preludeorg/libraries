@@ -147,7 +147,7 @@ class DeployProbe:
 
     def enter(self):
         endpoint_id = Prompt.ask("Enter an identifier for your probe:", default=socket.gethostname())
-        print(f'Select tags to categorize {endpoint_id}')
+        print(f'Select tags to categorize "{endpoint_id}"')
         menu = TerminalMenu(
             ['laptop', 'server', 'container', 'red', 'green', 'white', 'amber'],
             multi_select=True,
@@ -160,7 +160,7 @@ class DeployProbe:
         tags = menu.chosen_menu_entries or []
         token = self.wiz.detect.register_endpoint(name=endpoint_id, tags=",".join(tags))
         print('> Probes: https://github.com/preludeorg/libraries/tree/master/shell/probe')
-        print(Padding(f'Start any probe executable with token "{token}"', 1))
+        print(Padding(f'Start any probe with token "{token}"', 1))
 
 
 class DeleteProbe:
@@ -542,7 +542,7 @@ class DeleteTest:
         self.wiz = wiz
 
     def enter(self):
-        print('Deleting tests is permanent and is effective immediately')
+        print('Deleting tests is permanent and effective immediately')
         menu = TerminalMenu(
             self.wiz.my_tests().values(),
             multi_select=True,
