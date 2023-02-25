@@ -532,7 +532,11 @@ class CreateTest:
         name = Prompt.ask('Enter a test name', default='Does my defense work?')
         test_id = str(uuid.uuid4())
         self.wiz.build.create_test(test_id=test_id, name=name)
-        self.wiz.load_tests()
+
+        mapping = Confirm.ask('Add a classification (such as a rule or ATT&CK technique)?')
+        if mapping:
+            value = Prompt.ask('Enter a classification ID', default='VSR-2023-0')
+            self.wiz.build.map(test_id=test_id, x=value.replace(' ', ''))
 
         # construct test file
         basename = f'{test_id}.go'
