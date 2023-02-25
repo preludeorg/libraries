@@ -110,7 +110,8 @@ class ViewLogs:
                     menu[entry] = None
                 TerminalMenu(menu.keys()).show()
                 break
-            except Exception:
+            except Exception as ex:
+                self.wiz.console.print(str(ex), style='red')
                 break
 
 
@@ -136,7 +137,8 @@ class ListProbes:
                 index = TerminalMenu(menu.keys()).show()
                 answer = list(menu.items())
                 answer[index][1](self.wiz).enter(e=answer[index][0])
-            except Exception:
+            except Exception as ex:
+                self.wiz.console.print(str(ex), style='red')
                 break
 
 
@@ -210,7 +212,8 @@ do
                 index = TerminalMenu(menu.keys()).show()
                 answer = list(menu.items())
                 answer[index][1](self.wiz).enter()
-            except Exception:
+            except Exception as ex:
+                self.wiz.console.print(str(ex), style='red')
                 break
 
 
@@ -313,7 +316,8 @@ class RunCode(Enum):
                 index = TerminalMenu(menu.keys()).show()
                 answer = list(menu.items())
                 answer[index][1](self.wiz).enter()
-            except Exception:
+            except Exception as ex:
+                self.wiz.console.print(str(ex), style='red')
                 break
 
 
@@ -480,7 +484,8 @@ EXPLOIT_PREVENTED = 107
                 index = TerminalMenu(menu.keys()).show()
                 answer = list(menu.items())
                 answer[index][1](self.wiz).enter()
-            except Exception:
+            except Exception as ex:
+                self.wiz.console.print(str(ex), style='red')
                 break
 
 
@@ -619,7 +624,8 @@ class Build:
                 index = TerminalMenu(menu.keys()).show()
                 answer = list(menu.items())
                 answer[index][1](self.wiz).enter()
-            except Exception:
+            except Exception as ex:
+                self.wiz.console.print(str(ex), style='red')
                 break
 
 
@@ -741,7 +747,8 @@ export const Permissions = {
                 index = TerminalMenu(menu.keys()).show()
                 answer = list(menu.items())
                 answer[index][1](self.wiz).enter()
-            except Exception:
+            except Exception as ex:
+                self.wiz.console.print(str(ex), style='red')
                 break
 
             
@@ -781,3 +788,6 @@ def interactive(account):
             wizard.iam.new_account(handle=os.getlogin())
             keychain = PurePath(Path.home(), '.prelude', 'keychain.ini')
             print(f'Account created! Credentials are stored in your keychain: {keychain}')
+        except Exception as ex:
+            wizard.console.print(str(ex), style='red')
+            break
