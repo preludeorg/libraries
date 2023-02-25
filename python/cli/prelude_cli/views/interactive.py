@@ -1,6 +1,7 @@
 import os
 import uuid
 import click
+import shutil
 import socket
 import prelude_cli.templates as templates
 import importlib.resources as pkg_resources
@@ -69,7 +70,10 @@ class Wizard:
                 print(Padding(helper, 1))
 
     def load_tests(self):
-        self.tests = {row['id']: row['name'] for row in self.build.list_tests()}
+        try:
+            self.tests = {row['id']: row['name'] for row in self.build.list_tests()}
+        except Exception:
+            pass
 
     def my_tests(self):
         account_id = self.build.account.headers['account']
@@ -463,7 +467,7 @@ EXPLOIT_PREVENTED = 107
         self.wiz = wiz
 
     def enter(self):
-        self.wiz.splash(self.SPLASH, helper='Detect records a code for each executed test, which explains what happened')
+        self.wiz.splash(self.SPLASH, helper='Detect records a code for each executed test to explain what happened')
 
         menu = OrderedDict()
         menu['Results by day'] = ViewDays
@@ -569,13 +573,13 @@ class UploadTest:
             test_id = self.wiz.convert(test, reverse=True)
 
             workspace = PurePath(Path.home(), '.prelude', 'workspace', test_id)
-            print(f'Uploading {workspace}')
 
             attachments = list(Path(workspace).glob('*'))
             if not attachments:
-                print(f'"{test_id}" has no local files')
+                print(f'"{test_id}" must exist in your workspace ({workspace})')
                 continue
 
+            print(f'Uploading {workspace}')
             for fp in attachments:
                 with open(fp, 'r') as attachment:
                     name = Path(fp).name
@@ -696,6 +700,8 @@ class DeleteAccount:
         users = [user for user in account['users']]
         if Confirm.ask(f'Deleting an account is a permanent action which will impact {len(users)} users. Are you sure?'):
             self.wiz.iam.purge_account()
+            shutil.rmtree(PurePath(Path.home(), '.prelude'))
+            quit()
 
 
 class IAM:
@@ -705,7 +711,7 @@ class IAM:
 export const Permissions = {
   ADMIN: 0,  // full access 
   EXECUTIVE: 1, // read-only to dashboard
-  BUILD: 2,  // read-only to dashboard + developer hub
+  BUILD: 2,  // executive permissions + developer hub access
   SERVICE: 3, // register new endpoints
   PRELUDE: 4  // read-only access to the activity API
   NONE: 5,
@@ -754,9 +760,20 @@ def interactive(account):
 
     while True:
         try:
+            if not wizard.tests:
+                raise PermissionError('No local keychain found. Would you like to create a Prelude account?')
+            
             index = TerminalMenu(menu.keys()).show()
             answer = list(menu.items())
             answer[index][1].enter()
         except TypeError:
             print(Padding('Goodbye. May the force of Verified Security Tests be with you.', 1))
             break
+        except PermissionError as pe:
+            yes = Confirm.ask(str(pe))
+            if not yes:
+                break
+
+            wizard.iam.new_account(handle=os.getlogin())
+            keychain = PurePath(Path.home(), '.prelude', 'keychain.ini')
+            print(f'Account created! Credentials are stored in your keychain: {keychain}')
