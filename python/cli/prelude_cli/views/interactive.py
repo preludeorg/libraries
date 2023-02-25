@@ -16,6 +16,7 @@ from rich.prompt import Prompt, Confirm
 from simple_term_menu import TerminalMenu
 from datetime import datetime, timedelta, time
 
+from prelude_cli.views.shared import handle_api_error
 from prelude_sdk.controllers.iam_controller import IAMController
 from prelude_sdk.models.codes import RunCode, ExitCode, Permission
 from prelude_sdk.controllers.build_controller import BuildController
@@ -95,6 +96,8 @@ class ViewLogs:
     def __init__(self, wiz: Wizard):
         self.wiz = wiz
 
+
+    @handle_api_error
     def enter(self, e: str):
         while True:
             try:
@@ -110,8 +113,7 @@ class ViewLogs:
                     menu[entry] = None
                 TerminalMenu(menu.keys()).show()
                 break
-            except Exception as ex:
-                self.wiz.console.print(str(ex), style='red')
+            except Exception:
                 break
 
 
@@ -120,6 +122,7 @@ class ListProbes:
     def __init__(self, wiz: Wizard):
         self.wiz = wiz
 
+    @handle_api_error
     def enter(self):
         my_probes = self.wiz.detect.describe_activity(view='probes', filters=self.wiz.filters)
         states = {x['state'] for x in my_probes}
@@ -137,8 +140,7 @@ class ListProbes:
                 index = TerminalMenu(menu.keys()).show()
                 answer = list(menu.items())
                 answer[index][1](self.wiz).enter(e=answer[index][0])
-            except Exception as ex:
-                self.wiz.console.print(str(ex), style='red')
+            except Exception:
                 break
 
 
@@ -199,6 +201,7 @@ do
     def __init__(self, wiz: Wizard):
         self.wiz = wiz
 
+    @handle_api_error
     def enter(self):
         self.wiz.splash(self.SPLASH, helper='Probes are 1 KB processes that run on endpoints and execute security tests')
 
@@ -212,8 +215,7 @@ do
                 index = TerminalMenu(menu.keys()).show()
                 answer = list(menu.items())
                 answer[index][1](self.wiz).enter()
-            except Exception as ex:
-                self.wiz.console.print(str(ex), style='red')
+            except Exception:
                 break
 
 
@@ -303,6 +305,7 @@ class RunCode(Enum):
     def __init__(self, wiz: Wizard):
         self.wiz = wiz
 
+    @handle_api_error
     def enter(self):
         self.wiz.splash(self.SPLASH, helper='Verified Security Tests can be scheduled according to run codes')
 
@@ -316,8 +319,7 @@ class RunCode(Enum):
                 index = TerminalMenu(menu.keys()).show()
                 answer = list(menu.items())
                 answer[index][1](self.wiz).enter()
-            except Exception as ex:
-                self.wiz.console.print(str(ex), style='red')
+            except Exception:
                 break
 
 
@@ -470,6 +472,7 @@ EXPLOIT_PREVENTED = 107
     def __init__(self, wiz: Wizard):
         self.wiz = wiz
 
+    @handle_api_error
     def enter(self):
         self.wiz.splash(self.SPLASH, helper='Detect records a code for each executed test to explain what happened')
 
@@ -484,8 +487,7 @@ EXPLOIT_PREVENTED = 107
                 index = TerminalMenu(menu.keys()).show()
                 answer = list(menu.items())
                 answer[index][1](self.wiz).enter()
-            except Exception as ex:
-                self.wiz.console.print(str(ex), style='red')
+            except Exception:
                 break
 
 
@@ -562,6 +564,7 @@ class DeleteTest:
             test_id = self.wiz.convert(test, reverse=True)
             print(f'Deleting "{test_id}"')
             self.wiz.build.delete_test(test_id=test_id)
+            shutil.rmtree(PurePath(Path.home(), '.prelude', 'workspace', test_id))
 
 
 class UploadTest:
@@ -585,7 +588,7 @@ class UploadTest:
 
             attachments = list(Path(workspace).glob('*'))
             if not attachments:
-                print(f'"{test_id}" must exist in your workspace ({workspace})')
+                print(f'Workspace missing test: {workspace}')
                 continue
 
             print(f'Uploading {workspace}')
@@ -610,6 +613,7 @@ class Build:
     def __init__(self, wiz: Wizard):
         self.wiz = wiz
 
+    @handle_api_error
     def enter(self):
         self.wiz.splash(self.SPLASH, helper='Verified Security Tests (VST) are production-ready TTPs written in Go')
 
@@ -624,8 +628,7 @@ class Build:
                 index = TerminalMenu(menu.keys()).show()
                 answer = list(menu.items())
                 answer[index][1](self.wiz).enter()
-            except Exception as ex:
-                self.wiz.console.print(str(ex), style='red')
+            except Exception:
                 break
 
 
@@ -732,6 +735,7 @@ export const Permissions = {
     def __init__(self, wiz: Wizard):
         self.wiz = wiz
 
+    @handle_api_error
     def enter(self):
         self.wiz.splash(self.SPLASH, helper='Prelude accounts can contain multiple users with different permissions')
 
@@ -747,8 +751,7 @@ export const Permissions = {
                 index = TerminalMenu(menu.keys()).show()
                 answer = list(menu.items())
                 answer[index][1](self.wiz).enter()
-            except Exception as ex:
-                self.wiz.console.print(str(ex), style='red')
+            except Exception:
                 break
 
             
