@@ -445,9 +445,9 @@ class ViewRecommendations:
                 menu[entry] = None
             TerminalMenu(menu.keys()).show()
         else:
-            print('No recommendations are available at this time')
+            print('No recommendations are available')
 
-    
+
 class Results:
 
     SPLASH="""
@@ -523,6 +523,7 @@ class CreateTest:
         name = Prompt.ask('Enter a test name', default='Does my defense work?')
         test_id = str(uuid.uuid4())
         self.wiz.build.create_test(test_id=test_id, name=name)
+        self.wiz.load_tests()
 
         # construct test file
         basename = f'{test_id}.go'
@@ -537,7 +538,7 @@ class CreateTest:
         Path(workspace).mkdir(parents=True, exist_ok=True)
         with open(PurePath(workspace, basename), 'w') as test_code:
             test_code.write(template)
-
+        
 
 class DeleteTest:
 
