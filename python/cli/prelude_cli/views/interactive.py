@@ -208,8 +208,8 @@ do
         self.wiz.splash(self.SPLASH, helper='Probes are 1 KB processes that run on endpoints and execute security tests')
 
         menu = OrderedDict()
-        menu['View probe logs'] = ListProbes
         menu['Deploy new probe'] = DeployProbe
+        menu['View probe logs'] = ListProbes
         menu['Delete existing probe'] = DeleteProbe
 
         while True:
@@ -644,9 +644,9 @@ class CreateUser:
         handle = Prompt.ask('Enter a user handle', default=os.getlogin())
         menu = [p.name for p in Permission]
         answer = TerminalMenu(menu).show()
-
         expires = datetime.utcnow() + timedelta(days=365)
-        print(f'Creating "{handle}" with {Permission(answer)}')
+
+        print(f'Creating "{handle}"')
         self.wiz.iam.create_user(handle=handle, permission=answer, expires=expires)
 
 
@@ -753,7 +753,8 @@ export const Permissions = {
                 index = TerminalMenu(menu.keys()).show()
                 answer = list(menu.items())
                 answer[index][1](self.wiz).enter()
-            except Exception:
+            except Exception as e:
+                print(str(e))
                 break
 
             
