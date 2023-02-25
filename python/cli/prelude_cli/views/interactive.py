@@ -16,7 +16,7 @@ from prelude_sdk.controllers.build_controller import BuildController
 from prelude_sdk.controllers.detect_controller import DetectController
 
 
-MARKDOWN_1="""
+HELLO="""
 ```go
 package main
 
@@ -38,41 +38,16 @@ func main() {
 ```
 """
 
-MARKDOWN_2="""
-```bash
-# My name is Nocturnal and I am the Detect probe for Linux and MacOS
-# Find the full source-code at https://github.com/preludeorg/libraries
-
-while :
-do
-    temp=$(mktemp)
-    location=$(curl -sL -w %{url_effective} -o $temp -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "dat:${dat}" $PRELUDE_API)
-    test=$(echo $location | grep -o '[0-9a-f]\{8\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{12\}' | head -n 1)
-```
-"""
-
-MARKDOWN_3="""
-```python
-class RunCode(Enum):
-    DAILY = 1
-    WEEKLY = 2
-    MONTHLY = 3
-```    
-"""
-
-MARKDOWN_4="""
-
-"""
 
 class Wizard:
 
     def __init__(self, account):
-        # controllers
+        # SDK controllers
         self.iam = IAMController(account=account)
         self.build = BuildController(account=account)
         self.detect = DetectController(account=account)
-        # instances
-        self.shown_splashes = []
+        # odds & ends
+        self.cached_splashes = []
         self.tests = dict()
         self.console = Console()
         self.filters = dict(
@@ -82,9 +57,9 @@ class Wizard:
 
     def splash(self, markdown: str, helper: str = None):
         identifier = hash(markdown)
-        if identifier not in self.shown_splashes:
+        if identifier not in self.cached_splashes:
             self.console.print(Markdown(markdown))
-            self.shown_splashes.append(identifier)
+            self.cached_splashes.append(identifier)
             if helper:
                 print(Padding(helper, 1))
 
@@ -102,49 +77,62 @@ class Wizard:
         return (element or '').ljust(chars, " ")
 
 
-def probes(wiz):
-    def list_probes():
-        def logs(e):
-            endpoint_id = e.split(' ')[0]
-            filters = wiz.filters.copy()
-            filters['endpoints'] = endpoint_id
-            logs = wiz.detect.describe_activity(view='logs', filters=filters)
-            print(f'{endpoint_id} has {len(logs)} results over the last 30 days')
+class ViewLogs:
 
-            menu = OrderedDict()
-            for log in logs:
-                entry = f'{wiz.normalize(log["date"], 30)} {wiz.normalize(ExitCode(log["status"]).name, 15)} {wiz.convert(log["test"])}'
-                menu[entry] = None
-            TerminalMenu(menu.keys()).show()
+    def __init__(self, wiz: Wizard):
+        self.wiz = wiz
 
-        my_probes = wiz.detect.describe_activity(view='probes', filters=wiz.filters)
+    def enter(self, e: str):
+        while True:
+            try:
+                endpoint_id = e.split(' ')[0]
+                filters = self.wiz.filters.copy()
+                filters['endpoints'] = endpoint_id
+                logs = self.wiz.detect.describe_activity(view='logs', filters=filters)
+                print(f'> {endpoint_id} has {len(logs)} results over the last 30 days')
+
+                menu = OrderedDict()
+                for log in logs:
+                    entry = f'{self.wiz.normalize(log["date"], 30)} {self.wiz.normalize(ExitCode(log["status"]).name, 15)} {self.wiz.convert(log["test"])}'
+                    menu[entry] = None
+                TerminalMenu(menu.keys()).show()
+                break
+            except Exception:
+                break
+
+
+class ListProbes:
+
+    def __init__(self, wiz: Wizard):
+        self.wiz = wiz
+
+    def enter(self):
+        my_probes = self.wiz.detect.describe_activity(view='probes', filters=self.wiz.filters)
         states = {x['state'] for x in my_probes}
         dos = {x['dos'] for x in my_probes}
         tags = {tag for x in my_probes for tag in x['tags']}
         print(f'Last 30 days: {len(my_probes)} probes in {len(states)} states, across {len(dos)} operating systems, with {len(tags)} tags')
-        
-        # menu: options
+
         menu = OrderedDict()
         for probe in my_probes:
-            entry = f'{wiz.normalize(probe["endpoint_id"], 20)} {wiz.normalize(probe["dos"], 15)} {wiz.normalize(probe["state"], 15)} {",".join(probe["tags"])}'
-            menu[entry] = logs
-        # menu: display
-        index = TerminalMenu(menu.keys()).show()
-        answer = list(menu.items())
-        answer[index][1](e=answer[index][0])
+            entry = f'{self.wiz.normalize(probe["endpoint_id"], 20)} {self.wiz.normalize(probe["dos"], 15)} {self.wiz.normalize(probe["state"], 15)} {",".join(probe["tags"])}'
+            menu[entry] = ViewLogs
 
-    def delete_probe():
-        menu = TerminalMenu(
-            [entry['endpoint_id'] for entry in wiz.detect.list_endpoints()],
-            multi_select=True,
-            show_multi_select_hint=True,
-        )
-        menu.show()
+        while True:
+            try:
+                index = TerminalMenu(menu.keys()).show()
+                answer = list(menu.items())
+                answer[index][1](self.wiz).enter(e=answer[index][0])
+            except Exception:
+                break
 
-        for ep in list(menu.chosen_menu_entries):
-            wiz.detect.delete_endpoint(ident=ep)
 
-    def deploy_new():
+class DeployProbe:
+
+    def __init__(self, wiz: Wizard):
+        self.wiz = wiz
+
+    def enter(self):
         endpoint_id = Prompt.ask("Enter an identifier for your probe:", default=socket.gethostname())
         menu = TerminalMenu(
             ['laptop', 'server', 'container', 'red', 'green', 'white', 'amber'],
@@ -154,95 +142,175 @@ def probes(wiz):
             multi_select_empty_ok=True
         )
         menu.show()
+
         tags = menu.chosen_menu_entries or []
-        token = wiz.detect.register_endpoint(name=endpoint_id, tags=",".join(tags))
-        print('Installers: https://github.com/preludeorg/libraries/tree/master/shell/install')
-        print(Padding(f'Use an installer with token {token} to deploy a probe', 1))
-
-    wiz.splash(
-        markdown=MARKDOWN_2, 
-        helper='Probes are 1 kilobyte processes that run on endpoints and execute security tests'
-    )
-
-    # menu: options
-    menu = OrderedDict()
-    menu['View deployed probes'] = list_probes
-    menu['Deploy new probe'] = deploy_new
-    menu['Delete existing probe'] = delete_probe
-    # menu: display
-    index = TerminalMenu(menu.keys()).show()
-    answer = list(menu.items())
-    answer[index][1]()
+        token = self.wiz.detect.register_endpoint(name=endpoint_id, tags=",".join(tags))
+        print('> Probes: https://github.com/preludeorg/libraries/tree/master/shell/probe')
+        print(Padding(f'Start any probe with token {token}', 1))
 
 
-def schedule(wiz):
-    def list_queue():
+class DeleteProbe:
+
+    def __init__(self, wiz: Wizard):
+        self.wiz = wiz
+
+    def enter(self):
+        menu = TerminalMenu(
+            [entry['endpoint_id'] for entry in self.wiz.detect.list_endpoints()],
+            multi_select=True,
+            show_multi_select_hint=True,
+        )
+        menu.show()
+
+        for ep in menu.chosen_menu_entries:
+            self.wiz.detect.delete_endpoint(ident=ep)
+
+
+class Probes:
+
+    SPLASH="""
+```bash
+# My name is Nocturnal and I am the Detect probe for Linux and MacOS
+# Find the full source-code at https://github.com/preludeorg/libraries
+
+while :
+do
+    temp=$(mktemp)
+    location=$(curl -sL -w %{url_effective} -o $temp -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "dat:${dat}" $PRELUDE_API)
+    test=$(echo $location | grep -o '[0-9a-f]\{8\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{12\}' | head -n 1)
+```
+    """
+
+    def __init__(self, wiz: Wizard):
+        self.wiz = wiz
+
+    def enter(self):
+        self.wiz.splash(self.SPLASH, helper='Probes are 1 KB processes that run on endpoints and execute security tests')
+
         menu = OrderedDict()
-        for item in wiz.detect.list_queue():
-            entry = f'{wiz.normalize(RunCode(item["run_code"]).name, 10)} {wiz.normalize(item.get("tag"), 10)} {wiz.normalize(item["started"], 15)} {wiz.convert(item["test"])}'
+        menu['View probe logs'] = ListProbes
+        menu['Deploy new probe'] = DeployProbe
+        menu['Delete existing probe'] = DeleteProbe
+
+        while True:
+            try:
+                index = TerminalMenu(menu.keys()).show()
+                answer = list(menu.items())
+                answer[index][1](self.wiz).enter()
+            except Exception:
+                break
+
+
+class ViewSchedule:
+
+    def __init__(self, wiz: Wizard):
+        self.wiz = wiz
+
+    def enter(self):
+        menu = OrderedDict()
+        queue = self.wiz.detect.list_queue()
+        print(f'You have {len(queue)} schedules')
+
+        for item in queue:
+            entry = f'{self.wiz.normalize(RunCode(item["run_code"]).name, 10)} {self.wiz.normalize(item.get("tag"), 10)} {self.wiz.normalize(item["started"], 15)} {self.wiz.convert(item["test"])}'
             menu[entry] = None
         TerminalMenu(menu.keys()).show()
 
-    def enable_test():
+
+class AddSchedule:
+
+    def __init__(self, wiz: Wizard):
+        self.wiz = wiz
+
+    def enter(self):
         menu = TerminalMenu(
-            wiz.tests.values(),
+            self.wiz.tests.values(),
             multi_select=True,
             show_multi_select_hint=True,
             multi_select_select_on_accept=False,
             multi_select_empty_ok=True
         )
         menu.show()
-        test_names = [wiz.convert(i, reverse=True) for i in list(menu.chosen_menu_entries)]
+        test_names = [self.wiz.convert(i, reverse=True) for i in list(menu.chosen_menu_entries)]
 
         menu = [RunCode.DAILY.name, RunCode.WEEKLY.name, RunCode.MONTHLY.name]
         index = TerminalMenu(menu, multi_select=False).show()
         run_code = RunCode[menu[index]].value
 
+        print('Apply this schedule to specific probe tags?')
         menu = TerminalMenu(
-            {tag for probe in wiz.detect.list_endpoints() for tag in probe['tags']},
+            {tag for probe in self.wiz.detect.list_endpoints() for tag in probe['tags']},
             multi_select=True,
             show_multi_select_hint=True,
             multi_select_select_on_accept=False,
             multi_select_empty_ok=True
         )
         menu.show()
-        tags = ",".join(menu.chosen_menu_entries)
+        tags = ",".join(menu.chosen_menu_entries or [])
 
         for test in test_names:
-            wiz.detect.enable_test(ident=test, run_code=run_code, tags=tags)
+            print(f'Adding schedule for {test}')
+            self.wiz.detect.enable_test(ident=test, run_code=run_code, tags=tags)
 
-    def disable_test():
+
+class DeleteSchedule:
+
+    def __init__(self, wiz: Wizard):
+        self.wiz = wiz
+
+    def enter(self):
         menu = TerminalMenu(
-            [wiz.convert(entry['test']) for entry in wiz.detect.list_queue()],
+            [self.wiz.convert(entry['test']) for entry in self.wiz.detect.list_queue()],
             multi_select=True,
             show_multi_select_hint=True,
         )
         menu.show()
 
-        for test in [wiz.convert(i, reverse=True) for i in list(menu.chosen_menu_entries)]:
-            wiz.detect.disable_test(ident=test)
-
-    wiz.splash(
-        markdown=MARKDOWN_3,
-        helper='Verified Security Tests can be scheduled according to run codes'
-    )
-    print(Padding(f'', 1))
-
-    # menu: options
-    menu = OrderedDict()
-    menu['View schedule'] = list_queue
-    menu['Add schedule'] = enable_test
-    menu['Remove schedule'] = disable_test
-    # menu: display
-    index = TerminalMenu(menu.keys()).show()
-    answer = list(menu.items())
-    answer[index][1]()
+        for test in [self.wiz.convert(i, reverse=True) for i in list(menu.chosen_menu_entries)]:
+            print(f'Removing schedule for {test}')
+            self.wiz.detect.disable_test(ident=test)
 
 
-def results(wiz):
-    def construct(filters):
-        my_endpoints = wiz.detect.describe_activity(view='probes', filters=wiz.filters)
+class Schedule:
 
+    SPLASH="""
+```python
+class RunCode(Enum):
+    DAILY = 1
+    WEEKLY = 2
+    MONTHLY = 3
+```  
+    """
+
+    def __init__(self, wiz: Wizard):
+        self.wiz = wiz
+
+    def enter(self):
+        self.wiz.splash(self.SPLASH, helper='Verified Security Tests can be scheduled according to run codes')
+
+        menu = OrderedDict()
+        menu['View schedule'] = ViewSchedule
+        menu['Add schedule'] = AddSchedule
+        menu['Remove schedule'] = DeleteSchedule
+
+        while True:
+            try:
+                index = TerminalMenu(menu.keys()).show()
+                answer = list(menu.items())
+                answer[index][1](self.wiz).enter()
+            except Exception:
+                break
+
+
+class FiltersView:
+
+    def __init__(self, wiz: Wizard):
+        self.wiz = wiz
+
+    def process(self, filters):
+        my_endpoints = self.wiz.detect.describe_activity(view='probes', filters=self.wiz.filters)
+
+        print('Filter results by probe tags?')
         menu = TerminalMenu(
             {tag for probe in my_endpoints for tag in probe['tags']},
             multi_select=True,
@@ -254,6 +322,7 @@ def results(wiz):
         if menu.chosen_menu_entries:
             filters['tags'] = ",".join(menu.chosen_menu_entries)
 
+        print('Filter results by operating system?')
         menu = TerminalMenu(
             {probe['dos'] for probe in my_endpoints},
             multi_select=True,
@@ -265,8 +334,9 @@ def results(wiz):
         if menu.chosen_menu_entries:
             filters['dos'] = ",".join(menu.chosen_menu_entries)
 
+        print('Filter results by tests?')
         menu = TerminalMenu(
-            wiz.tests.values(),
+            self.wiz.tests.values(),
             multi_select=True,
             show_multi_select_hint=True,
             multi_select_select_on_accept=False,
@@ -274,86 +344,130 @@ def results(wiz):
         )
         menu.show()
         if menu.chosen_menu_entries:
-            filters['tests'] = ",".join([wiz.convert(i, reverse=True) for i in menu.chosen_menu_entries])
+            filters['tests'] = ",".join([self.wiz.convert(i, reverse=True) for i in menu.chosen_menu_entries])
 
-        menu = TerminalMenu(
-            [c.name for c in ExitCode],
-            multi_select=True,
-            show_multi_select_hint=True,
-            multi_select_select_on_accept=False,
-            multi_select_empty_ok=True
-        )
-        menu.show()
-        if menu.chosen_menu_entries:
-            filters['statuses'] = ",".join([str(ExitCode[x].value) for i in menu.chosen_menu_entries])
 
-    def days():
-        filters = wiz.filters.copy()
-        construct(filters=filters)
+class ViewDays:
 
-        days = wiz.detect.describe_activity(view='days', filters=filters)
+    def __init__(self, wiz: Wizard):
+        self.wiz = wiz
+
+    def enter(self):
+        filters = self.wiz.filters.copy()
+        FiltersView(self.wiz).process(filters)
+
+        days = self.wiz.detect.describe_activity(view='days', filters=filters)
         days.reverse()
 
         menu = OrderedDict()
-        legend = f'{wiz.normalize("date", 15)} {wiz.normalize("unprotected", 15)} {wiz.normalize("total", 15)}'
+        legend = f'{self.wiz.normalize("date", 15)} {self.wiz.normalize("unprotected", 15)} {self.wiz.normalize("total", 15)}'
         menu[legend] = None
         for item in days:
-            entry = f'{wiz.normalize(item["date"], 15)} {wiz.normalize(str(item["unprotected"]), 15)} {wiz.normalize(str(item["count"]), 15)}'
+            entry = f'{self.wiz.normalize(item["date"], 15)} {self.wiz.normalize(str(item["unprotected"]), 15)} {self.wiz.normalize(str(item["count"]), 15)}'
             menu[entry] = None
         TerminalMenu(menu.keys()).show()
 
-    def rules():
-        filters = wiz.filters.copy()
-        construct(filters=filters)
 
-        rules = wiz.detect.describe_activity(view='rules', filters=filters)
+class ViewRules:
+
+    def __init__(self, wiz: Wizard):
+        self.wiz = wiz
+
+    def enter(self):
+        print(Padding('Detect classifies all tests under rules, which judge your endpoints by surface area', 1))
+        filters = self.wiz.filters.copy()
+        FiltersView(self.wiz).process(filters)
+
+        rules = self.wiz.detect.describe_activity(view='rules', filters=filters)
 
         menu = OrderedDict()
-        legend = f'{wiz.normalize("rule", 35)} {wiz.normalize("unprotected", 15)} {wiz.normalize("total", 15)}'
+        legend = f'{self.wiz.normalize("rule", 35)} {self.wiz.normalize("unprotected", 15)} {self.wiz.normalize("total", 15)}'
         menu[legend] = None
         for item in rules:
             rule = item.get('rule')
             usage = item.get('usage')
-            entry = f'{wiz.normalize(rule["label"], 35)} {wiz.normalize(str(usage["unprotected"]), 15)} {wiz.normalize(str(usage["count"]), 15)}'
+            entry = f'{self.wiz.normalize(rule["label"], 35)} {self.wiz.normalize(str(usage["unprotected"]), 15)} {self.wiz.normalize(str(usage["count"]), 15)}'
             menu[entry] = None
         TerminalMenu(menu.keys()).show()
 
-    def insights():
-        filters = wiz.filters.copy()
-        construct(filters=filters)
 
-        insights = wiz.detect.describe_activity(view='insights', filters=filters)
+class ViewInsights:
+
+    def __init__(self, wiz: Wizard):
+        self.wiz = wiz
+
+    def enter(self):
+        print(Padding('A computer generated insight exposes the most vulnerable combinations of test and OS', 1))
+        filters = self.wiz.filters.copy()
+        FiltersView(self.wiz).process(filters)
+
+        insights = self.wiz.detect.describe_activity(view='insights', filters=filters)
 
         menu = OrderedDict()
-        legend = f'{wiz.normalize("unprotected", 15)} {wiz.normalize("protected", 15)} {wiz.normalize("dos", 15)} {"test"}'
+        legend = f'{self.wiz.normalize("unprotected", 15)} {self.wiz.normalize("protected", 15)} {self.wiz.normalize("dos", 15)} {"test"}'
         menu[legend] = None
         for item in insights:
             vol = item['volume']
-            entry = f'{wiz.normalize(str(vol["unprotected"]), 15)} {wiz.normalize(str(vol["protected"]), 15)} {wiz.normalize(item["dos"], 15)} {wiz.convert(item["test"])}'
-            menu[entry] = None
+            if vol['unprotected']:
+                entry = f'{self.wiz.normalize(str(vol["unprotected"]), 15)} {self.wiz.normalize(str(vol["protected"]), 15)} {self.wiz.normalize(item["dos"], 15)} {self.wiz.convert(item["test"])}'
+                menu[entry] = None
         TerminalMenu(menu.keys()).show()
 
-    def recommendations():
+
+class ViewRecommendations:
+
+    def __init__(self, wiz: Wizard):
+        self.wiz = wiz
+
+    def enter(self):
+        print(Padding('The Prelude team provides manual security recommendations for licensed accounts', 1))
         menu = OrderedDict()
-        recommendations = wiz.detect.recommendations()
+        recommendations = self.wiz.detect.recommendations()
 
-        for item in recommendations:
-            entry = f'{wiz.normalize(item["created"]), 15} {wiz.normalize(item["handle"]), 20} {wiz.normalize(item["title"], 50)} {item["description"]}'
-            menu[entry] = None
-        TerminalMenu(menu.keys()).show()
+        if recommendations:
+            for item in recommendations:
+                entry = f'{self.wiz.normalize(item["created"]), 15} {self.wiz.normalize(item["handle"]), 20} {self.wiz.normalize(item["title"], 50)} {item["description"]}'
+                menu[entry] = None
+            TerminalMenu(menu.keys()).show()
+        else:
+            print('No recommendations are available at this time')
 
-    wiz.splash(markdown=MARKDOWN_4, helper='Each result is a granular code to reduce telemetry')
+    
+class Results:
 
-    # menu: options
-    menu = OrderedDict()
-    menu['Results by day'] = days
-    menu['Results by rule'] = rules
-    menu['Computer insights'] = insights
-    menu['Human recommendations'] = recommendations
-    # menu: display
-    index = TerminalMenu(menu.keys()).show()
-    answer = list(menu.items())
-    answer[index][1]()
+    SPLASH="""
+```python
+PROTECTED = 100
+UNPROTECTED = 101
+TIMEOUT = 102
+CLEANUP_ERROR = 103
+NOT_RELEVANT = 104
+QUARANTINED_1 = 105
+OUTBOUND_SECURE = 106
+EXPLOIT_PREVENTED = 107
+```  
+    """
+
+    def __init__(self, wiz: Wizard):
+        self.wiz = wiz
+
+    def enter(self):
+        self.wiz.splash(self.SPLASH, helper='Detect records a code for each executed test, which explains what happened')
+
+        menu = OrderedDict()
+        menu['Results by day'] = ViewDays
+        menu['Results by rule'] = ViewRules
+        menu['Computer insights'] = ViewInsights
+        menu['Human recommendations'] = ViewRecommendations
+
+        while True:
+            try:
+                index = TerminalMenu(menu.keys()).show()
+                answer = list(menu.items())
+                answer[index][1](self.wiz).enter()
+            except Exception:
+                break
+
 
 def build(wiz):
     pass
@@ -371,25 +485,24 @@ def executive(wiz):
 @click.pass_obj
 def interactive(account):
     """ Interactive shell for managing Detect """
-    menu = OrderedDict()
-    menu['Deploy probes'] = probes
-    menu['Schedule tests'] = schedule
-    menu['View results'] = results
-    menu['Customize tests'] = build
-    menu['Manage account'] = iam
-    menu['Open executive dashboard'] = executive
-
     wizard = Wizard(account=account)
-    wizard.splash(MARKDOWN_1)
-
+    wizard.splash(HELLO)
     wizard.load_tests()
     print(Padding(f'Your account has access to {len(wizard.tests)} Verified Security Tests', 1))
+
+    menu = OrderedDict()
+    menu['Deploy probes'] = Probes(wizard)
+    menu['Schedule tests'] = Schedule(wizard)
+    menu['View results'] = Results(wizard)
+    menu['Test library'] = build
+    menu['Manage account'] = iam
+    menu['Open executive dashboard'] = executive
 
     while True:
         try:
             index = TerminalMenu(menu.keys()).show()
             answer = list(menu.items())
-            answer[index][1](wiz=wizard)
+            answer[index][1].enter()
         except TypeError:
-            print('Goodbye!')
+            print(Padding('Goodbye. May the force of Verified Security Tests be with you.', 1))
             break

@@ -142,7 +142,6 @@ def add_recommendation(controller, title, description):
 @click.option('--tags', help='comma-separated list of tags', type=str)
 @click.option('--endpoints', help='comma-separated list of endpoint IDs', type=str)
 @click.option('--dos', help='comma-separated list of DOS', type=str)
-@click.option('--statuses', help='comma-separated list of statuses', type=str)
 @click.pass_obj
 @handle_api_error
 def describe_activity(controller, days, view, tests, tags, endpoints, dos, statuses, convert):
@@ -166,8 +165,6 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos, statu
         filters['tags'] = tags
     if endpoints:
         filters['endpoints'] = endpoints
-    if statuses:
-        filters['statuses'] = statuses
     if dos:
         filters['dos'] = dos
 
