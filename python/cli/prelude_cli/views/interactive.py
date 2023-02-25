@@ -131,6 +131,8 @@ class ListProbes:
         print(f'Last 30 days: {len(my_probes)} probes in {len(states)} states, across {len(dos)} operating systems, with {len(tags)} tags')
 
         menu = OrderedDict()
+        legend = f'{self.wiz.normalize("endpoint_id", 20)} {self.wiz.normalize("os", 15)} {self.wiz.normalize("state", 15)} tags'
+        menu[legend] = None
         for probe in my_probes:
             entry = f'{self.wiz.normalize(probe["endpoint_id"], 20)} {self.wiz.normalize(probe["dos"], 15)} {self.wiz.normalize(probe["state"], 15)} {",".join(probe["tags"])}'
             menu[entry] = ViewLogs
@@ -179,7 +181,7 @@ class DeleteProbe:
         menu.show()
 
         for ep in menu.chosen_menu_entries:
-            print(f'Deleting {ep}')
+            print(f'Deleting "{ep}"')
             self.wiz.detect.delete_endpoint(ident=ep)
 
 
