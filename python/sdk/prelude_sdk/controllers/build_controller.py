@@ -10,15 +10,6 @@ class BuildController:
         self.account = account
 
     @verify_credentials
-    def list_tests(self):
-        """ List all tests available to an account """
-        with Spinner():
-            res = requests.get(f'{self.account.hq}/build/tests', headers=self.account.headers)
-            if res.status_code == 200:
-                return res.json()
-            raise Exception(res.text)
-
-    @verify_credentials
     def create_test(self, test_id, name):
         """ Create or update a test """
         with Spinner():

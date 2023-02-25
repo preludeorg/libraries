@@ -4,9 +4,9 @@ import click
 import prelude_cli.templates as templates
 import importlib.resources as pkg_resources
 
+from pathlib import Path
 from rich import print_json
 from datetime import datetime
-from pathlib import Path, PurePath
 
 from prelude_cli.views.shared import handle_api_error
 from prelude_sdk.controllers.build_controller import BuildController
@@ -20,31 +20,6 @@ UUID = re.compile('[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a
 def build(ctx):
     """ Terminal-based security test environment """
     ctx.obj = BuildController(account=ctx.obj)
-
-
-@build.command('clone')
-@click.pass_obj
-@handle_api_error
-def clone(controller):
-    """ Download all tests to your local environment """
-    for test in controller.list_tests():
-        click.secho(f'Cloning {test["id"]}')
-        my_test = PurePath('prelude', test['id'])
-        Path(my_test).mkdir(parents=True, exist_ok=True)
-
-        for attach in controller.get_test(test_id=test['id']).get('attachments'):
-            if Path(attach).suffix:
-                code = controller.download(test_id=test['id'], filename=attach)
-                with open(PurePath(my_test, attach), 'wb') as f:
-                    f.write(code)
-    click.secho('Project cloned successfully', fg='green')
-
-@build.command('tests')
-@click.pass_obj
-@handle_api_error
-def list_tests(controller):
-    """ List all security tests """
-    print_json(data=controller.list_tests())
 
 
 @build.command('test')
