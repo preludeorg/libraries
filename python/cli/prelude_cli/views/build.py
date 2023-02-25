@@ -117,24 +117,6 @@ def upload_attachment(controller, path, test):
             upload(p=Path(obj))
 
 
-@build.command('url')
-@click.argument('attachment')
-@click.pass_obj
-@handle_api_error
-def create_url(controller, attachment):
-    """ Generate a download URL from an attachment """
-    print_json(data=controller.create_url(attachment=attachment))
-
-
-@build.command('compute')
-@click.argument('test')
-@click.pass_obj
-@handle_api_error
-def compute(controller, test):
-    """ Create a VST from a test """
-    print_json(data=controller.compute(test_id=test))
-
-
 @build.command('map')
 @click.argument('test')
 @click.argument('identifier')

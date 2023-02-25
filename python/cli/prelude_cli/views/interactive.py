@@ -1,11 +1,15 @@
+import uuid
 import click
 import socket
+import prelude_cli.templates as templates
+import importlib.resources as pkg_resources
 
 from rich import print
 from rich.prompt import Prompt
 from rich.console import Console
 from rich.padding import Padding
 from rich.markdown import Markdown
+from pathlib import Path, PurePath
 from collections import OrderedDict
 from simple_term_menu import TerminalMenu
 from datetime import datetime, timedelta, time
@@ -66,6 +70,10 @@ class Wizard:
     def load_tests(self):
         self.tests = {row['id']: row['name'] for row in self.build.list_tests()}
 
+    def my_tests(self):
+        account_id = self.build.account.headers['account']
+        return {te['id']: te['name'] for te in self.build.list_tests() if te['account_id'] == account_id}
+    
     def convert(self, i: str, reverse=False):
         if reverse:
             rvs = dict((v, k) for k, v in self.tests.items())
@@ -134,6 +142,7 @@ class DeployProbe:
 
     def enter(self):
         endpoint_id = Prompt.ask("Enter an identifier for your probe:", default=socket.gethostname())
+        print(f'Select tags to categorize {endpoint_id}')
         menu = TerminalMenu(
             ['laptop', 'server', 'container', 'red', 'green', 'white', 'amber'],
             multi_select=True,
@@ -146,7 +155,7 @@ class DeployProbe:
         tags = menu.chosen_menu_entries or []
         token = self.wiz.detect.register_endpoint(name=endpoint_id, tags=",".join(tags))
         print('> Probes: https://github.com/preludeorg/libraries/tree/master/shell/probe')
-        print(Padding(f'Start any probe with token {token}', 1))
+        print(Padding(f'Start any probe executable with token {token}', 1))
 
 
 class DeleteProbe:
@@ -155,14 +164,13 @@ class DeleteProbe:
         self.wiz = wiz
 
     def enter(self):
-        menu = TerminalMenu(
-            [entry['endpoint_id'] for entry in self.wiz.detect.list_endpoints()],
-            multi_select=True,
-            show_multi_select_hint=True,
-        )
+        my_probes = [entry['endpoint_id'] for entry in self.wiz.detect.list_endpoints()]
+        print(f'You have {len(my_probes)} registered probes')
+        menu = TerminalMenu(my_probes, multi_select=True, show_multi_select_hint=True)
         menu.show()
 
         for ep in menu.chosen_menu_entries:
+            print(f'Deleting {ep}')
             self.wiz.detect.delete_endpoint(ident=ep)
 
 
@@ -211,6 +219,8 @@ class ViewSchedule:
         queue = self.wiz.detect.list_queue()
         print(f'You have {len(queue)} schedules')
 
+        legend = f'{self.wiz.normalize("schedule", 10)} {self.wiz.normalize("tag", 10)} {self.wiz.normalize("started", 15)} {"test"}'
+        menu[legend] = None
         for item in queue:
             entry = f'{self.wiz.normalize(RunCode(item["run_code"]).name, 10)} {self.wiz.normalize(item.get("tag"), 10)} {self.wiz.normalize(item["started"], 15)} {self.wiz.convert(item["test"])}'
             menu[entry] = None
@@ -374,7 +384,7 @@ class ViewRules:
         self.wiz = wiz
 
     def enter(self):
-        print(Padding('Detect classifies all tests under rules, which judge your endpoints by surface area', 1))
+        print(Padding('Detect classifies tests under rules, which analyze the surface area of an operating system', 1))
         filters = self.wiz.filters.copy()
         FiltersView(self.wiz).process(filters)
 
@@ -469,15 +479,117 @@ EXPLOIT_PREVENTED = 107
                 break
 
 
+class DownloadTests:
+
+    def __init__(self, wiz: Wizard):
+        self.wiz = wiz
+
+    def enter(self):
+        print('Prelude tests are immutable but you can download their source code')
+        menu = TerminalMenu(
+            self.wiz.tests.values(),
+            multi_select=True,
+            show_multi_select_hint=True
+        )
+        menu.show()
+        for test in menu.chosen_menu_entries:
+            test_id = self.wiz.convert(test, reverse=True)
+            basename = f'{test_id}.go'
+            code = self.wiz.build.download(test_id=test_id, filename=basename)
+            workspace = PurePath(Path.home(), '.prelude', 'workspace', test_id)
+            print(workspace)
+
+            Path(workspace).mkdir(parents=True, exist_ok=True)
+            with open(PurePath(workspace, basename), 'wb') as test_code:
+                test_code.write(code)
+
+
+class CreateTest:
+
+    def __init__(self, wiz: Wizard):
+        self.wiz = wiz
+
+    def enter(self):
+        print('Build your own tests to customize your security testing')
+        # save test
+        name = Prompt.ask('Enter a test name', default='Does my defense work?')
+        test_id = str(uuid.uuid4())
+        self.wiz.build.create_test(test_id=test_id, name=name)
+
+        # construct test file
+        basename = f'{test_id}.go'
+        template = pkg_resources.read_text(templates, 'template.go')
+        template = template.replace('$ID', test_id)
+        template = template.replace('$NAME', name)
+        template = template.replace('$CREATED', str(datetime.utcnow()))
+
+        # write test file
+        workspace = PurePath(Path.home(), '.prelude', 'workspace', test_id)
+        print(workspace)
+        Path(workspace).mkdir(parents=True, exist_ok=True)
+        with open(PurePath(workspace, basename), 'w') as test_code:
+            test_code.write(template)
+
+
+class DeleteTest:
+
+    def __init__(self, wiz: Wizard):
+        self.wiz = wiz
+
+    def enter(self):
+        print('Deleting tests is permanent and is effective immediately')
+        menu = TerminalMenu(
+            self.wiz.my_tests().values(),
+            multi_select=True,
+            show_multi_select_hint=True
+        )
+        menu.show()
+        for test in menu.chosen_menu_entries:
+            test_id = self.wiz.convert(test, reverse=True)
+            print(f'Deleting {test}')
+            self.wiz.build.delete_test(test_id=test_id)
+
+
+class UploadTest:
+
+    def __init__(self, wiz: Wizard):
+        self.wiz = wiz
+
+    def enter(self):
+        print('Tests must be uploaded before they can be scheduled')
+        menu = TerminalMenu(
+            self.wiz.my_tests().values(),
+            multi_select=True,
+            show_multi_select_hint=True
+        )
+        menu.show()
+        
+        for test in menu.chosen_menu_entries:
+            test_id = self.wiz.convert(test, reverse=True)
+
+            workspace = PurePath(Path.home(), '.prelude', 'workspace', test_id)
+            print(f'Uploading {workspace}')
+
+            attachments = list(Path(workspace).glob('*'))
+            if not attachments:
+                print(f'{test_id} has no local files')
+                continue
+
+            for fp in attachments:
+                with open(fp, 'r') as attachment:
+                    name = Path(fp).name
+                    self.wiz.build.upload(test_id=test_id, filename=name, code=attachment.read())
+
+
 class Build:
 
     SPLASH="""
 ```bash
-# A sample output from test #b74ad239-2ddd-4b1e-b608-8397a43c7c54
+# Find all open-source tests at https://github.com/preludeorg/test
 
 [+] Extracting file for quarantine test
 [+] Pausing for 1 second to gauge defensive reaction
-[-] Malicious file was not caught
+[-] Malicious file was not caught!
 ```  
     """
 
@@ -488,14 +600,10 @@ class Build:
         self.wiz.splash(self.SPLASH, helper='Verified Security Tests (VST) are production-ready TTPs written in Go')
 
         menu = OrderedDict()
-        #menu['Browse tests'] = ListTests
-        #menu['Clone test library'] = CloneTests
-        #menu['Create test'] = CreateTest
-        #menu['Delete test'] = DeleteTest
-        #menu['Save test'] = UploadTest
-        #menu['Compile test'] = ComputeTest
-        #menu['Map test'] = MapTest
-        #menu['Unmap test'] = UnmapTest
+        menu['Create new test'] = CreateTest
+        menu['Download test'] = DownloadTests
+        menu['Upload test'] = UploadTest
+        menu['Delete test'] = DeleteTest
 
         while True:
             try:
@@ -504,14 +612,6 @@ class Build:
                 answer[index][1](self.wiz).enter()
             except Exception:
                 break
-
-
-def iam(wiz):
-    pass
-
-
-def executive(wiz):
-    pass
 
 
 @click.command()
@@ -527,9 +627,9 @@ def interactive(account):
     menu['Deploy probes'] = Probes(wizard)
     menu['Schedule tests'] = Schedule(wizard)
     menu['View results'] = Results(wizard)
-    menu['Test library'] = Build(wizard)
-    menu['Manage account'] = iam
-    menu['Open executive dashboard'] = executive
+    menu['Developer hub'] = Build(wizard)
+    menu['Manage account'] = None
+    menu['Open executive dashboard'] = None
 
     while True:
         try:
