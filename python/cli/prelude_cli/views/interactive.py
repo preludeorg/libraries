@@ -20,6 +20,7 @@ from prelude_cli.views.shared import handle_api_error
 from prelude_sdk.controllers.iam_controller import IAMController
 from prelude_sdk.models.codes import RunCode, ExitCode, Permission
 from prelude_sdk.controllers.build_controller import BuildController
+from prelude_sdk.controllers.probe_controller import ProbeController
 from prelude_sdk.controllers.detect_controller import DetectController
 
 
@@ -52,6 +53,7 @@ class Wizard:
         # SDK controllers
         self.iam = IAMController(account=account)
         self.build = BuildController(account=account)
+        self.probe = ProbeController(account=account)
         self.detect = DetectController(account=account)
         # odds & ends
         self.cached_splashes = []
@@ -152,10 +154,14 @@ class DeployProbe:
         self.wiz = wiz
 
     def enter(self):
+        # register endpoint
         endpoint_id = Prompt.ask("Enter an identifier for your probe:", default=socket.gethostname())
+
         print(f'Select tags to categorize "{endpoint_id}"')
+        tlp_colors = ['TLP:CLEAR', 'TLP:GREEN', 'TLP:AMBER', 'TLP:AMBER+STRICT', 'TLP:RED']
+        systems = ['workstation', 'server', 'container', 'cloud']
         menu = TerminalMenu(
-            ['laptop', 'server', 'container', 'red', 'green', 'white', 'amber'],
+            systems + tlp_colors,
             multi_select=True,
             show_multi_select_hint=True,
             multi_select_select_on_accept=False,
@@ -165,8 +171,27 @@ class DeployProbe:
 
         tags = menu.chosen_menu_entries or []
         token = self.wiz.detect.register_endpoint(name=endpoint_id, tags=",".join(tags))
-        print('> Probes: https://github.com/preludeorg/libraries/tree/master/shell/probe')
-        print(Padding(f'Start any probe with token "{token}"', 1))
+        
+        # download executable
+        probe_options = OrderedDict()
+        probe_options['windows'] = 'raindrop'
+        probe_options['darwin'] = 'nocturnal'
+        probe_options['linux'] = 'nocturnal'
+
+        print('Which probe do you want?')
+        index = TerminalMenu(probe_options.keys()).show()
+        answer = list(probe_options.items())
+        platform = answer[index]
+        code = self.wiz.probe.download(name=platform[1], dos=f'{platform[0]}-x86_64')
+
+        # customize probe
+        extension = '.ps1' if platform[0] == 'windows' else ''
+        auth = f'SETX PRELUDE_TOKEN {token}' if platform[0] == 'windows' else f'export PRELUDE_TOKEN={token}'
+
+        custom_probe = PurePath(Path.home(), '.prelude', f'{endpoint_id}{extension}')
+        with open(custom_probe, 'w') as probe_code:
+            probe_code.write(f'{auth}\n{code}')
+            print(f'Downloaded {custom_probe}')
 
 
 class DeleteProbe:
@@ -208,8 +233,8 @@ do
         self.wiz.splash(self.SPLASH, helper='Probes are 1 KB processes that run on endpoints and execute security tests')
 
         menu = OrderedDict()
-        menu['Deploy new probe'] = DeployProbe
-        menu['View probe logs'] = ListProbes
+        menu['Register new probe'] = DeployProbe
+        menu['View probe results'] = ListProbes
         menu['Delete existing probe'] = DeleteProbe
 
         while True:
@@ -245,6 +270,7 @@ class AddSchedule:
         self.wiz = wiz
 
     def enter(self):
+        print('Select tests to schedule')
         menu = TerminalMenu(
             self.wiz.tests.values(),
             multi_select=True,
@@ -259,7 +285,6 @@ class AddSchedule:
         index = TerminalMenu(menu, multi_select=False).show()
         run_code = RunCode[menu[index]].value
 
-        print('Apply this schedule to specific probe tags?')
         menu = TerminalMenu(
             {tag for probe in self.wiz.detect.list_endpoints() for tag in probe['tags']},
             multi_select=True,
@@ -267,6 +292,7 @@ class AddSchedule:
             multi_select_select_on_accept=False,
             multi_select_empty_ok=True
         )
+        print('Apply this schedule to specific probe tags?')
         menu.show()
         tags = ",".join(menu.chosen_menu_entries or [])
 
@@ -421,10 +447,7 @@ class ViewInsights:
 
     def enter(self):
         print(Padding('A computer generated insight exposes the most vulnerable combinations of test and OS', 1))
-        filters = self.wiz.filters.copy()
-        FiltersView(self.wiz).process(filters)
-
-        insights = self.wiz.detect.describe_activity(view='insights', filters=filters)
+        insights = self.wiz.detect.describe_activity(view='insights', filters=self.wiz.filters)
 
         menu = OrderedDict()
         legend = f'{self.wiz.normalize("unprotected", 15)} {self.wiz.normalize("protected", 15)} {self.wiz.normalize("dos", 15)} {"test"}'
@@ -533,7 +556,7 @@ class CreateTest:
         test_id = str(uuid.uuid4())
         self.wiz.build.create_test(test_id=test_id, name=name)
 
-        mapping = Confirm.ask('Add a classification (such as a rule or ATT&CK technique)?')
+        mapping = Confirm.ask('Add a classification, such as a rule, CVE or ATT&CK technique?')
         if mapping:
             value = Prompt.ask('Enter a classification ID', default='VSR-2023-0')
             self.wiz.build.map(test_id=test_id, x=value.replace(' ', ''))
@@ -566,6 +589,7 @@ class DeleteTest:
             show_multi_select_hint=True
         )
         menu.show()
+
         for test in menu.chosen_menu_entries:
             test_id = self.wiz.convert(test, reverse=True)
             print(f'Deleting "{test_id}"')
@@ -580,11 +604,12 @@ class UploadTest:
 
     def enter(self):
         print('Tests must be uploaded before they can be scheduled')
-        menu = TerminalMenu(
-            self.wiz.my_tests().values(),
-            multi_select=True,
-            show_multi_select_hint=True
-        )
+        my_tests = self.wiz.my_tests()
+        if not self.wiz.my_tests():
+            print('You have no custom tests to upload')
+            return
+
+        menu = TerminalMenu(my_tests.values(), multi_select=True, show_multi_select_hint=True)
         menu.show()
         
         for test in menu.chosen_menu_entries:
@@ -788,7 +813,7 @@ def interactive(account):
             answer = list(menu.items())
             answer[index][1].enter()
         except TypeError:
-            print(Padding('Goodbye. May the force of Verified Security Tests be with you.', 1))
+            print(Padding('Goodbye. May Verified Security Tests be with you.', 1))
             break
         except PermissionError as pe:
             yes = Confirm.ask(str(pe))
