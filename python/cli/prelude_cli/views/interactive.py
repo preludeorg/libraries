@@ -183,12 +183,12 @@ class DeployProbe:
         index = TerminalMenu(probe_options.keys()).show()
         answer = list(probe_options.items())
         platform = answer[index]
+        print(f'Injecting token "{token}" into executable...')
         code = self.wiz.probe.download(name=platform[1], dos=f'{platform[0]}-x86_64')
 
         # customize probe
         extension = '.ps1' if platform[0] == 'windows' else ''
         auth = f'SETX PRELUDE_TOKEN {token}' if platform[0] == 'windows' else f'export PRELUDE_TOKEN={token}'
-        print(f'Injecting token "{token}" into executable...')
 
         custom_probe = PurePath(Path.home(), '.prelude', f'{endpoint_id}{extension}')
         with open(custom_probe, 'w') as probe_code:
@@ -411,7 +411,7 @@ class ViewDays:
         days.reverse()
 
         menu = OrderedDict()
-        legend = f'{self.wiz.normalize("date", 15)} {self.wiz.normalize("unprotected", 15)} {self.wiz.normalize("total", 15)}'
+        legend = f'{self.wiz.normalize("date", 15)} {self.wiz.normalize("unprotected", 15)} {self.wiz.normalize("endpoints", 15)}'
         menu[legend] = None
         for item in days:
             entry = f'{self.wiz.normalize(item["date"], 15)} {self.wiz.normalize(str(item["unprotected"]), 15)} {self.wiz.normalize(str(item["count"]), 15)}'
@@ -425,14 +425,11 @@ class ViewRules:
         self.wiz = wiz
 
     def enter(self):
-        print(Padding('Detect classifies tests under rules, which analyze the surface area of an operating system', 1))
-        filters = self.wiz.filters.copy()
-        FiltersView(self.wiz).process(filters)
-
-        rules = self.wiz.detect.describe_activity(view='rules', filters=filters)
+        print(Padding('Detect classifies tests under rules, which analyze the surface area of operating systems', 1))
+        rules = self.wiz.detect.describe_activity(view='rules', filters=self.wiz.filters)
 
         menu = OrderedDict()
-        legend = f'{self.wiz.normalize("rule", 35)} {self.wiz.normalize("unprotected", 15)} {self.wiz.normalize("total", 15)}'
+        legend = f'{self.wiz.normalize("rule", 35)} {self.wiz.normalize("unprotected", 15)} {self.wiz.normalize("endpoints", 15)}'
         menu[legend] = None
         for item in rules:
             rule = item.get('rule')
@@ -729,6 +726,7 @@ class DetachControl:
 
         if not controls:
             print('No controls exist for this account')
+            return
 
         menu = TerminalMenu(controls, multi_select=True, show_multi_select_hint=True)
         menu.show()
@@ -761,7 +759,7 @@ export const Permissions = {
   EXECUTIVE: 1, // read-only to dashboard
   BUILD: 2,  // executive permissions + developer hub access
   SERVICE: 3, // register new endpoints
-  PRELUDE: 4  // read-only access to the activity API
+  PRELUDE: 4  // read-only access to the results API
   NONE: 5,
 } as const;
 ```  
