@@ -550,7 +550,7 @@ class CreateTest:
         self.wiz = wiz
 
     def enter(self):
-        print('Build your own tests to customize your security testing')
+        print('Tests should be in the form of a question')
         # save test
         name = Prompt.ask('Enter a test name', default='Does my defense work?')
         test_id = str(uuid.uuid4())
@@ -650,8 +650,8 @@ class Build:
 
         menu = OrderedDict()
         menu['Create new test'] = CreateTest
-        menu['Download test'] = DownloadTests
         menu['Upload test'] = UploadTest
+        menu['Download test'] = DownloadTests
         menu['Delete test'] = DeleteTest
 
         while True:
@@ -704,8 +704,10 @@ class AttachControl:
         self.wiz = wiz
 
     def enter(self):
+        print('Learn about integrations: https://docs.preludesecurity.com/docs/defensive-integrations')
         menu = ['crowdstrike', 'splunk']
         answer = TerminalMenu(menu).show()
+        
         name = menu[answer]
         api = Prompt.ask('API FQDN', default='https://api.us-2.crowdstrike.com')
         user = Prompt.ask('User or client ID', default=os.getlogin())
@@ -782,8 +784,7 @@ export const Permissions = {
                 index = TerminalMenu(menu.keys()).show()
                 answer = list(menu.items())
                 answer[index][1](self.wiz).enter()
-            except Exception as e:
-                print(str(e))
+            except Exception:
                 break
 
             
