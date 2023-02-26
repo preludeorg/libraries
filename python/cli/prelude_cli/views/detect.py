@@ -11,7 +11,7 @@ from prelude_sdk.controllers.detect_controller import DetectController
 @click.group()
 @click.pass_context
 def detect(ctx):
-    """ Continuously test your endpoints """
+    """ Continuous security testing """
     ctx.obj = DetectController(account=ctx.obj)
 
 

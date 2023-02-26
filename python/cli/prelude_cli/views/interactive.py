@@ -3,6 +3,7 @@ import uuid
 import click
 import shutil
 import socket
+import webbrowser
 import prelude_cli.templates as templates
 import importlib.resources as pkg_resources
 
@@ -187,6 +188,7 @@ class DeployProbe:
         # customize probe
         extension = '.ps1' if platform[0] == 'windows' else ''
         auth = f'SETX PRELUDE_TOKEN {token}' if platform[0] == 'windows' else f'export PRELUDE_TOKEN={token}'
+        print(f'Injecting token "{token}" into executable...')
 
         custom_probe = PurePath(Path.home(), '.prelude', f'{endpoint_id}{extension}')
         with open(custom_probe, 'w') as probe_code:
@@ -707,7 +709,7 @@ class AttachControl:
         print('Learn about integrations: https://docs.preludesecurity.com/docs/defensive-integrations')
         menu = ['crowdstrike', 'splunk']
         answer = TerminalMenu(menu).show()
-        
+
         name = menu[answer]
         api = Prompt.ask('API FQDN', default='https://api.us-2.crowdstrike.com')
         user = Prompt.ask('User or client ID', default=os.getlogin())
@@ -787,11 +789,20 @@ export const Permissions = {
             except Exception:
                 break
 
-            
+
+class ExecutiveDashboard:
+
+    def __init__(self, wiz: Wizard):
+        self.wiz = wiz
+
+    def enter(self):
+        webbrowser.open('https://platform.preludesecurity.com/detect', new=2)
+
+
 @click.command()
 @click.pass_obj
 def interactive(account):
-    """ Interactive shell for managing Detect """
+    """ Interactive shell for Prelude Detect """
     wizard = Wizard(account=account)
     wizard.splash(HELLO)
     wizard.load_tests()
@@ -803,7 +814,7 @@ def interactive(account):
     menu['View results'] = Results(wizard)
     menu['Developer hub'] = Build(wizard)
     menu['Manage account'] = IAM(wizard)
-    menu['Open executive dashboard'] = None
+    menu['Open executive dashboard'] = ExecutiveDashboard(wizard)
 
     while True:
         try:

@@ -11,7 +11,7 @@ from prelude_sdk.controllers.iam_controller import IAMController
 @click.group()
 @click.pass_context
 def iam(ctx):
-    """ Administer your account """
+    """ Prelude account management """
     ctx.obj = IAMController(account=ctx.obj)
 
 
