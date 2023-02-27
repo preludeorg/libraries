@@ -31,7 +31,9 @@ package main
 
 // This is a Verified Security Test
 
-import "github.com/preludeorg/test/endpoint"
+import (
+    Endpoint "github.com/preludeorg/test/endpoint"
+)
 
 func test() {
     Endpoint.Stop(100)
@@ -294,7 +296,7 @@ class AddSchedule:
             multi_select_empty_ok=True
         )
         menu.show()
-        test_names = [self.wiz.convert(i, reverse=True) for i in list(menu.chosen_menu_entries)]
+        tests = {self.wiz.convert(i, reverse=True): i for i in list(menu.chosen_menu_entries)}
 
         print('How often do you want to run these tests?')
         menu = [RunCode.DAILY.name, RunCode.WEEKLY.name, RunCode.MONTHLY.name]
@@ -312,9 +314,9 @@ class AddSchedule:
         menu.show()
         tags = ",".join(menu.chosen_menu_entries or [])
 
-        for test in test_names:
-            print(f'Adding schedule for {test}')
-            self.wiz.detect.enable_test(ident=test, run_code=run_code, tags=tags)
+        for test_id in tests:
+            print(f'Adding schedule for {tests[test_id]}')
+            self.wiz.detect.enable_test(ident=test_id, run_code=run_code, tags=tags)
         print('Probes check in every few hours to retrieve their scheduled tests')
 
 
@@ -331,9 +333,10 @@ class DeleteSchedule:
         )
         menu.show()
 
-        for test in [self.wiz.convert(i, reverse=True) for i in list(menu.chosen_menu_entries)]:
-            print(f'Removing schedule for {test}')
-            self.wiz.detect.disable_test(ident=test)
+        tests = {self.wiz.convert(i, reverse=True): i for i in list(menu.chosen_menu_entries)}
+        for test_id in tests:
+            print(f'Removing schedule for {tests[test_id]}')
+            self.wiz.detect.disable_test(ident=test_id)
 
 
 class Schedule:
