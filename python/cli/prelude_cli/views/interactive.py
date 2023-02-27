@@ -588,6 +588,7 @@ class CreateTest:
         Path(workspace).mkdir(parents=True, exist_ok=True)
         with open(PurePath(workspace, basename), 'w') as test_code:
             test_code.write(template)
+        self.wiz.load_tests()
         
 
 class DeleteTest:
@@ -606,9 +607,10 @@ class DeleteTest:
 
         for test in menu.chosen_menu_entries:
             test_id = self.wiz.convert(test, reverse=True)
-            print(f'Deleting "{test_id}"')
+            print(f'Deleting "{test}"')
             self.wiz.build.delete_test(test_id=test_id)
             shutil.rmtree(PurePath(Path.home(), '.prelude', 'workspace', test_id))
+        self.wiz.load_tests()
 
 
 class UploadTest:
