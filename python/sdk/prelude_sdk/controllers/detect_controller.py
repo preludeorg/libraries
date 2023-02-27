@@ -48,9 +48,18 @@ class DetectController:
             raise Exception(res.text)
 
     @verify_credentials
-    def print_queue(self):
+    def list_queue(self):
         with Spinner():
             res = requests.get(f'{self.account.hq}/detect/queue', headers=self.account.headers)
+            if res.status_code == 200:
+                return res.json()
+            raise Exception(res.text)
+
+    @verify_credentials
+    def list_tests(self):
+        """ List all tests available to an account """
+        with Spinner():
+            res = requests.get(f'{self.account.hq}/detect/tests', headers=self.account.headers)
             if res.status_code == 200:
                 return res.json()
             raise Exception(res.text)

@@ -1,17 +1,17 @@
 import click
 
 from rich import print_json
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 
+from prelude_sdk.models.codes import Permission
 from prelude_cli.views.shared import handle_api_error
 from prelude_sdk.controllers.iam_controller import IAMController
-from prelude_sdk.models.codes import Permission
 
 
 @click.group()
 @click.pass_context
 def iam(ctx):
-    """ Administer your account """
+    """ Prelude account management """
     ctx.obj = IAMController(account=ctx.obj)
 
 
@@ -23,7 +23,6 @@ def register_account(controller):
     """ Register a new account """
     creds = controller.new_account(handle=click.prompt('Enter a handle'))
     print_json(data=creds)
-    click.secho('Your keychain has been updated to use this account', fg='green')
 
 
 @iam.command('account')
@@ -31,10 +30,7 @@ def register_account(controller):
 @handle_api_error
 def describe_account(controller):
     """ Get account details """
-    acct = controller.get_account()
-    users = {user["handle"]: dict(permission=Permission(user["permission"]).name, expires=user['expires'])
-              for user in acct['users']}
-    print_json(data=dict(whoami=acct['whoami'], users=users, controls=acct['controls']))
+    print_json(data=controller.get_account())
 
 
 @iam.command('create-user')
@@ -52,7 +48,7 @@ def create_user(controller, permission, handle, days):
         permission=Permission[permission.upper()].value, 
         expires=expires
     )
-    click.secho(f'Created new [{permission}] user "{handle}". Token: {resp["token"]}', fg='green')
+    print_json(data=resp)
 
 
 @iam.command('delete-user')
@@ -62,8 +58,7 @@ def create_user(controller, permission, handle, days):
 @handle_api_error
 def delete_user(controller, handle):
     """ Remove a user from your account """
-    if controller.delete_user(handle=handle):
-        click.secho(f'Deleted user {handle}', fg='green')
+    controller.delete_user(handle=handle)
 
 
 @iam.command('attach-control')
@@ -76,7 +71,6 @@ def delete_user(controller, handle):
 def attach_control(controller, name, api, user, secret):
     """ Attach an EDR or SIEM to Detect """
     controller.attach_control(name=name, api=api, user=user, secret=secret)
-    click.secho(f'Attached "{name}" to your Detect account', fg='green')
 
 
 @iam.command('detach-control')
@@ -87,7 +81,6 @@ def attach_control(controller, name, api, user, secret):
 def attach_control(controller, name):
     """ Detach an existing control from your account """
     controller.detach_control(name=name)
-    click.secho(f'Detached "{name}" from your Detect account', fg='red')
 
 
 @iam.command('purge')
@@ -97,4 +90,3 @@ def attach_control(controller, name):
 def purge(controller):
     """ Delete your account """
     controller.purge_account()
-    click.secho('Your account has been deleted', fg='green')

@@ -10,15 +10,6 @@ class BuildController:
         self.account = account
 
     @verify_credentials
-    def list_tests(self):
-        """ List all tests available to an account """
-        with Spinner():
-            res = requests.get(f'{self.account.hq}/build/tests', headers=self.account.headers)
-            if res.status_code == 200:
-                return res.json()
-            raise Exception(res.text)
-
-    @verify_credentials
     def create_test(self, test_id, name):
         """ Create or update a test """
         with Spinner():
@@ -60,24 +51,6 @@ class BuildController:
             res = requests.post(f'{self.account.hq}/build/tests/{test_id}/{filename}', json=dict(code=code), headers=self.account.headers)
             if not res.status_code == 200:
                 raise Exception(res.text)
-
-    @verify_credentials
-    def create_url(self, attachment: str):
-        """ Get a presigned URL to a VST """
-        with Spinner():
-            res = requests.get(f'{self.account.hq}/build/{attachment}/url', headers=self.account.headers)
-            if res.status_code == 200:
-                return res.json()
-            raise Exception(res.text)
-
-    @verify_credentials
-    def compute(self, test_id: str):
-        """ Compile a test and get presigned URLs for each DOS """
-        with Spinner():
-            res = requests.post(f'{self.account.hq}/build/compute', json=dict(id=test_id), headers=self.account.headers)
-            if res.status_code == 200:
-                return res.json()
-            raise Exception(res.text)
 
     @verify_credentials
     def map(self, test_id: str, x: str):
