@@ -158,19 +158,30 @@ class DeployProbe:
         # register endpoint
         endpoint_id = Prompt.ask("Enter an identifier for your probe:", default=socket.gethostname())
 
-        print(f'Select tags to categorize "{endpoint_id}"')
-        tlp_colors = ['TLP:CLEAR', 'TLP:GREEN', 'TLP:AMBER', 'TLP:AMBER+STRICT', 'TLP:RED']
+        print(f'Optionally, select a host type tag')
         systems = ['workstation', 'server', 'container', 'cloud']
         menu = TerminalMenu(
-            systems + tlp_colors,
+            systems,
             multi_select=True,
             show_multi_select_hint=True,
             multi_select_select_on_accept=False,
             multi_select_empty_ok=True
         )
         menu.show()
-
         tags = menu.chosen_menu_entries or []
+
+        print(f'Optionally, select a host sensitivity level')
+        tlp_colors = ['TLP:CLEAR', 'TLP:GREEN', 'TLP:AMBER', 'TLP:AMBER+STRICT', 'TLP:RED']
+        menu = TerminalMenu(
+            tlp_colors,
+            multi_select=True,
+            show_multi_select_hint=True,
+            multi_select_select_on_accept=False,
+            multi_select_empty_ok=True
+        )
+        menu.show()
+        tags = tags + (menu.chosen_menu_entries or [])
+
         token = self.wiz.detect.register_endpoint(name=endpoint_id, tags=",".join(tags))
         
         # download executable
@@ -194,6 +205,8 @@ class DeployProbe:
         with open(custom_probe, 'w') as probe_code:
             probe_code.write(f'{auth}\n{code}')
             print(f'Downloaded {custom_probe}')
+
+        print(Padding('Copy your new probe to a host and start it as an executable', 1))
 
 
 class DeleteProbe:
@@ -283,6 +296,7 @@ class AddSchedule:
         menu.show()
         test_names = [self.wiz.convert(i, reverse=True) for i in list(menu.chosen_menu_entries)]
 
+        print('How often do you want to run these tests?')
         menu = [RunCode.DAILY.name, RunCode.WEEKLY.name, RunCode.MONTHLY.name]
         index = TerminalMenu(menu, multi_select=False).show()
         run_code = RunCode[menu[index]].value
@@ -301,6 +315,7 @@ class AddSchedule:
         for test in test_names:
             print(f'Adding schedule for {test}')
             self.wiz.detect.enable_test(ident=test, run_code=run_code, tags=tags)
+        print('Probes check in every few hours to retrieve their scheduled tests')
 
 
 class DeleteSchedule:
@@ -337,7 +352,7 @@ class RunCode(Enum):
 
     @handle_api_error
     def enter(self):
-        self.wiz.splash(self.SPLASH, helper='Verified Security Tests can be scheduled according to run codes')
+        self.wiz.splash(self.SPLASH, helper='Verified Security Tests are designed to run continuously')
 
         menu = OrderedDict()
         menu['View schedule'] = ViewSchedule
@@ -604,7 +619,7 @@ class UploadTest:
     def enter(self):
         print('Tests must be uploaded before they can be scheduled')
         my_tests = self.wiz.my_tests()
-        if not self.wiz.my_tests():
+        if not my_tests:
             print('You have no custom tests to upload')
             return
 
@@ -613,7 +628,6 @@ class UploadTest:
         
         for test in menu.chosen_menu_entries:
             test_id = self.wiz.convert(test, reverse=True)
-
             workspace = PurePath(Path.home(), '.prelude', 'workspace', test_id)
 
             attachments = list(Path(workspace).glob('*'))
@@ -674,8 +688,8 @@ class CreateUser:
         answer = TerminalMenu(menu).show()
         expires = datetime.utcnow() + timedelta(days=365)
 
-        print(f'Creating "{handle}"')
-        self.wiz.iam.create_user(handle=handle, permission=answer, expires=expires)
+        creds = self.wiz.iam.create_user(handle=handle, permission=answer, expires=expires)
+        print(f'Created "{handle}" with token "{creds["token"]}"')
 
 
 class DeleteUser:

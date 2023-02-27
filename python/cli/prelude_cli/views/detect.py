@@ -127,15 +127,14 @@ def add_recommendation(controller, title, description):
               help='retrieve a specific result view',
               default='logs', show_default=True,
               type=click.Choice(['logs', 'days', 'insights', 'probes', 'rules']))
-@click.option('-c', '--convert', help='convert test IDs to names', is_flag=True, type=bool, default=False)
-@click.option('-d', '--days', help='days to look back', default=7, type=int)
+@click.option('-d', '--days', help='days to look back', default=30, type=int)
 @click.option('--tests', help='comma-separated list of test IDs', type=str)
 @click.option('--tags', help='comma-separated list of tags', type=str)
 @click.option('--endpoints', help='comma-separated list of endpoint IDs', type=str)
 @click.option('--dos', help='comma-separated list of DOS', type=str)
 @click.pass_obj
 @handle_api_error
-def describe_activity(controller, days, view, tests, tags, endpoints, dos, statuses, convert):
+def describe_activity(controller, days, view, tests, tags, endpoints, dos):
     """ View my Detect results """
     filters = dict(
         start=datetime.combine(datetime.utcnow() - timedelta(days=days), time.min),
