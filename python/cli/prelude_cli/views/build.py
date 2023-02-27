@@ -12,8 +12,7 @@ from prelude_cli.views.shared import handle_api_error
 from prelude_sdk.controllers.build_controller import BuildController
 
 
-UUID = re.compile(
-    '[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}')
+UUID = re.compile('[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}')
 
 
 @click.group()
@@ -78,17 +77,15 @@ def upload_attachment(controller, path, test):
         match = UUID.search(path)
         if match:
             return match.group(0)
-        raise FileNotFoundError(
-            'You must supply a test ID or include it in the path')
+        raise FileNotFoundError('You must supply a test ID or include it in the path')
 
     def upload(p: Path):
         with open(p, 'r') as source_code:
-            controller.upload(test_id=identifier,
-                              filename=p.name, code=source_code.read())
+            controller.upload(test_id=identifier, filename=p.name, code=source_code.read())
             click.secho(f'Uploaded {path}', fg='green')
 
     identifier = test or test_id()
-
+    
     if Path(path).is_file():
         upload(p=Path(path))
     else:
