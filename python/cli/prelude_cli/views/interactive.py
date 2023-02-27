@@ -684,7 +684,7 @@ class CreateUser:
     def enter(self):
         print('All users share an account ID but have unique access tokens')
         handle = Prompt.ask('Enter a user handle', default=os.getlogin())
-        menu = [p.name for p in Permission]
+        menu = [p.name for p in Permission if p != Permission.INVALID]
         answer = TerminalMenu(menu).show()
         expires = datetime.utcnow() + timedelta(days=365)
 
