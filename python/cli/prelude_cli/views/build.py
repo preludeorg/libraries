@@ -56,11 +56,12 @@ def create_test(controller, name, test):
 
 @build.command('delete-test')
 @click.argument('test')
+@click.option('-t', '--test', help='test identifier', default=None, type=str)
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
 @handle_api_error
 def delete_test(controller, test):
-    """ Delete TEST """
+    """ Delete a test """
     controller.delete_test(test_id=test)
     click.secho(f'Deleted {test}', fg='green')
 
