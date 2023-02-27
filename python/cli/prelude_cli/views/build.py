@@ -3,6 +3,7 @@ import uuid
 import click
 import prelude_cli.templates as templates
 import importlib.resources as pkg_resources
+import base64
 
 from pathlib import Path
 from rich import print_json
@@ -12,7 +13,8 @@ from prelude_cli.views.shared import handle_api_error
 from prelude_sdk.controllers.build_controller import BuildController
 
 
-UUID = re.compile('[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}')
+UUID = re.compile(
+    '[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}')
 
 
 @click.group()
@@ -76,15 +78,17 @@ def upload_attachment(controller, path, test):
         match = UUID.search(path)
         if match:
             return match.group(0)
-        raise FileNotFoundError('You must supply a test ID or include it in the path')
+        raise FileNotFoundError(
+            'You must supply a test ID or include it in the path')
 
     def upload(p: Path):
-        with open(p, 'r') as source_code:
-            controller.upload(test_id=identifier, filename=p.name, code=source_code.read())
+        with open(p, 'rb') as source_code:
+            controller.upload(test_id=identifier,
+                              filename=p.name, code=base64.b64encode(source_code.read()).decode('utf-8'))
             click.secho(f'Uploaded {path}', fg='green')
 
     identifier = test or test_id()
-    
+
     if Path(path).is_file():
         upload(p=Path(path))
     else:
