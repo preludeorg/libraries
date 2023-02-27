@@ -157,7 +157,8 @@ export type Platform =
   | "linux-x86_64"
   | "linux-arm64"
   | "windows-x86_64"
-  | "windows-arm64";
+  | "windows-arm64"
+  | "unknown";
 
 export interface Activity {
   date: string;
@@ -179,6 +180,7 @@ export interface Rule {
   label: string;
   published: string;
   description: string;
+  long_description: string;
 }
 
 export interface RuleUsage {
@@ -239,4 +241,16 @@ export interface ProbeActivity {
   endpoint_id: string;
   state: "PROTECTED" | "UNPROTECTED" | "ERROR";
   tags: string[];
+}
+
+export interface CreateRecommendation {
+  id: string;
+  title: string;
+  description: string;
+  decision?: number;
+}
+
+export interface RegisterEndpointParams {
+  id: string;
+  tags?: string;
 }

@@ -31,7 +31,9 @@ package main
 
 // This is a Verified Security Test
 
-import "github.com/preludeorg/test/endpoint"
+import (
+    Endpoint "github.com/preludeorg/test/endpoint"
+)
 
 func test() {
     Endpoint.Stop(100)
@@ -294,7 +296,7 @@ class AddSchedule:
             multi_select_empty_ok=True
         )
         menu.show()
-        test_names = [self.wiz.convert(i, reverse=True) for i in list(menu.chosen_menu_entries)]
+        tests = {self.wiz.convert(i, reverse=True): i for i in list(menu.chosen_menu_entries)}
 
         print('How often do you want to run these tests?')
         menu = [RunCode.DAILY.name, RunCode.WEEKLY.name, RunCode.MONTHLY.name]
@@ -312,9 +314,9 @@ class AddSchedule:
         menu.show()
         tags = ",".join(menu.chosen_menu_entries or [])
 
-        for test in test_names:
-            print(f'Adding schedule for {test}')
-            self.wiz.detect.enable_test(ident=test, run_code=run_code, tags=tags)
+        for test_id in tests:
+            print(f'Adding schedule for {tests[test_id]}')
+            self.wiz.detect.enable_test(ident=test_id, run_code=run_code, tags=tags)
         print('Probes check in every few hours to retrieve their scheduled tests')
 
 
@@ -331,9 +333,10 @@ class DeleteSchedule:
         )
         menu.show()
 
-        for test in [self.wiz.convert(i, reverse=True) for i in list(menu.chosen_menu_entries)]:
-            print(f'Removing schedule for {test}')
-            self.wiz.detect.disable_test(ident=test)
+        tests = {self.wiz.convert(i, reverse=True): i for i in list(menu.chosen_menu_entries)}
+        for test_id in tests:
+            print(f'Removing schedule for {tests[test_id]}')
+            self.wiz.detect.disable_test(ident=test_id)
 
 
 class Schedule:
@@ -588,6 +591,7 @@ class CreateTest:
         Path(workspace).mkdir(parents=True, exist_ok=True)
         with open(PurePath(workspace, basename), 'w') as test_code:
             test_code.write(template)
+        self.wiz.load_tests()
         
 
 class DeleteTest:
@@ -606,9 +610,10 @@ class DeleteTest:
 
         for test in menu.chosen_menu_entries:
             test_id = self.wiz.convert(test, reverse=True)
-            print(f'Deleting "{test_id}"')
+            print(f'Deleting "{test}"')
             self.wiz.build.delete_test(test_id=test_id)
             shutil.rmtree(PurePath(Path.home(), '.prelude', 'workspace', test_id))
+        self.wiz.load_tests()
 
 
 class UploadTest:
@@ -684,7 +689,7 @@ class CreateUser:
     def enter(self):
         print('All users share an account ID but have unique access tokens')
         handle = Prompt.ask('Enter a user handle', default=os.getlogin())
-        menu = [p.name for p in Permission]
+        menu = [p.name for p in Permission if p != Permission.INVALID]
         answer = TerminalMenu(menu).show()
         expires = datetime.utcnow() + timedelta(days=365)
 
