@@ -2,6 +2,7 @@ import Client from "../client";
 import {
   Activity,
   ActivityQuery,
+  CreateRecommendation,
   DayResult,
   EnableTest,
   Insight,
@@ -9,10 +10,12 @@ import {
   ProbeActivity,
   Queue,
   Recommendation,
+  RegisterEndpointParams,
   RequestOptions,
   RuleInfo,
   SearchResults,
   Stats,
+  Test,
 } from "../types";
 
 export default class DetectController {
@@ -24,9 +27,9 @@ export default class DetectController {
 
   /** Register (or re-register) an endpoint to your account */
   async registerEndpoint(
-    { id, tags = "" }: { id: string; tags?: string },
+    { id, tags = "" }: RegisterEndpointParams,
     options: RequestOptions = {}
-  ) {
+  ): Promise<string> {
     const response = await this.#client.requestWithAuth("/detect/endpoint", {
       method: "POST",
       body: JSON.stringify({ id, tags }),
@@ -36,13 +39,52 @@ export default class DetectController {
     return response.text();
   }
 
-  async printQueue(options: RequestOptions = {}) {
+  /** Delete an endpoint from your account */
+  async deleteEndpoint(
+    endpoint_id: string,
+    options: RequestOptions = {}
+  ): Promise<void> {
+    await this.#client.requestWithAuth(`/detect/endpoint`, {
+      method: "DELETE",
+      body: JSON.stringify({ id: endpoint_id }),
+      ...options,
+    });
+  }
+
+  /** List all endpoints on your account */
+  async listEndpoints(
+    days: number = 7,
+    options: RequestOptions = {}
+  ): Promise<Probe[]> {
+    const searchParams = new URLSearchParams({ days: days.toString() });
+    const response = await this.#client.requestWithAuth(
+      `/detect/endpoint?${searchParams.toString()}`,
+      {
+        method: "GET",
+        ...options,
+      }
+    );
+
+    return (await response.json()) as Probe[];
+  }
+
+  async listQueue(options: RequestOptions = {}): Promise<Queue[]> {
     const response = await this.#client.requestWithAuth("/detect/queue", {
       method: "GET",
       ...options,
     });
 
-    return (await response.json()) as Queue[];
+    return await response.json();
+  }
+
+  /** List all tests available to an account */
+  async listTests(options: RequestOptions = {}): Promise<Test[]> {
+    const response = await this.#client.requestWithAuth("/detect/tests", {
+      method: "GET",
+      ...options,
+    });
+
+    return await response.json();
   }
 
   /** Enable a test so endpoints will start running it */
@@ -63,6 +105,41 @@ export default class DetectController {
       method: "DELETE",
       ...options,
     });
+  }
+
+  /** Search the NVD for a keyword  */
+  async search(
+    identifier: string,
+    options: RequestOptions = {}
+  ): Promise<SearchResults> {
+    const searchParams = new URLSearchParams({ identifier });
+    const response = await this.#client.requestWithAuth(
+      `/detect/search?${searchParams.toString()}`,
+      {
+        method: "GET",
+        ...options,
+      }
+    );
+
+    return await response.json();
+  }
+
+  /** Pull social statistics for a specific test */
+  async socialStats(
+    test: string,
+    days: number = 30,
+    options: RequestOptions = {}
+  ): Promise<Stats> {
+    const searchParams = new URLSearchParams({ days: days.toString() });
+    const response = await this.#client.requestWithAuth(
+      `/detect/${test}/social?${searchParams.toString()}`,
+      {
+        method: "GET",
+        ...options,
+      }
+    );
+
+    return await response.json();
   }
 
   /** Get logs for an Account */
@@ -114,57 +191,6 @@ export default class DetectController {
     return await response.json();
   }
 
-  /** Pull social statistics for a specific test */
-  async stats(test: string, days: number = 30, options: RequestOptions = {}) {
-    const searchParams = new URLSearchParams({ days: days.toString() });
-    const response = await this.#client.requestWithAuth(
-      `/detect/${test}/social?${searchParams.toString()}`,
-      {
-        method: "GET",
-        ...options,
-      }
-    );
-
-    return (await response.json()) as Stats;
-  }
-
-  /** Delete an endpoint */
-  async deleteProbe(endpoint_id: string, options: RequestOptions = {}) {
-    await this.#client.requestWithAuth(`/detect/endpoint`, {
-      method: "DELETE",
-      body: JSON.stringify({ id: endpoint_id }),
-      ...options,
-    });
-  }
-
-  /** Search the NVD for a keyword  */
-  async search(identifier: string, options: RequestOptions = {}) {
-    const searchParams = new URLSearchParams({ identifier });
-    const response = await this.#client.requestWithAuth(
-      `/detect/search?${searchParams.toString()}`,
-      {
-        method: "GET",
-        ...options,
-      }
-    );
-
-    return (await response.json()) as SearchResults;
-  }
-
-  /** Get all probes associated to an Account */
-  async listProbes(days: number = 7, options: RequestOptions = {}) {
-    const searchParams = new URLSearchParams({ days: days.toString() });
-    const response = await this.#client.requestWithAuth(
-      `/detect/endpoint?${searchParams.toString()}`,
-      {
-        method: "GET",
-        ...options,
-      }
-    );
-
-    return (await response.json()) as Probe[];
-  }
-
   /** Return a list of recommendations associated to an Account */
   async getRecommendations(options: RequestOptions = {}) {
     const response = await this.#client.requestWithAuth(
@@ -176,5 +202,22 @@ export default class DetectController {
     );
 
     return (await response.json()) as Recommendation[];
+  }
+
+  /** Create a new security recommendation */
+  async createRecommendation(
+    request: CreateRecommendation,
+    options: RequestOptions = {}
+  ): Promise<string> {
+    const response = await this.#client.requestWithAuth(
+      `/detect/recommendations`,
+      {
+        method: "POST",
+        body: JSON.stringify(request),
+        ...options,
+      }
+    );
+
+    return await response.text();
   }
 }

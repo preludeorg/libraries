@@ -117,17 +117,11 @@
 
           try {
             service = await setupAccount();
-            console.log("List Tests", await service.build.listTests());
 
             const testId = uuid.v4();
             console.log(
               "CREATE new test",
               await service.build.createTest(testId, "This is a test", code)
-            );
-
-            console.log(
-              "List Tests after CREATE",
-              await service.build.listTests()
             );
 
             console.log(
@@ -187,7 +181,9 @@
           try {
             service = await setupAccount();
 
-            console.log("List Probes", await service.detect.listProbes());
+            console.log("List Tests", await service.detect.listTests());
+
+            console.log("List Probes", await service.detect.listEndpoints());
 
             console.log(
               "Register Endpoint",
@@ -199,7 +195,7 @@
 
             console.log(
               "List Probes after create",
-              await service.detect.listProbes()
+              await service.detect.listEndpoints()
             );
 
             console.log(
@@ -211,11 +207,13 @@
               })
             );
 
-            console.log("Print Queue", await service.detect.printQueue());
+            console.log("Print Queue", await service.detect.listQueue());
 
             console.log(
               "Stats",
-              await service.detect.stats("39de298a-911d-4a3b-aed4-1e8281010a9a")
+              await service.detect.socialStats(
+                "39de298a-911d-4a3b-aed4-1e8281010a9a"
+              )
             );
 
             console.log("Search", await service.detect.search("CVE-2017-0199"));
