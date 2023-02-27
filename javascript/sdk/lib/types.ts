@@ -246,6 +246,7 @@ export interface ProbeActivity {
 export interface CreateRecommendation {
   title: string;
   description: string;
+  decision?: number;
 }
 
 export interface RegisterEndpointParams {
