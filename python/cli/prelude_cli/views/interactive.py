@@ -93,7 +93,7 @@ class Wizard:
 
     @staticmethod
     def normalize(element: str, chars: int):
-        return element[:chars-2] + '..' if len(element) > chars else (element or '').ljust(chars, " ")
+        return f'{element[:chars - 2]}..' if len(element) > chars else (element or '').ljust(chars, " ")
 
 
 class ViewLogs:
