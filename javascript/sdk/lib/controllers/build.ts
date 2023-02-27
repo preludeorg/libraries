@@ -1,5 +1,10 @@
 import Client from "../client";
-import type { ComputeResult, RequestOptions, Test, TestData } from "../types";
+import type { RequestOptions, TestData } from "../types";
+
+interface MapParams {
+  testId: string;
+  key: string;
+}
 
 export default class BuildController {
   #client: Client;
@@ -8,15 +13,12 @@ export default class BuildController {
     this.#client = client;
   }
 
-  async listTests(options: RequestOptions = {}) {
-    const response = await this.#client.requestWithAuth(
-      "/build/tests",
-      options
-    );
-    return (await response.json()) as Test[];
-  }
-
-  async createTest(id: string, name: string, options: RequestOptions = {}) {
+  /** Create or update a test */
+  async createTest(
+    id: string,
+    name: string,
+    options: RequestOptions = {}
+  ): Promise<void> {
     await this.#client.requestWithAuth(`/build/tests/${id}`, {
       method: "POST",
       body: JSON.stringify({ name }),
@@ -24,14 +26,19 @@ export default class BuildController {
     });
   }
 
-  async deleteTest(id: string, options: RequestOptions = {}) {
+  /** Delete an existing test */
+  async deleteTest(id: string, options: RequestOptions = {}): Promise<void> {
     await this.#client.requestWithAuth(`/build/tests/${id}`, {
       method: "DELETE",
       ...options,
     });
   }
 
-  async getTest(testId: string, options: RequestOptions = {}) {
+  /** Get properties of an existing test */
+  async getTest(
+    testId: string,
+    options: RequestOptions = {}
+  ): Promise<TestData> {
     const response = await this.#client.requestWithAuth(
       `/build/tests/${testId}`,
       {
@@ -39,14 +46,15 @@ export default class BuildController {
       }
     );
 
-    return (await response.json()) as TestData;
+    return await response.json();
   }
 
+  /** Clone a test file or attachment */
   async download(
     testId: string,
     filename: string,
     options: RequestOptions = {}
-  ) {
+  ): Promise<string> {
     const response = await this.#client.requestWithAuth(
       `/build/tests/${testId}/${filename}`,
       {
@@ -60,12 +68,13 @@ export default class BuildController {
     return response.text();
   }
 
+  /** Upload a test or attachment */
   async upload(
     testId: string,
     filename: string,
     code: string,
     options: RequestOptions = {}
-  ) {
+  ): Promise<void> {
     await this.#client.requestWithAuth(`/build/tests/${testId}/${filename}`, {
       method: "POST",
       body: JSON.stringify({ code }),
@@ -73,23 +82,27 @@ export default class BuildController {
     });
   }
 
-  async createURL(attachment: string, options: RequestOptions = {}) {
+  async map(params: MapParams, options: RequestOptions = {}): Promise<string> {
     const response = await this.#client.requestWithAuth(
-      `/build/${attachment}/url`,
+      `/build/tests/${params.testId}/map/${params.key}`,
       {
+        method: "POST",
+        body: JSON.stringify({ id: params.testId }),
         ...options,
       }
     );
-    return (await response.json()) as { url: string };
+
+    return response.text();
   }
 
-  async computeProxy(id: string, options: RequestOptions = {}) {
-    const response = await this.#client.requestWithAuth(`/build/compute`, {
-      method: "POST",
-      body: JSON.stringify({ id }),
-      ...options,
-    });
-
-    return (await response.json()) as ComputeResult[];
+  async unmap(params: MapParams, options: RequestOptions = {}): Promise<void> {
+    await this.#client.requestWithAuth(
+      `/build/tests/${params.testId}/map/${params.key}`,
+      {
+        method: "DELETE",
+        body: JSON.stringify({ id: params.testId }),
+        ...options,
+      }
+    );
   }
 }
