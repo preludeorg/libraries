@@ -244,6 +244,7 @@ export interface ProbeActivity {
 }
 
 export interface CreateRecommendation {
+  id: string;
   title: string;
   description: string;
   decision?: number;
