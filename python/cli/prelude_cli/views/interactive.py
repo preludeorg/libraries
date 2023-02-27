@@ -93,7 +93,7 @@ class Wizard:
 
     @staticmethod
     def normalize(element: str, chars: int):
-        return (element or '').ljust(chars, " ")
+        return f'{element[:chars - 2]}..' if len(element) > chars else (element or '').ljust(chars, " ")
 
 
 class ViewLogs:
@@ -681,6 +681,25 @@ class Build:
                 break
 
 
+class ListUser:
+
+    def __init__(self, wiz: Wizard):
+        self.wiz = wiz
+
+    def enter(self):
+        account = self.wiz.iam.get_account()
+        menu = OrderedDict()
+        legend = f'{self.wiz.normalize("handle", 20)} {self.wiz.normalize("permission", 10)} {self.wiz.normalize("expires", 26)}'
+        menu[legend] = None
+        for user in account['users']:
+            handle = user['handle']
+            permission = Permission(user['permission']).name
+            expires = user['expires']
+            entry = f'{self.wiz.normalize(handle, 20)} {self.wiz.normalize(permission, 10)} {self.wiz.normalize(expires, 26)}'
+            menu[entry] = None
+        TerminalMenu(menu.keys()).show()
+
+
 class CreateUser:
 
     def __init__(self, wiz: Wizard):
@@ -714,6 +733,26 @@ class DeleteUser:
         for handle in menu.chosen_menu_entries:
             print(f'Deleting "{handle}"')
             self.wiz.iam.delete_user(handle=handle)
+
+
+class ListControls:
+
+    def __init__(self, wiz: Wizard):
+        self.wiz = wiz
+
+    def enter(self):
+        account = self.wiz.iam.get_account()
+        menu = OrderedDict()
+        legend = f'{self.wiz.normalize("name", 20)} {self.wiz.normalize("apî", 40)} {self.wiz.normalize("username", 10)} {self.wiz.normalize("secret", 10)}'
+        menu[legend] = None
+        for control in account['controls']:
+            name = control['name']
+            api = control['api']
+            username = control['username']
+            secret = control['secret']
+            entry = f'{self.wiz.normalize(name, 20)} {self.wiz.normalize(api, 40)} {self.wiz.normalize(username, 10)} {self.wiz.normalize(secret, 10)} '
+            menu[entry] = None
+        TerminalMenu(menu.keys()).show()
 
 
 class AttachControl:
@@ -792,8 +831,10 @@ export const Permissions = {
         self.wiz.splash(self.SPLASH, helper='Prelude accounts can contain multiple users with different permissions')
 
         menu = OrderedDict()
+        menu['List users'] = ListUser
         menu['Create user'] = CreateUser
         menu['Delete user'] = DeleteUser
+        menu['List defensive controls'] = ListControls
         menu['Attach defensive control'] = AttachControl
         menu['Detach defensive control'] = DetachControl
         menu['Delete account'] = DeleteAccount
