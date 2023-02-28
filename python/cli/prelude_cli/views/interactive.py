@@ -93,6 +93,7 @@ class Wizard:
 
     @staticmethod
     def normalize(element: str, chars: int):
+        element = '' if element is None else element
         return f'{element[:chars - 2]}..' if len(element) > chars else (element or '').ljust(chars, " ")
 
 
@@ -272,7 +273,6 @@ class ViewSchedule:
         menu = OrderedDict()
         queue = self.wiz.detect.list_queue()
         print(f'You have {len(queue)} schedules')
-
         legend = f'{self.wiz.normalize("schedule", 10)} {self.wiz.normalize("tag", 10)} {self.wiz.normalize("started", 15)} {"test"}'
         menu[legend] = None
         for item in queue:
