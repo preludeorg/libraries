@@ -566,7 +566,7 @@ class DownloadTests:
                     code = self.wiz.build.download(test_id=test_id, filename=attachment)
                     with open(PurePath(workspace, attachment), 'wb') as test_code:
                         test_code.write(code)
-            print(workspace)
+            print(f'Downloading {workspace} ({name})')
 
 
 class CreateTest:
@@ -654,7 +654,7 @@ class UploadTest:
                 print(f'Workspace missing test: {workspace}')
                 continue
 
-            print(f'Uploading {workspace}')
+            print(f'Uploading {workspace} ({test})')
             for fp in attachments:
                 with open(fp, 'r') as attachment:
                     name = Path(fp).name
