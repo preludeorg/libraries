@@ -93,6 +93,7 @@ class Wizard:
 
     @staticmethod
     def normalize(element: str, chars: int):
+        element = '' if element is None else element
         return f'{element[:chars - 2]}..' if len(element) > chars else (element or '').ljust(chars, " ")
 
 
@@ -272,11 +273,10 @@ class ViewSchedule:
         menu = OrderedDict()
         queue = self.wiz.detect.list_queue()
         print(f'You have {len(queue)} schedules')
-
         legend = f'{self.wiz.normalize("schedule", 10)} {self.wiz.normalize("tag", 10)} {self.wiz.normalize("started", 15)} {"test"}'
         menu[legend] = None
         for item in queue:
-            entry = f'{self.wiz.normalize(RunCode(item["run_code"]).name, 10)} {self.wiz.normalize(item.get("tag"), 10)} {self.wiz.normalize(item["started"], 15)} {self.wiz.convert(item["test"])}'
+            entry = f'{self.wiz.normalize(RunCode(item["run_code"]).name, 10)} {self.wiz.normalize(item.get("tag", ""), 10)} {self.wiz.normalize(item["started"], 15)} {self.wiz.convert(item["test"])}'
             menu[entry] = None
         TerminalMenu(menu.keys()).show()
 
@@ -367,7 +367,8 @@ class RunCode(Enum):
                 index = TerminalMenu(menu.keys()).show()
                 answer = list(menu.items())
                 answer[index][1](self.wiz).enter()
-            except Exception:
+            except Exception as e:
+                print(e)
                 break
 
 
