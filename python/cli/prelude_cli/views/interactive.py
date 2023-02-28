@@ -305,6 +305,7 @@ class AddSchedule:
 
         menu = TerminalMenu(
             {tag for probe in self.wiz.detect.list_endpoints() for tag in probe['tags']},
+            skip_empty_entries=True,
             multi_select=True,
             show_multi_select_hint=True,
             multi_select_select_on_accept=False,
