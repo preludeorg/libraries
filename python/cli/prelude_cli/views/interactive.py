@@ -549,8 +549,9 @@ class DownloadTests:
         menu = TerminalMenu(
             self.wiz.tests.values(),
             multi_select=True,
-            show_multi_select_hint=True
-        )
+            show_multi_select_hint=True,
+            multi_select_select_on_accept=False,
+            multi_select_empty_ok=True)
         menu.show()
 
         for name in menu.chosen_menu_entries:
@@ -610,8 +611,9 @@ class DeleteTest:
         menu = TerminalMenu(
             self.wiz.my_tests().values(),
             multi_select=True,
-            show_multi_select_hint=True
-        )
+            show_multi_select_hint=True,
+            multi_select_select_on_accept=False,
+            multi_select_empty_ok=True)
         menu.show()
 
         for test in menu.chosen_menu_entries:
@@ -634,7 +636,12 @@ class UploadTest:
             print('You have no custom tests to upload')
             return
 
-        menu = TerminalMenu(my_tests.values(), multi_select=True, show_multi_select_hint=True)
+        menu = TerminalMenu(
+            my_tests.values(),
+            multi_select=True,
+            show_multi_select_hint=True,
+            multi_select_select_on_accept=False,
+            multi_select_empty_ok=True)
         menu.show()
         
         for test in menu.chosen_menu_entries:
