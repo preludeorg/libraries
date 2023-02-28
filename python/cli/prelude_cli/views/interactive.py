@@ -632,21 +632,21 @@ class UploadTest:
 
     def enter(self):
         print('Tests must be uploaded before they can be scheduled')
-        my_tests = self.wiz.my_tests()
+        my_tests = list(self.wiz.my_tests().items())
         if not my_tests:
             print('You have no custom tests to upload')
             return
 
         menu = TerminalMenu(
-            my_tests.values(),
+            [f'{self.wiz.normalize(t, 30)} (id: {id})' for id, t in my_tests],
             multi_select=True,
             show_multi_select_hint=True,
             multi_select_select_on_accept=False,
             multi_select_empty_ok=True)
-        menu.show()
-        
-        for test in menu.chosen_menu_entries:
-            test_id = self.wiz.convert(test, reverse=True)
+        indexes = menu.show()
+
+        for i in indexes:
+            test_id, test = my_tests[i]
             workspace = PurePath(Path.home(), '.prelude', 'workspace', test_id)
 
             attachments = list(Path(workspace).glob('*'))
