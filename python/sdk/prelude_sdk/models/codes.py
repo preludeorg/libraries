@@ -50,37 +50,41 @@ class ExitCode(Enum):
 
     @property
     def state(self):
-        for k in ExitCodeGroup:
-            for v in k.value: 
-                if self.value == v.value:
-                    return k
-        return ExitCodeGroup.NONE
+        for k, v in State.mapping().items():
+            if self in v:
+                return k
+        return State.NONE
 
 
-class ExitCodeGroup(Enum):
-    NONE = [
-        ExitCode.MISSING
-    ]
-    PROTECTED = [
-        ExitCode.PROTECTED,
-        ExitCode.QUARANTINED_1,
-        ExitCode.QUARANTINED_2,
-        ExitCode.PROCESS_KILLED_1,
-        ExitCode.PROCESS_KILLED_2,
-        ExitCode.NOT_RELEVANT,
-        ExitCode.OUTBOUND_SECURE,
-        ExitCode.EXPLOIT_PREVENTED
-    ]
-    UNPROTECTED = [
-        ExitCode.UNPROTECTED
-    ]
-    ERROR = [
-        ExitCode.ERROR,
-        ExitCode.MALFORMED_VST,
-        ExitCode.TIMEOUT,
-        ExitCode.INCOMPATIBLE_HOST,
-        ExitCode.UNEXPECTED
-    ]
+class State(Enum):
+    NONE = 0
+    PROTECTED = 1
+    UNPROTECTED = 2
+    ERROR = 3
+
+    @classmethod
+    def mapping(self):
+        return {
+            State.NONE: [ExitCode.MISSING],
+            State.PROTECTED: [
+                ExitCode.PROTECTED,
+                ExitCode.QUARANTINED_1,
+                ExitCode.QUARANTINED_2,
+                ExitCode.PROCESS_KILLED_1,
+                ExitCode.PROCESS_KILLED_2,
+                ExitCode.NOT_RELEVANT,
+                ExitCode.OUTBOUND_SECURE,
+                ExitCode.EXPLOIT_PREVENTED
+            ],
+            State.UNPROTECTED: [ExitCode.UNPROTECTED],
+            State.ERROR: [
+                ExitCode.ERROR,
+                ExitCode.MALFORMED_VST,
+                ExitCode.TIMEOUT,
+                ExitCode.INCOMPATIBLE_HOST,
+                ExitCode.UNEXPECTED
+            ]
+        }
 
 
 class DOS(Enum):
