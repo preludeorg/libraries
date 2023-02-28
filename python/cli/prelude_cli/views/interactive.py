@@ -174,7 +174,7 @@ class DeployProbe:
             multi_select_empty_ok=True
         )
         menu.show()
-        tags = menu.chosen_menu_entries or []
+        tags = list(menu.chosen_menu_entries or [])
 
         print(f'Optionally, select a host sensitivity level')
         tlp_colors = ['TLP:CLEAR', 'TLP:GREEN', 'TLP:AMBER', 'TLP:AMBER+STRICT', 'TLP:RED']
@@ -186,7 +186,7 @@ class DeployProbe:
             multi_select_empty_ok=True
         )
         menu.show()
-        tags = tags + (menu.chosen_menu_entries or [])
+        tags = tags + list(menu.chosen_menu_entries or [])
 
         token = self.wiz.detect.register_endpoint(name=endpoint_id, tags=",".join(tags))
         
