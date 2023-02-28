@@ -762,7 +762,7 @@ class AttachControl:
 
     def enter(self):
         print('Learn about integrations: https://docs.preludesecurity.com/docs/defensive-integrations')
-        menu = ['crowdstrike', 'splunk']
+        menu = ['crowdstrike']
         answer = TerminalMenu(menu).show()
 
         name = menu[answer]
@@ -834,9 +834,9 @@ export const Permissions = {
         menu['List users'] = ListUser
         menu['Create user'] = CreateUser
         menu['Delete user'] = DeleteUser
-        menu['List defensive controls'] = ListControls
-        menu['Attach defensive control'] = AttachControl
-        menu['Detach defensive control'] = DetachControl
+        menu['List integrations'] = ListControls
+        menu['Attach integration'] = AttachControl
+        menu['Detach integration'] = DetachControl
         menu['Delete account'] = DeleteAccount
 
         while True:
