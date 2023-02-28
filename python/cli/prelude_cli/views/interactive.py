@@ -276,7 +276,7 @@ class ViewSchedule:
         legend = f'{self.wiz.normalize("schedule", 10)} {self.wiz.normalize("tag", 10)} {self.wiz.normalize("started", 15)} {"test"}'
         menu[legend] = None
         for item in queue:
-            entry = f'{self.wiz.normalize(RunCode(item["run_code"]).name, 10)} {self.wiz.normalize(item.get("tag", ""), 10)} {self.wiz.normalize(item["started"], 15)} {self.wiz.convert(item["test"])}'
+            entry = f'{self.wiz.normalize(RunCode(item["run_code"]).name, 10)} {self.wiz.normalize(item.get("tag"), 10)} {self.wiz.normalize(item["started"], 15)} {self.wiz.convert(item["test"])}'
             menu[entry] = None
         TerminalMenu(menu.keys()).show()
 
