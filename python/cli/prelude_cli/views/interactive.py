@@ -93,6 +93,7 @@ class Wizard:
 
     @staticmethod
     def normalize(element: str, chars: int):
+        element = '' if element is None else element
         return f'{element[:chars - 2]}..' if len(element) > chars else (element or '').ljust(chars, " ")
 
 
@@ -272,7 +273,6 @@ class ViewSchedule:
         menu = OrderedDict()
         queue = self.wiz.detect.list_queue()
         print(f'You have {len(queue)} schedules')
-
         legend = f'{self.wiz.normalize("schedule", 10)} {self.wiz.normalize("tag", 10)} {self.wiz.normalize("started", 15)} {"test"}'
         menu[legend] = None
         for item in queue:
@@ -762,7 +762,7 @@ class AttachControl:
 
     def enter(self):
         print('Learn about integrations: https://docs.preludesecurity.com/docs/defensive-integrations')
-        menu = ['crowdstrike', 'splunk']
+        menu = ['crowdstrike']
         answer = TerminalMenu(menu).show()
 
         name = menu[answer]
@@ -834,9 +834,9 @@ export const Permissions = {
         menu['List users'] = ListUser
         menu['Create user'] = CreateUser
         menu['Delete user'] = DeleteUser
-        menu['List defensive controls'] = ListControls
-        menu['Attach defensive control'] = AttachControl
-        menu['Detach defensive control'] = DetachControl
+        menu['List integrations'] = ListControls
+        menu['Attach integration'] = AttachControl
+        menu['Detach integration'] = DetachControl
         menu['Delete account'] = DeleteAccount
 
         while True:

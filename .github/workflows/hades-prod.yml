@@ -1,9 +1,9 @@
 name: Prod - hades build and deploy 
 
 on:
-  release:
-    types:
-      - published
+  push:
+    tags:
+      - go/probe/*
   workflow_dispatch:
 
 
