@@ -91,6 +91,9 @@ class Wizard:
             return rvs.get(i, 'DELETED')
         return self.tests.get(i, 'DELETED')
 
+    def add_menu(self, menu: OrderedDict, title: str, item):
+        menu[title] = item(self, title)
+
     @staticmethod
     def normalize(element: str, chars: int):
         return f'{element[:chars - 2]}..' if len(element) > chars else (element or '').ljust(chars, " ")
@@ -242,8 +245,9 @@ do
 ```
     """
 
-    def __init__(self, wiz: Wizard):
+    def __init__(self, wiz: Wizard, title: str):
         self.wiz = wiz
+        self.title = title
 
     @handle_api_error
     def enter(self):
@@ -256,7 +260,7 @@ do
 
         while True:
             try:
-                index = TerminalMenu(menu.keys()).show()
+                index = TerminalMenu(menu.keys(), title=self.title).show()
                 answer = list(menu.items())
                 answer[index][1](self.wiz).enter()
             except Exception:
@@ -350,8 +354,9 @@ class RunCode(Enum):
 ```  
     """
 
-    def __init__(self, wiz: Wizard):
+    def __init__(self, wiz: Wizard, title: str):
         self.wiz = wiz
+        self.title = title
 
     @handle_api_error
     def enter(self):
@@ -364,7 +369,7 @@ class RunCode(Enum):
 
         while True:
             try:
-                index = TerminalMenu(menu.keys()).show()
+                index = TerminalMenu(menu.keys(), title=self.title).show()
                 answer = list(menu.items())
                 answer[index][1](self.wiz).enter()
             except Exception:
@@ -511,8 +516,9 @@ EXPLOIT_PREVENTED = 107
 ```  
     """
 
-    def __init__(self, wiz: Wizard):
+    def __init__(self, wiz: Wizard, title: str):
         self.wiz = wiz
+        self.title = title
 
     @handle_api_error
     def enter(self):
@@ -526,7 +532,7 @@ EXPLOIT_PREVENTED = 107
 
         while True:
             try:
-                index = TerminalMenu(menu.keys()).show()
+                index = TerminalMenu(menu.keys(), title=self.title).show()
                 answer = list(menu.items())
                 answer[index][1](self.wiz).enter()
             except Exception:
@@ -659,8 +665,9 @@ class Build:
 ```  
     """
 
-    def __init__(self, wiz: Wizard):
+    def __init__(self, wiz: Wizard, title: str):
         self.wiz = wiz
+        self.title = title
 
     @handle_api_error
     def enter(self):
@@ -674,7 +681,7 @@ class Build:
 
         while True:
             try:
-                index = TerminalMenu(menu.keys()).show()
+                index = TerminalMenu(menu.keys(), title=self.title).show()
                 answer = list(menu.items())
                 answer[index][1](self.wiz).enter()
             except Exception:
@@ -823,8 +830,9 @@ export const Permissions = {
 ```  
     """
 
-    def __init__(self, wiz: Wizard):
+    def __init__(self, wiz: Wizard, title: str):
         self.wiz = wiz
+        self.title = title
 
     @handle_api_error
     def enter(self):
@@ -841,7 +849,7 @@ export const Permissions = {
 
         while True:
             try:
-                index = TerminalMenu(menu.keys()).show()
+                index = TerminalMenu(menu.keys(), title=self.title).show()
                 answer = list(menu.items())
                 answer[index][1](self.wiz).enter()
             except Exception:
@@ -850,8 +858,9 @@ export const Permissions = {
 
 class ExecutiveDashboard:
 
-    def __init__(self, wiz: Wizard):
+    def __init__(self, wiz: Wizard, title: str):
         self.wiz = wiz
+        self.title = title
 
     def enter(self):
         webbrowser.open('https://platform.preludesecurity.com/detect', new=2)
@@ -867,12 +876,12 @@ def interactive(account):
     print(Padding(f'Your account has access to {len(wizard.tests)} Verified Security Tests', 1))
 
     menu = OrderedDict()
-    menu['Deploy probes'] = Probes(wizard)
-    menu['Schedule tests'] = Schedule(wizard)
-    menu['View results'] = Results(wizard)
-    menu['Developer hub'] = Build(wizard)
-    menu['Manage account'] = IAM(wizard)
-    menu['Open executive dashboard'] = ExecutiveDashboard(wizard)
+    wizard.add_menu(menu, 'Deploy probes', Probes)
+    wizard.add_menu(menu, 'Schedule tests', Schedule)
+    wizard.add_menu(menu, 'View results', Results)
+    wizard.add_menu(menu, 'Developer hub', Build)
+    wizard.add_menu(menu, 'Manage account', IAM)
+    wizard.add_menu(menu, 'Open executive dashboard', ExecutiveDashboard)
 
     while True:
         try:
