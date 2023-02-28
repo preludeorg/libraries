@@ -495,7 +495,7 @@ class ViewRecommendations:
 
         if recommendations:
             for item in recommendations:
-                entry = f'{self.wiz.normalize(item["created"]), 15} {self.wiz.normalize(item["handle"]), 20} {self.wiz.normalize(item["title"], 50)} {item["description"]}'
+                entry = f'{self.wiz.normalize(item["created"], 15)} {self.wiz.normalize(item["handle"], 20)} {self.wiz.normalize(item["title"], 50)} {item["description"]}'
                 menu[entry] = None
             TerminalMenu(menu.keys()).show()
         else:
