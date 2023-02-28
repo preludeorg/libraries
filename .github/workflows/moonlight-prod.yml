@@ -1,9 +1,9 @@
 name: Prod - moonlight build and deploy 
 
 on:
-  release:
-    types:
-      - published
+  push:
+    tags:
+      - swift/probe/*
   workflow_dispatch:
 
 jobs:

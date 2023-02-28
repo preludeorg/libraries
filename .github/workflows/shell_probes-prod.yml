@@ -1,9 +1,9 @@
 name: Prod - shell probes (install / demo / nocturnal / raindrop scripts) deploy
 
 on:
-  release:
-    types:
-      - published
+  push:
+    tags:
+      - shell/probe/*
   workflow_dispatch:
 
 jobs:

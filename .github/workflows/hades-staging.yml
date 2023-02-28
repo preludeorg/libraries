@@ -6,9 +6,6 @@ on:
       - master
     paths:
       - 'go/probe/**'
-  release:
-    types:
-      - published
   workflow_dispatch:
 
 jobs:
