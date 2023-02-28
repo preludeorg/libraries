@@ -367,8 +367,7 @@ class RunCode(Enum):
                 index = TerminalMenu(menu.keys()).show()
                 answer = list(menu.items())
                 answer[index][1](self.wiz).enter()
-            except Exception as e:
-                print(e)
+            except Exception:
                 break
 
 
