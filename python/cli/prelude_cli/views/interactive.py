@@ -638,7 +638,7 @@ class UploadTest:
             return
 
         menu = TerminalMenu(
-            my_tests.values(),
+            [f'{self.wiz.normalize(t, 30)} (id: {id})' for id, t in my_tests.items()],
             multi_select=True,
             show_multi_select_hint=True,
             multi_select_select_on_accept=False,
