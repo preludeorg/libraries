@@ -5,7 +5,7 @@ from prelude_cli.views.build import build
 from prelude_cli.views.detect import detect
 from prelude_sdk.models.account import Account
 from prelude_cli.views.configure import configure
-from prelude_cli.views.interactive import interactive as wizard
+from prelude_cli.views.interactive import interactive as interactive_command
 
 
 @click.group(invoke_without_command=True)
@@ -17,7 +17,7 @@ def cli(ctx, profile, interactive):
     ctx.obj = Account(profile=profile)
     if ctx.invoked_subcommand is None:
         if interactive:
-            ctx.invoke(wizard)
+            ctx.invoke(interactive_command)
         else:
             click.echo(ctx.get_help())
 
