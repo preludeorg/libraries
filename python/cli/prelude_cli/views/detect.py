@@ -101,7 +101,7 @@ def endpoints(controller):
 @handle_api_error
 def social_statistics(controller, test, days):
     """ Pull social statistics for a specific test """
-    print_json(data=controller.social_stats(ident=test, days=days).items())
+    print_json(data=controller.social_stats(ident=test, days=days))
 
 
 @detect.command('recommendations')
