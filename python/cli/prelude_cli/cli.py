@@ -12,7 +12,7 @@ from prelude_cli.views.interactive import interactive as wizard
 @click.version_option()
 @click.pass_context
 @click.option('--profile', default='default', help='The prelude keychain profile to use', show_default=True)
-@click.option('--interactive', help='Open interactive wizard', default=False, is_flag=True)
+@click.option('--interactive', help='Open interactive wizard (cannot be used with a subcommand)', default=False, is_flag=True)
 def cli(ctx, profile, interactive):
     ctx.obj = Account(profile=profile)
     if ctx.invoked_subcommand is None:
