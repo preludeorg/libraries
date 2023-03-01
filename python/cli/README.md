@@ -1,6 +1,6 @@
 # Prelude CLI
 
-Interact with the full range of features in Build or Detect, organized by:
+Interact with the full range of features in Prelude Detect, organized by:
 
 - IAM: manage your account 
 - Build: write and maintain your collection of security tests
@@ -10,6 +10,7 @@ Interact with the full range of features in Build or Detect, organized by:
 ```bash
 pip install prelude-cli
 prelude --help
+prelude --interactive
 ```
 
 ## Documentation
