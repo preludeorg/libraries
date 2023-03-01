@@ -114,10 +114,10 @@ class DetectController:
             raise Exception(res.text)
 
     @verify_credentials
-    def create_recommendation(self, title: str, description: str):
+    def put_recommendation(self, title: str = '', description: str = '', decision: int = 0):
         """ Create a new security recommendation """
         with Spinner():
-            params = dict(title=title, description=description)
+            params = dict(title=title, description=description, decision=decision)
             res = requests.post(f'{self.account.hq}/detect/recommendations', headers=self.account.headers, json=params)
             if res.status_code != 200:
                 raise Exception(res.text)
