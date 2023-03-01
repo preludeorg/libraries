@@ -221,6 +221,7 @@ export interface Insight {
 }
 
 export interface Recommendation {
+  id: string;
   title: string;
   description: string;
   handle: string;
@@ -244,10 +245,17 @@ export interface ProbeActivity {
 }
 
 export interface CreateRecommendation {
-  id: string;
   title: string;
   description: string;
-  decision?: number;
+}
+
+export interface DecideRecommendation {
+  id: string;
+  /**
+   * 1 = APPROVE
+   * 2 = DENY
+   */
+  decision: 1 | 2;
 }
 
 export interface RegisterEndpointParams {

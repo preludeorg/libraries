@@ -181,6 +181,36 @@
           try {
             service = await setupAccount();
 
+            console.log(
+              "List Recommendations",
+              await service.detect.getRecommendations()
+            );
+
+            console.log(
+              "Create Recommendation",
+              await service.detect.createRecommendation({
+                title: "Test Recommendation",
+                description: "This is a test recommendation",
+              })
+            );
+
+            const recos = await service.detect.getRecommendations();
+
+            console.log("List Recommendations After Create", recos);
+
+            console.log(
+              "Update Recommendation",
+              await service.detect.createRecommendation({
+                id: recos[0].id,
+                decision: 1,
+              })
+            );
+
+            console.log(
+              "List Recommendations After Update",
+              await service.detect.getRecommendations()
+            );
+
             console.log("List Tests", await service.detect.listTests());
 
             console.log("List Probes", await service.detect.listEndpoints());
