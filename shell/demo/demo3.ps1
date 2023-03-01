@@ -19,9 +19,8 @@ Malicious files are used to gain entry and conduct cyberattacks against corporat
 innocuous email attachments or direct downloads. For example - a malicious Windows executable was used by the SteelClover group 
 during an attack in January 2023.
 
-This test will attempt to download a malicious file to your disk - a defanged version of RedLine Stealer used by SteelClover - 
-to see how your machine will respond. Downloading malicious files can open you up to further attacks,
-so the ability to quickly detect and quarantine any potentially harmful files is an important part of maintaining a proper security posture.
+This test will attempt to download a defanged malicious file to your disk - containing a signature for RedLine Stealer used by SteelClover - to see how your endpoint defenses will respond. 
+Downloading malicious files can open you up to further attacks, so the ability to quickly detect and quarantine any potentially harmful files is an important part of maintaining a proper security posture.
 
 This is a Verified Security Test (VST) Developed by Prelude Research Inc.
 
