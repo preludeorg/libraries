@@ -4,6 +4,7 @@ import {
   ActivityQuery,
   CreateRecommendation,
   DayResult,
+  DecideRecommendation,
   EnableTest,
   Insight,
   Probe,
@@ -204,16 +205,16 @@ export default class DetectController {
     return (await response.json()) as Recommendation[];
   }
 
-  /** Create a new security recommendation */
-  async createRecommendation(
-    request: CreateRecommendation,
+  /** Creates or updates a new security recommendation */
+  async putRecommendation(
+    params: CreateRecommendation | DecideRecommendation,
     options: RequestOptions = {}
   ): Promise<string> {
     const response = await this.#client.requestWithAuth(
       `/detect/recommendations`,
       {
         method: "POST",
-        body: JSON.stringify(request),
+        body: JSON.stringify(params),
         ...options,
       }
     );
