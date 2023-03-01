@@ -11,7 +11,7 @@ class ProbeController:
 
     def download(self, name: str, dos: str):
         """ Download a probe executable """
-        with Spinner(plaintext=self.plaintext):
+        with Spinner(self.plaintext):
             res = requests.get(f'{self.account.hq}/download/{name}', headers=dict(dos=dos))
             if not res.status_code == 200:
                 raise Exception(res.text)

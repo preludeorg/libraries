@@ -13,7 +13,7 @@ class BuildController:
     @verify_credentials
     def create_test(self, test_id, name):
         """ Create or update a test """
-        with Spinner(plaintext=self.plaintext):
+        with Spinner(self.plaintext):
             data = dict(name=name)
             res = requests.post(f'{self.account.hq}/build/tests/{test_id}', json=data, headers=self.account.headers)
             if not res.status_code == 200:
@@ -22,7 +22,7 @@ class BuildController:
     @verify_credentials
     def delete_test(self, test_id):
         """ Delete an existing test """
-        with Spinner(plaintext=self.plaintext):
+        with Spinner(self.plaintext):
             res = requests.delete(f'{self.account.hq}/build/tests/{test_id}', headers=self.account.headers)
             if not res.status_code == 200:
                 raise Exception(res.text)
@@ -30,7 +30,7 @@ class BuildController:
     @verify_credentials
     def get_test(self, test_id):
         """ Get properties of an existing test """
-        with Spinner(plaintext=self.plaintext):
+        with Spinner(self.plaintext):
             res = requests.get(f'{self.account.hq}/build/tests/{test_id}', headers=self.account.headers)
             if res.status_code == 200:
                 return res.json()
@@ -39,7 +39,7 @@ class BuildController:
     @verify_credentials
     def download(self, test_id, filename):
         """ Clone a test file or attachment"""
-        with Spinner(plaintext=self.plaintext):
+        with Spinner(self.plaintext):
             res = requests.get(f'{self.account.hq}/build/tests/{test_id}/{filename}', headers=self.account.headers)
             if res.status_code == 200:
                 return res.content
@@ -48,7 +48,7 @@ class BuildController:
     @verify_credentials
     def upload(self, test_id, filename, code):
         """ Upload a test or attachment """
-        with Spinner(plaintext=self.plaintext):
+        with Spinner(self.plaintext):
             res = requests.post(f'{self.account.hq}/build/tests/{test_id}/{filename}', json=dict(code=code), headers=self.account.headers)
             if not res.status_code == 200:
                 raise Exception(res.text)
@@ -56,7 +56,7 @@ class BuildController:
     @verify_credentials
     def map(self, test_id: str, x: str):
         """ Add a classification property to a test """
-        with Spinner(plaintext=self.plaintext):
+        with Spinner(self.plaintext):
             res = requests.post(f'{self.account.hq}/build/tests/{test_id}/map/{x}', json=dict(id=test_id), headers=self.account.headers)
             if not res.status_code == 200:
                 raise Exception(res.text)
@@ -64,7 +64,7 @@ class BuildController:
     @verify_credentials
     def unmap(self, test_id: str, x: str):
         """ Remove a classification property from a test """
-        with Spinner(plaintext=self.plaintext):
+        with Spinner(self.plaintext):
             res = requests.delete(f'{self.account.hq}/build/tests/{test_id}/map/{x}', json=dict(id=test_id), headers=self.account.headers)
             if not res.status_code == 200:
                 raise Exception(res.text)

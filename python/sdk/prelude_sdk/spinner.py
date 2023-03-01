@@ -13,7 +13,7 @@ class Spinner:
         while 1: 
             for cursor in '|/-\\': yield cursor
 
-    def __init__(self, delay=None, plaintext=False):
+    def __init__(self, plaintext=False, delay=None):
         self.plaintext = plaintext
         self.spinner_generator = self.spinning_cursor()
         if delay and float(delay): self.delay = delay

@@ -13,7 +13,7 @@ class DetectController:
     @verify_credentials
     def register_endpoint(self, name, tags):
         """ Register (or re-register) an endpoint to your account """
-        with Spinner(plaintext=self.plaintext):
+        with Spinner(self.plaintext):
             params = dict(id=name, tags=tags)
             res = requests.post(f'{self.account.hq}/detect/endpoint', headers=self.account.headers, json=params)
             if res.status_code == 200:
@@ -23,7 +23,7 @@ class DetectController:
     @verify_credentials
     def delete_endpoint(self, ident: str):
         """ Delete an endpoint from your account """
-        with Spinner(plaintext=self.plaintext):
+        with Spinner(self.plaintext):
             params = dict(id=ident)
             res = requests.delete(f'{self.account.hq}/detect/endpoint', headers=self.account.headers, json=params)
             if res.status_code != 200:
@@ -32,7 +32,7 @@ class DetectController:
     @verify_credentials
     def list_endpoints(self):
         """ List all endpoints on your account """
-        with Spinner(plaintext=self.plaintext):
+        with Spinner(self.plaintext):
             res = requests.get(f'{self.account.hq}/detect/endpoint', headers=self.account.headers)
             if res.status_code == 200:
                 return res.json()
@@ -41,7 +41,7 @@ class DetectController:
     @verify_credentials
     def describe_activity(self, filters: dict, view: str = 'logs'):
         """ Get report for an Account """
-        with Spinner(plaintext=self.plaintext):
+        with Spinner(self.plaintext):
             params = dict(view=view, **filters)
             res = requests.get(f'{self.account.hq}/detect/activity', headers=self.account.headers, params=params)
             if res.status_code == 200:
@@ -50,7 +50,7 @@ class DetectController:
 
     @verify_credentials
     def list_queue(self):
-        with Spinner(plaintext=self.plaintext):
+        with Spinner(self.plaintext):
             res = requests.get(f'{self.account.hq}/detect/queue', headers=self.account.headers)
             if res.status_code == 200:
                 return res.json()
@@ -59,7 +59,7 @@ class DetectController:
     @verify_credentials
     def list_tests(self):
         """ List all tests available to an account """
-        with Spinner(plaintext=self.plaintext):
+        with Spinner(self.plaintext):
             res = requests.get(f'{self.account.hq}/detect/tests', headers=self.account.headers)
             if res.status_code == 200:
                 return res.json()
@@ -68,7 +68,7 @@ class DetectController:
     @verify_credentials
     def enable_test(self, ident: str, run_code: int, tags: str):
         """ Enable a test so endpoints will start running it """
-        with Spinner(plaintext=self.plaintext):
+        with Spinner(self.plaintext):
             res = requests.post(
                 url=f'{self.account.hq}/detect/queue/{ident}',
                 headers=self.account.headers,
@@ -80,7 +80,7 @@ class DetectController:
     @verify_credentials
     def disable_test(self, ident):
         """ Disable a test so endpoints will stop running it """
-        with Spinner(plaintext=self.plaintext):
+        with Spinner(self.plaintext):
             res = requests.delete(f'{self.account.hq}/detect/queue/{ident}', headers=self.account.headers)
             if res.status_code != 200:
                 raise Exception(res.text)
@@ -88,7 +88,7 @@ class DetectController:
     @verify_credentials
     def search(self, identifier: str):
         """ Search the NVD for a keyword """
-        with Spinner(plaintext=self.plaintext):
+        with Spinner(self.plaintext):
             params = dict(identifier=identifier)
             res = requests.get(f'{self.account.hq}/detect/search', headers=self.account.headers, params=params)
             if res.status_code == 200:
@@ -98,7 +98,7 @@ class DetectController:
     @verify_credentials
     def social_stats(self, ident: str, days: int = 30):
         """ Pull social statistics for a specific test """
-        with Spinner(plaintext=self.plaintext):
+        with Spinner(self.plaintext):
             params = dict(days=days)
             res = requests.get(f'{self.account.hq}/detect/{ident}/social', headers=self.account.headers, params=params)
             if res.status_code == 200:
@@ -108,7 +108,7 @@ class DetectController:
     @verify_credentials
     def recommendations(self):
         """ List all security recommendations for your account """
-        with Spinner(plaintext=self.plaintext):
+        with Spinner(self.plaintext):
             res = requests.get(f'{self.account.hq}/detect/recommendations', headers=self.account.headers)
             if res.status_code == 200:
                 return res.json()
@@ -117,7 +117,7 @@ class DetectController:
     @verify_credentials
     def create_recommendation(self, title: str, description: str):
         """ Create a new security recommendation """
-        with Spinner(plaintext=self.plaintext):
+        with Spinner(self.plaintext):
             params = dict(title=title, description=description)
             res = requests.post(f'{self.account.hq}/detect/recommendations', headers=self.account.headers, json=params)
             if res.status_code != 200:
