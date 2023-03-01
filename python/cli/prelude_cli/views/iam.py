@@ -12,7 +12,7 @@ from prelude_sdk.controllers.iam_controller import IAMController
 @click.pass_context
 def iam(ctx):
     """ Prelude account management """
-    ctx.obj = IAMController(account=ctx.obj)
+    ctx.obj = IAMController(**ctx.obj)
 
 
 @iam.command('create-account')
