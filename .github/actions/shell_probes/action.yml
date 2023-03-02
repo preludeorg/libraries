@@ -46,12 +46,18 @@ runs:
         aws s3 cp shell/probe/install.sh s3://${{ inputs.s3_bucket }}/prelude/probes/install/install_linux-x86_64
 
         aws s3 cp shell/demo/demo2.ps1 s3://${{ inputs.s3_bucket }}/prelude/probes/demo2/demo2_windows-x86_64
-          
+        aws s3 cp shell/demo/demo3.ps1 s3://${{ inputs.s3_bucket }}/prelude/probes/demo3/demo3_windows-x86_64
+ 
         aws s3 cp shell/demo/demo2.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo2/demo2_darwin-arm64
         aws s3 cp shell/demo/demo2.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo2/demo2_darwin-x86_64
         aws s3 cp shell/demo/demo2.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo2/demo2_linux-arm64
         aws s3 cp shell/demo/demo2.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo2/demo2_linux-x86_64
       
+        aws s3 cp shell/demo/demo3.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo3/demo3_darwin-arm64
+        aws s3 cp shell/demo/demo3.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo3/demo3_darwin-x86_64
+        aws s3 cp shell/demo/demo3.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo3/demo3_linux-arm64
+        aws s3 cp shell/demo/demo3.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo3/demo3_linux-x86_64
+
         aws s3 cp shell/probe/raindrop.ps1 s3://${{ inputs.s3_bucket }}/prelude/probes/raindrop/raindrop_windows-x86_64
 
     - name: Send custom JSON data to Slack workflow
