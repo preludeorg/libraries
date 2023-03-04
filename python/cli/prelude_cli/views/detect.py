@@ -130,7 +130,7 @@ def add_recommendation(controller, title, description):
 @handle_api_error
 def decide_recommendation(controller, id, decision):
     """ Update a security recommendation decision """
-    controller.put_recommendation(id=id, decision=decision)
+    controller.put_recommendation(id=id, decision=Decision[decision.upper()].value)
 
 
 @detect.command('activity')
