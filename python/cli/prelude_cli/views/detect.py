@@ -123,13 +123,14 @@ def add_recommendation(controller, title, description):
 
 
 @detect.command('decide-recommendation')
+@click.argument('id')
 @click.option('-d', '--decision', help='approve or deny the recommendation', default=Decision.APPROVE.name,
               type=click.Choice([d.name for d in Decision], case_sensitive=False), show_default=True)
 @click.pass_obj
 @handle_api_error
-def add_recommendation(controller, decision):
-    """ Create a new security recommendation """
-    controller.put_recommendation(decision=decision)
+def decide_recommendation(controller, id, decision):
+    """ Update a security recommendation decision """
+    controller.put_recommendation(id=id, decision=decision)
 
 
 @detect.command('activity')
