@@ -4,7 +4,7 @@ from rich import print_json
 from datetime import datetime, timedelta, time
 
 from prelude_cli.views.shared import handle_api_error
-from prelude_sdk.models.codes import RunCode, Decision
+from prelude_sdk.models.codes import Decision, RunCode
 from prelude_sdk.controllers.detect_controller import DetectController
 
 
