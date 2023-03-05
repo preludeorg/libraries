@@ -29,10 +29,11 @@ class DetectController:
                 raise Exception(res.text)
 
     @verify_credentials
-    def list_endpoints(self):
+    def list_endpoints(self, days: int = 90):
         """ List all endpoints on your account """
         with Spinner():
-            res = requests.get(f'{self.account.hq}/detect/endpoint', headers=self.account.headers)
+            params = dict(days=days)
+            res = requests.get(f'{self.account.hq}/detect/endpoint', headers=self.account.headers, params=params)
             if res.status_code == 200:
                 return res.json()
             raise Exception(res.text)

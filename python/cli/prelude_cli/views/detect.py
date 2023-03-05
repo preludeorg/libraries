@@ -87,11 +87,12 @@ def search(controller, cve):
 
 
 @detect.command('endpoints')
+@click.option('-d', '--days', help='only show endpoints that have run at least once in the past DAYS days', default=90, type=int)
 @click.pass_obj
 @handle_api_error
-def endpoints(controller):
-    """ List all endpoints associated to your account """
-    print_json(data=controller.list_endpoints())
+def endpoints(controller, days):
+    """ List all active endpoints associated to your account """
+    print_json(data=controller.list_endpoints(days=days))
 
 
 @detect.command('social-stats')
