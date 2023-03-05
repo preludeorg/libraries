@@ -16,13 +16,15 @@ def detect(ctx):
 
 
 @detect.command('create-endpoint')
+@click.option('-h', '--host', help='hostname of this machine', type=str, required=True)
+@click.option('-s', '--serial_num', help='serial number of this machine', type=str, required=True)
+@click.option('-e', '--edr_id', help='EDR id', type=str, default='')
 @click.option('-t', '--tags', help='a comma-separated list of tags for this endpoint', type=str, default='')
-@click.argument('name')
 @click.pass_obj
 @handle_api_error
-def register_endpoint(controller, name, tags):
+def register_endpoint(controller, host, serial_num, edr_id, tags):
     """ Register a new endpoint """
-    token = controller.register_endpoint(name=name, tags=tags)
+    token = controller.register_endpoint(host=host, serial_num=serial_num, edr_id=edr_id, tags=tags)
     click.secho(token)
 
 
