@@ -13,10 +13,7 @@ class DetectController:
     def register_endpoint(self, host, serial_num, edr_id, tags):
         """ Register (or re-register) an endpoint to your account """
         with Spinner():
-            id = f'{host}:{serial_num}'
-            if edr_id:
-                id += f':{edr_id}'
-            params = dict(id=id, tags=tags)
+            params = dict(id=f'{host}:{serial_num}:{edr_id}', tags=tags)
             res = requests.post(f'{self.account.hq}/detect/endpoint', headers=self.account.headers, json=params)
             if res.status_code == 200:
                 return res.text
