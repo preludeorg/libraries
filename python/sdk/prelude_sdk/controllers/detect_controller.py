@@ -10,10 +10,10 @@ class DetectController:
         self.account = account
 
     @verify_credentials
-    def register_endpoint(self, name, tags):
+    def register_endpoint(self, host, serial_num, edr_id, tags):
         """ Register (or re-register) an endpoint to your account """
         with Spinner():
-            params = dict(id=name, tags=tags)
+            params = dict(id=f'{host}:{serial_num}:{edr_id}', tags=tags)
             res = requests.post(f'{self.account.hq}/detect/endpoint', headers=self.account.headers, json=params)
             if res.status_code == 200:
                 return res.text
@@ -29,10 +29,11 @@ class DetectController:
                 raise Exception(res.text)
 
     @verify_credentials
-    def list_endpoints(self):
+    def list_endpoints(self, days: int = 90):
         """ List all endpoints on your account """
         with Spinner():
-            res = requests.get(f'{self.account.hq}/detect/endpoint', headers=self.account.headers)
+            params = dict(days=days)
+            res = requests.get(f'{self.account.hq}/detect/endpoint', headers=self.account.headers, params=params)
             if res.status_code == 200:
                 return res.json()
             raise Exception(res.text)

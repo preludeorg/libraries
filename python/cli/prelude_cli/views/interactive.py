@@ -162,7 +162,8 @@ class DeployProbe:
 
     def enter(self):
         # register endpoint
-        endpoint_id = Prompt.ask("Enter an identifier for your probe:", default=socket.gethostname())
+        host = Prompt.ask("Enter hostname of your probe:", default=socket.gethostname())
+        serial = Prompt.ask("Enter serial number of your probe:", default='1-2-3-4')
 
         print(f'Optionally, select a host type tag')
         systems = ['workstation', 'server', 'container', 'cloud']
@@ -188,7 +189,7 @@ class DeployProbe:
         menu.show()
         tags = tags + list(menu.chosen_menu_entries or [])
 
-        token = self.wiz.detect.register_endpoint(name=endpoint_id, tags=",".join(tags))
+        token = self.wiz.detect.register_endpoint(host=host, serial_num=serial, tags=",".join(tags))
         
         # download executable
         probe_options = OrderedDict()
@@ -207,7 +208,7 @@ class DeployProbe:
         extension = '.ps1' if platform[0] == 'windows' else ''
         auth = f'SETX PRELUDE_TOKEN {token}' if platform[0] == 'windows' else f'export PRELUDE_TOKEN={token}'
 
-        custom_probe = PurePath(Path.home(), '.prelude', f'{endpoint_id}{extension}')
+        custom_probe = PurePath(Path.home(), '.prelude', f'{host}{extension}')
         with open(custom_probe, 'w') as probe_code:
             probe_code.write(f'{auth}\n{code}')
             print(f'Downloaded {custom_probe}')
