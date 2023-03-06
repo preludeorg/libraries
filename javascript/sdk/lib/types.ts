@@ -231,14 +231,18 @@ export interface Recommendation {
   description: string;
   handle: string;
   created: string;
+  event: RecommendationEvent[];
+}
+export interface RecommendationEvent {
   /**
    * 0 = NONE
    * 1 = APPROVE
    * 2 = DENY
    */
-  decision: 0 | 1 | 2;
+  decision: number;
+  handle: string;
+  created: string;
 }
-
 export type RuleVolume = Record<
   string,
   {
