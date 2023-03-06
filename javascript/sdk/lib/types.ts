@@ -86,6 +86,10 @@ export interface EnableTest {
 
 export interface Probe {
   endpoint_id: string;
+  edr_id: string;
+  host: string;
+  last_beacon: string;
+  serial_num: string;
   tags: string[];
   created: string;
 }
@@ -169,6 +173,7 @@ export interface Activity {
   test: string;
   dos: Platform;
   tags: string[] | null;
+  edr_id: string | null;
 }
 
 export interface TestData {
@@ -226,6 +231,12 @@ export interface Recommendation {
   description: string;
   handle: string;
   created: string;
+  /**
+   * 0 = NONE
+   * 1 = APPROVE
+   * 2 = DENY
+   */
+  decision: 0 | 1 | 2;
 }
 
 export type RuleVolume = Record<
@@ -242,6 +253,7 @@ export interface ProbeActivity {
   endpoint_id: string;
   state: "PROTECTED" | "UNPROTECTED" | "ERROR";
   tags: string[];
+  edr_id: string | null;
 }
 
 export interface CreateRecommendation {
@@ -259,6 +271,8 @@ export interface DecideRecommendation {
 }
 
 export interface RegisterEndpointParams {
-  id: string;
+  host: string;
+  serial_num: string;
+  edr_id?: string;
   tags?: string;
 }
