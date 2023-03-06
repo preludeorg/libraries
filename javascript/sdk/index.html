@@ -59,30 +59,30 @@
       }
 
       const code = `
-      package main
-      import (
-          "fmt"
-          "os"
-      )
+            package main
+            import (
+                "fmt"
+                "os"
+            )
 
-      func test() {
-          fmt.Println("Run test")
-          os.Exit(100)
-      }
+            func test() {
+                fmt.Println("Run test")
+                os.Exit(100)
+            }
 
-      func clean() {
-          fmt.Println("Clean up")
-          os.Exit(100)
-      }
+            func clean() {
+                fmt.Println("Clean up")
+                os.Exit(100)
+            }
 
-      func main() {
-          args := os.Args[1:]
-          if len(args) > 0 {
-              clean()
-          } else {
-              test()
-          }
-      }`;
+            func main() {
+                args := os.Args[1:]
+                if len(args) > 0 {
+                    clean()
+                } else {
+                    test()
+                }
+            }`;
 
       import * as Prelude from "/lib/main.ts";
       import * as uuid from "https://jspm.dev/uuid";
@@ -101,7 +101,12 @@
           },
         });
 
-        const credentials = await service.iam.newAccount("user_handle");
+        // const credentials = await service.iam.newAccount("user_handle");
+
+        const credentials = {
+          account: "76af96c54a01da6e63d3ae76495fef4a",
+          token: "c0f43c9b-8da9-42b9-b85f-fb9d4f3ec098",
+        };
 
         console.log("CREATE account", { credentials });
 
@@ -169,7 +174,7 @@
           } catch (e) {
             console.log("Error", e.message);
           } finally {
-            console.log("PURGE ACCOUNT", await service.iam.purgeAccount());
+            // console.log("PURGE ACCOUNT", await service.iam.purgeAccount());
           }
         });
 
@@ -188,78 +193,79 @@
 
             console.log(
               "Create Recommendation",
-              await service.detect.createRecommendation({
+              await service.detect.putRecommendation({
                 title: "Test Recommendation",
-                description: "This is a test recommendation",
+                description:
+                  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sit amet diam tempor, varius libero viverra, imperdiet lacus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Etiam pretium dolor in eros dictum varius. Vestibulum feugiat risus id rhoncus lacinia. Nunc posuere, justo sit amet elementum ultricies, lorem elit posuere dui, ac sagittis orci nisi a eros. Maecenas leo sem, rhoncus a enim sed, facilisis malesuada est. Vestibulum vel nulla massa. Quisque id urna at mi dapibus malesuada vel ac libero. Morbi mollis augue quis mauris condimentum, non cursus magna porttitor. Nam maximus varius lacus, sed lacinia nisi condimentum quis. Sed sodales ornare sem id consectetur. Integer in accumsan lectus. Nullam non pretium massa. Praesent justo lacus, fermentum vel nisi id, venenatis suscipit libero.",
               })
             );
 
-            const recos = await service.detect.getRecommendations();
+            // const recos = await service.detect.getRecommendations();
 
-            console.log("List Recommendations After Create", recos);
+            // console.log("List Recommendations After Create", recos);
 
-            console.log(
-              "Update Recommendation",
-              await service.detect.createRecommendation({
-                id: recos[0].id,
-                decision: 1,
-              })
-            );
+            // console.log(
+            //   "Update Recommendation",
+            //   await service.detect.createRecommendation({
+            //     id: recos[0].id,
+            //     decision: 1,
+            //   })
+            // );
 
-            console.log(
-              "List Recommendations After Update",
-              await service.detect.getRecommendations()
-            );
+            // console.log(
+            //   "List Recommendations After Update",
+            //   await service.detect.getRecommendations()
+            // );
 
-            console.log("List Tests", await service.detect.listTests());
+            // console.log("List Tests", await service.detect.listTests());
 
-            console.log("List Probes", await service.detect.listEndpoints());
+            // console.log("List Probes", await service.detect.listEndpoints());
 
-            console.log(
-              "Register Endpoint",
-              await service.detect.registerEndpoint({
-                id: "test-endpoint",
-                tags: "test,js",
-              })
-            );
+            // console.log(
+            //   "Register Endpoint",
+            //   await service.detect.registerEndpoint({
+            //     id: "test-endpoint",
+            //     tags: "test,js",
+            //   })
+            // );
 
-            console.log(
-              "List Probes after create",
-              await service.detect.listEndpoints()
-            );
+            // console.log(
+            //   "List Probes after create",
+            //   await service.detect.listEndpoints()
+            // );
 
-            console.log(
-              "Probe Activity",
-              await service.detect.describeActivity({
-                start: "2023-01-10",
-                finish: "2023-02-15",
-                view: "probes",
-              })
-            );
+            // console.log(
+            //   "Probe Activity",
+            //   await service.detect.describeActivity({
+            //     start: "2023-01-10",
+            //     finish: "2023-02-15",
+            //     view: "probes",
+            //   })
+            // );
 
-            console.log("Print Queue", await service.detect.listQueue());
+            // console.log("Print Queue", await service.detect.listQueue());
 
-            console.log(
-              "Stats",
-              await service.detect.socialStats(
-                "39de298a-911d-4a3b-aed4-1e8281010a9a"
-              )
-            );
+            // console.log(
+            //   "Stats",
+            //   await service.detect.socialStats(
+            //     "39de298a-911d-4a3b-aed4-1e8281010a9a"
+            //   )
+            // );
 
-            console.log("Search", await service.detect.search("CVE-2017-0199"));
+            // console.log("Search", await service.detect.search("CVE-2017-0199"));
 
-            console.log(
-              "Activity",
-              await service.detect.describeActivity({
-                view: "logs",
-                start: "2023-01-10",
-                finish: "2023-01-15",
-              })
-            );
+            // console.log(
+            //   "Activity",
+            //   await service.detect.describeActivity({
+            //     view: "logs",
+            //     start: "2023-01-10",
+            //     finish: "2023-01-15",
+            //   })
+            // );
           } catch (e) {
             console.log("Error", e.message);
           } finally {
-            console.log("PURGE ACCOUNT", await service.iam.purgeAccount());
+            // console.log("PURGE ACCOUNT", await service.iam.purgeAccount());
           }
         });
 
@@ -273,7 +279,7 @@
         } catch (e) {
           console.log("Error", e.message);
         } finally {
-          console.log("PURGE ACCOUNT", await service.iam.purgeAccount());
+          // console.log("PURGE ACCOUNT", await service.iam.purgeAccount());
         }
       });
     </script>

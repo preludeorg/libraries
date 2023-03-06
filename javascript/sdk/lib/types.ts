@@ -226,6 +226,12 @@ export interface Recommendation {
   description: string;
   handle: string;
   created: string;
+  /**
+   * 0 = NONE
+   * 1 = APPROVE
+   * 2 = DENY
+   */
+  decision: 0 | 1 | 2;
 }
 
 export type RuleVolume = Record<
