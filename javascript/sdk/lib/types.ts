@@ -231,7 +231,7 @@ export interface Recommendation {
   description: string;
   handle: string;
   created: string;
-  event: RecommendationEvent[];
+  events: RecommendationEvent[];
 }
 export interface RecommendationEvent {
   /**
