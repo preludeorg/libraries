@@ -265,6 +265,8 @@ export interface DecideRecommendation {
 }
 
 export interface RegisterEndpointParams {
-  id: string;
+  host: string;
+  serial_num: string;
+  edr_id?: string;
   tags?: string;
 }
