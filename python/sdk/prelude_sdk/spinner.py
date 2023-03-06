@@ -33,4 +33,3 @@ class Spinner:
         time.sleep(self.delay)
         if exception is not None:
             return False
-        
