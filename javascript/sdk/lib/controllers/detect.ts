@@ -221,4 +221,15 @@ export default class DetectController {
 
     return await response.text();
   }
+  /** Updates a recommendation with a new event containing new decision */
+  async makeDecision(
+    params: DecideRecommendation,
+    options: RequestOptions = {}
+  ): Promise<void> {
+    await this.#client.requestWithAuth(`/detect/recommendations/${params.id}`, {
+      method: "POST",
+      body: JSON.stringify({ decision: params.decision }),
+      ...options,
+    });
+  }
 }
