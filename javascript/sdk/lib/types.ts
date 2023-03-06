@@ -86,6 +86,10 @@ export interface EnableTest {
 
 export interface Probe {
   endpoint_id: string;
+  edr_id: string;
+  host: string;
+  last_beacon: string;
+  serial_num: string;
   tags: string[];
   created: string;
 }
@@ -169,6 +173,7 @@ export interface Activity {
   test: string;
   dos: Platform;
   tags: string[] | null;
+  edr_id: string | null;
 }
 
 export interface TestData {
@@ -248,6 +253,7 @@ export interface ProbeActivity {
   endpoint_id: string;
   state: "PROTECTED" | "UNPROTECTED" | "ERROR";
   tags: string[];
+  edr_id: string | null;
 }
 
 export interface CreateRecommendation {
