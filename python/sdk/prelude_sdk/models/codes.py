@@ -28,6 +28,7 @@ class Permission(Enum):
 
 class ExitCode(Enum):
     MISSING = -1
+    REMOVED = 0
     ERROR = 1
     MALFORMED_VST = 2
     PROCESS_KILLED_1 = 9
@@ -67,6 +68,7 @@ class State(Enum):
         return {
             State.NONE: [ExitCode.MISSING],
             State.PROTECTED: [
+                ExitCode.REMOVED,
                 ExitCode.PROTECTED,
                 ExitCode.QUARANTINED_1,
                 ExitCode.QUARANTINED_2,
@@ -95,7 +97,6 @@ class Decision(Enum):
     @classmethod
     def _missing_(cls, value):
         return Decision.NONE
-
 
 class DOS(Enum):
     none = 'none'

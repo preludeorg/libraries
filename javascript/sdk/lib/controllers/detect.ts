@@ -28,12 +28,12 @@ export default class DetectController {
 
   /** Register (or re-register) an endpoint to your account */
   async registerEndpoint(
-    { id, tags = "" }: RegisterEndpointParams,
+    { host, serial_num, edr_id = "", tags = "" }: RegisterEndpointParams,
     options: RequestOptions = {}
   ): Promise<string> {
     const response = await this.#client.requestWithAuth("/detect/endpoint", {
       method: "POST",
-      body: JSON.stringify({ id, tags }),
+      body: JSON.stringify({ id: `${host}:${serial_num}:${edr_id}`, tags }),
       ...options,
     });
 
@@ -220,5 +220,16 @@ export default class DetectController {
     );
 
     return await response.text();
+  }
+  /** Updates a recommendation with a new event containing new decision */
+  async makeDecision(
+    params: DecideRecommendation,
+    options: RequestOptions = {}
+  ): Promise<void> {
+    await this.#client.requestWithAuth(`/detect/recommendations/${params.id}`, {
+      method: "POST",
+      body: JSON.stringify({ decision: params.decision }),
+      ...options,
+    });
   }
 }
