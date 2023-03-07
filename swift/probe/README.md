@@ -1,5 +1,3 @@
-> This probe is not actively maintained. Please use Nocturnal.
-
 # Moonlight
 
 A probe written in Swift.
