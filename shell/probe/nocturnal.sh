@@ -15,7 +15,6 @@ do
 
     if [ $test ];then
         ca=$(echo $location | sed -e 's|^[^/]*//||' -e 's|/.*$||')
-        echo $ca
 
         if [ "$PRELUDE_CA" == "$ca" ];then
             echo "[P] Running $test masquerading as $exe"
