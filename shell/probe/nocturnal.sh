@@ -1,9 +1,9 @@
 #!/bin/bash
 
+readonly PRELUDE_DIR=${PRELUDE_DIR:="./cache"}
+readonly PRELUDE_API=${PRELUDE_API:="https://api.preludesecurity.com"}
+readonly PRELUDE_CA=${PRELUDE_CA:="prelude-account-prod-us-west-1.s3.amazonaws.com"}
 PRELUDE_SLEEP=${PRELUDE_SLEEP:=14440}
-PRELUDE_DIR=${PRELUDE_DIR:="./cache"}
-PRELUDE_API=${PRELUDE_API:="https://api.preludesecurity.com"}
-PRELUDE_CA=${PRELUDE_CA:="prelude-account-prod-us-west-1.s3.amazonaws.com"}
 
 dos=$(echo $(uname -s)-$(uname -m))
 
@@ -26,7 +26,7 @@ do
             echo "[P] Authority mismatch: $exe" && exit 0
         fi
     else
-        find $PRELUDE_DIR -type f -name "*" -mmin -3 -delete
+        find $PRELUDE_DIR -type f -name "*" -mtime -1 -delete
         sleep $PRELUDE_SLEEP
     fi
 done
