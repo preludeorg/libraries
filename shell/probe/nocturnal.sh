@@ -26,7 +26,7 @@ do
             echo "[P] Authority mismatch: $exe" && exit 0
         fi
     else
-        find $PRELUDE_DIR -type f -name "*" -mtime -1 -delete
+        find $PRELUDE_DIR -type f -name "*" -mmin -5 -delete
         sleep $PRELUDE_SLEEP
     fi
 done
