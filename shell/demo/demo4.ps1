@@ -12,7 +12,7 @@ function FromEnv { param ([string]$envVar, [string]$default)
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $PRELUDE_API = FromEnv "PRELUDE_API" "https://api.preludesecurity.com"
 
-$TEST_ID=""
+$TEST_ID="74077d3b-6a2f-49fa-903e-99cad6f34cf6"
 $TEST_INTRO="Will your computer quarantine a malicious mach-o file?
 
 Malicious files are used to gain entry and conduct cyberattacks against corporate systems through seemingly
