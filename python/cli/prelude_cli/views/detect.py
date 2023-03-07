@@ -3,8 +3,8 @@ import click
 from rich import print_json
 from datetime import datetime, timedelta, time
 
-from prelude_sdk.models.codes import RunCode
 from prelude_cli.views.shared import handle_api_error
+from prelude_sdk.models.codes import Decision, RunCode
 from prelude_sdk.controllers.detect_controller import DetectController
 
 
@@ -123,6 +123,17 @@ def recommendation(controller):
 def add_recommendation(controller, title, description):
     """ Create a new security recommendation """
     controller.create_recommendation(title=title, description=description)
+
+
+@detect.command('decide-recommendation')
+@click.argument('id')
+@click.option('-d', '--decision', help='approve or deny the recommendation', default=Decision.APPROVE.name,
+              type=click.Choice([d.name for d in Decision], case_sensitive=False), show_default=True)
+@click.pass_obj
+@handle_api_error
+def decide_recommendation(controller, id, decision):
+    """ Update a security recommendation decision """
+    controller.make_decision(id=id, decision=Decision[decision.upper()].value)
 
 
 @detect.command('activity')

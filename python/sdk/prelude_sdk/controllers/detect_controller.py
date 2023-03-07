@@ -122,3 +122,12 @@ class DetectController:
             res = requests.post(f'{self.account.hq}/detect/recommendations', headers=self.account.headers, json=params)
             if res.status_code != 200:
                 raise Exception(res.text)
+
+    @verify_credentials
+    def make_decision(self, id: str, decision: int):
+        """ Add a new decision for a security recommendation """
+        with Spinner():
+            params = dict(decision=decision)
+            res = requests.post(f'{self.account.hq}/detect/recommendations/{id}', headers=self.account.headers, json=params)
+            if res.status_code != 200:
+                raise Exception(res.text)
