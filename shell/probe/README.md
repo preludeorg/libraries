@@ -1,6 +1,6 @@
 # Shell probes
 
-Shell probes are intended to be runtime-free executable code that works on most common operating systems.
+Shell probes are intended to be dependency-free executable code that works on most common operating systems.
 
 ## Quick start
 
