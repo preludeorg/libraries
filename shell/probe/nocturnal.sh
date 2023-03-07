@@ -12,6 +12,7 @@ do
     exe=$PRELUDE_DIR/$(uuidgen)
     location=$(curl -sL -w %{url_effective} --create-dirs -o $exe -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "dat:${dat}" $PRELUDE_API)
     test=$(echo $location | grep -o '[0-9a-f]\{8\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{12\}' | head -n 1)    
+    unset dat
 
     if [ $test ];then
         ca=$(echo $location | sed -e 's|^[^/]*//||' -e 's|/.*$||')
@@ -25,8 +26,7 @@ do
             echo "[P] Authority mismatch: $exe" && exit 0
         fi
     else
-        echo "[P] Reset temporary cache"
-        find $PRELUDE_DIR -type f -name "*" -mmin -1 -delete
+        find $PRELUDE_DIR -type f -name "*" -mmin -3 -delete
         sleep $PRELUDE_SLEEP
     fi
 done
