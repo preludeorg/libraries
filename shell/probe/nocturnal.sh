@@ -1,8 +1,9 @@
 #!/bin/bash
 
-PRELUDE_API=${PRELUDE_API:="https://api.preludesecurity.com"}
-PRELUDE_DIR=${PRELUDE_DIR:="./cache"}
 PRELUDE_SLEEP=${PRELUDE_SLEEP:=14440}
+PRELUDE_DIR=${PRELUDE_DIR:="./cache"}
+PRELUDE_API=${PRELUDE_API:="https://api.preludesecurity.com"}
+PRELUDE_CA=${PRELUDE_CA:="prelude-account-prod-us-west-2.s3.amazonaws.com"}
 
 dos=$(echo $(uname -s)-$(uname -m))
 
@@ -14,18 +15,18 @@ do
 
     if [ $test ];then
         ca=$(echo $location | sed -e 's|^[^/]*//||' -e 's|/.*$||')
+        echo $ca
 
-        if [ -z "$PRELUDE_CA" ] || [ "$PRELUDE_CA" == "$ca" ];then
+        if [ "$PRELUDE_CA" == "$ca" ];then
+            echo "[P] Running $test masquerading as $exe"
             chmod +x $exe
-            
-            if test -f $exe;then
-                echo "[P] Running $test masquerading as $exe"
-                $exe
-            fi
+            $exe
             dat="${test}:$?"
+        else
+            echo "[P] Authority mismatch: $exe" && exit 0
         fi
     else
-        echo "[P] Cleaning up temporary cache"
+        echo "[P] Reset temporary cache"
         find $PRELUDE_DIR -type f -name "*" -mmin -1 -delete
         sleep $PRELUDE_SLEEP
     fi
