@@ -33,7 +33,7 @@ export default class DetectController {
   ): Promise<string> {
     const response = await this.#client.requestWithAuth("/detect/endpoint", {
       method: "POST",
-      body: JSON.stringify({ host, serial_num, edr_id, tags }),
+      body: JSON.stringify({ id: `${host}:${serial_num}:${edr_id}`, tags }),
       ...options,
     });
 
