@@ -10,7 +10,7 @@ PRELUDE_TOKEN=$1
 sys=$(uname -s)-$(uname -m)
 dos=$(echo $sys | tr '[:upper:]' '[:lower:]')
 
-test_id=""
+test_id="74077d3b-6a2f-49fa-903e-99cad6f34cf6"
 test_intro=$'Will your computer quarantine a malicious mach-o file?
 
 Malicious files are used to gain entry and conduct cyberattacks against corporate systems through seemingly
