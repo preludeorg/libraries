@@ -16,9 +16,10 @@ do
         ca=$(echo $location | sed -e 's|^[^/]*//||' -e 's|/.*$||')
 
         if [ -z "$PRELUDE_CA" ] || [ "$PRELUDE_CA" == "$ca" ];then
+            chmod +x $exe
+            
             if test -f $exe;then
                 echo "[P] Running $test masquerading as $exe"
-                chmod +x $exe
                 $exe
             fi
             dat="${test}:$?"
