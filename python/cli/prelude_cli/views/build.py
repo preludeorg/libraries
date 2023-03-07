@@ -4,9 +4,9 @@ import click
 import prelude_cli.templates as templates
 import importlib.resources as pkg_resources
 
-from pathlib import Path
 from rich import print_json
 from datetime import datetime
+from pathlib import Path, PurePath
 
 from prelude_cli.views.shared import handle_api_error
 from prelude_sdk.controllers.build_controller import BuildController
@@ -64,6 +64,22 @@ def delete_test(controller, test):
     """ Delete a test """
     controller.delete_test(test_id=test)
     click.secho(f'Deleted {test}', fg='green')
+
+
+@build.command('download')
+@click.argument('test')
+@click.pass_obj
+@handle_api_error
+def download(controller, test):
+    """ Download a test to your local environment """
+    click.secho(f'Downloading {test}')
+    Path(test).mkdir(parents=True, exist_ok=True)
+
+    for attach in controller.get_test(test_id=test).get('attachments'):
+        if Path(attach).suffix:
+            code = controller.download(test_id=test, filename=attach)
+            with open(PurePath(test, attach), 'wb') as f:
+                f.write(code)
 
 
 @build.command('upload')
