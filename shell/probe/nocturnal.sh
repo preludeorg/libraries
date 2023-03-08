@@ -18,16 +18,14 @@ do
 
         if [ "$PRELUDE_CA" == "$ca" ];then
             echo "[P] Running $test as $exe"
-            chmod +x $exe
-            $exe
-            dat="${test}:$?"
+            chmod +x $exe && $exe
+            code=$?
+            dat="${test}:$([[ -f $exe ]] && echo $code || echo 127)"
         else
             echo "[P] Authority mismatch: $ca" && exit 0
         fi
     else
-        echo "[P] Reset $PRELUDE_DIR"
         find $PRELUDE_DIR -type f -name "*" -mmin -5 -delete
-        sleep $PRELUDE_SLEEP
-        unset dat
+        unset dat && sleep $PRELUDE_SLEEP
     fi
 done
