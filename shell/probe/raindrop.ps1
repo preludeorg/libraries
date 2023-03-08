@@ -55,7 +55,7 @@ $Dir = FromEnv "PRELUDE_DIR" ".vst"
 $CA = FromEnv "PRELUDE_CA" "prelude-account-prod-us-west-1.s3.amazonaws.com"
 
 $Api = "https://api.preludesecurity.com"
-$Dos = "windows-" + $Env:PROCESSOR_ARCHITECTURE
+$Dos = "windows-$Env:PROCESSOR_ARCHITECTURE" 
 
 while ($true) {
     Run
