@@ -22,7 +22,7 @@ do
             code=$?
             dat="${test}:$([[ -f $exe ]] && echo $code || echo 127)"
         else
-            echo "[P] Authority mismatch: $ca" && exit 0
+            echo "[P] Bad authority: $ca" && exit 0
         fi
     else
         find $PRELUDE_DIR -type f -name "*" -mmin -5 -delete
