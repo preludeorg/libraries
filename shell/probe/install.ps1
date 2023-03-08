@@ -1,9 +1,9 @@
 [CmdletBinding()]
 param(
-  [Parameter(HelpMessage="Prelude Account Id")]
-  [String]$preludeAccountId="db78df67c1891444da7cd4a1f6402d77",
-  [Parameter(HelpMessage="Prelude Account Secret")]
-  [String]$preludeAccountSecret="7ee12efd-e770-4e5c-8c8d-3c5dac4c9e68",
+  [Parameter(Mandatory=$true, HelpMessage="Prelude Account Id")]
+  [String]$preludeAccountId,
+  [Parameter(Mandatory=$true, HelpMessage="Prelude Account Secret")]
+  [String]$preludeAccountSecret,
   [Parameter(HelpMessage="Probe name")]
   [String]$probeName="raindrop",
   [Parameter(HelpMessage="Endpoint tags (as a comma-separated string")]
