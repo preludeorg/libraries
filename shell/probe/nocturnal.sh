@@ -12,7 +12,6 @@ do
     exe=$PRELUDE_DIR/$(uuidgen)
     location=$(curl -sL -w %{url_effective} --create-dirs -o $exe -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "dat:${dat}" $api)
     test=$(echo $location | grep -o '[0-9a-f]\{8\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{12\}' | head -n 1)    
-    unset dat
 
     if [ $test ];then
         ca=$(echo $location | sed -e 's|^[^/]*//||' -e 's|/.*$||')
@@ -29,5 +28,6 @@ do
         echo "[P] Cleaning up $PRELUDE_DIR"
         find $PRELUDE_DIR -type f -name "*" -mmin -5 -delete
         sleep $PRELUDE_SLEEP
+        unset dat
     fi
 done
