@@ -4,7 +4,8 @@ PRELUDE_API=${PRELUDE_API:="https://api.preludesecurity.com"}
 PRELUDE_ACCOUNT_ID=""
 PRELUDE_ACCOUNT_SECRET=""
 PROBE_NAME="nocturnal"
-ENDPOINT_ID=$(hostname)
+HOST=$(hostname)
+SERIAL=$(uuidgen)
 ENDPOINT_TAGS=""
 ENDPOINT_TOKEN=""
 DOS="$(uname | awk '{print tolower($0)}')-$(uname -m)"
@@ -15,21 +16,17 @@ function usage {
     echo
     echo '  -h                          Shows Usage'
     echo "  -n PROBE_NAME               Probe Name; Default: ${PROBE_NAME}"
-    echo "  -e ENDPOINT_ID              Endpoint Id; Default: ${ENDPOINT_ID}"
     echo "  -a PRELUDE_ACCOUNT_ID       Prelude Account Id; ${PRELUDE_ACCOUNT_ID}"
     echo "  -s PRELUDE_ACCOUNT_SECRET   Prelude Account Secret; ${PRELUDE_ACCOUNT_SECRET}"
     echo "  -t ENDPOINT_TAGS            Endpoint Tags (as a comma-separated string); ${ENDPOINT_TAGS}"
     echo
     exit
 }
-optstring="n:e:a:s:t:h"
+optstring="n:a:s:t:h"
 while getopts ${optstring} arg; do
     case ${arg} in
         n)
             PROBE_NAME="${OPTARG}"
-            ;;
-        e)
-            ENDPOINT_ID="${OPTARG}"
             ;;
         a)
             PRELUDE_ACCOUNT_ID="${OPTARG}"
@@ -54,7 +51,7 @@ done
 register_new_endpoint() {
     echo "[+] Provisioning Detect Endpoint Token..."
     local _token_url="${PRELUDE_API}/detect/endpoint"
-    local _data="{\"id\":\"${ENDPOINT_ID}\",\"tags\":\"${ENDPOINT_TAGS}\"}"
+    local _data="{\"id\":\"${HOST}:${SERIAL}\",\"tags\":\"${ENDPOINT_TAGS}\"}"
     ENDPOINT_TOKEN=$(curl -sfS -X POST -H "account:${PRELUDE_ACCOUNT_ID}" -H "token:${PRELUDE_ACCOUNT_SECRET}" -H "Content-Type: application/json" -d "${_data}"  "${_token_url}")
     export ENDPOINT_TOKEN
 }

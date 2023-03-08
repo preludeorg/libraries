@@ -1,13 +1,11 @@
 [CmdletBinding()]
 param(
-  [Parameter(Mandatory=$true, HelpMessage="Prelude Account Id")]
-  [String]$preludeAccountId,
-  [Parameter(Mandatory=$true, HelpMessage="Prelude Account Secret")]
-  [String]$preludeAccountSecret,
+  [Parameter(HelpMessage="Prelude Account Id")]
+  [String]$preludeAccountId="db78df67c1891444da7cd4a1f6402d77",
+  [Parameter(HelpMessage="Prelude Account Secret")]
+  [String]$preludeAccountSecret="7ee12efd-e770-4e5c-8c8d-3c5dac4c9e68",
   [Parameter(HelpMessage="Probe name")]
   [String]$probeName="raindrop",
-  [Parameter(HelpMessage="Endpoint id")]
-  [String]$endpointId=$env:computername,
   [Parameter(HelpMessage="Endpoint tags (as a comma-separated string")]
   [String]$endpointTags=""
 )
@@ -32,13 +30,14 @@ function LogMessage {
 
 function RegisterEndpoint {
     LogMessage "Provisioning Detect Endpoint Token..."
-    $data = @{"id"=$endpointId;"tags"=$endpointTags} | ConvertTo-Json
+    $data = @{"id"= "$($env:computername):$(New-Guid)";"tags"=$endpointTags} | ConvertTo-Json
     $response = Invoke-WebRequest -Method POST -Uri $PRELUDE_API/detect/endpoint -UseBasicParsing -Headers @{"account"=$preludeAccountId;"token"=$preludeAccountSecret} -ContentType "application/json" -Body $data
     if($response.StatusCode -ne 200) {
         LogError "Endpoint failed to register! $($response.StatusDescription)"
         Exit 1
     }
-    return $response.Content
+    Write-Output $response.Content
+    Exit 1
 }
 
 function DownloadProbe {
