@@ -36,8 +36,7 @@ function RegisterEndpoint {
         LogError "Endpoint failed to register! $($response.StatusDescription)"
         Exit 1
     }
-    Write-Output $response.Content
-    Exit 1
+    return $response.Content
 }
 
 function DownloadProbe {
