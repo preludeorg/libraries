@@ -96,8 +96,8 @@ def upload_attachment(controller, path, test):
         raise FileNotFoundError('You must supply a test ID or include it in the path')
 
     def upload(p: Path):
-        with open(p, 'r') as source_code:
-            controller.upload(test_id=identifier, filename=p.name, code=source_code.read())
+        with open(p, 'rb') as data:
+            controller.upload(test_id=identifier, filename=p.name, data=data.read())
             click.secho(f'Uploaded {path}', fg='green')
 
     identifier = test or test_id()
