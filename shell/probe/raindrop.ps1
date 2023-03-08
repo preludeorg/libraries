@@ -28,7 +28,7 @@ function Execute {
 
     try {
         $Code = (Start-Process -FilePath $File -Wait -NoNewWindow -PassThru).ExitCode
-        return If (Test-Path $Vst) {$Code} Else {127}
+        return If (Test-Path $File) {$Code} Else {127}
     } catch [System.UnauthorizedAccessException] {
         return 126
     } catch [System.InvalidOperationException] {
