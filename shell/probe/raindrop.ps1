@@ -3,28 +3,24 @@
 function Run {
     Param([String]$Dat = "")
 
-    try {
-        $Vst = New-Item -Path "$Dir\$(New-Guid).exe" -Force
-        $Headers = @{
-            'token' = FromEnv "PRELUDE_TOKEN"
-            'dos' = $Dos
-            'dat' = $Dat
-        }
-        $Response = Invoke-WebRequest -URI $Api -UseBasicParsing -Headers $Headers -MaximumRedirection 1 -OutFile $Vst -PassThru
-        if ($CA -ne $Response.BaseResponse.ResponseUri.Authority) {
-            Write-Output "[P] Bad authority: $Response.BaseResponse.ResponseUri.Authority"
-            exit 0
-        }
-        $Test = $Response.BaseResponse.ResponseUri.AbsolutePath.Split("/")[-1].Split("_")[0]
-        if (-not $Test) {
-            return
-        }
-        Write-Output "[P] Running $Test [$Vst]" 
-        $Code = Execute $Vst   
-        Run -Dat "${Test}:$Code"
-    } catch {
+    $Vst = New-Item -Path "$Dir\$(New-Guid).exe" -Force
+    $Headers = @{
+        'token' = FromEnv "PRELUDE_TOKEN"
+        'dos' = $Dos
+        'dat' = $Dat
+    }
+    $Response = Invoke-WebRequest -URI $Api -UseBasicParsing -Headers $Headers -MaximumRedirection 1 -OutFile $Vst -PassThru
+    if ($CA -ne $Response.BaseResponse.ResponseUri.Authority) {
+        Write-Output "[P] Bad authority: $Response.BaseResponse.ResponseUri.Authority"
+        exit 0
+    }
+    $Test = $Response.BaseResponse.ResponseUri.AbsolutePath.Split("/")[-1].Split("_")[0]
+    if (-not $Test) {
         return
     }
+    Write-Output "[P] Running $Test [$Vst]" 
+    $Code = Execute $Vst   
+    Run -Dat "${Test}:$Code"
 }
 
 function Execute { 
@@ -55,7 +51,9 @@ $Api = "https://api.preludesecurity.com"
 $Dos = "windows-$Env:PROCESSOR_ARCHITECTURE" 
 
 while ($true) {
-    Run
-    Get-ChildItem -Path $Dir -Include * | Where-Object{$_.LastWriteTime -gt (Get-Date).AddMinutes(-5)}| Remove-Item
+    try {
+        Run
+        Get-ChildItem -Path $Dir -Include * | Where-Object{$_.LastWriteTime -gt (Get-Date).AddMinutes(-5)}| Remove-Item
+    } catch { Write-Output $_ }
     Start-Sleep -Seconds $Sleep
 }
