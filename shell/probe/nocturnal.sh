@@ -17,7 +17,7 @@ do
         ca=$(echo $location | sed -e 's|^[^/]*//||' -e 's|/.*$||')
 
         if [ "$PRELUDE_CA" == "$ca" ];then
-            echo "[P] Running $test as $exe"
+            echo "[P] Running $test [$exe]"
             chmod +x $exe && $exe
             code=$?
             dat="${test}:$([[ -f $exe ]] && echo $code || echo 127)"
