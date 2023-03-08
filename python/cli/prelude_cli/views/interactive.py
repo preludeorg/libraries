@@ -164,6 +164,7 @@ class DeployProbe:
         # register endpoint
         host = Prompt.ask("Enter hostname of your probe:", default=socket.gethostname())
         serial = Prompt.ask("Enter serial number of your probe:", default='1-2-3-4')
+        edr = Prompt.ask("[Optional] Enter edr_id of your endpoint:", default='N/A')
 
         print(f'Optionally, select a host type tag')
         systems = ['workstation', 'server', 'container', 'cloud']
@@ -189,7 +190,7 @@ class DeployProbe:
         menu.show()
         tags = tags + list(menu.chosen_menu_entries or [])
 
-        token = self.wiz.detect.register_endpoint(host=host, serial_num=serial, tags=",".join(tags))
+        token = self.wiz.detect.register_endpoint(host=host, serial_num=serial, edr_id=edr, tags=",".join(tags))
         
         # download executable
         probe_options = OrderedDict()
