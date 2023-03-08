@@ -1,12 +1,5 @@
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-$Sleep = FromEnv "PRELUDE_SLEEP" 14440
-$Dir = FromEnv "PRELUDE_DIR" ".vst"
-$CA = FromEnv "PRELUDE_CA" "prelude-account-prod-us-west-1.s3.amazonaws.com"
-
-$Api = "https://api.preludesecurity.com"
-$Dos = "windows-" + $Env:PROCESSOR_ARCHITECTURE
-
 function Run {
     Param([String]$Dat = "")
 
@@ -52,10 +45,12 @@ function Execute {
     }
 }
 
-function FromEnv { param ([string]$envVar, [string]$default)
-    $envVal = [Environment]::GetEnvironmentVariable($envVar, "#User")
-    if ($envVal) { return $envVal } else { return $default }
-}
+$Sleep = FromEnv "PRELUDE_SLEEP" 14440
+$Dir = FromEnv "PRELUDE_DIR" ".vst"
+$CA = FromEnv "PRELUDE_CA" "prelude-account-prod-us-west-1.s3.amazonaws.com"
+
+$Api = "https://api.preludesecurity.com"
+$Dos = "windows-" + $Env:PROCESSOR_ARCHITECTURE
 
 while ($true) {
     Run
