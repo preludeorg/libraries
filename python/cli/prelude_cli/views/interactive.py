@@ -164,7 +164,7 @@ class DeployProbe:
         # register endpoint
         host = Prompt.ask("Enter hostname of your probe:", default=socket.gethostname())
         serial = Prompt.ask("Enter serial number of your probe:", default='1-2-3-4')
-        edr = Prompt.ask("[Optional] Enter edr_id of your endpoint:", default='N/A')
+        edr = Prompt.ask("[Optional] Enter edr_id of your endpoint:", default='')
 
         print(f'Optionally, select a host type tag')
         systems = ['workstation', 'server', 'container', 'cloud']
