@@ -27,8 +27,9 @@ function Execute {
     Param([String]$File)
 
     try {
-        $Code = (Start-Process -FilePath $File -Wait -NoNewWindow -PassThru).ExitCode
-        return If (Test-Path $File) {$Code} Else {127}
+        $R = (Start-Process -FilePath $File -Wait -NoNewWindow -PassThru).ExitCode
+        $Code = If (Test-Path $File) {$R} Else {127}
+        return $Code
     } catch [System.UnauthorizedAccessException] {
         return 126
     } catch [System.InvalidOperationException] {
