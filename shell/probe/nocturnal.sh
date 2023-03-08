@@ -23,9 +23,10 @@ do
             $exe
             dat="${test}:$?"
         else
-            echo "[P] Authority mismatch: $exe" && exit 0
+            echo "[P] Authority mismatch: $ca" && exit 0
         fi
     else
+        echo "[P] Cleaning up $PRELUDE_DIR"
         find $PRELUDE_DIR -type f -name "*" -mmin -5 -delete
         sleep $PRELUDE_SLEEP
     fi
