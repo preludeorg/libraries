@@ -5,7 +5,7 @@ PRELUDE_DIR=${PRELUDE_DIR:="./cache"}
 PRELUDE_CA=${PRELUDE_CA:="prelude-account-prod-us-west-1.s3.amazonaws.com"}
 
 api="https://api.preludesecurity.com"
-dos=$(echo $(uname -s)-$(uname -m))
+dos=$(uname -s)-$(uname -m)
 
 while :
 do  
