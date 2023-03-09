@@ -9,7 +9,7 @@ Shell probes are intended to be dependency-free executable code that works on mo
 ### Raindrop 
 
 ```terminal
-SETX PRELUDE_TOKEN <TOKEN>
+SETX PRELUDE_TOKEN <TOKEN> /M
 .\raindrop.ps1
 ```
 
