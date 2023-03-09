@@ -207,7 +207,7 @@ class DeployProbe:
 
         # customize probe
         extension = '.ps1' if platform[0] == 'windows' else ''
-        auth = f'SETX PRELUDE_TOKEN {token}' if platform[0] == 'windows' else f'export PRELUDE_TOKEN={token}'
+        auth = f'SETX PRELUDE_TOKEN {token} /M' if platform[0] == 'windows' else f'export PRELUDE_TOKEN={token}'
 
         custom_probe = PurePath(Path.home(), '.prelude', f'{host}{extension}')
         with open(custom_probe, 'w') as probe_code:
