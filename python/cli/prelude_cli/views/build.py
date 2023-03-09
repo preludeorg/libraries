@@ -97,10 +97,7 @@ def upload_attachment(controller, path, test):
 
     def upload(p: Path):
         with open(p, 'r') as source_code:
-            out = controller.upload(test_id=identifier, filename=p.name, code=source_code.read())
-            click.secho(f'Uploaded {path}', fg='green')
-            click.secho(f'Compiled {path}', fg='green')
-            print_json(out)
+            print_json(controller.upload(test_id=identifier, filename=p.name, code=source_code.read()))
 
     identifier = test or test_id()
     
