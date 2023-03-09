@@ -11,7 +11,7 @@ param(
 )
 
 function FromEnv { param ([string]$envVar, [string]$default)
-    $envVal = [Environment]::GetEnvironmentVariable($envVar, "User")
+    $envVal = [Environment]::GetEnvironmentVariable($envVar, "Machine")
     if ($envVal) { return $envVal } else { return $default }
 }
 
