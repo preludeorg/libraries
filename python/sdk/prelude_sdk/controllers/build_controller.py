@@ -45,12 +45,12 @@ class BuildController:
             raise Exception(res.text)
 
     @verify_credentials
-    def upload(self, test_id, filename, data):
+    def upload(self, test_id, filename, data, binary=False):
         """ Upload a test or attachment """
         with Spinner():
             res = requests.post(f'{self.account.hq}/build/tests/{test_id}/{filename}',
                                 data=data,
-                                headers=self.account.headers | {'Content-Type': 'application/octet-stream'})
+                                headers=self.account.headers | {'Content-Type': 'application/octet-stream'} if binary else {})
             if not res.status_code == 200:
                 raise Exception(res.text)
 

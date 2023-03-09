@@ -47,7 +47,7 @@ def create_test(controller, name, test):
         template = template.replace('$ID', test_id)
         template = template.replace('$NAME', name)
         template = template.replace('$CREATED', str(datetime.utcnow()))
-        controller.upload(test_id=test_id, filename=basename, code=template)
+        controller.upload(test_id=test_id, filename=basename, data=template)
 
         with open(basename, 'w') as test_code:
             test_code.write(template)
@@ -97,7 +97,7 @@ def upload_attachment(controller, path, test):
 
     def upload(p: Path):
         with open(p, 'rb') as data:
-            controller.upload(test_id=identifier, filename=p.name, data=data.read())
+            controller.upload(test_id=identifier, filename=p.name, data=data.read(), binary=True)
             click.secho(f'Uploaded {path}', fg='green')
 
     identifier = test or test_id()
