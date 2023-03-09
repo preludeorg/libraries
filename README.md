@@ -37,4 +37,4 @@ Shell probes are the default choice when using a [Prelude installer](https://doc
 | Name  |  Runtime | Supported (DOS)
 | ------------- | ------------- | -------------
 | [Raindrop](https://github.com/preludeorg/libraries/tree/master/shell/probe) | PowerShell | windows-x86_64
-| [Nocturnal](https://github.com/preludeorg/libraries/tree/master/shell/probe) | Bash | linux-x86_64, linux-arm64,darwin-x86_64, darwin-arm64
+| [Nocturnal](https://github.com/preludeorg/libraries/tree/master/shell/probe) | Bash | linux-x86_64, linux-arm64, darwin-x86_64, darwin-arm64
