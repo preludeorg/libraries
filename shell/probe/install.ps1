@@ -6,8 +6,6 @@ param(
   [String]$preludeAccountSecret,
   [Parameter(HelpMessage="Probe name")]
   [String]$probeName="raindrop",
-  [Parameter(HelpMessage="Endpoint id")]
-  [String]$endpointId=$env:computername,
   [Parameter(HelpMessage="Endpoint tags (as a comma-separated string")]
   [String]$endpointTags=""
 )
@@ -32,7 +30,7 @@ function LogMessage {
 
 function RegisterEndpoint {
     LogMessage "Provisioning Detect Endpoint Token..."
-    $data = @{"id"=$endpointId;"tags"=$endpointTags} | ConvertTo-Json
+    $data = @{"id"= "$($env:computername):$(New-Guid)";"tags"=$endpointTags} | ConvertTo-Json
     $response = Invoke-WebRequest -Method POST -Uri $PRELUDE_API/detect/endpoint -UseBasicParsing -Headers @{"account"=$preludeAccountId;"token"=$preludeAccountSecret} -ContentType "application/json" -Body $data
     if($response.StatusCode -ne 200) {
         LogError "Endpoint failed to register! $($response.StatusDescription)"
