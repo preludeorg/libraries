@@ -94,8 +94,9 @@ function ExecuteTest {
 
 function ExecuteCleanup {
     try {
-        $p = Remove-Item .\09a79e5e20fa4f5aae610c8ce3fe954029a91972b56c6576035ff7e0ec4c1d14.elf
-        if ($p.ExitCode -eq 0 ) {
+        $mal = ".\09a79e5e20fa4f5aae610c8ce3fe954029a91972b56c6576035ff7e0ec4c1d14.elf"
+        Remove-Item $mal
+        if (Test-Path -Path $mal) {
             Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Clean up is complete"
         } else {
             Write-Host -ForegroundColor Red "`r`n[!] Clean up failed"
