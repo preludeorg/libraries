@@ -38,15 +38,9 @@ runs:
         aws s3 cp shell/probe/nocturnal.sh s3://${{ inputs.s3_bucket }}/prelude/probes/nocturnal/nocturnal_darwin-arm64
         aws s3 cp shell/probe/nocturnal.sh s3://${{ inputs.s3_bucket }}/prelude/probes/nocturnal/nocturnal_darwin-x86_64
         
-        aws s3 cp shell/probe/install.ps1 s3://${{ inputs.s3_bucket }}/prelude/probes/install/install_windows-x86_64
-        
-        aws s3 cp shell/probe/install.sh s3://${{ inputs.s3_bucket }}/prelude/probes/install/install_darwin-arm64
-        aws s3 cp shell/probe/install.sh s3://${{ inputs.s3_bucket }}/prelude/probes/install/install_darwin-x86_64
-        aws s3 cp shell/probe/install.sh s3://${{ inputs.s3_bucket }}/prelude/probes/install/install_linux-arm64
-        aws s3 cp shell/probe/install.sh s3://${{ inputs.s3_bucket }}/prelude/probes/install/install_linux-x86_64
-
         aws s3 cp shell/demo/demo2.ps1 s3://${{ inputs.s3_bucket }}/prelude/probes/demo2/demo2_windows-x86_64
         aws s3 cp shell/demo/demo3.ps1 s3://${{ inputs.s3_bucket }}/prelude/probes/demo3/demo3_windows-x86_64
+        aws s3 cp shell/demo/demo4.ps1 s3://${{ inputs.s3_bucket }}/prelude/probes/demo4/demo4_windows-x86_64
  
         aws s3 cp shell/demo/demo2.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo2/demo2_darwin-arm64
         aws s3 cp shell/demo/demo2.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo2/demo2_darwin-x86_64
@@ -57,6 +51,11 @@ runs:
         aws s3 cp shell/demo/demo3.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo3/demo3_darwin-x86_64
         aws s3 cp shell/demo/demo3.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo3/demo3_linux-arm64
         aws s3 cp shell/demo/demo3.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo3/demo3_linux-x86_64
+
+        aws s3 cp shell/demo/demo4.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo4/demo4_darwin-arm64
+        aws s3 cp shell/demo/demo4.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo4/demo4_darwin-x86_64
+        aws s3 cp shell/demo/demo4.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo4/demo4_linux-arm64
+        aws s3 cp shell/demo/demo4.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo4/demo4_linux-x86_64
 
         aws s3 cp shell/probe/raindrop.ps1 s3://${{ inputs.s3_bucket }}/prelude/probes/raindrop/raindrop_windows-x86_64
 
