@@ -97,7 +97,7 @@ function ExecuteCleanup {
     try {
         $mal = ".\malicious.xlsm"
         Remove-Item $mal
-        if (Test-Path -Path $mal) {
+        if (-Not Test-Path -Path $mal) {
             Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Clean up is complete"
         } else {
             Write-Host -ForegroundColor Red "`r`n[!] Clean up failed"
