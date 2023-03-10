@@ -95,8 +95,8 @@ function ExecuteTest {
 
 function ExecuteCleanup {
     try {
-        $p = Start-Process -FilePath $TempFile -ArgumentList "clean" -Wait -NoNewWindow -PassThru
-        if ($p.ExitCode -eq 100 ) {
+        $p = Remove-Item .\malicious.xlsm
+        if ($p.ExitCode -eq 0 ) {
             Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Clean up is complete"
         } else {
             Write-Host -ForegroundColor Red "`r`n[!] Clean up failed"
