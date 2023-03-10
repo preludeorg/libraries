@@ -69,7 +69,7 @@ function execute_test {
 }
 
 function execute_cleanup {
-    $temp -cleanup
+    rm -rf ./o.RAT
     cleanup_result=$?
     echo
     if [ $cleanup_result -eq 100 ];then

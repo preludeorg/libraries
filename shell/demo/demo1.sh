@@ -71,10 +71,10 @@ function execute_test {
 }
 
 function execute_cleanup {
-    $temp -cleanup
+    rm -rf ./malicious.xlsm
     cleanup_result=$?
     echo
-    if [ $cleanup_result -eq 100 ];then
+    if [ $cleanup_result -eq 0 ];then
         echo -e "${GREEN}[✓] Clean up is complete${NC}"
     else
         echo -e "${RED}[!] Clean up failed${NC}"

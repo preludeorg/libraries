@@ -70,10 +70,10 @@ function execute_test {
 }
 
 function execute_cleanup {
-    $temp -cleanup
+    rm -rf ./09a79e5e20fa4f5aae610c8ce3fe954029a91972b56c6576035ff7e0ec4c1d14.elf
     cleanup_result=$?
     echo
-    if [ $cleanup_result -eq 100 ];then
+    if [ $cleanup_result -eq 0 ];then
         echo -e "${GREEN}[✓] Clean up is complete${NC}"
     else
         echo -e "${RED}[!] Clean up failed${NC}"
