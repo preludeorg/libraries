@@ -54,7 +54,7 @@ $Dos = "windows-$Env:PROCESSOR_ARCHITECTURE"
 while ($true) {
     try {
         Run
-        Get-ChildItem -Path $Dir -Include * | Where-Object{$_.LastWriteTime -gt (Get-Date).AddMinutes(-5)}| Remove-Item
+        Get-ChildItem -Path $Dir -Include * | Where-Object{$_.LastWriteTime -gt (Get-Date).AddMinutes(-2)}| Remove-Item
     } catch { Write-Output $_ }
     Start-Sleep -Seconds $Sleep
 }

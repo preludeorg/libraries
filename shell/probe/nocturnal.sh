@@ -25,7 +25,7 @@ do
             echo "[P] Bad authority: $ca" && exit 0
         fi
     else
-        find $PRELUDE_DIR -type f -name "*" -mmin -5 -delete
+        find $PRELUDE_DIR -type f -name "*" -mmin -2 -delete
         unset dat && sleep $PRELUDE_SLEEP
     fi
 done
