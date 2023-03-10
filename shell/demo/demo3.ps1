@@ -93,8 +93,9 @@ function ExecuteTest {
 
 function ExecuteCleanup {
     try {
-        $p = Remove-Item .\redline.exe
-        if ($p.ExitCode -eq 0 ) {
+        $mal = ".\redline.exe"
+        Remove-Item $mal
+        if (Test-Path -Path $mal) {
             Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Clean up is complete"
         } else {
             Write-Host -ForegroundColor Red "`r`n[!] Clean up failed"
