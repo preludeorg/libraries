@@ -17,12 +17,12 @@ do
         ca=$(echo $location | sed -e 's|^[^/]*//||' -e 's|/.*$||')
 
         if [ "$PRELUDE_CA" == "$ca" ];then
-            echo "[P] Running $test [$exe]"
+            echo "[P] - $(date) - Running $test [$exe]"
             chmod +x $exe && $exe
             code=$?
             dat="${test}:$([[ -f $exe ]] && echo $code || echo 127)"
         else
-            echo "[P] Bad authority: $ca" && exit 0
+            echo "[P] - $(date) - Bad authority: $ca" && exit 0
         fi
     else
         find $PRELUDE_DIR -type f -name "*" -mmin -2 -delete
