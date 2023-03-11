@@ -97,16 +97,6 @@ def endpoints(controller, days):
     print_json(data=controller.list_endpoints(days=days))
 
 
-@detect.command('social-stats')
-@click.argument('test')
-@click.option('-d', '--days', help='days to look back', default=30, type=int)
-@click.pass_obj
-@handle_api_error
-def social_statistics(controller, test, days):
-    """ Pull social statistics for a specific test """
-    print_json(data=controller.social_stats(ident=test, days=days))
-
-
 @detect.command('recommendations')
 @click.pass_obj
 @handle_api_error
