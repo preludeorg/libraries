@@ -15,10 +15,10 @@ function Run {
         return
     }
     if ($CA -ne $Response.BaseResponse.ResponseUri.Authority) {
-        Write-Output "[P] Bad authority: $Response.BaseResponse.ResponseUri.Authority"
+        Write-Output "[P] - $(Get-Date) - Bad authority: $Response.BaseResponse.ResponseUri.Authority"
         exit 0
     }
-    Write-Output "[P] Running $Test [$Vst]" 
+    Write-Output "[P] - $(Get-Date) - Running $Test [$Vst]" 
     $Code = Execute $Vst   
     Run -Dat "${Test}:$Code"
 }
