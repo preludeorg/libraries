@@ -86,7 +86,7 @@ export interface EnableTest {
 
 export interface Probe {
   endpoint_id: string;
-  edr_id: string;
+  edr_id: string | null;
   host: string;
   last_beacon: string;
   serial_num: string;
