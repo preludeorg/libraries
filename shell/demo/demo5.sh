@@ -17,7 +17,7 @@ Malicious files are used to gain entry and conduct cyberattacks against corporat
 innocuous email attachments or direct downloads. For example - a malicious python file was used by the malware authors Portugal and Brazil
 during a supply chain attack in February 2023.
 
-This test will attempt to download a defanged malicious python file to your disk - containing a signature for the Colour-Blind malware used in a recent supply chain attack campaign - to see how your endpoint defenses will respond. 
+This test will attempt to download a defanged malicious python file to your disk - containing a signature for the Colour-Blind malware used in a 2023 supply chain attack campaign - to see how your endpoint defenses will respond. 
 Downloading malicious files can open you up to further attacks, so the ability to quickly detect and quarantine any potentially harmful files is an important part of maintaining a proper security posture.
 
 This is a Verified Security Test (VST) Developed by Prelude Research Inc.
