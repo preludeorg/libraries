@@ -69,7 +69,7 @@ function execute_test {
 }
 
 function execute_cleanup {
-    rm -rf ./o.RAT
+    rm -rf ./colour-blind.py
     cleanup_result=$?
     echo
     if [ $cleanup_result -eq 0 ];then

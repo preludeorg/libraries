@@ -93,7 +93,7 @@ function ExecuteTest {
 
 function ExecuteCleanup {
     try {
-        $mal = ".\o.RAT"
+        $mal = ".\colour-blind.py"
         Remove-Item $mal
         if (-Not (Test-Path -Path $mal)) {
             Write-Host -ForegroundColor Green "`r`n[$($symbols.CHECKMARK)] Clean up is complete"
