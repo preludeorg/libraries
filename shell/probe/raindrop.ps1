@@ -48,7 +48,7 @@ $Sleep = FromEnv "PRELUDE_SLEEP" 14440
 $Dir = FromEnv "PRELUDE_DIR" ".vst"
 $CA = FromEnv "PRELUDE_CA" "prelude-account-prod-us-west-1.s3.amazonaws.com"
 
-$Api = "https://api.preludesecurity.com/1.0"
+$Api = "https://api.preludesecurity.com/1.0.0"
 $Dos = "windows-$Env:PROCESSOR_ARCHITECTURE" 
 
 while ($true) {
