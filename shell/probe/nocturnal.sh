@@ -4,7 +4,7 @@ PRELUDE_SLEEP=${PRELUDE_SLEEP:=14440}
 PRELUDE_DIR=${PRELUDE_DIR:=".vst"}
 PRELUDE_CA=${PRELUDE_CA:="prelude-account-prod-us-west-1.s3.amazonaws.com"}
 
-api="https://api.preludesecurity.com"
+api="https://api.preludesecurity.com/1.0"
 dos=$(uname -s)-$(uname -m)
 
 while :
