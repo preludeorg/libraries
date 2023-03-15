@@ -25,6 +25,18 @@ def register_account(controller):
     print_json(data=creds)
 
 
+@iam.command('update-account')
+@click.option('-m', '--mode',
+              help='provide a mode',
+              default='manual', show_default=True,
+              type=click.Choice(['manual', 'frozen'], case_sensitive=False))
+@click.pass_obj
+@handle_api_error
+def update_account(controller, mode):
+    """ Update an account """
+    controller.update_account(mode=mode)
+
+
 @iam.command('account')
 @click.pass_obj
 @handle_api_error

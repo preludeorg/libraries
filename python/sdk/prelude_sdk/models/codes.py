@@ -11,7 +11,7 @@ class RunCode(Enum):
     @classmethod
     def _missing_(cls, value):
         return RunCode.INVALID
-
+    
 
 class Permission(Enum):
     INVALID = -1
