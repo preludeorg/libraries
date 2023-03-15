@@ -3,8 +3,8 @@ import click
 from rich import print_json
 from datetime import datetime, timedelta
 
-from prelude_sdk.models.codes import Permission
 from prelude_cli.views.shared import handle_api_error
+from prelude_sdk.models.codes import Permission, Mode
 from prelude_sdk.controllers.iam_controller import IAMController
 
 
@@ -23,6 +23,18 @@ def register_account(controller):
     """ Register a new account """
     creds = controller.new_account(handle=click.prompt('Enter a handle'))
     print_json(data=creds)
+
+
+@iam.command('update-account')
+@click.option('-m', '--mode',
+              help='provide a mode',
+              default='manual', show_default=True,
+              type=click.Choice([m.name for m in Mode], case_sensitive=False))
+@click.pass_obj
+@handle_api_error
+def update_account(controller, mode):
+    """ Update an account """
+    controller.update_account(mode=Mode[mode].value)
 
 
 @iam.command('account')

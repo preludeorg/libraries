@@ -33,6 +33,15 @@ class IAMController:
             return res.text
 
     @verify_credentials
+    def update_account(self, mode: int):
+        """ Update properties on an account """
+        with Spinner():
+            params = dict(mode=mode)
+            res = requests.put(f'{self.account.hq}/iam/account', headers=self.account.headers, json=params)
+            if res.status_code != 200:
+                raise Exception(res.text)
+        
+    @verify_credentials
     def get_account(self):
         """ Get account properties """
         with Spinner():
@@ -65,7 +74,7 @@ class IAMController:
 
     @verify_credentials
     def attach_control(self, name: str, api: str, user: str, secret: str = ''):
-        """ Attach a control to your Detect account """
+        """ Attach a control to your account """
         with Spinner():
             params = dict(name=name, api=api, user=user, secret=secret)
             res = requests.post(f'{self.account.hq}/iam/control', headers=self.account.headers, json=params)
