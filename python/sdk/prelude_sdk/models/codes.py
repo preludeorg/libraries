@@ -13,13 +13,13 @@ class RunCode(Enum):
         return RunCode.INVALID
     
 
-class Modes(Enum):
+class Mode(Enum):
      MANUAL = 0
      FROZEN = 1
 
      @classmethod
      def _missing_(cls, value):
-         return Modes.MANUAL
+         return Mode.MANUAL
      
 
 class Permission(Enum):

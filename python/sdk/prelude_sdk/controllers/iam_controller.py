@@ -37,7 +37,7 @@ class IAMController:
         """ Update properties on an account """
         with Spinner():
             params = dict(mode=mode)
-            res = requests.put(f'{self.account.hq}/iam/control', headers=self.account.headers, json=params)
+            res = requests.put(f'{self.account.hq}/iam/account', headers=self.account.headers, json=params)
             if res.status_code != 200:
                 raise Exception(res.text)
         
