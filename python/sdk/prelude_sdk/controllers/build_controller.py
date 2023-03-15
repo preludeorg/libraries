@@ -50,7 +50,7 @@ class BuildController:
         with Spinner():
             res = requests.post(f'{self.account.hq}/build/tests/{test_id}/{filename}',
                                 data=data,
-                                headers=self.account.headers | {'Content-Type': 'application/octet-stream'} if binary else {})
+                                headers=self.account.headers | ({'Content-Type': 'application/octet-stream'} if binary else {}))
             if not res.status_code == 200:
                 raise Exception(res.text)
 
