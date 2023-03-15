@@ -28,13 +28,13 @@ def register_account(controller):
 @iam.command('update-account')
 @click.option('-m', '--mode',
               help='provide a mode',
-              default='manual', show_default=True,
+              default=Mode.MANUAL.name, show_default=True,
               type=click.Choice([m.name for m in Mode], case_sensitive=False))
 @click.pass_obj
 @handle_api_error
 def update_account(controller, mode):
     """ Update an account """
-    controller.update_account(mode=Mode[mode].value)
+    controller.update_account(mode=Mode[mode.upper()].value)
 
 
 @iam.command('account')
