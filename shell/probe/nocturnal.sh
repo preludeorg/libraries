@@ -22,7 +22,7 @@ do
             code=$?
             dat="${test}:$([[ -f $exe ]] && echo $code || echo 127)"
         else
-            echo "[P] - $(date) - Bad authority: $ca" && exit 0
+            echo "[P] - $(date) - Bad authority: $ca" && exit 1
         fi
     else
         find $PRELUDE_DIR -type f -name "*" -mmin -2 -delete
