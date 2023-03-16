@@ -62,7 +62,7 @@ def deactivate_test(controller, test):
 
 @detect.command('social-stats')
 @click.argument('test')
-@click.option('-d', '--days', help='days to look back', default=30, type=int)
+@click.option('-d', '--days', help='days to look back', default=30, type=int, show_default=True)
 @click.pass_obj
 @handle_api_error
 def social_statistics(controller, test, days):
