@@ -27,10 +27,10 @@ This is a Verified Security Test (VST) Developed by Prelude Research Inc.
 [+] Applicable CVE(s): CVE-2017-0199
 [+] ATT&CK mappings: T1204.002'
 test_success=$'Your computer detected and responded to a malicious Office document dropped on
-the disk${NC}'
+the disk'"${NC}"
 test_failure=$'This test was able to verify the existence of this vulnerability on your machine, as well as drop
 a malicious Office document on the disk. If you have security controls in place that you suspect should
-have protected your host, please review the logs${NC}'
+have protected your host, please review the logs'"${NC}"
 
 function check_relevance {
     echo -e "${GREEN}[✓] Result: Success - server or workstation detected${NC}"
