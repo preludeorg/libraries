@@ -84,7 +84,17 @@ class DetectController:
             res = requests.delete(f'{self.account.hq}/detect/queue/{ident}', headers=self.account.headers)
             if res.status_code != 200:
                 raise Exception(res.text)
-    
+
+    @verify_credentials
+    def social_stats(self, ident: str, days: int = 30):
+        """ Pull social statistics for a specific test """
+        with Spinner():
+            params = dict(days=days)
+            res = requests.get(f'{self.account.hq}/detect/{ident}/social', headers=self.account.headers, params=params)
+            if res.status_code == 200:
+                return res.json()
+            raise Exception(res.text)
+         
     @verify_credentials
     def search(self, identifier: str):
         """ Search the NVD for a keyword """
