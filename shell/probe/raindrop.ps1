@@ -1,5 +1,14 @@
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
+function Log {
+    Param([String]$line)
+    if ($UseEventLog) {
+        Write-EventLog -LogName "Application" -Source $EventLogSource -EventId 0 -Message $line
+        return
+    }
+    Write-Output "[P] - $(Get-Date) - $line)"
+}
+
 function Run {
     Param([String]$Dat = "")
 
@@ -15,10 +24,10 @@ function Run {
         return
     }
     if ($CA -ne $Response.BaseResponse.ResponseUri.Authority) {
-        Write-Output "[P] - $(Get-Date) - Bad authority: $Response.BaseResponse.ResponseUri.Authority"
+       Log "Bad authority: $Response.BaseResponse.ResponseUri.Authority"
         exit 1
     }
-    Write-Output "[P] - $(Get-Date) - Running $Test [$Vst]" 
+    Log "Running $Test [$Vst]"
     $Code = Execute $Vst   
     Run -Dat "${Test}:$Code"
 }
@@ -28,7 +37,7 @@ function Execute {
 
     try {
         $R = (Start-Process -FilePath $File -Wait -NoNewWindow -PassThru).ExitCode
-        $Code = If (Test-Path $File) {$R} Else {127}
+        $Code = if (Test-Path $File) {$R} Else {127}
         return $Code
     } catch [System.UnauthorizedAccessException] {
         return 126
@@ -49,12 +58,14 @@ $Dir = FromEnv "PRELUDE_DIR" ".vst"
 $CA = FromEnv "PRELUDE_CA" "prelude-account-prod-us-west-1.s3.amazonaws.com"
 
 $Api = "https://api.preludesecurity.com"
-$Dos = "windows-$Env:PROCESSOR_ARCHITECTURE" 
+$Dos = "windows-$Env:PROCESSOR_ARCHITECTURE"
+$EventLogSource = "Prelude Probe Service"
+$UseEventLog = [System.Diagnostics.EventLog]::SourceExists($EventLogSource)
 
 while ($true) {
     try {
         Run
         Get-ChildItem -Path $Dir -Include * | Where-Object{$_.LastWriteTime -gt (Get-Date).AddMinutes(-2)}| Remove-Item
-    } catch { Write-Output $_ }
+    } catch { Log $_ }
     Start-Sleep -Seconds $Sleep
 }
