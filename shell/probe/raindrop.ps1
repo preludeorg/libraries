@@ -2,11 +2,8 @@
 
 function Log {
     Param([String]$line)
-    if ($UseEventLog) {
-        Write-EventLog -LogName "Application" -Source $EventLogSource -EventId 0 -Message $line
-        return
-    }
-    Write-Output "[P] - $(Get-Date) - $line)"
+
+    Write-EventLog -LogName "Application" -Source "Prelude Probe Service" -EventId 0 -Message $line -ErrorAction Ignore
 }
 
 function Run {
@@ -24,7 +21,7 @@ function Run {
         return
     }
     if ($CA -ne $Response.BaseResponse.ResponseUri.Authority) {
-       Log "Bad authority: $Response.BaseResponse.ResponseUri.Authority"
+        Log "Bad authority: $Response.BaseResponse.ResponseUri.Authority"
         exit 1
     }
     Log "Running $Test [$Vst]"
@@ -59,8 +56,6 @@ $CA = FromEnv "PRELUDE_CA" "prelude-account-prod-us-west-1.s3.amazonaws.com"
 
 $Api = "https://api.preludesecurity.com"
 $Dos = "windows-$Env:PROCESSOR_ARCHITECTURE"
-$EventLogSource = "Prelude Probe Service"
-$UseEventLog = [System.Diagnostics.EventLog]::SourceExists($EventLogSource)
 
 while ($true) {
     try {
