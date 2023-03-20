@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: prod
 
-    name: Prod - shell probes (install / demo / nocturnal / raindrop scripts) deploy
+    name: Prod - shell probes (demo / nocturnal / raindrop scripts) deploy
 
     steps:
       - name: Check out code. 
