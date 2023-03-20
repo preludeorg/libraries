@@ -159,7 +159,7 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos):
     if tags:
         filters['tags'] = tags
     if endpoints:
-        filters['endpoints'] = endpoints
+        filters['endpoints'] = endpoints.lower()
     if dos:
         filters['dos'] = dos
 
