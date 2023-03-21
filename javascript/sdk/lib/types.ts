@@ -215,7 +215,7 @@ export interface ActivityQuery {
 export interface DayResult {
   count: number;
   date: string;
-  unprotected: number;
+  failed: number;
 }
 
 export interface Insight {
