@@ -191,12 +191,12 @@ export interface Rule {
 export interface RuleUsage {
   tests: string[];
   count: number;
-  unprotected: number;
+  failed: number;
 }
 
 export interface RuleInfo {
   rule: Rule | null;
-  usage: RuleUsage;
+  usage?: RuleUsage;
 }
 
 export type Stats = Record<Platform, Record<`${ExitCode}`, number>>;
