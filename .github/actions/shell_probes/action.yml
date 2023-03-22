@@ -30,6 +30,16 @@ runs:
         aws-access-key-id: ${{ inputs.aws_access_key_id }}
         aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
 
+    - name: Staging Conversion
+      if: ${{ input.environment == 'staging' }}
+      shell: bash
+      run: |
+        for i in shell/probe/nocturnal.sh shell/probe/raindrop.ps1; do
+          echo "Staging substitution for ${i}"
+          sed -i 's/prelude-account-prod-us-west-1.s3.amazonaws.com//g' ${i}
+          sed -i 's!https://api.preludesecurity.com!https://api.staging.preludesecurity.com!g' ${i}
+        done
+
     - name: Copy files to the s3 with the AWS CLI
       shell: bash
       run: |
