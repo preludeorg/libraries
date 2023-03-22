@@ -31,7 +31,7 @@ runs:
         aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
 
     - name: Staging Conversion
-      if: ${{ inputs.environment == 'staging' }}
+      if: ${{ inputs.environment == 'prod' }}
       shell: bash
       run: |
         for i in shell/probe/nocturnal.sh shell/probe/raindrop.ps1; do
