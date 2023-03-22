@@ -36,7 +36,7 @@ runs:
       run: |
         for i in shell/probe/nocturnal.sh shell/probe/raindrop.ps1; do
           echo "Staging substitution for ${i}"
-          sed -i 's/prelude-account-prod-us-west-1.s3.amazonaws.com//g' ${i}
+          sed -i 's/prelude-account-prod-us-west-1.s3.amazonaws.com/prelude-account-staging-us-west-1.s3.amazonaws.com/g' ${i}
           sed -i 's!https://api.preludesecurity.com!https://api.staging.preludesecurity.com!g' ${i}
         done
 
