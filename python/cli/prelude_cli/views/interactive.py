@@ -437,10 +437,10 @@ class ViewDays:
         days.reverse()
 
         menu = OrderedDict()
-        legend = f'{self.wiz.normalize("date", 15)} {self.wiz.normalize("unprotected", 15)} {self.wiz.normalize("endpoints", 15)}'
+        legend = f'{self.wiz.normalize("date", 15)} {self.wiz.normalize("failed", 15)} {self.wiz.normalize("endpoints", 15)}'
         menu[legend] = None
         for item in days:
-            entry = f'{self.wiz.normalize(item["date"], 15)} {self.wiz.normalize(str(item["unprotected"]), 15)} {self.wiz.normalize(str(item["count"]), 15)}'
+            entry = f'{self.wiz.normalize(item["date"], 15)} {self.wiz.normalize(str(item["failed"]), 15)} {self.wiz.normalize(str(item["count"]), 15)}'
             menu[entry] = None
         TerminalMenu(menu.keys()).show()
 
@@ -455,12 +455,12 @@ class ViewRules:
         rules = self.wiz.detect.describe_activity(view='rules', filters=self.wiz.filters)
 
         menu = OrderedDict()
-        legend = f'{self.wiz.normalize("rule", 35)} {self.wiz.normalize("unprotected", 15)} {self.wiz.normalize("endpoints", 15)}'
+        legend = f'{self.wiz.normalize("rule", 35)} {self.wiz.normalize("failed", 15)} {self.wiz.normalize("endpoints", 15)}'
         menu[legend] = None
         for item in rules:
             rule = item.get('rule')
             usage = item.get('usage')
-            entry = f'{self.wiz.normalize(rule["label"], 35)} {self.wiz.normalize(str(usage["unprotected"]), 15)} {self.wiz.normalize(str(usage["count"]), 15)}'
+            entry = f'{self.wiz.normalize(rule["label"], 35)} {self.wiz.normalize(str(usage["failed"]), 15)} {self.wiz.normalize(str(usage["count"]), 15)}'
             menu[entry] = None
         TerminalMenu(menu.keys()).show()
 
