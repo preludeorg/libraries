@@ -33,37 +33,24 @@ runs:
     - name: Copy files to the s3 with the AWS CLI
       shell: bash
       run: |
-        aws s3 cp shell/probe/nocturnal.sh s3://${{ inputs.s3_bucket }}/prelude/probes/nocturnal/nocturnal_linux-arm64
-        aws s3 cp shell/probe/nocturnal.sh s3://${{ inputs.s3_bucket }}/prelude/probes/nocturnal/nocturnal_linux-x86_64
-        aws s3 cp shell/probe/nocturnal.sh s3://${{ inputs.s3_bucket }}/prelude/probes/nocturnal/nocturnal_darwin-arm64
-        aws s3 cp shell/probe/nocturnal.sh s3://${{ inputs.s3_bucket }}/prelude/probes/nocturnal/nocturnal_darwin-x86_64
-        
-        aws s3 cp shell/demo/demo2.ps1 s3://${{ inputs.s3_bucket }}/prelude/probes/demo2/demo2_windows-x86_64
-        aws s3 cp shell/demo/demo3.ps1 s3://${{ inputs.s3_bucket }}/prelude/probes/demo3/demo3_windows-x86_64
-        aws s3 cp shell/demo/demo4.ps1 s3://${{ inputs.s3_bucket }}/prelude/probes/demo4/demo4_windows-x86_64
-        aws s3 cp shell/demo/demo5.ps1 s3://${{ inputs.s3_bucket }}/prelude/probes/demo5/demo5_windows-x86_64
- 
-        aws s3 cp shell/demo/demo2.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo2/demo2_darwin-arm64
-        aws s3 cp shell/demo/demo2.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo2/demo2_darwin-x86_64
-        aws s3 cp shell/demo/demo2.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo2/demo2_linux-arm64
-        aws s3 cp shell/demo/demo2.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo2/demo2_linux-x86_64
-      
-        aws s3 cp shell/demo/demo3.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo3/demo3_darwin-arm64
-        aws s3 cp shell/demo/demo3.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo3/demo3_darwin-x86_64
-        aws s3 cp shell/demo/demo3.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo3/demo3_linux-arm64
-        aws s3 cp shell/demo/demo3.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo3/demo3_linux-x86_64
-
-        aws s3 cp shell/demo/demo4.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo4/demo4_darwin-arm64
-        aws s3 cp shell/demo/demo4.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo4/demo4_darwin-x86_64
-        aws s3 cp shell/demo/demo4.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo4/demo4_linux-arm64
-        aws s3 cp shell/demo/demo4.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo4/demo4_linux-x86_64
-        
-        aws s3 cp shell/demo/demo5.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo5/demo5_darwin-arm64
-        aws s3 cp shell/demo/demo5.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo5/demo5_darwin-x86_64
-        aws s3 cp shell/demo/demo5.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo5/demo5_linux-arm64
-        aws s3 cp shell/demo/demo5.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo5/demo5_linux-x86_64
-
         aws s3 cp shell/probe/raindrop.ps1 s3://${{ inputs.s3_bucket }}/prelude/probes/raindrop/raindrop_windows-x86_64
+        
+        ARCHS=(darwin-arm64 darwin-x86_64 linux-arm64 linux-x86_64)        
+        DEMOS=($(seq 1 5))
+
+        for i in ${DEMOS[@]}; do 
+          aws s3 cp shell/demo/demo${i}.ps1 s3://bucket/prelude/probes/demo${i}/demo${i}_windows-x86_64
+        done
+
+        for a in ${ARCHS[@]}; do  
+          aws s3 cp shell/probe/nocturnal.sh s3://bucket/shell/probe/nocturnal_${a}
+        done 
+
+        for i in ${DEMOS[@]}; do
+          for a in ${ARCHS[@]}; do
+            aws s3 cp shell/demo/demo${i}.sh s3://bucket/prelude/probes/demo${i}/demo${i}_${a}
+          done 
+        done
 
     - name: Send custom JSON data to Slack workflow
       if: inputs.environment == 'prod' && always()
