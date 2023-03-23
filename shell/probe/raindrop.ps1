@@ -14,6 +14,7 @@ function Run {
         'token' = FromEnv "PRELUDE_TOKEN"
         'dos' = $Dos
         'dat' = $Dat
+        'version' = $Version
     }
     $Response = Invoke-WebRequest -URI $Api -UseBasicParsing -Headers $Headers -MaximumRedirection 1 -OutFile $Vst -PassThru
     $Test = $Response.BaseResponse.ResponseUri.AbsolutePath.Split("/")[-1].Split("_")[0]
@@ -55,6 +56,7 @@ $Dir = FromEnv "PRELUDE_DIR" ".vst"
 $CA = FromEnv "PRELUDE_CA" "prelude-account-prod-us-west-1.s3.amazonaws.com"
 
 $Api = "https://api.preludesecurity.com"
+$Version = "1.0.0"
 $Dos = "windows-$Env:PROCESSOR_ARCHITECTURE"
 
 while ($true) {
