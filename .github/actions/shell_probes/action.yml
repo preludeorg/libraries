@@ -39,16 +39,16 @@ runs:
         DEMOS=($(seq 1 5))
 
         for i in ${DEMOS[@]}; do 
-          aws s3 cp shell/demo/demo${i}.ps1 s3://bucket/prelude/probes/demo${i}/demo${i}_windows-x86_64
+          aws s3 cp shell/demo/demo${i}.ps1 s3://${{ inputs.s3_bucket }}/prelude/probes/demo${i}/demo${i}_windows-x86_64
         done
 
         for a in ${ARCHS[@]}; do  
-          aws s3 cp shell/probe/nocturnal.sh s3://bucket/shell/probe/nocturnal_${a}
+          aws s3 cp shell/probe/nocturnal.sh s3://${{ inputs.s3_bucket }}/shell/probe/nocturnal_${a}
         done 
 
         for i in ${DEMOS[@]}; do
           for a in ${ARCHS[@]}; do
-            aws s3 cp shell/demo/demo${i}.sh s3://bucket/prelude/probes/demo${i}/demo${i}_${a}
+            aws s3 cp shell/demo/demo${i}.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo${i}/demo${i}_${a}
           done 
         done
 
@@ -64,7 +64,7 @@ runs:
             "user": "${{ github.triggering_actor }}",
             "ref": "${{ github.ref }}",
             "workflow": "${{ github.workflow }}",
-            "status": "${{ job.status }}",
+            "status": "${{ action.status }}",
             "job_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
             "event_name": "${{ github.event_name }}",
             "event_action": "${{ github.event.action }}"
