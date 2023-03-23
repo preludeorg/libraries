@@ -63,7 +63,7 @@ runs:
             "user": "${{ github.triggering_actor }}",
             "ref": "${{ github.ref }}",
             "workflow": "${{ github.workflow }}",
-            "status": "${{ action.status }}",
+            "status": "${{ github.action_status }}",
             "job_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
             "event_name": "${{ github.event_name }}",
             "event_action": "${{ github.event.action }}"
