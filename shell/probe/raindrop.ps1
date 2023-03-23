@@ -52,7 +52,7 @@ function FromEnv { param ([string]$envVar, [string]$default)
 
 $Sleep = FromEnv "PRELUDE_SLEEP" 14440
 $Dir = FromEnv "PRELUDE_DIR" ".vst"
-$CA = FromEnv "PRELUDE_CA" "prelude-account-prod-us-west-1.s3.amazonaws.com"
+$CA = "prelude-account-prod-us-west-1.s3.amazonaws.com"
 
 $Api = "https://api.preludesecurity.com"
 $Dos = "windows-$Env:PROCESSOR_ARCHITECTURE"

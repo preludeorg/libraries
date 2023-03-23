@@ -1,4 +1,4 @@
-name: Deploy (install / demo / nocturnal / raindrop scripts)
+name: Deploy (demo / nocturnal / raindrop scripts)
 description: Copy script to s3
 inputs:
   environment:
@@ -23,12 +23,21 @@ runs:
   using: "composite"
   steps:
     - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@567d4149d67f15f52b09796bea6573fc32952783
-      # uses: aws-actions/configure-aws-credentials@v1-node16
+      uses: aws-actions/configure-aws-credentials@v1-node16
       with:
         aws-region: ${{ inputs.aws_region }}
         aws-access-key-id: ${{ inputs.aws_access_key_id }}
         aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
+
+    - name: Staging Conversion
+      if: ${{ inputs.environment == 'staging' }}
+      shell: bash
+      run: |
+        for i in shell/probe/nocturnal.sh shell/probe/raindrop.ps1; do
+          echo "Staging substitution for ${i}"
+          sed -i 's/prelude-account-prod-us-west-1.s3.amazonaws.com/prelude-account-staging-us-west-1.s3.amazonaws.com/g' ${i}
+          sed -i 's!https://api.preludesecurity.com!https://api.staging.preludesecurity.com!g' ${i}
+        done
 
     - name: Copy files to the s3 with the AWS CLI
       shell: bash
