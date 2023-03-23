@@ -1,4 +1,4 @@
-name: Deploy (install / demo / nocturnal / raindrop scripts)
+name: Deploy (demo / nocturnal / raindrop scripts)
 description: Copy script to s3
 inputs:
   environment:
@@ -23,8 +23,7 @@ runs:
   using: "composite"
   steps:
     - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@567d4149d67f15f52b09796bea6573fc32952783
-      # uses: aws-actions/configure-aws-credentials@v1-node16
+      uses: aws-actions/configure-aws-credentials@v1-node16
       with:
         aws-region: ${{ inputs.aws_region }}
         aws-access-key-id: ${{ inputs.aws_access_key_id }}
@@ -74,7 +73,7 @@ runs:
             "user": "${{ github.triggering_actor }}",
             "ref": "${{ github.ref }}",
             "workflow": "${{ github.workflow }}",
-            "status": "${{ job.status }}",
+            "status": "${{ action.status }}",
             "job_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
             "event_name": "${{ github.event_name }}",
             "event_action": "${{ github.event.action }}"
