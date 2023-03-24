@@ -42,24 +42,27 @@ runs:
     - name: Copy files to the s3 with the AWS CLI
       shell: bash
       run: |
-        aws s3 cp shell/probe/raindrop.ps1 s3://${{ inputs.s3_bucket }}/prelude/probes/raindrop/raindrop_windows-x86_64
         
-        ARCHS=(darwin-arm64 darwin-x86_64 linux-arm64 linux-x86_64)        
-        DEMOS=($(seq 1 5))
+        NIX_ARCHS=(darwin-arm64 darwin-x86_64 linux-arm64 linux-x86_64)       
+ 
+        for a in ${NIX_ARCHS[@]}; do
+          aws s3 cp shell/demo/demo.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo/demo_${a}
+        done 
 
-        for i in ${DEMOS[@]}; do 
-          aws s3 cp shell/demo/demo${i}.ps1 s3://${{ inputs.s3_bucket }}/prelude/probes/demo${i}/demo${i}_windows-x86_64
-        done
-
-        for a in ${ARCHS[@]}; do  
+        for a in ${NIX_ARCHS[@]}; do  
           aws s3 cp shell/probe/nocturnal.sh s3://${{ inputs.s3_bucket }}/prelude/shell/probe/nocturnal_${a}
         done 
 
-        for i in ${DEMOS[@]}; do
-          for a in ${ARCHS[@]}; do
-            aws s3 cp shell/demo/demo${i}.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo${i}/demo${i}_${a}
-          done 
+        WIN_ARCHS=(windows-x86_64)        
+
+        for a in ${WIN_ARCHS[@]}; do
+          aws s3 cp shell/demo/demo.ps1 s3://${{ inputs.s3_bucket }}/prelude/probes/demo/demo_${a}
         done
+
+        for a in ${WIN_ARCHS[@]}; do
+          aws s3 cp shell/probe/raindrop.ps1 s3://${{ inputs.s3_bucket }}/prelude/probes/raindrop/raindrop_${a}
+        done
+
 
     - name: Send custom JSON data to Slack workflow
       if: inputs.environment == 'prod' && always()
