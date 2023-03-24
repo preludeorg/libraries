@@ -23,13 +23,14 @@ $Tests = [ordered]@{
 $Results = [ordered]@{}
 
 function CheckRelevance {
-    Write-Host "`r`n[ ] Conducting relevance test"
+    Write-Host -NoNewLine "`r`n[ ] Conducting relevance test`r"
+    Start-Sleep -Seconds 1
     Write-Host -ForegroundColor Green "[$($symbols.CHECKMARK)] Conducted relevance test: valid server or workstation detected"
 }
 
 function DownloadTest {
     Param([string]$TestId, [string]$Temp)
-    Write-Host "`r`n[ ] Downloading test"
+    Write-Host -NoNewLine "`r`n[ ] Downloading test`r"
     $Headers = @{
         'token' = $preludeToken
         'dos' = $dos
@@ -39,37 +40,37 @@ function DownloadTest {
     try {
         Invoke-WebRequest -URI $PRELUDE_API -UseBasicParsing -Headers $Headers -MaximumRedirection 1 -OutFile $Temp -PassThru | Out-Null
     } catch {
-        $StatusCode = $_.Exception.Response.StatusCode.value__
-        Write-Host -ForegroundColor Red "[!] Failed to find test. Http response code: $StatusCode"
+        Write-Host -ForegroundColor Red "[!] Failed to download test"
         Exit 1
     }
-    Write-Host -ForegroundColor Green "[$($symbols.CHECKMARK)] Wrote to temporary file: $Temp"
+    Write-Host -ForegroundColor Green "[$($symbols.CHECKMARK)] Downloaded test to temporary file: $Temp"
 }
 
 function ExecuteTest {
     Param([string]$Temp)
-    Write-Host "`r`n[ ] Starting test"
+    Write-Host -NoNewLine "`r`n[ ] Starting test`r"
+    Start-Sleep -Seconds 1
     try {
         $p = Start-Process -FilePath $Temp -Wait -NoNewWindow -PassThru
         if ($p.ExitCode -in 100,9,17,18,105,127 ) {
-            Write-Host -ForegroundColor Green "[$($symbols.CHECKMARK)] Result: control test passed"
+            Write-Host -ForegroundColor Green "[$($symbols.CHECKMARK)] Executed test: control test passed"
         } else {
-            Write-Host -ForegroundColor Red "[!] Result: control test failed"
+            Write-Host -ForegroundColor Red "[!] Executed test: control test failed"
         }
         return $p.ExitCode
     } catch [System.InvalidOperationException] {
-        Write-Host -ForegroundColor Red $_
-        Write-Host -ForegroundColor Green "[$($symbols.CHECKMARK)] Result: control test passed"
+        Write-Host -ForegroundColor Green "[$($symbols.CHECKMARK)] Executed test: control test passed"
         return 127
     } catch {
-        Write-Host -ForegroundColor Red "[!] Unexpected error occurred:`r`n"
+        Write-Host -ForegroundColor Red "[!] Executed test: an unexpected error occurred:`r`n"
         Write-Host -ForegroundColor Red  $_
         return 1
     }
 }
 
 function ExecuteCleanup {
-    Write-Host "`r`n[ ] Running cleanup"
+    Write-Host -NoNewLine "`r`n[ ] Running cleanup`r"
+    Start-Sleep -Seconds 1
     Remove-Item "$PRELUDE_DIR\*" -Force -Recurse -ErrorAction Ignore
     if (-Not (Test-Path -Path "$PRELUDE_DIR\*")) {
         Write-Host -ForegroundColor Green "[$($symbols.CHECKMARK)] Clean up is complete"
@@ -111,6 +112,7 @@ function RunDemo {
     }
 
     Write-Host "`r`n###########################################################################################################"
+    Start-Sleep -Seconds 2
 }
 
 foreach ($i in $Tests.Keys) {
@@ -120,7 +122,7 @@ foreach ($i in $Tests.Keys) {
 Remove-Item $PRELUDE_DIR -Force -Recurse -ErrorAction Ignore
 
 Write-Host "###########################################################################################################"
-Write-Host "`r`nSummary of test results:`r`n"
+Write-Host "`r`nSummary of test results:"
 $Results.GetEnumerator()  | Format-Table @{
     Label="Test";
     Expression={
@@ -147,4 +149,4 @@ $Results.GetEnumerator()  | Format-Table @{
     }
 }
 
-Write-Host "`r`n[*] Return to https://platform.preludesecurity.com to view your results`r`n"
+Write-Host "[*] Return to https://platform.preludesecurity.com to view your results`r`n"
