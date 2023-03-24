@@ -61,7 +61,7 @@ $Dos = "windows-$Env:PROCESSOR_ARCHITECTURE"
 while ($true) {
     try {
         Run
-        Get-ChildItem -Path $Dir -Include * | Remove-Item
+        Remove-Item $Dir -Force -Recurse -ErrorAction SilentlyContinue
     } catch { Log $_ }
     Start-Sleep -Seconds $Sleep
 }

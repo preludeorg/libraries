@@ -25,7 +25,8 @@ do
     elif [[ "$location" == *"upgrade"* ]];then
         echo "[P] - $(date) - Upgrade requested" && exit 1
     else
-        find $PRELUDE_DIR -type f -name "*" -delete
-        unset dat && sleep $PRELUDE_SLEEP
+        rm -r $PRELUDE_DIR
+        unset dat
+        sleep $PRELUDE_SLEEP
     fi
 done
