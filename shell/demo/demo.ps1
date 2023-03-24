@@ -14,11 +14,11 @@ $symbols = [PSCustomObject] @{
 }
 
 $Tests = [ordered]@{
-    '39de298a-911d-4a3b-aed4-1e8281010a9a' = "Health check"
-    '3ebbda49-738c-4799-a8fb-206630cf609e' = "Will a long running VST be stopped properly?"
-    '2e705bac-a889-4283-9a8e-a12358fa1d09' = "Will your computer quarantine Royal Ransomware?"
-    'b74ad239-2ddd-4b1e-b608-8397a43c7c54' = "Will your computer quarantine a malicious Office document?"
-    'ca9b22be-93d5-4902-95f4-4bc43a817b73' = "Will your computer quarantine Colour-Blind malware?"
+    "39de298a-911d-4a3b-aed4-1e8281010a9a" = "Health check"
+    "3ebbda49-738c-4799-a8fb-206630cf609e" = "Will a long running VST be stopped properly?"
+    "2e705bac-a889-4283-9a8e-a12358fa1d09" = "Will your computer quarantine Royal Ransomware?"
+    "b74ad239-2ddd-4b1e-b608-8397a43c7c54" = "Will your computer quarantine a malicious Office document?"
+    "ca9b22be-93d5-4902-95f4-4bc43a817b73" = "Will your computer quarantine Colour-Blind malware?"
 }
 $Results = [ordered]@{}
 
@@ -32,9 +32,9 @@ function DownloadTest {
     Param([string]$TestId, [string]$Temp)
     Write-Host -NoNewLine "`r`n[ ] Downloading test`r"
     $Headers = @{
-        'token' = $preludeToken
-        'dos' = $dos
-        'id' = $TestId
+        "token" = $preludeToken
+        "dos" = $dos
+        "id" = $TestId
     }
 
     try {
@@ -82,9 +82,9 @@ function ExecuteCleanup {
 function PostResults {
     param([string]$Id, [string]$Result)
     $Headers = @{
-        'token' = $preludeToken
-        'dos' = $dos
-        'dat' = $Id + ":" + $Result
+        "token" = $preludeToken
+        "dos" = $dos
+        "dat" = $Id + ":" + $Result
     }
     Invoke-WebRequest -URI $PRELUDE_API -UseBasicParsing -Headers $Headers -MaximumRedirection 1 | Out-Null
 }
@@ -127,9 +127,9 @@ $Results.GetEnumerator()  | Format-Table @{
     Label="Test";
     Expression={
         switch ($_.Value) {
-            'PROTECTED' { $color = '32'; break }
-            'UNPROTECTED' { $color = '31'; break }
-            'ERROR' { $color = '33'; break }
+            "PROTECTED" { $color = "32"; break }
+            "UNPROTECTED" { $color = "31"; break }
+            "ERROR" { $color = "33"; break }
             default { $color = "0" }
         }
         $e = [char]27
@@ -139,9 +139,9 @@ $Results.GetEnumerator()  | Format-Table @{
     Label="Result";
     Expression={
         switch ($_.Value) {
-            'PROTECTED' { $color = '32'; break }
-            'UNPROTECTED' { $color = '31'; break }
-            'ERROR' { $color = '33'; break }
+            "PROTECTED" { $color = "32"; break }
+            "UNPROTECTED" { $color = "31"; break }
+            "ERROR" { $color = "33"; break }
             default { $color = "0" }
         }
         $e = [char]27
