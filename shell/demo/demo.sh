@@ -31,7 +31,7 @@ declare -a results
 function check_relevance {
     echo -e "\n[ ] Conducting relevance test"
     sleep 1 && tput cuu 1 && tput el
-    echo -e "${GREEN}[✓] Conducted relevance test: Success - server or workstation detected${NC}"
+    echo -e "${GREEN}[✓] Conducted relevance test: valid server or workstation detected${NC}"
 }
 
 function download_test {
@@ -53,7 +53,7 @@ function download_test {
 
 function execute_test {
     local _temp=$1
-    echo -e "\n[ ] Executing test"
+    echo -e "\n[ ] Starting test"
     sleep 1 && tput cuu 1 && tput el
     $_temp
     local _res=$?
@@ -85,10 +85,10 @@ function post_results {
 }
 
 function run_demo {
-    local _i=$1
-    local _test_id=${tests[$_i]}
+    local _test_id=${tests[$1]}
+    local _test_name=${names[$1]}
     local _temp=$PRELUDE_DIR/$(uuidgen)
-    echo -e "\n${STANDOUT}Test: ${names[$_i]}${NC}"
+    echo -e "\n${STANDOUT}Test: ${_test_name}${NC}"
     echo -e "\nMore details at: https://github.com/preludeorg/test/tree/master/tests/${_test_id}"
     sleep 1
     echo -e "\nStarting test at: $(date +"%T")"
@@ -99,17 +99,18 @@ function run_demo {
     execute_cleanup $_temp
     post_results $_test_id $_res
     if ( echo "100 9 17 18 105 127" | grep -w -q $_res );then
-        results+=( "${GREEN}${names[$i]}\tPROTECTED${NC}" )
+        results+=( "${GREEN}${_test_name}\tPROTECTED${NC}" )
     elif [ $_res -eq 101 ];then
-        results+=( "${RED}${names[$i]}\tUNPROTECTED${NC}" )
+        results+=( "${RED}${_test_name}\tUNPROTECTED${NC}" )
     else
-        results+=( "${YELLOW}${names[$i]}\tERROR${NC}" )
+        results+=( "${YELLOW}${_test_name}\tERROR${NC}" )
     fi
     echo -e "\n###########################################################################################################"
     sleep 3
 }
 
 mkdir -p $PRELUDE_DIR
+trap 'rm -rf -- "$PRELUDE_DIR"' EXIT
 
 for i in "${!tests[@]}"
 do
