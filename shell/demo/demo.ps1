@@ -130,7 +130,7 @@ $Results.GetEnumerator()  | Format-Table @{
             'PROTECTED' { $color = '32'; break }
             'UNPROTECTED' { $color = '31'; break }
             'ERROR' { $color = '33'; break }
-           default { $color = "0" }
+            default { $color = "0" }
         }
         $e = [char]27
        "$e[${color}m$($_.Key)${e}[0m"
@@ -142,7 +142,7 @@ $Results.GetEnumerator()  | Format-Table @{
             'PROTECTED' { $color = '32'; break }
             'UNPROTECTED' { $color = '31'; break }
             'ERROR' { $color = '33'; break }
-           default { $color = "0" }
+            default { $color = "0" }
         }
         $e = [char]27
        "$e[${color}m$($_.Value)${e}[0m"
