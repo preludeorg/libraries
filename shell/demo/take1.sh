@@ -1,8 +1,14 @@
 #!/bin/bash
 
-GREEN='\033[1;32m'
-RED='\033[1;31m'
-NC='\033[0m' # No Color
+#GREEN='\033[1;32m'
+#RED='\033[1;31m'
+#YELLOW='\033[1;33m'
+#NC='\033[0m' # No Color
+GREEN=$(tput setf 2)
+RED=$(tput setf 1)
+YELLOW=$(tput setf 3)
+STANDOUT=$(tput bold)$(tput smul)
+NC=$(tput sgr0)
 
 PRELUDE_API=${PRELUDE_API:="https://api.preludesecurity.com"}
 PRELUDE_TOKEN=$1
@@ -28,8 +34,7 @@ declare -a results
 function get_info {
     local _test_id=$1
     local _test_name=$2
-    echo -e "Test name: ${_test_name}"
-    echo -e "Test id: ${_test_id}\n"
+    echo -e "${STANDOUT}${_test_name}${NC} (ID: ${_test_id})\n"
     curl -sfS "https://raw.githubusercontent.com/preludeorg/test/master/tests/${_test_id}/README.md" | sed -n '3 p'
     echo -e "\nThis is a Verified Security Test (VST) Developed by Prelude Research Inc."
 }
@@ -108,11 +113,11 @@ function run_demo {
     execute_cleanup $_temp
     post_results $_test_id $_res
     if ( echo "100 9 17 18 105 127" | grep -w -q $_res );then
-        results+=( "PROTECTED" )
+        results+=( "${GREEN}${names[$i]}\tPROTECTED${NC}" )
     elif [ $_res -eq 101 ];then
-        results+=( "UNPROTECTED" )
+        results+=( "${RED}${names[$i]}\tUNPROTECTED${NC}" )
     else
-        results+=( "ERROR" )
+        results+=( "${YELLOW}${names[$i]}\tERROR${NC}" )
     fi
   #  echo -e "\n###########################################################################################################\n"
   #  echo "SUMMARY HERE"
@@ -126,9 +131,7 @@ do
 	run_demo "$i"
 done
 
-echo -e "\nSummary\n"
-paste <(printf '%s\n' Test "${names[@]}") \
-      <(printf "%s\n" Result "${results[@]}") \
-| column -ts $'\t'
+echo -e "\nSummary of test results:\n"
+paste <(printf "%b\n" "${results[@]}") | column -txs $'\t'
 
 echo -e "\n[*] Return to https://platform.preludesecurity.com to view your results\n"
