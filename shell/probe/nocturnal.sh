@@ -23,7 +23,7 @@ do
             dat="${test}:$([[ -f $exe ]] && echo $code || echo 127)"
         fi
     elif [[ "$location" == *"upgrade"* ]];then
-        echo "[P] - $(date) - Upgrade requested" && exit 1
+        echo "[P] - $(date) - Upgrade required" && exit 1
     else
         rm -r $PRELUDE_DIR
         unset dat
