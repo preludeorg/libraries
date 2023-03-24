@@ -113,7 +113,6 @@ function RunDemo {
     Write-Host "`r`n###########################################################################################################"
 }
 
-
 foreach ($i in $Tests.Keys) {
     RunDemo $i $Tests[$i]
 }
@@ -122,6 +121,30 @@ Remove-Item $PRELUDE_DIR -Force -Recurse -ErrorAction Ignore
 
 Write-Host "###########################################################################################################"
 Write-Host "`r`nSummary of test results:`r`n"
-Write-Host ($Results | Out-String)
+$Results.GetEnumerator()  | Format-Table @{
+    Label="Test";
+    Expression={
+        switch ($_.Value) {
+            'PROTECTED' { $color = '32'; break }
+            'UNPROTECTED' { $color = '31'; break }
+            'ERROR' { $color = '33'; break }
+           default { $color = "0" }
+        }
+        $e = [char]27
+       "$e[${color}m$($_.Key)${e}[0m"
+    }
+}, @{
+    Label="Result";
+    Expression={
+        switch ($_.Value) {
+            'PROTECTED' { $color = '32'; break }
+            'UNPROTECTED' { $color = '31'; break }
+            'ERROR' { $color = '33'; break }
+           default { $color = "0" }
+        }
+        $e = [char]27
+       "$e[${color}m$($_.Value)${e}[0m"
+    }
+}
 
 Write-Host "`r`n[*] Return to https://platform.preludesecurity.com to view your results`r`n"
