@@ -1,17 +1,14 @@
 #!/bin/bash
 
-#GREEN='\033[1;32m'
-#RED='\033[1;31m'
-#YELLOW='\033[1;33m'
-#NC='\033[0m' # No Color
-GREEN=$(tput setf 2)
-RED=$(tput setf 1)
-YELLOW=$(tput setf 3)
+GREEN=$(tput setaf 2)
+RED=$(tput setaf 1)
+YELLOW=$(tput setaf 3)
 STANDOUT=$(tput bold)$(tput smul)
 NC=$(tput sgr0)
 
 PRELUDE_API=${PRELUDE_API:="https://api.preludesecurity.com"}
 PRELUDE_TOKEN=$1
+PRELUDE_DIR=${PRELUDE_DIR:=".vst"}
 
 dos=$(uname -s)-$(uname -m)
 
@@ -31,51 +28,53 @@ declare -a names=(
 )
 declare -a results
 
-function get_info {
-    local _test_id=$1
-    local _test_name=$2
-    echo -e "${STANDOUT}${_test_name}${NC} (ID: ${_test_id})\n"
-    curl -sfS "https://raw.githubusercontent.com/preludeorg/test/master/tests/${_test_id}/README.md" | sed -n '3 p'
-    echo -e "\nThis is a Verified Security Test (VST) Developed by Prelude Research Inc."
-}
-
 function check_relevance {
-    echo -e "${GREEN}[✓] Result: Success - server or workstation detected${NC}"
+    echo -e "\n[ ] Conducting relevance test"
+    sleep 1
+    tput cuu 1
+    tput el
+    echo -e "${GREEN}[✓] Conducted relevance test: Success - server or workstation detected${NC}"
 }
 
 function download_test {
     local _test_id=$1
     local _temp=$2
+    echo -e "\n[ ] Downloading test"
+
     location=$(curl -sfSL -w %{url_effective} -o $_temp -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "id:${_test_id}" $PRELUDE_API)
     test=$(echo $location | grep -o '[0-9a-f]\{8\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{12\}' | head -n 1)
+    tput cuu 1
+    tput el
     if [ -z "$test" ];then
         echo -e "${RED}[!] Failed to download test${NC}"
         exit 1
     else
-        echo -e "${GREEN}[✓] Wrote to temporary file: ${_temp}${NC}"
+        echo -e "${GREEN}[✓] Downloaded test to temporary file: ${_temp}${NC}"
         chmod +x $_temp
     fi
 }
 
 function execute_test {
     local _temp=$1
+    echo -e "\n[ ] Executing test"
     $_temp
     local _res=$?
     if ( echo "100 9 17 18 105 127" | grep -w -q $_res );then
-        echo -e "\n${GREEN}[✓] Result: control test passed${NC}"
+        echo -e "${GREEN}[✓] Executed test: control test passed${NC}"
     elif [ $_res -eq 101 ];then
-        echo -e "\n${RED}[!] Result: control test failed${NC}"
+        echo -e "${RED}[!] Executed test: control test failed${NC}"
     else
-        echo -e "\n${RED}[!] An unexpected error occurred${NC}"
+        echo -e "${YELLOW}[!] Executed test: an unexpected error occurred${NC}"
     fi
     return $_res
 }
 
 function execute_cleanup {
-    local _temp=$1
-    local _temp_dir=$(dirname $_temp)
-    rm -f $_temp ${_temp_dir}/09a79e5e20fa4f5aae610c8ce3fe954029a91972b56c6576035ff7e0ec4c1d14.elf ${_temp_dir}/malicious.xlsm ${_temp_dir}/colour-blind.py
+    echo -e "\n[ ] Running cleanup"
+    rm -rf $PRELUDE_DIR/*
     local _res=$?
+    tput cuu 1
+    tput el
     if [ $_res -eq 0 ];then
         echo -e "${GREEN}[✓] Clean up is complete${NC}"
     else
@@ -91,25 +90,15 @@ function post_results {
 function run_demo {
     local _i=$1
     local _test_id=${tests[$_i]}
-    local _temp=$(mktemp)
-    echo -e "###########################################################################################################\n"
-    get_info $_test_id "${names[$_i]}"
-    echo -e "\n###########################################################################################################\n"
-#    sleep 2
-    echo -e "Starting test at: $(date +"%T")"
-    echo -e "\n-----------------------------------------------------------------------------------------------------------"
-#    sleep 2
-    echo -e "[0] Conducting relevance test\n"
+    local _temp=$PRELUDE_DIR/$(uuidgen)
+    echo -e "\n${STANDOUT}Test: ${names[$_i]}${NC}"
+    echo -e "\nMore details at: https://github.com/preludeorg/test/tree/master/tests/${_test_id}"
+    sleep 1
+    echo -e "\nStarting test at: $(date +"%T")"
     check_relevance
-    echo -e "-----------------------------------------------------------------------------------------------------------"
-    echo -e "[1] Downloading test\n"
     download_test $_test_id $_temp
-    echo -e "-----------------------------------------------------------------------------------------------------------"
-    echo -e "[2] Executing test\n"
     execute_test $_temp
     local _res=$?
-    echo -e "-----------------------------------------------------------------------------------------------------------"
-    echo -e "[3] Running cleanup\n"
     execute_cleanup $_temp
     post_results $_test_id $_res
     if ( echo "100 9 17 18 105 127" | grep -w -q $_res );then
@@ -119,18 +108,20 @@ function run_demo {
     else
         results+=( "${YELLOW}${names[$i]}\tERROR${NC}" )
     fi
-  #  echo -e "\n###########################################################################################################\n"
-  #  echo "SUMMARY HERE"
     echo -e "\n###########################################################################################################"
-#    sleep 4
+    sleep 3
 }
 
-echo
+mkdir -p $PRELUDE_DIR
+
 for i in "${!tests[@]}"
 do
-	run_demo "$i"
+	  run_demo "$i"
 done
 
+rm -rf $PRELUDE_DIR
+
+echo -e "###########################################################################################################"
 echo -e "\nSummary of test results:\n"
 paste <(printf "%b\n" "${results[@]}") | column -txs $'\t'
 
