@@ -17,13 +17,13 @@ do
         ca=$(echo $location | sed -e 's|^[^/]*//||' -e 's|/.*$||')
 
         if [ "$PRELUDE_CA" == "$ca" ];then
-            echo "[P] - $(date) - Running $test [$exe]"
+            echo "[P] Running $test [$exe]"
             chmod +x $exe && $exe
             code=$?
             dat="${test}:$([[ -f $exe ]] && echo $code || echo 127)"
         fi
     elif [[ "$location" == *"upgrade"* ]];then
-        echo "[P] - $(date) - Upgrade required" && exit 1
+        echo "[P] Upgrade required" && exit 1
     else
         rm -r $PRELUDE_DIR
         unset dat

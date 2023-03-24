@@ -20,12 +20,14 @@ function Run {
     $Test = $Response.BaseResponse.ResponseUri.AbsolutePath.Split("/")[-1].Split("_")[0]
 
     if ($Response.BaseResponse.ResponseUri -contains "upgrade") {
-        Log "Upgrade requested" && exit 1
-    } elseif (-not $Test -Or $CA -ne $Response.BaseResponse.ResponseUri.Authority) {
+        Log "[P] Upgrade required" && exit 1
+    } elseif (-not $Test) {
+        return
+    } elseif ($CA -ne $Response.BaseResponse.ResponseUri.Authority) {
         return
     }
 
-    Log "Running $Test [$Vst]"
+    Log "[P] Running $Test [$Vst]"
     $Code = Execute $Vst   
     Run -Dat "${Test}:$Code"
 }
