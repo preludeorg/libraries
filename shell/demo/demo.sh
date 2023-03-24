@@ -30,9 +30,7 @@ declare -a results
 
 function check_relevance {
     echo -e "\n[ ] Conducting relevance test"
-    sleep 1
-    tput cuu 1
-    tput el
+    sleep 1 && tput cuu 1 && tput el
     echo -e "${GREEN}[✓] Conducted relevance test: Success - server or workstation detected${NC}"
 }
 
@@ -43,8 +41,7 @@ function download_test {
 
     location=$(curl -sfSL -w %{url_effective} -o $_temp -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "id:${_test_id}" $PRELUDE_API)
     test=$(echo $location | grep -o '[0-9a-f]\{8\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{12\}' | head -n 1)
-    tput cuu 1
-    tput el
+    tput cuu 1 && tput el
     if [ -z "$test" ];then
         echo -e "${RED}[!] Failed to download test${NC}"
         exit 1
@@ -57,6 +54,7 @@ function download_test {
 function execute_test {
     local _temp=$1
     echo -e "\n[ ] Executing test"
+    sleep 1 && tput cuu 1 && tput el
     $_temp
     local _res=$?
     if ( echo "100 9 17 18 105 127" | grep -w -q $_res );then
@@ -73,8 +71,7 @@ function execute_cleanup {
     echo -e "\n[ ] Running cleanup"
     rm -rf $PRELUDE_DIR/*
     local _res=$?
-    tput cuu 1
-    tput el
+    tput cuu 1 && tput el
     if [ $_res -eq 0 ];then
         echo -e "${GREEN}[✓] Clean up is complete${NC}"
     else
