@@ -2,9 +2,9 @@
 
 PRELUDE_DIR=".vst"
 PRELUDE_SLEEP=${PRELUDE_SLEEP:=14440}
-PRELUDE_CA="prelude-account-staging-us-west-1.s3.amazonaws.com"
+PRELUDE_CA="prelude-account-prod-us-west-1.s3.amazonaws.com"
 
-api="https://api.staging.preludesecurity.com"
+api="https://api.preludesecurity.com"
 dos=$(uname -s)-$(uname -m)
 
 while :
