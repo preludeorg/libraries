@@ -1,11 +1,5 @@
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-function Log {
-    Param([String]$line)
-
-    Write-EventLog -LogName "Application" -Source "Prelude Detect" -EventId 0 -Message $line -ErrorAction Ignore
-}
-
 function Execute { 
     Param([String]$File)
 
@@ -34,7 +28,6 @@ $CA = "prelude-account-prod-us-west-1.s3.amazonaws.com"
 $Api = "https://api.preludesecurity.com"
 $Dos = "windows-$Env:PROCESSOR_ARCHITECTURE"
 $Dat = ""
-New-EventLog –LogName Application –Source 'Prelude Detect' -ErrorAction Ignore
 
 while ($true) {
     try {
@@ -50,19 +43,19 @@ while ($true) {
     
         if ($Test) {
             if ($CA -eq $Response.BaseResponse.ResponseUri.Authority) {
-                Log "[P] Running $Test [$Vst]"
+                Write-Output "[P] Running $Test [$Vst]"
                 $Code = Execute $Vst   
                 $Dat = "${Test}:$Code"
             }
         } elseif ($Response.BaseResponse.ResponseUri -contains "upgrade") {
-            Log "[P] Upgrade required"
+            Write-Output "[P] Upgrade required"
             exit 1
         } else {
             Remove-Item $Dir -Force -Recurse
             Start-Sleep -Seconds $Sleep
         }
     } catch { 
-        Log $_
+        Write-Error $_
         Start-Sleep -Seconds $Sleep
     }
 }
