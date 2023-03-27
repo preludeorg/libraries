@@ -51,6 +51,7 @@ while ($true) {
             Write-Output "[P] Upgrade required"
             exit 1
         } else {
+            $Dat = ""
             Remove-Item $Dir -Force -Recurse
             Start-Sleep -Seconds $Sleep
         }
