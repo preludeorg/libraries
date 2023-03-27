@@ -14,17 +14,17 @@ dos=$(uname -s)-$(uname -m)
 
 declare -a tests=(
   '39de298a-911d-4a3b-aed4-1e8281010a9a'    # Health check
-  '3ebbda49-738c-4799-a8fb-206630cf609e'    # Will a long running VST be stopped properly?
-  '2e705bac-a889-4283-9a8e-a12358fa1d09'    # Will your computer quarantine Royal Ransomware?
-  'b74ad239-2ddd-4b1e-b608-8397a43c7c54'    # Will your computer quarantine a malicious Office document?
-  'ca9b22be-93d5-4902-95f4-4bc43a817b73'    # Will your computer quarantine Colour-Blind malware?
+  #'3ebbda49-738c-4799-a8fb-206630cf609e'    # Will a long running VST be stopped properly?
+ # '2e705bac-a889-4283-9a8e-a12358fa1d09'    # Will your computer quarantine Royal Ransomware?
+  #'b74ad239-2ddd-4b1e-b608-8397a43c7c54'    # Will your computer quarantine a malicious Office document?
+  #'ca9b22be-93d5-4902-95f4-4bc43a817b73'    # Will your computer quarantine Colour-Blind malware?
 )
 declare -a names=(
   'Health check'
-  'Will a long running VST be stopped properly?'
-  'Will your computer quarantine Royal Ransomware?'
-  'Will your computer quarantine a malicious Office document?'
-  'Will your computer quarantine Colour-Blind malware?'
+ # 'Will a long running VST be stopped properly?'
+  #'Will your computer quarantine Royal Ransomware?'
+  #'Will your computer quarantine a malicious Office document?'
+  #'Will your computer quarantine Colour-Blind malware?'
 )
 declare -a results
 
@@ -53,11 +53,13 @@ function download_test {
 
 function execute_test {
     local _temp=$1
+    local _test_name=$2
     echo -e "\n[ ] Starting test"
     sleep 1 && tput cuu 1 && tput el
     $_temp
     local _res=$?
     if ( echo "100 9 17 18 105 127" | grep -w -q $_res );then
+        [ "$_test_name" == 'Health check' ] && [ $_res != 100 ] && echo -e "${YELLOW}[!] Health check should not be quarantined or blocked${NC}"
         echo -e "${GREEN}[✓] Executed test: control test passed${NC}"
     elif [ $_res -eq 101 ];then
         echo -e "${RED}[!] Executed test: control test failed${NC}"
@@ -69,7 +71,7 @@ function execute_test {
 
 function execute_cleanup {
     echo -e "\n[ ] Running cleanup"
-    rm -rf $PRELUDE_DIR/*
+    rm -rf ${PRELUDE_DIR:?}/*
     local _res=$?
     tput cuu 1 && tput el
     if [ $_res -eq 0 ];then
@@ -94,7 +96,7 @@ function run_demo {
     echo -e "\nStarting test at: $(date +"%T")"
     check_relevance
     download_test $_test_id $_temp
-    execute_test $_temp
+    execute_test $_temp "${_test_name}"
     local _res=$?
     execute_cleanup $_temp
     post_results $_test_id $_res
