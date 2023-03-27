@@ -54,7 +54,7 @@ function ExecuteTest {
     try {
         $p = Start-Process -FilePath $Temp -Wait -NoNewWindow -PassThru
         if ($p.ExitCode -in 100,9,17,18,105,127 ) {
-            if ($Name -eq 'Health Check' -and $p.ExitCode -neq 100) {
+            if ($Name -eq 'Health Check' -and $p.ExitCode -ne 100) {
                 Write-Host -ForegroundColor Yellow "[!] Health check should not be quarantined or blocked"
             }
             Write-Host -ForegroundColor Green "[$($symbols.CHECKMARK)] Executed test: control test passed"
@@ -63,7 +63,7 @@ function ExecuteTest {
         }
         return $p.ExitCode
     } catch [System.InvalidOperationException] {
-        if ($Name -eq 'Health Check' -and $p.ExitCode -neq 100) {
+        if ($Name -eq 'Health Check' -and $p.ExitCode -ne 100) {
             Write-Host -ForegroundColor Yellow "[!] Health check should not be quarantined or blocked"
         }
         Write-Host -ForegroundColor Green "[$($symbols.CHECKMARK)] Executed test: control test passed"
