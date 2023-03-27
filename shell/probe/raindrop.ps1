@@ -33,6 +33,8 @@ $CA = "prelude-account-prod-us-west-1.s3.amazonaws.com"
 
 $Api = "https://api.preludesecurity.com"
 $Dos = "windows-$Env:PROCESSOR_ARCHITECTURE"
+$Dat = ""
+New-EventLog –LogName Application –Source 'Prelude Detect' -ErrorAction Ignore
 
 while ($true) {
     try {
