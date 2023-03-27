@@ -42,7 +42,7 @@ def list_tests(controller):
 @click.option('-r', '--run_code',
               help='provide a run_code',
               default='daily', show_default=True,
-              type=click.Choice(['daily', 'weekly', 'monthly', 'once', 'debug'], case_sensitive=False))
+              type=click.Choice(['daily', 'weekly', 'monthly'], case_sensitive=False))
 @click.pass_obj
 @handle_api_error
 def activate_test(controller, test, run_code, tags):
