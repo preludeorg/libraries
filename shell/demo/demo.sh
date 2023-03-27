@@ -14,17 +14,17 @@ dos=$(uname -s)-$(uname -m)
 
 declare -a tests=(
   '39de298a-911d-4a3b-aed4-1e8281010a9a'    # Health check
-  #'3ebbda49-738c-4799-a8fb-206630cf609e'    # Will a long running VST be stopped properly?
- # '2e705bac-a889-4283-9a8e-a12358fa1d09'    # Will your computer quarantine Royal Ransomware?
-  #'b74ad239-2ddd-4b1e-b608-8397a43c7c54'    # Will your computer quarantine a malicious Office document?
-  #'ca9b22be-93d5-4902-95f4-4bc43a817b73'    # Will your computer quarantine Colour-Blind malware?
+  '3ebbda49-738c-4799-a8fb-206630cf609e'    # Will a long running VST be stopped properly?
+  '2e705bac-a889-4283-9a8e-a12358fa1d09'    # Will your computer quarantine Royal Ransomware?
+  'b74ad239-2ddd-4b1e-b608-8397a43c7c54'    # Will your computer quarantine a malicious Office document?
+  'ca9b22be-93d5-4902-95f4-4bc43a817b73'    # Will your computer quarantine Colour-Blind malware?
 )
 declare -a names=(
   'Health check'
- # 'Will a long running VST be stopped properly?'
-  #'Will your computer quarantine Royal Ransomware?'
-  #'Will your computer quarantine a malicious Office document?'
-  #'Will your computer quarantine Colour-Blind malware?'
+  'Will a long running VST be stopped properly?'
+  'Will your computer quarantine Royal Ransomware?'
+  'Will your computer quarantine a malicious Office document?'
+  'Will your computer quarantine Colour-Blind malware?'
 )
 declare -a results
 
