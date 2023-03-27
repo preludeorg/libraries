@@ -25,7 +25,7 @@ do
     elif [[ "$location" == *"upgrade"* ]];then
         echo "[P] Upgrade required" && exit 1
     else
-        rm -rf ${PRELUDE_DIR:?}/*
+        rm -r $PRELUDE_DIR
         unset dat
         sleep $PRELUDE_SLEEP
     fi
