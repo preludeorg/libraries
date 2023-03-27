@@ -53,12 +53,14 @@ while ($true) {
                 $Dat = "${Test}:$Code"
             }
         } elseif ($Response.BaseResponse.ResponseUri -contains "upgrade") {
-            Log "[P] Upgrade required" && exit 1
+            Log "[P] Upgrade required"
+            exit 1
         } else {
             Remove-Item $Dir -Force -Recurse
             Start-Sleep -Seconds $Sleep
         }
     } catch { 
-        Log $_ 
+        Log $_
+        Start-Sleep -Seconds $Sleep
     }
 }
