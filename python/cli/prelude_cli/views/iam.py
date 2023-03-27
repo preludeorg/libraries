@@ -60,6 +60,7 @@ def create_user(controller, permission, handle, days):
         permission=Permission[permission.upper()].value, 
         expires=expires
     )
+    print("You must verify your user account before using it.\n")
     print_json(data=resp)
 
 
