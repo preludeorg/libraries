@@ -40,22 +40,25 @@ while ($true) {
         }
         $Response = Invoke-WebRequest -URI $Api -UseBasicParsing -Headers $Headers -MaximumRedirection 1 -OutFile $Vst -PassThru
         $Test = $Response.BaseResponse.ResponseUri.AbsolutePath.Split("/")[-1].Split("_")[0]
-    
+        $Dat = ""
         if ($Test) {
             if ($CA -eq $Response.BaseResponse.ResponseUri.Authority) {
                 Write-Output "[P] Running $Test [$Vst]"
-                $Code = Execute $Vst   
+                $Code = Execute $Vst
                 $Dat = "${Test}:$Code"
             }
-        } elseif ($Response.BaseResponse.ResponseUri -contains "upgrade") {
+        }
+        Remove-Item $Vst -Force
+        if ($Response.BaseResponse.ResponseUri -contains "upgrade") {
             Write-Output "[P] Upgrade required"
             exit 1
         } else {
-            Remove-Item $Dir -Force -Recurse
             Start-Sleep -Seconds $Sleep
         }
-    } catch { 
+    } catch {
         Write-Error $_
+        Remove-Item $Vst -Force
         Start-Sleep -Seconds $Sleep
     }
 }
+
