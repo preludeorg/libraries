@@ -21,7 +21,7 @@ function FromEnv { param ([string]$envVar, [string]$default)
     if ($envVal) { return $envVal } else { return $default }
 }
 
-$Dir = ".vst"
+$Dir = FromEnv "PRELUDE_DIR" ".vst"
 $Sleep = FromEnv "PRELUDE_SLEEP" 14440
 $CA = "prelude-account-prod-us-west-1.s3.amazonaws.com"
 
@@ -48,7 +48,7 @@ while ($true) {
                 $Dat = "${Test}:$Code"
             }
         }
-        Remove-Item $Vst -Force
+        Remove-Item $Dir -Force -Recursive
         if ($Response.BaseResponse.ResponseUri -contains "upgrade") {
             Write-Output "[P] Upgrade required"
             exit 1
@@ -57,7 +57,7 @@ while ($true) {
         }
     } catch {
         Write-Error $_
-        Remove-Item $Vst -Force
+        Remove-Item $Dir -Force -Recursive
         Start-Sleep -Seconds $Sleep
     }
 }
