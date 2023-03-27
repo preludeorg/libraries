@@ -27,7 +27,6 @@ $CA = "prelude-account-prod-us-west-1.s3.amazonaws.com"
 
 $Api = "https://api.preludesecurity.com"
 $Dos = "windows-$Env:PROCESSOR_ARCHITECTURE"
-$Dat = ""
 
 while ($true) {
     try {
@@ -35,7 +34,7 @@ while ($true) {
         $Headers = @{
             'token' = FromEnv "PRELUDE_TOKEN"
             'dos' = $Dos
-            'dat' = $Dat
+            'dat' = $Dat=if ($Dat) { $Dat } else { "" }
             'version' = "1.0"
         }
         $Response = Invoke-WebRequest -URI $Api -UseBasicParsing -Headers $Headers -MaximumRedirection 1 -OutFile $Vst -PassThru
