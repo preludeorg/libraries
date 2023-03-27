@@ -47,8 +47,7 @@ function DownloadTest {
 }
 
 function ExecuteTest {
-    Param([string]$Temp)
-    Param([string]$Name)
+    Param([string]$Temp, [string]$Name)
     Write-Host -NoNewLine "`r`n[ ] Starting test`r"
     Start-Sleep -Seconds 1
     try {
