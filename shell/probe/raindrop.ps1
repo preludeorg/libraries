@@ -48,7 +48,7 @@ while ($true) {
                 $Dat = "${Test}:$Code"
             }
         }
-        Remove-Item $Dir -Force -Recursive
+        Remove-Item $Dir -Force -Recurse
         if ($Response.BaseResponse.ResponseUri -contains "upgrade") {
             Write-Output "[P] Upgrade required"
             exit 1
@@ -57,7 +57,7 @@ while ($true) {
         }
     } catch {
         Write-Error $_
-        Remove-Item $Dir -Force -Recursive
+        Remove-Item $Dir -Force -Recurse
         Start-Sleep -Seconds $Sleep
     }
 }
