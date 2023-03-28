@@ -55,8 +55,9 @@ function ExecuteTest {
         if ($p.ExitCode -in 100,9,17,18,105,127 ) {
             if (($Name -eq 'Health Check' -or $Name -eq 'Will a long running VST be stopped properly?') -and $p.ExitCode -ne 100) {
                 Write-Host -ForegroundColor Yellow "[!] Health check should not be quarantined or blocked"
+            } else {
+                Write-Host -ForegroundColor Green "[$($symbols.CHECKMARK)] Executed test: control test passed"
             }
-            Write-Host -ForegroundColor Green "[$($symbols.CHECKMARK)] Executed test: control test passed"
         } else {
             Write-Host -ForegroundColor Red "[!] Executed test: control test failed"
         }
@@ -64,8 +65,9 @@ function ExecuteTest {
     } catch [System.InvalidOperationException] {
         if (($Name -eq 'Health Check' -or $Name -eq 'Will a long running VST be stopped properly?') -and $p.ExitCode -ne 100) {
             Write-Host -ForegroundColor Yellow "[!] Health check should not be quarantined or blocked"
+        } else {
+            Write-Host -ForegroundColor Green "[$($symbols.CHECKMARK)] Executed test: control test passed"
         }
-        Write-Host -ForegroundColor Green "[$($symbols.CHECKMARK)] Executed test: control test passed"
         return 127
     } catch {
         Write-Host -ForegroundColor Red "[!] Executed test: an unexpected error occurred:`r`n"
@@ -118,8 +120,16 @@ function RunDemo {
     }
 
     Write-Host "`r`n###########################################################################################################"
+    if ($Id == '3ebbda49-738c-4799-a8fb-206630cf609e') {
+        Write-Host "`r`n`r`nCompleted Health Check tests. Beginning quarantine tests.`r`n"
+        Write-Host "`r`n###########################################################################################################"
+    }
     Start-Sleep -Seconds 2
 }
+
+Write-Host "`r`n###########################################################################################################"
+Write-Host "`r`n`r`nRunning safety checks to ensure quarantine tests will run as expected.`r`n"
+Write-Host "`r`n###########################################################################################################"
 
 foreach ($i in $Tests.Keys) {
     RunDemo $i $Tests[$i]
