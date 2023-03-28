@@ -1,4 +1,4 @@
-name: Staging - shell probes (install / demo / nocturnal / raindrop scripts) deploy
+name: Staging - shell probes (demo / nocturnal / raindrop scripts) deploy
 
 on:
   push:

@@ -1,4 +1,4 @@
-name: Prod - shell probes (install / demo / nocturnal / raindrop scripts) deploy
+name: Prod - shell probes (demo / nocturnal / raindrop scripts) deploy
 
 on:
   push:
