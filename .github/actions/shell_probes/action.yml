@@ -50,7 +50,7 @@ runs:
         done 
 
         for a in ${NIX_ARCHS[@]}; do  
-          aws s3 cp shell/probe/nocturnal.sh s3://${{ inputs.s3_bucket }}/prelude/probes/nocturnal_${a}
+          aws s3 cp shell/probe/nocturnal.sh s3://${{ inputs.s3_bucket }}/prelude/probes/nocturnal/nocturnal_${a}
         done 
 
         WIN_ARCHS=(windows-x86_64)        
