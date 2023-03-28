@@ -47,18 +47,24 @@ function DownloadTest {
 }
 
 function ExecuteTest {
-    Param([string]$Temp)
+    Param([string]$Temp, [string]$Name)
     Write-Host -NoNewLine "`r`n[ ] Starting test`r"
     Start-Sleep -Seconds 1
     try {
         $p = Start-Process -FilePath $Temp -Wait -NoNewWindow -PassThru
         if ($p.ExitCode -in 100,9,17,18,105,127 ) {
+            if (($Name -eq 'Health Check' -or $Name -eq 'Will a long running VST be stopped properly?') -and $p.ExitCode -ne 100) {
+                Write-Host -ForegroundColor Yellow "[!] Health check should not be quarantined or blocked"
+            }
             Write-Host -ForegroundColor Green "[$($symbols.CHECKMARK)] Executed test: control test passed"
         } else {
             Write-Host -ForegroundColor Red "[!] Executed test: control test failed"
         }
         return $p.ExitCode
     } catch [System.InvalidOperationException] {
+        if (($Name -eq 'Health Check' -or $Name -eq 'Will a long running VST be stopped properly?') -and $p.ExitCode -ne 100) {
+            Write-Host -ForegroundColor Yellow "[!] Health check should not be quarantined or blocked"
+        }
         Write-Host -ForegroundColor Green "[$($symbols.CHECKMARK)] Executed test: control test passed"
         return 127
     } catch {
@@ -99,7 +105,7 @@ function RunDemo {
     Write-Host "`r`nStarting test at: $(Get-Date -UFormat %T)"
     CheckRelevance
     DownloadTest $Id $Temp
-    $TestResult = ExecuteTest $Temp
+    $TestResult = ExecuteTest $Temp $Name
     ExecuteCleanup
     PostResults $Id $TestResult
 
