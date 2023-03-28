@@ -11,9 +11,9 @@ class IAMController:
         self.account = account
 
     @verify_credentials
-    def new_account(self, handle: str):
+    def new_account(self):
         with Spinner():
-            res = requests.post(url=f'{self.account.hq}/iam/account', json=dict(handle=handle), headers=self.account.headers)
+            res = requests.post(url=f'{self.account.hq}/iam/account', headers=self.account.headers)
             if res.status_code != 200:
                 raise Exception(res.text)
             

@@ -21,8 +21,7 @@ def iam(ctx):
 @click.confirmation_option(prompt='Overwrite local account credentials for selected profile?')
 def register_account(controller):
     """ Register a new account """
-    creds = controller.new_account(handle=click.prompt('Enter a handle'))
-    print("Check your email to verifiy your account.\n")
+    creds = controller.new_account()
     print_json(data=creds)
 
 
