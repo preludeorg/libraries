@@ -59,8 +59,11 @@ function execute_test {
     $_temp
     local _res=$?
     if ( echo "100 9 17 18 105 127" | grep -w -q $_res );then
-        [[ ("$_test_name" == 'Health check' || "$_test_name" == 'Will a long running VST be stopped properly?') ]] && [ $_res != 100 ] && echo -e "${YELLOW}[!] Health check should not be quarantined or blocked${NC}"
-        echo -e "${GREEN}[✓] Executed test: control test passed${NC}"
+        if [[ ("$_test_name" == 'Health check' || "$_test_name" == 'Will a long running VST be stopped properly?') ]] && [ $_res != 100 ];then
+          echo -e "${YELLOW}[!] Health check should not be quarantined or blocked${NC}"
+        else
+          echo -e "${GREEN}[✓] Executed test: control test passed${NC}"
+        fi
     elif [ $_res -eq 101 ];then
         echo -e "${RED}[!] Executed test: control test failed${NC}"
     else
