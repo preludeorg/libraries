@@ -120,8 +120,16 @@ function RunDemo {
     }
 
     Write-Host "`r`n###########################################################################################################"
+    if ($Id == '3ebbda49-738c-4799-a8fb-206630cf609e') {
+        Write-Host "`r`n`r`nCompleted Health Check tests. Beginning quarantine tests.`r`n"
+        Write-Host "`r`n###########################################################################################################"
+    }
     Start-Sleep -Seconds 2
 }
+
+Write-Host "`r`n###########################################################################################################"
+Write-Host "`r`n`r`nRunning safety checks to ensure quarantine tests will run as expected.`r`n"
+Write-Host "`r`n###########################################################################################################"
 
 foreach ($i in $Tests.Keys) {
     RunDemo $i $Tests[$i]

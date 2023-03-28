@@ -111,11 +111,19 @@ function run_demo {
         results+=( "${YELLOW}${_test_name}\tERROR${NC}" )
     fi
     echo -e "\n###########################################################################################################"
+    if [[ $1 == 1 ]];then
+        echo -e "\n\nCompleted Health Check tests. Beginning quarantine tests.\n"
+        echo -e "\n###########################################################################################################"
+    fi
     sleep 3
 }
 
 mkdir -p $PRELUDE_DIR
 trap 'rm -rf -- "$PRELUDE_DIR"' EXIT
+
+echo -e "\n###########################################################################################################"
+echo -e "\n\nRunning safety checks to ensure quarantine tests will run as expected.\n"
+echo -e "\n###########################################################################################################"
 
 for i in "${!tests[@]}"
 do
