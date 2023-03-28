@@ -22,6 +22,7 @@ def iam(ctx):
 def register_account(controller):
     """ Register a new account """
     creds = controller.new_account(handle=click.prompt('Enter a handle'))
+    print("Check your email to verifiy your account.\n")
     print_json(data=creds)
 
 
@@ -60,7 +61,7 @@ def create_user(controller, permission, handle, days):
         permission=Permission[permission.upper()].value, 
         expires=expires
     )
-    print("You must verify your user account before using it.\n")
+    print("Check your email to verifiy your account.\n")
     print_json(data=resp)
 
 
