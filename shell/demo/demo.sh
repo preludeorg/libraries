@@ -86,7 +86,7 @@ function execute_cleanup {
 
 function post_results {
     local _dat="$1:$2"
-    curl -sfSL -H "token:$ {PRELUDE_TOKEN}" -H "dos: ${dos}" -H "dat: ${_dat}" $PRELUDE_API
+    curl -sfSL -H "token: ${PRELUDE_TOKEN}" -H "dos: ${dos}" -H "dat: ${_dat}" $PRELUDE_API
 }
 
 function run_demo {
