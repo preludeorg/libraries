@@ -134,6 +134,6 @@ rm -rf $PRELUDE_DIR
 
 echo -e "###########################################################################################################"
 echo -e "\nSummary of test results:\n"
-paste <(printf "%b\n" "${results[@]}") | column -txs $'\t'
+paste <(printf "%b\n" "${results[@]}") | column -ts $'\t'
 
 echo -e "\n[*] Return to https://platform.preludesecurity.com to view your results\n"
