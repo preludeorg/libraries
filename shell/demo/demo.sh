@@ -136,4 +136,4 @@ echo -e "#######################################################################
 echo -e "\nSummary of test results:\n"
 paste <(printf "%b\n" "${results[@]}") | column -ts $'\t'
 
-echo -e "\n[*] Return to https://platform.preludesecurity.com to view your results\n"
+echo -e "\n[*] Go to https://platform.preludesecurity.com to register for an account\n"
