@@ -165,4 +165,4 @@ $Results.GetEnumerator()  | Format-Table @{
     }
 }
 
-Write-Host "[*] Return to https://platform.preludesecurity.com to view your results`r`n"
+Write-Host "[*] Go to https://platform.preludesecurity.com to register for an account`r`n"
