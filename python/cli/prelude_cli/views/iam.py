@@ -22,8 +22,8 @@ def iam(ctx):
 def register_account(controller):
     """ Register a new account """
     creds = controller.new_account(handle=click.prompt('Enter a handle'))
-    print("Check your email to verifiy your account.\n")
     print_json(data=creds)
+    print("\nCheck your email to verifiy your account.\n")
 
 
 @iam.command('update-account')
@@ -61,9 +61,8 @@ def create_user(controller, permission, handle, days):
         permission=Permission[permission.upper()].value, 
         expires=expires
     )
-    print("Check your email to verifiy your account.\n")
     print_json(data=resp)
-
+    print("\nCheck your email to verifiy your account.\n")
 
 @iam.command('delete-user')
 @click.confirmation_option(prompt='Are you sure?')
