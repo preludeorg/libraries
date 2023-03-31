@@ -118,11 +118,12 @@
           try {
             service = await setupAccount();
 
-            const testId = uuid.v4();
+            const newTest = await service.build.createTest("This is a test", code);
             console.log(
               "CREATE new test",
-              await service.build.createTest(testId, "This is a test", code)
+              newTest
             );
+            const testId = newTest.id;
 
             console.log(
               "Get Test after CREATE",

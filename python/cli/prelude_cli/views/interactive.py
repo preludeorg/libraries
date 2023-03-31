@@ -580,8 +580,8 @@ class CreateTest:
         print('Tests should be in the form of a question')
         # save test
         name = Prompt.ask('Enter a test name', default='Does my defense work?')
-        test_id = str(uuid.uuid4())
-        self.wiz.build.create_test(test_id=test_id, name=name)
+        test = self.wiz.build.create_test(name=name)
+        test_id = test['id']
 
         mapping = Confirm.ask('Add a classification, such as a rule, CVE or ATT&CK technique?')
         if mapping:

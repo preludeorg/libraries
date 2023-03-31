@@ -10,13 +10,14 @@ class BuildController:
         self.account = account
 
     @verify_credentials
-    def create_test(self, test_id, name):
+    def create_test(self, name):
         """ Create or update a test """
         with Spinner():
             data = dict(name=name)
-            res = requests.post(f'{self.account.hq}/build/tests/{test_id}', json=data, headers=self.account.headers)
-            if not res.status_code == 200:
-                raise Exception(res.text)
+            res = requests.post(f'{self.account.hq}/build/tests', json=data, headers=self.account.headers)
+            if res.status_code == 200:
+                return res.json()
+            raise Exception(res.text)
 
     @verify_credentials
     def delete_test(self, test_id):

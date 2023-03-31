@@ -33,15 +33,14 @@ def get_test(controller, test_id):
 
 @build.command('create-test')
 @click.argument('name')
-@click.option('-t', '--test', help='test identifier', default=None, type=str)
 @click.pass_obj
 @handle_api_error
-def create_test(controller, name, test):
-    """ Create or update a security test """
-    test_id = test or str(uuid.uuid4())
-    controller.create_test(test_id=test_id, name=name)
+def create_test(controller, name):
+    """ Create a security test """
+    new_test = controller.create_test(name=name)
 
-    if not test:
+    if new_test:
+        test_id = new_test['id']
         basename = f'{test_id}.go'
         template = pkg_resources.read_text(templates, 'template.go')
         template = template.replace('$ID', test_id)

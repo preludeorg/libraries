@@ -1,5 +1,5 @@
 import Client from "../client";
-import type { RequestOptions, TestData } from "../types";
+import type {RequestOptions, Test, TestData} from "../types";
 
 interface MapParams {
   testId: string;
@@ -15,15 +15,15 @@ export default class BuildController {
 
   /** Create or update a test */
   async createTest(
-    id: string,
     name: string,
     options: RequestOptions = {}
-  ): Promise<void> {
-    await this.#client.requestWithAuth(`/build/tests/${id}`, {
+  ): Promise<Test> {
+    const response = await this.#client.requestWithAuth(`/build/tests`, {
       method: "POST",
       body: JSON.stringify({ name }),
       ...options,
     });
+    return await response.json()
   }
 
   /** Delete an existing test */
