@@ -54,6 +54,7 @@ class Wizard:
 
     def __init__(self, account):
         # SDK controllers
+        self.account = account
         self.iam = IAMController(account=account)
         self.build = BuildController(account=account)
         self.probe = ProbeController(account=account)
@@ -873,7 +874,9 @@ class ExecutiveDashboard:
         self.title = title
 
     def enter(self):
-        webbrowser.open('https://platform.preludesecurity.com/detect', new=2)
+        account = self.wiz.account.headers['account']
+        token = self.wiz.account.headers['token']
+        webbrowser.open(f'https://platform.preludesecurity.com?account={account}&token={token}', new=2)
 
 
 @click.command()
