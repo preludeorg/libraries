@@ -56,7 +56,6 @@ class Wizard:
 
     def __init__(self, account):
         # SDK controllers
-        self.account = account
         self.iam = IAMController(account=account)
         self.build = BuildController(account=account)
         self.probe = ProbeController(account=account)
@@ -876,7 +875,7 @@ class ExecutiveDashboard:
         self.title = title
 
     def enter(self):
-        d = dict(account=self.wiz.account.headers['account'], token=self.wiz.account.headers['token'])
+        d = dict(account=self.wiz.detect.account.headers['account'], token=self.wiz.detect.account.headers['token'])
         data = base64.urlsafe_b64encode(json.dumps(d).encode('utf8')).decode('utf8')
         webbrowser.open(f'https://platform.preludesecurity.com#{data}', new=2)
 
