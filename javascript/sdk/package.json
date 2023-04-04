@@ -18,9 +18,11 @@
     "dev": "vite",
     "build": "vite build && tsc --emitDeclarationOnly",
     "lint": "tsc --noEmit",
-    "prepublishOnly": "yarn build"
+    "prepublishOnly": "yarn build",
+    "test": "cucumber-js"
   },
   "devDependencies": {
+    "@cucumber/cucumber": "^9.1.0",
     "@types/node": "^18.11.4",
     "tslib": "^2.4.0",
     "typescript": "^4.6.4",
