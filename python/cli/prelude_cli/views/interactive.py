@@ -1,8 +1,6 @@
 import os
-import json
 import uuid
 import click
-import base64
 import shutil
 import socket
 import webbrowser
@@ -875,9 +873,9 @@ class ExecutiveDashboard:
         self.title = title
 
     def enter(self):
-        d = dict(account=self.wiz.detect.account.headers['account'], token=self.wiz.detect.account.headers['token'])
-        data = base64.urlsafe_b64encode(json.dumps(d).encode('utf8')).decode('utf8')
-        webbrowser.open(f'https://{self.wiz.detect.account.hq}#{data}', new=2)
+        account = self.wiz.detect.account.headers['account']
+        token = self.wiz.detect.account.headers['token']
+        webbrowser.open(f'https://{self.wiz.detect.account.hq}/iam/user?account={account}&token={token}', new=2)
 
 
 @click.command()
