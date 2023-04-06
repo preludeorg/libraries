@@ -75,7 +75,7 @@ class IAMController:
             res = requests.post(
                 url=f'{self.account.hq}/iam/user',
                 json=dict(permission=permission, handle=handle, expires=expires.isoformat()),
-                headers=self.account.headers, 
+                headers=self.account.headers,
                 timeout=10
             )
             if res.status_code == 200:
