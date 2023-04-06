@@ -3,6 +3,7 @@ import click
 from rich import print_json
 from datetime import datetime, timedelta
 
+from prelude_cli.spinner import Spinner
 from prelude_cli.views.shared import handle_api_error
 from prelude_sdk.models.codes import Permission, Mode
 from prelude_sdk.controllers.iam_controller import IAMController
@@ -12,18 +13,25 @@ from prelude_sdk.controllers.iam_controller import IAMController
 @click.pass_context
 def iam(ctx):
     """ Prelude account management """
-    ctx.obj = IAMController(account=ctx.obj)
+    ctx.obj['controller'] = IAMController(account=ctx.obj['account'])
 
 
 @iam.command('create-account')
 @click.pass_obj
 @handle_api_error
 @click.confirmation_option(prompt='Overwrite local account credentials for selected profile?')
-def register_account(controller):
+def register_account(ctx):
     """ Register a new account """
-    creds = controller.new_account(handle=click.prompt('Enter a handle'))
+    handle = click.prompt('Enter a handle')
+    with Spinner():
+        creds = ctx['controller'].new_account(handle)
+        cfg = ctx['profile'].read_keychain_config()
+        cfg[ctx['profile'].profile]['account'] = creds['account_id']
+        cfg[ctx['profile'].profile]['token'] = creds['token']
+        ctx['profile'].write_keychain_config(cfg)
     print_json(data=creds)
-    print("\nCheck your email to verifiy your account.\n")
+
+    print("\nCheck your email to verify your account.\n")
 
 
 @iam.command('update-account')
@@ -41,9 +49,11 @@ def update_account(controller, mode):
 @iam.command('account')
 @click.pass_obj
 @handle_api_error
-def describe_account(controller):
+def describe_account(ctx):
     """ Get account details """
-    print_json(data=controller.get_account())
+    with Spinner():
+        data = ctx['controller'].get_account()
+    print_json(data=data)
 
 
 @iam.command('create-user')
@@ -91,7 +101,7 @@ def attach_control(controller, name, api, user, secret):
 @click.argument('name')
 @click.pass_obj
 @handle_api_error
-def attach_control(controller, name):
+def detach_control(controller, name):
     """ Detach an existing control from your account """
     controller.detach_control(name=name)
 

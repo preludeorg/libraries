@@ -12,7 +12,7 @@ from prelude_sdk.controllers.detect_controller import DetectController
 @click.pass_context
 def detect(ctx):
     """ Continuous security testing """
-    ctx.obj = DetectController(account=ctx.obj)
+    ctx.obj = DetectController(account=ctx.obj['account'])
 
 
 @detect.command('create-endpoint')

@@ -10,24 +10,16 @@ class IAMController:
     def __init__(self, account):
         self.account = account
 
-    @verify_credentials
     def new_account(self, handle: str):
-        with Spinner():
-            res = requests.post(
-                url=f'{self.account.hq}/iam/account',
-                json=dict(handle=handle),
-                headers=self.account.headers,
-                timeout=10
-            )
-            if res.status_code != 200:
-                raise Exception(res.text)
-
-            cfg = self.account.read_keychain_config()
-            res_json = res.json()
-            cfg[self.account.profile]['account'] = res_json['account_id']
-            cfg[self.account.profile]['token'] = res_json['token']
-            self.account.write_keychain_config(cfg)
-            return res_json
+        res = requests.post(
+            url=f'{self.account.hq}/iam/account',
+            json=dict(handle=handle),
+            headers=self.account.headers,
+            timeout=10
+        )
+        if res.status_code != 200:
+            raise Exception(res.text)
+        return res.json()
 
     @verify_credentials
     def purge_account(self):
@@ -55,18 +47,16 @@ class IAMController:
             if res.status_code != 200:
                 raise Exception(res.text)
 
-    @verify_credentials
     def get_account(self):
         """ Get account properties """
-        with Spinner():
-            res = requests.get(
-                f'{self.account.hq}/iam/account',
-                headers=self.account.headers,
-                timeout=10
-            )
-            if res.status_code == 200:
-                return res.json()
-            raise Exception(res.text)
+        res = requests.get(
+            f'{self.account.hq}/iam/account',
+            headers=self.account.headers,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
 
     @verify_credentials
     def create_user(self, permission: int, handle: str, expires: datetime):

@@ -8,6 +8,7 @@ import prelude_cli.templates as templates
 import importlib.resources as pkg_resources
 
 from rich import print
+from time import sleep
 from rich.console import Console
 from rich.padding import Padding
 from rich.markdown import Markdown
@@ -878,9 +879,9 @@ class ExecutiveDashboard:
 
 @click.command()
 @click.pass_obj
-def interactive(account):
+def interactive(ctx):
     """ Interactive shell for Prelude Detect """
-    wizard = Wizard(account=account)
+    wizard = Wizard(account=ctx['account'])
     wizard.splash(HELLO)
     wizard.load_tests()
     print(Padding(f'Your account has access to {len(wizard.tests)} Verified Security Tests', 1))
@@ -909,9 +910,17 @@ def interactive(account):
             if not yes:
                 break
 
-            wizard.iam.new_account(handle=os.getlogin())
+            email = Prompt.ask('Enter your email handle')
+            creds = wizard.iam.new_account(handle=email)
+
+            cfg = ctx['profile'].read_keychain_config()
+            cfg[ctx['profile'].profile]['account'] = creds['account_id']
+            cfg[ctx['profile'].profile]['token'] = creds['token']
+            ctx['profile'].write_keychain_config(cfg)
+
             keychain = PurePath(Path.home(), '.prelude', 'keychain.ini')
-            print(f'Account created! Credentials are stored in your keychain: {keychain}')
+            print(f'Account created! Check your email to verify your account. Credentials are stored in your keychain: {keychain}')
+            break
         except Exception as ex:
             wizard.console.print(str(ex), style='red')
             break
