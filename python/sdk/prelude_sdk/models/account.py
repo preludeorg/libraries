@@ -24,6 +24,7 @@ def verify_credentials(func):
             raise Exception('Property not found, %s' % e)
         except StopIteration:
             raise Exception('Could not find "%s" profile in %s' % (args[0].account.profile, args[0].account.keychain_location))
+    handler.__wrapped__ = func
     return handler
 
 
