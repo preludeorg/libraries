@@ -1,33 +1,30 @@
-import configparser
 import os
-from functools import wraps
-from os.path import exists
+import configparser
 from pathlib import Path
+from os.path import exists
 
 
-def get_creds(account):
+def get_creds(keychain):
     try:
-        cfg = account.read_keychain_config()
-        profile = next(s for s in cfg.sections() if s == account.profile)
+        cfg = keychain.read_keychain_config()
+        profile = next(s for s in cfg.sections() if s == keychain.profile)
         account = cfg.get(profile, 'account')
         token = cfg.get(profile, 'token')
         hq = cfg.get(profile, 'hq')
         return account, token, hq
     except FileNotFoundError:
-        raise Exception('Please create a %s file' % account.keychain_location)
+        raise Exception('Please create a %s file' % keychain.keychain_location)
     except KeyError as e:
         raise Exception('Property not found, %s' % e)
     except StopIteration:
-        raise Exception(
-            'Could not find "%s" profile in %s' % (account.profile, account.keychain_location))
+        raise Exception('Could not find "%s" profile in %s' % (keychain.profile, keychain.keychain_location))
 
 
-class Profile:
+class Keychain:
 
     def __init__(self, profile='default', hq='https://api.preludesecurity.com', keychain_location=os.path.join(Path.home(), '.prelude', 'keychain.ini')):
         self.profile = profile
         self.hq = hq
-        self.headers = dict()
         self.keychain_location = keychain_location
 
     def configure(self, account_id, token, hq='https://api.preludesecurity.com', profile='default'):

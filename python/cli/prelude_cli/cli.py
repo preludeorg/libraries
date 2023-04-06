@@ -1,11 +1,11 @@
 import click
 
 from prelude_cli.views.iam import iam
-from prelude_cli.profile import Profile, get_creds
 from prelude_cli.views.build import build
 from prelude_cli.views.detect import detect
 from prelude_sdk.models.account import Account
 from prelude_cli.views.configure import configure
+from prelude_cli.keychain import Keychain, get_creds
 from prelude_cli.views.interactive import interactive as interactive_command
 
 
@@ -16,8 +16,8 @@ from prelude_cli.views.interactive import interactive as interactive_command
 @click.option('--interactive', help='Open interactive wizard (cannot be used with a subcommand)', default=False, is_flag=True)
 def cli(ctx, profile, interactive):
     try:
-        profile = Profile(profile=profile)
-        ctx.obj = dict(account=Account(*get_creds(account=profile)), profile=profile)
+        keychain = Keychain(profile=profile)
+        ctx.obj = dict(account=Account(*get_creds(account=profile)), keychain=keychain)
 
         if ctx.invoked_subcommand is None:
             if interactive:

@@ -25,12 +25,11 @@ def register_account(ctx):
     handle = click.prompt('Enter a handle')
     with Spinner():
         creds = ctx['controller'].new_account(handle)
-        cfg = ctx['profile'].read_keychain_config()
-        cfg[ctx['profile'].profile]['account'] = creds['account_id']
-        cfg[ctx['profile'].profile]['token'] = creds['token']
-        ctx['profile'].write_keychain_config(cfg)
+        cfg = ctx['keychain'].read_keychain_config()
+        cfg[ctx['keychain'].profile]['account'] = creds['account_id']
+        cfg[ctx['keychain'].profile]['token'] = creds['token']
+        ctx['keychain'].write_keychain_config(cfg)
     print_json(data=creds)
-
     print("\nCheck your email to verify your account.\n")
 
 
