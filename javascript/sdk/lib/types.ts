@@ -202,8 +202,8 @@ export interface RuleInfo {
 export type Stats = Record<Platform, Record<`${ExitCode}`, number>>;
 
 export interface ActivityQuery {
-  start: string;
-  finish: string;
+  start?: string;
+  finish?: string;
   tests?: string;
   result_id?: string;
   endpoints?: string;
