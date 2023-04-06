@@ -13,7 +13,7 @@ class IAMController:
     @verify_credentials
     def new_account(self, handle: str):
         with Spinner():
-            res = requests.post(url=f'{self.account.hq}/iam/account', json=dict(handle=handle), headers=self.account.headers)
+            res = requests.post(url=f'{self.account.hq}/iam/account', json=dict(handle=handle), headers=self.account.headers, timeout=10)
             if res.status_code != 200:
                 raise Exception(res.text)
             
@@ -28,7 +28,7 @@ class IAMController:
     def purge_account(self):
         """ Delete an account and all things in it """
         with Spinner():
-            res = requests.delete(f'{self.account.hq}/iam/account', headers=self.account.headers)
+            res = requests.delete(f'{self.account.hq}/iam/account', headers=self.account.headers, timeout=10)
             if not res.status_code == 200:
                 raise Exception(res.text)
             return res.text
@@ -38,7 +38,7 @@ class IAMController:
         """ Update properties on an account """
         with Spinner():
             params = dict(mode=mode)
-            res = requests.put(f'{self.account.hq}/iam/account', headers=self.account.headers, json=params)
+            res = requests.put(f'{self.account.hq}/iam/account', headers=self.account.headers, json=params, timeout=10)
             if res.status_code != 200:
                 raise Exception(res.text)
         
@@ -46,7 +46,7 @@ class IAMController:
     def get_account(self):
         """ Get account properties """
         with Spinner():
-            res = requests.get(f'{self.account.hq}/iam/account', headers=self.account.headers)
+            res = requests.get(f'{self.account.hq}/iam/account', headers=self.account.headers, timeout=10)
             if res.status_code == 200:
                 return res.json()
             raise Exception(res.text)
@@ -58,7 +58,8 @@ class IAMController:
             res = requests.post(
                 url=f'{self.account.hq}/iam/user',
                 json=dict(permission=permission, handle=handle, expires=expires.isoformat()),
-                headers=self.account.headers
+                headers=self.account.headers, 
+                timeout=10
             )
             if res.status_code == 200:
                 return res.json()
@@ -68,7 +69,7 @@ class IAMController:
     def delete_user(self, handle):
         """ Delete a user from an account """
         with Spinner():
-            res = requests.delete(f'{self.account.hq}/iam/user', json=dict(handle=handle), headers=self.account.headers)
+            res = requests.delete(f'{self.account.hq}/iam/user', json=dict(handle=handle), headers=self.account.headers, timeout=10)
             if res.status_code == 200:
                 return True
             raise Exception(res.text)
@@ -78,7 +79,7 @@ class IAMController:
         """ Attach a control to your account """
         with Spinner():
             params = dict(name=name, api=api, user=user, secret=secret)
-            res = requests.post(f'{self.account.hq}/iam/control', headers=self.account.headers, json=params)
+            res = requests.post(f'{self.account.hq}/iam/control', headers=self.account.headers, json=params, timeout=10)
             if res.status_code == 200:
                 return res.text
             raise Exception(res.text)
@@ -88,7 +89,7 @@ class IAMController:
         """ Detach a control from your Detect account """
         with Spinner():
             params = dict(name=name)
-            res = requests.delete(f'{self.account.hq}/iam/control', headers=self.account.headers, json=params)
+            res = requests.delete(f'{self.account.hq}/iam/control', headers=self.account.headers, json=params, timeout=10)
             if res.status_code == 200:
                 return res.text
             raise Exception(res.text)

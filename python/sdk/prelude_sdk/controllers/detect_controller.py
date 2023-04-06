@@ -14,7 +14,7 @@ class DetectController:
         """ Register (or re-register) an endpoint to your account """
         with Spinner():
             params = dict(id=f'{host}:{serial_num}:{edr_id}', tags=tags)
-            res = requests.post(f'{self.account.hq}/detect/endpoint', headers=self.account.headers, json=params)
+            res = requests.post(f'{self.account.hq}/detect/endpoint', headers=self.account.headers, json=params, timeout=10)
             if res.status_code == 200:
                 return res.text
             raise Exception(res.text)
@@ -24,7 +24,7 @@ class DetectController:
         """ Delete an endpoint from your account """
         with Spinner():
             params = dict(id=ident)
-            res = requests.delete(f'{self.account.hq}/detect/endpoint', headers=self.account.headers, json=params)
+            res = requests.delete(f'{self.account.hq}/detect/endpoint', headers=self.account.headers, json=params, timeout=10)
             if res.status_code != 200:
                 raise Exception(res.text)
 
@@ -33,7 +33,7 @@ class DetectController:
         """ List all endpoints on your account """
         with Spinner():
             params = dict(days=days)
-            res = requests.get(f'{self.account.hq}/detect/endpoint', headers=self.account.headers, params=params)
+            res = requests.get(f'{self.account.hq}/detect/endpoint', headers=self.account.headers, params=params, timeout=10)
             if res.status_code == 200:
                 return res.json()
             raise Exception(res.text)
@@ -43,7 +43,7 @@ class DetectController:
         """ Get report for an Account """
         with Spinner():
             params = dict(view=view, **filters)
-            res = requests.get(f'{self.account.hq}/detect/activity', headers=self.account.headers, params=params)
+            res = requests.get(f'{self.account.hq}/detect/activity', headers=self.account.headers, params=params, timeout=10)
             if res.status_code == 200:
                 return res.json()
             raise Exception(res.text)
@@ -51,7 +51,7 @@ class DetectController:
     @verify_credentials
     def list_queue(self):
         with Spinner():
-            res = requests.get(f'{self.account.hq}/detect/queue', headers=self.account.headers)
+            res = requests.get(f'{self.account.hq}/detect/queue', headers=self.account.headers, timeout=10)
             if res.status_code == 200:
                 return res.json()
             raise Exception(res.text)
@@ -60,7 +60,7 @@ class DetectController:
     def list_tests(self):
         """ List all tests available to an account """
         with Spinner():
-            res = requests.get(f'{self.account.hq}/detect/tests', headers=self.account.headers)
+            res = requests.get(f'{self.account.hq}/detect/tests', headers=self.account.headers, timeout=10)
             if res.status_code == 200:
                 return res.json()
             raise Exception(res.text)
@@ -72,7 +72,8 @@ class DetectController:
             res = requests.post(
                 url=f'{self.account.hq}/detect/queue/{ident}',
                 headers=self.account.headers,
-                json=dict(code=run_code, tags=tags)
+                json=dict(code=run_code, tags=tags),
+                timeout=10
             )
             if res.status_code != 200:
                 raise Exception(res.text)
@@ -81,7 +82,7 @@ class DetectController:
     def disable_test(self, ident):
         """ Disable a test so endpoints will stop running it """
         with Spinner():
-            res = requests.delete(f'{self.account.hq}/detect/queue/{ident}', headers=self.account.headers)
+            res = requests.delete(f'{self.account.hq}/detect/queue/{ident}', headers=self.account.headers, timeout=10)
             if res.status_code != 200:
                 raise Exception(res.text)
 
@@ -90,7 +91,7 @@ class DetectController:
         """ Pull social statistics for a specific test """
         with Spinner():
             params = dict(days=days)
-            res = requests.get(f'{self.account.hq}/detect/{ident}/social', headers=self.account.headers, params=params)
+            res = requests.get(f'{self.account.hq}/detect/{ident}/social', headers=self.account.headers, params=params, timeout=10)
             if res.status_code == 200:
                 return res.json()
             raise Exception(res.text)
@@ -100,7 +101,7 @@ class DetectController:
         """ Search the NVD for a keyword """
         with Spinner():
             params = dict(identifier=identifier)
-            res = requests.get(f'{self.account.hq}/detect/search', headers=self.account.headers, params=params)
+            res = requests.get(f'{self.account.hq}/detect/search', headers=self.account.headers, params=params, timeout=10)
             if res.status_code == 200:
                 return res.json()
             raise Exception(res.text)
@@ -109,7 +110,7 @@ class DetectController:
     def recommendations(self):
         """ List all security recommendations for your account """
         with Spinner():
-            res = requests.get(f'{self.account.hq}/detect/recommendations', headers=self.account.headers)
+            res = requests.get(f'{self.account.hq}/detect/recommendations', headers=self.account.headers, timeout=10)
             if res.status_code == 200:
                 return res.json()
             raise Exception(res.text)
@@ -119,7 +120,7 @@ class DetectController:
         """ Create a new security recommendation """
         with Spinner():
             params = dict(title=title, description=description)
-            res = requests.post(f'{self.account.hq}/detect/recommendations', headers=self.account.headers, json=params)
+            res = requests.post(f'{self.account.hq}/detect/recommendations', headers=self.account.headers, json=params, timeout=10)
             if res.status_code != 200:
                 raise Exception(res.text)
 
@@ -128,6 +129,6 @@ class DetectController:
         """ Add a new decision for a security recommendation """
         with Spinner():
             params = dict(decision=decision)
-            res = requests.post(f'{self.account.hq}/detect/recommendations/{id}', headers=self.account.headers, json=params)
+            res = requests.post(f'{self.account.hq}/detect/recommendations/{id}', headers=self.account.headers, json=params, timeout=10)
             if res.status_code != 200:
                 raise Exception(res.text)

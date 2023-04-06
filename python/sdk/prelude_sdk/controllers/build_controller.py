@@ -14,7 +14,7 @@ class BuildController:
         """ Create or update a test """
         with Spinner():
             data = dict(name=name)
-            res = requests.post(f'{self.account.hq}/build/tests/{test_id}', json=data, headers=self.account.headers)
+            res = requests.post(f'{self.account.hq}/build/tests/{test_id}', json=data, headers=self.account.headers, timeout=10)
             if not res.status_code == 200:
                 raise Exception(res.text)
 
@@ -22,7 +22,7 @@ class BuildController:
     def delete_test(self, test_id):
         """ Delete an existing test """
         with Spinner():
-            res = requests.delete(f'{self.account.hq}/build/tests/{test_id}', headers=self.account.headers)
+            res = requests.delete(f'{self.account.hq}/build/tests/{test_id}', headers=self.account.headers, timeout=10)
             if not res.status_code == 200:
                 raise Exception(res.text)
 
@@ -30,7 +30,7 @@ class BuildController:
     def get_test(self, test_id):
         """ Get properties of an existing test """
         with Spinner():
-            res = requests.get(f'{self.account.hq}/build/tests/{test_id}', headers=self.account.headers)
+            res = requests.get(f'{self.account.hq}/build/tests/{test_id}', headers=self.account.headers, timeout=10)
             if res.status_code == 200:
                 return res.json()
             raise Exception(res.text)
@@ -39,7 +39,7 @@ class BuildController:
     def download(self, test_id, filename):
         """ Clone a test file or attachment"""
         with Spinner():
-            res = requests.get(f'{self.account.hq}/build/tests/{test_id}/{filename}', headers=self.account.headers)
+            res = requests.get(f'{self.account.hq}/build/tests/{test_id}/{filename}', headers=self.account.headers, timeout=10)
             if res.status_code == 200:
                 return res.content
             raise Exception(res.text)
@@ -50,7 +50,8 @@ class BuildController:
         with Spinner():
             res = requests.post(f'{self.account.hq}/build/tests/{test_id}/{filename}',
                                 data=data,
-                                headers=self.account.headers | ({'Content-Type': 'application/octet-stream'} if binary else {}))
+                                headers=self.account.headers | ({'Content-Type': 'application/octet-stream'} if binary else {}),
+                                timeout=10)
             if not res.status_code == 200:
                 raise Exception(res.text)
 
@@ -58,7 +59,7 @@ class BuildController:
     def map(self, test_id: str, x: str):
         """ Add a classification property to a test """
         with Spinner():
-            res = requests.post(f'{self.account.hq}/build/tests/{test_id}/map/{x}', json=dict(id=test_id), headers=self.account.headers)
+            res = requests.post(f'{self.account.hq}/build/tests/{test_id}/map/{x}', json=dict(id=test_id), headers=self.account.headers, timeout=10)
             if not res.status_code == 200:
                 raise Exception(res.text)
 
@@ -66,6 +67,6 @@ class BuildController:
     def unmap(self, test_id: str, x: str):
         """ Remove a classification property from a test """
         with Spinner():
-            res = requests.delete(f'{self.account.hq}/build/tests/{test_id}/map/{x}', json=dict(id=test_id), headers=self.account.headers)
+            res = requests.delete(f'{self.account.hq}/build/tests/{test_id}/map/{x}', json=dict(id=test_id), headers=self.account.headers, timeout=10)
             if not res.status_code == 200:
                 raise Exception(res.text)
