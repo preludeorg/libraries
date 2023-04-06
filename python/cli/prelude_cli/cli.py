@@ -17,7 +17,7 @@ from prelude_cli.views.interactive import interactive as interactive_command
 def cli(ctx, profile, interactive):
     try:
         keychain = Keychain(profile=profile)
-        ctx.obj = dict(account=Account(*get_creds(account=profile)), keychain=keychain)
+        ctx.obj = dict(account=Account(*get_creds(keychain=keychain)), keychain=keychain)
 
         if ctx.invoked_subcommand is None:
             if interactive:
