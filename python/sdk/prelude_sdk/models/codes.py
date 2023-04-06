@@ -51,7 +51,7 @@ class ExitCode(Enum):
     QUARANTINED_1 = 105
     OUTBOUND_SECURE = 106
     EXPLOIT_PREVENTED = 107
-    INCOMPATIBLE_HOST = 126
+    ENDPOINT_BLOCK = 126
     QUARANTINED_2 = 127
     UNEXPECTED = 256
 
@@ -86,6 +86,7 @@ class State(Enum):
                 ExitCode.PROCESS_KILLED_2,
                 ExitCode.NOT_RELEVANT,
                 ExitCode.OUTBOUND_SECURE,
+                ExitCode.ENDPOINT_BLOCK,
                 ExitCode.EXPLOIT_PREVENTED
             ],
             State.UNPROTECTED: [ExitCode.UNPROTECTED],
@@ -93,7 +94,6 @@ class State(Enum):
                 ExitCode.ERROR,
                 ExitCode.MALFORMED_VST,
                 ExitCode.TIMEOUT,
-                ExitCode.INCOMPATIBLE_HOST,
                 ExitCode.UNEXPECTED
             ]
         }

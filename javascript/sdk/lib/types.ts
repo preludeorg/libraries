@@ -116,7 +116,7 @@ export const ExitCodes = {
   QUARANTINED_1: 105,
   OUTBOUND_SECURE: 106,
   EXPLOIT_PREVENTED: 107,
-  INCOMPATIBLE_HOST: 126,
+  ENDPOINT_BLOCK: 126,
   QUARANTINED_2: 127,
   UNEXPECTED: 256,
 } as const;
@@ -134,6 +134,7 @@ export const ExitCodeGroup = {
     ExitCodes.PROCESS_KILLED_2,
     ExitCodes.NOT_RELEVANT,
     ExitCodes.OUTBOUND_SECURE,
+    ExitCodes.ENDPOINT_BLOCK,
     ExitCodes.EXPLOIT_PREVENTED,
   ],
   UNPROTECTED: [ExitCodes.UNPROTECTED],
@@ -141,7 +142,6 @@ export const ExitCodeGroup = {
     ExitCodes.ERROR,
     ExitCodes.MALFORMED_VST,
     ExitCodes.TIMEOUT,
-    ExitCodes.INCOMPATIBLE_HOST,
     ExitCodes.UNEXPECTED,
   ],
 } as const;
