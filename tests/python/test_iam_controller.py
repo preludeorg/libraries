@@ -7,7 +7,7 @@ from prelude_sdk.controllers.iam_controller import IAMController
 
 
 class Account:
-    def __init__(self, account_id='', token='', hq='https://api.staging.preludesecurity.com'):
+    def __init__(self, account_id='', token='', hq=''):
         self.hq = hq
         self.profile = 'test'
         self.headers = dict(
@@ -34,29 +34,25 @@ def check_if_string_is_uuid(string):
 
 class TestIAMController:
 
-    def setup_class(self):
-        """Setup the test class"""
-        self.email_handle = 'alex+testingframework@preludesecurity.com'
-
     @pytest.mark.order(1)
-    def test_new_account(self, unwrap, pause_for_manual_action):
+    def test_new_account(self, unwrap, pause_for_manual_action, email, api):
         """Test new_account method"""
-        pytest.account = Account()
+        pytest.account = Account(hq=api)
         iam = IAMController(pytest.account)
-        res = unwrap(iam.new_account)(iam, handle=self.email_handle)
+        res = unwrap(iam.new_account)(iam, handle=email)
         with pause_for_manual_action:
             input("Press ENTER to continue testing after verifying the account...\n")
         pytest.account.headers['account'] = res['account_id']
         pytest.account.headers['token'] = res['token']
-        assert check_if_string_is_uuid(pytest.account.headers['account'])
+        assert len(pytest.account.headers['account']) == 32
         assert check_if_string_is_uuid(pytest.account.headers['token'])
 
     @pytest.mark.order(2)
-    def test_get_account(self, unwrap):
+    def test_get_account(self, unwrap, email):
         """Test get_account method"""
         iam = IAMController(pytest.account)
         res = unwrap(iam.get_account)(iam)
-        assert res['whoami'] == self.email_handle
+        assert res['whoami'] == email
         assert res['mode'] == 0
 
     @pytest.mark.order(3)

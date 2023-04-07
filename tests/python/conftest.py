@@ -25,3 +25,18 @@ def pause_for_manual_action(pytestconfig):
             self.capture.resume_global_capture()
 
     yield suspend()
+
+
+def pytest_addoption(parser):
+    parser.addoption("--api", default='https://api.staging.preludesecurity.com', action='store', help='API target for tests')
+    parser.addoption('--email', action='store', help='Email address to use for testing', required=True)
+
+
+@pytest.fixture(scope='session')
+def api(pytestconfig):
+    return pytestconfig.getoption('api')
+
+
+@pytest.fixture(scope='session')
+def email(pytestconfig):
+    return pytestconfig.getoption('email')
