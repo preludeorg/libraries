@@ -87,9 +87,9 @@ describe("SDK Test", function () {
     it("upload should have an attachment in the getTest call", async function () {
       const file = readFileSync(`${__dirname}/templates/template.go`, "utf8");
       let data = file.toString();
-      data.replace('$ID', testId);
-      data.replace('$NAME', testName);
-      data.replace('$CREATED', new Date().toISOString());
+      data = data.replaceAll('$ID', testId);
+      data = data.replaceAll('$NAME', testName);
+      data = data.replaceAll('$CREATED', new Date().toISOString());
       await service.build.upload(testId, templateName, data);
       const test = await service.build.getTest(testId);
       expect(test.attachments).to.have.lengthOf(1);
