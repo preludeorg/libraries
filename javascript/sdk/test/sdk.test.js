@@ -164,7 +164,7 @@ describe("SDK Test", function () {
     });
     
     it("enableTest should add a new test to the queue", async function () {
-      await service.detect.enableTest({test: activeTest, runCode: RunCodes.DEBUG, tags: [tags]});
+      await service.detect.enableTest({test: activeTest, runCode: RunCodes.DEBUG, tags: tags});
       const result = await service.detect.listQueue();
       expect(result).to.have.lengthOf(2);
       expect(result).to.have.deep.property('[1].test', activeTest);
