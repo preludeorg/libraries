@@ -27,7 +27,7 @@ const waitForUserInput = function () {
 
 describe("SDK Test", function () {
   let service = new Service({
-    host: "https://api.staging.preludesecurity.com",
+    host: process.env.API,
   });
 
   describe("IAM Controller - Core", function () {
@@ -43,7 +43,7 @@ describe("SDK Test", function () {
     it("getAccount should return the account", async function () {
       const account = await service.iam.getAccount();
       expect(account).to.have.property("whoami");
-      assert.equal(account.whoami, "alex+testingframework@preludesecurity.com", "whoami is correct");
+      assert.equal(account.whoami, process.env.EMAIL, "whoami is correct");
     });
     
     it("createUser should return an object with a value token that is a UUID4", async function () {
