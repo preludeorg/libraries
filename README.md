@@ -45,6 +45,6 @@ Shell probes are the default choice when using a [Prelude installer](https://doc
 To test the Python SDK and Probes, run the following commands:
 
 ```bash
-pip install -r tests/python/requirements.txt
-pytest tests/python/ --api https://api.staging.preludesecurity.com --email alex+testingframework@preludesecurity.com
+pip install -r python/sdk/tests/requirements.txt
+pytest python/sdk/tests --api https://api.staging.preludesecurity.com --email alex+testingframework@preludesecurity.com
 ```

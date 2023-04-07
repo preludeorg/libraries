@@ -1,12 +1,11 @@
 import os
 import uuid
-from datetime import datetime
-
 import pytest
 
-import tests.python.templates as templates
-import importlib.resources as pkg_resources
+from datetime import datetime
+from importlib.resources import files
 
+from python.sdk.tests import templates as templates
 from prelude_sdk.controllers.build_controller import BuildController
 
 
@@ -32,7 +31,7 @@ class TestBuildController:
 
     def test_upload(self, unwrap):
         """Test upload method"""
-        template = pkg_resources.read_text(templates, 'template.go')
+        template = files(templates).joinpath('template.go').read_text()
         template = template.replace('$ID', self.test_id)
         template = template.replace('$NAME', self.test_name)
         template = template.replace('$CREATED', str(datetime.utcnow()))
