@@ -22,5 +22,5 @@ TBD
 
 ```bash
 yarn install
-API='https://api.staging.preludesecurity.com' EMAIL='alex+testframework@preludesecurity.com' yarn test
+API='https://api.preludesecurity.com' EMAIL='<EMAIL>' yarn test
 ```
