@@ -9,14 +9,15 @@ def verify_credentials(func):
     @wraps(verify_credentials)
     def handler(*args, **kwargs):
         try:
-            cfg = args[0].account.read_keychain_config()
-            args[0].account.profile = next(s for s in cfg.sections() if s == args[0].account.profile)
-            args[0].account.hq = cfg.get(args[0].account.profile, 'hq')
-            args[0].account.headers = dict(
-                account=cfg.get(args[0].account.profile, 'account'),
-                token=cfg.get(args[0].account.profile, 'token'),
-                _product='py-sdk'
-            )
+            if args[0].account.profile:
+                cfg = args[0].account.read_keychain_config()
+                args[0].account.profile = next(s for s in cfg.sections() if s == args[0].account.profile)
+                args[0].account.hq = cfg.get(args[0].account.profile, 'hq')
+                args[0].account.headers = dict(
+                    account=cfg.get(args[0].account.profile, 'account'),
+                    token=cfg.get(args[0].account.profile, 'token'),
+                    _product='py-sdk'
+                )
             return func(*args, **kwargs)
         except FileNotFoundError:
             raise Exception('Please create a %s file' % args[0].account.keychain_location)
@@ -29,11 +30,19 @@ def verify_credentials(func):
 
 class Account:
 
-    def __init__(self, profile='default', hq='https://api.preludesecurity.com', keychain_location=os.path.join(Path.home(), '.prelude', 'keychain.ini')):
-        self.profile = profile
+    def __init__(self, profile='default', hq='https://api.preludesecurity.com', keychain_location=os.path.join(Path.home(), '.prelude', 'keychain.ini'), account=None, token=None):
         self.hq = hq
-        self.headers = dict()
-        self.keychain_location = keychain_location
+        if account and token:
+            self.profile = None
+            self.headers = dict(
+                account=account,
+                token=token,
+                _product='py-sdk'
+            )
+        else:
+            self.profile = profile
+            self.headers = dict()
+            self.keychain_location = keychain_location
 
     def configure(self, account_id, token, hq='https://api.preludesecurity.com', profile='default'):
         cfg = self._merge_configs(self.read_keychain_config(hq, profile), self.generate_config(account_id, token, hq, profile))

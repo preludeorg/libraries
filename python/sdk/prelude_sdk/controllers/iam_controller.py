@@ -21,12 +21,19 @@ class IAMController:
             )
             if res.status_code != 200:
                 raise Exception(res.text)
-
-            cfg = self.account.read_keychain_config()
             res_json = res.json()
-            cfg[self.account.profile]['account'] = res_json['account_id']
-            cfg[self.account.profile]['token'] = res_json['token']
-            self.account.write_keychain_config(cfg)
+
+            if self.account.profile:
+                cfg = self.account.read_keychain_config()
+                cfg[self.account.profile]['account'] = res_json['account_id']
+                cfg[self.account.profile]['token'] = res_json['token']
+                self.account.write_keychain_config(cfg)
+            else:
+                self.account.headers = dict(
+                    account=res_json['account_id'],
+                    token=res_json['token'],
+                    _product='py-sdk'
+                )
             return res_json
 
     @verify_credentials
