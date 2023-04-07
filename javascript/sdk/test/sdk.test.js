@@ -170,11 +170,15 @@ describe("SDK Test", function () {
       expect(result).to.have.deep.property('[1].test', activeTest);
     });
     
+    it("describeActivity should spawn a probe and run 2 tests");
+    
     it("disableTest should remove the test from the queue", async function () {
       await service.detect.disableTest(activeTest);
       const result = await service.detect.listQueue();
       expect(result).to.have.lengthOf(1);
     });
+    
+    it("socialStats should an object that has values of a length greater than 1");
     
     it("deleteEndpoint should remove the endpoint from the list", async function () {
       await service.detect.deleteEndpoint(endpointId);
