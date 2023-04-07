@@ -5,7 +5,11 @@ import fetch, { Headers, Request, Response } from 'node-fetch';
 import readline from 'readline';
 import { stdin as input, stdout as output } from 'node:process';
 import {randomUUID} from "crypto";
+import path from 'path';
+import { fileURLToPath } from 'url';
 import {readFileSync} from "fs";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 if (!globalThis.fetch) {
   globalThis.fetch = fetch;
@@ -31,9 +35,9 @@ describe("SDK Test", function () {
   });
 
   describe("IAM Controller - Core", function () {
+    this.timeout(60000);
     it("newAccount should return a new account", async function (){
-      this.timeout(60000);
-      const account = await service.iam.newAccount("alex+testingframework@preludesecurity.com");
+      const account = await service.iam.newAccount(process.env.EMAIL);
       expect(account).to.have.property("account");
       expect(account).to.have.property("token");
       service.setCredentials(account);
@@ -64,8 +68,10 @@ describe("SDK Test", function () {
   });
   
   describe("Build Controller", function () {
+    this.timeout(60000);
     const testId = randomUUID();
     const testName = "test";
+    const templateName = `${testId}.go`;
     
     it("createTest should not throw an error", async function () {
       await service.build.createTest(testId, testName);
@@ -79,19 +85,19 @@ describe("SDK Test", function () {
     });
     
     it("upload should have an attachment in the getTest call", async function () {
-      const file = readFileSync("./templates/template.go", "utf8");
+      const file = readFileSync(`${__dirname}/templates/template.go`, "utf8");
       let data = file.toString();
       data.replace('$ID', testId);
       data.replace('$NAME', testName);
       data.replace('$CREATED', new Date().toISOString());
-      await service.build.upload(testId, 'template.go', data);
+      await service.build.upload(testId, templateName, data);
       const test = await service.build.getTest(testId);
       expect(test.attachments).to.have.lengthOf(1);
-      expect(test.attachments[0]).to.be.equal(`${testId}.go`);
+      expect(test.attachments[0]).to.be.equal(templateName);
     });
     
     it("download should return the same data as the upload", async function () {
-      const data = await service.build.download(testId, `${testId}.go`);
+      const data = await service.build.download(testId, templateName);
       expect(data).to.have.string(testId);
       expect(data).to.have.string(testName);
     });
