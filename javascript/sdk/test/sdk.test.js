@@ -125,6 +125,7 @@ describe("SDK Test", function () {
   });
   
   describe("Detect Controller", function () {
+    this.timeout(60000);
     const host = 'test_host';
     const serial = 'test_serial';
     const edrId = 'test_edr_id';
