@@ -5,7 +5,7 @@ import pytest
 from datetime import datetime
 from importlib.resources import files
 
-from python.sdk.tests import templates as templates
+from tests import templates as templates
 from prelude_sdk.controllers.build_controller import BuildController
 
 
