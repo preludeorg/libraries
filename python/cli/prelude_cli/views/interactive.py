@@ -909,9 +909,12 @@ def interactive(account):
             if not yes:
                 break
 
-            wizard.iam.new_account(handle=os.getlogin())
+            email = Prompt.ask('Enter your email handle')
+            wizard.iam.new_account(handle=email)
             keychain = PurePath(Path.home(), '.prelude', 'keychain.ini')
             print(f'Account created! Credentials are stored in your keychain: {keychain}')
+            print('Check your email to verify your account, then restart the wizard to continue.')
+            break
         except Exception as ex:
             wizard.console.print(str(ex), style='red')
             break

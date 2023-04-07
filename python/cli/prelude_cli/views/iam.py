@@ -23,7 +23,7 @@ def register_account(controller):
     """ Register a new account """
     creds = controller.new_account(handle=click.prompt('Enter a handle'))
     print_json(data=creds)
-    print("\nCheck your email to verifiy your account.\n")
+    print("\nCheck your email to verify your account.\n")
 
 
 @iam.command('update-account')
@@ -91,7 +91,7 @@ def attach_control(controller, name, api, user, secret):
 @click.argument('name')
 @click.pass_obj
 @handle_api_error
-def attach_control(controller, name):
+def detach_control(controller, name):
     """ Detach an existing control from your account """
     controller.detach_control(name=name)
 
