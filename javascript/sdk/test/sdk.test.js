@@ -1,4 +1,4 @@
-import {Service} from "@theprelude/sdk";
+import {Service, RunCodes, } from "@theprelude/sdk";
 import { expect, assert } from "chai";
 import { describe } from "mocha";
 import fetch, { Headers, Request, Response } from 'node-fetch';
@@ -34,7 +34,7 @@ describe("SDK Test", function () {
     host: process.env.API,
   });
 
-  describe("IAM Controller - Core", function () {
+  describe("IAM Controller", function () {
     this.timeout(60000);
     it("newAccount should return a new account", async function (){
       const account = await service.iam.newAccount(process.env.EMAIL);
@@ -117,6 +117,87 @@ describe("SDK Test", function () {
     it("deleteTest should not throw an error", async function () {
       await service.build.deleteTest(testId);
       assert.equal(true, true);
+    });
+  });
+  
+  describe("Probe Controller", function () {
+    it("download should return a string");
+  });
+  
+  describe("Detect Controller", function () {
+    const host = 'test_host';
+    const serial = 'test_serial';
+    const edrId = 'test_edr_id';
+    const tags = 'test_tag';
+    const healthCheck = '39de298a-911d-4a3b-aed4-1e8281010a9a';
+    const recommendation = 'Test';
+    let endpointToken = '';
+    let endpointId = '';
+    let activeTest = '';
+    let recommendationId = '';
+    
+    it("registerEndpoint should return a string with length 32", async function () {
+      const result = await service.detect.registerEndpoint({host, serial_num: serial, edr_id: edrId, tags});
+      expect(result).to.have.lengthOf(32);
+      endpointToken = result;
+    });
+    
+    it("listEndpoints should return an array with length 1", async function () {
+      const result = await service.detect.listEndpoints();
+      expect(result).to.have.lengthOf(1);
+      assert.equal(result[0].host, host);
+      endpointId = result[0].endpoint_id;
+    });
+    
+    it("listTests should return an array with length greater that 1", async function () {
+      const result = await service.detect.listTests();
+      expect(result).to.have.length.greaterThan(1);
+      const tests = result.filter((test) => test.id !==  healthCheck);
+      activeTest = tests[0].id;
+    });
+    
+    it("listQueue should return an array with length 1", async function () {
+      const result = await service.detect.listQueue();
+      expect(result).to.have.lengthOf(1);
+      assert.equal(result[0].test, healthCheck);
+    });
+    
+    it("enableTest should add a new test to the queue", async function () {
+      await service.detect.enableTest({test: activeTest, runCode: RunCodes.DEBUG, tags: [tags]});
+      const result = await service.detect.listQueue();
+      expect(result).to.have.lengthOf(2);
+      expect(result).to.have.deep.property('[1].test', activeTest);
+    });
+    
+    it("disableTest should remove the test from the queue", async function () {
+      await service.detect.disableTest(activeTest);
+      const result = await service.detect.listQueue();
+      expect(result).to.have.lengthOf(1);
+    });
+    
+    it("deleteEndpoint should remove the endpoint from the list", async function () {
+      await service.detect.deleteEndpoint(endpointId);
+      const result = await service.detect.listEndpoints();
+      expect(result).to.have.lengthOf(0);
+    });
+    
+    it("putRecommendation should assert true", async function () {
+      await service.detect.putRecommendation({title: recommendation, description: recommendation});
+      assert.equal(true, true);
+    });
+    
+    it("getRecommendations should return an array with length 1", async function () {
+      const result = await service.detect.getRecommendations();
+      expect(result).to.have.lengthOf(1);
+      assert.equal(result[0].title, recommendation);
+      recommendationId = result[0].id;
+    });
+    
+    it("makeDecision should make a decision on the recommendation", async function () {
+      await service.detect.makeDecision({id: recommendationId, decision: 1});
+      const result = await service.detect.getRecommendations();
+      expect(result).to.have.lengthOf(1);
+      assert.equal(result[0].events[0].decision, 1);
     });
   });
   
