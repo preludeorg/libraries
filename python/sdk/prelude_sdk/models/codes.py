@@ -16,7 +16,6 @@ class RunCode(Enum):
 class Mode(Enum):
      MANUAL = 0
      FROZEN = 1
-     AUTOPILOT = 2
 
      @classmethod
      def _missing_(cls, value):

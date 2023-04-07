@@ -68,9 +68,9 @@ class TestIAMController:
     def test_update_account(self, unwrap):
         """Test update_account method"""
         iam = IAMController(pytest.account)
-        unwrap(iam.update_account)(iam, mode=Mode.AUTOPILOT.value)
+        unwrap(iam.update_account)(iam, mode=Mode.FROZEN.value)
         res = unwrap(iam.get_account)(iam)
-        assert res['mode'] == Mode.AUTOPILOT.value
+        assert res['mode'] == Mode.FROZEN.value
 
     @pytest.mark.order(5)
     def test_attach_control(self, unwrap):
