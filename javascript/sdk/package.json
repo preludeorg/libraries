@@ -25,6 +25,9 @@
     "@types/chai": "^4.3.4",
     "@types/mocha": "^10.0.1",
     "@types/node": "^18.11.4",
+    "@theprelude/sdk": "^0.9.58",
+    "mocha": "^10.2.0",
+    "node-fetch": "^3.3.1",
     "chai": "^4.3.7",
     "esm": "^3.2.25",
     "tslib": "^2.4.0",
@@ -49,10 +52,5 @@
   "bugs": {
     "url": "https://github.com/preludeorg/libraries/issues"
   },
-  "homepage": "https://github.com/preludeorg/libraries#readme",
-  "dependencies": {
-    "@theprelude/sdk": "^0.9.58",
-    "mocha": "^10.2.0",
-    "node-fetch": "^3.3.1"
-  }
+  "homepage": "https://github.com/preludeorg/libraries#readme"
 }
