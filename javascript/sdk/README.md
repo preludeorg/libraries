@@ -17,3 +17,11 @@ npm install @theprelude/sdk
 ## Documentation 
 
 TBD
+
+## Testing
+
+```bash
+yarn install
+yarn build
+API='https://api.preludesecurity.com' EMAIL='<EMAIL>' yarn test
+```

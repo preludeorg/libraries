@@ -81,7 +81,7 @@ export interface ComputeResult {
 export interface EnableTest {
   test: string;
   runCode: RunCode;
-  tags: string[];
+  tags: string;
 }
 
 export interface Probe {

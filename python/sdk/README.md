@@ -19,3 +19,12 @@ pip install prelude-sdk
 ## Documentation 
 
 TBD
+
+## Testing
+
+To test the Python SDK and Probes, run the following commands:
+
+```bash
+pip install -r python/sdk/tests/requirements.txt
+pytest tests --api https://api.preludesecurity.com --email <EMAIL>
+```

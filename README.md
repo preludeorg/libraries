@@ -38,13 +38,3 @@ Shell probes are the default choice when using a [Prelude installer](https://doc
 | ------------- | ------------- | -------------
 | [Raindrop](https://github.com/preludeorg/libraries/tree/master/shell/probe) | PowerShell | windows-x86_64
 | [Nocturnal](https://github.com/preludeorg/libraries/tree/master/shell/probe) | Bash | linux-x86_64, linux-arm64, darwin-x86_64, darwin-arm64
-
-
-## Testing
-
-To test the Python SDK and Probes, run the following commands:
-
-```bash
-pip install -r python/sdk/tests/requirements.txt
-pytest python/sdk/tests --api https://api.preludesecurity.com --email <EMAIL>
-```
