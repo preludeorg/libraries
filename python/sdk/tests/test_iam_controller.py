@@ -73,22 +73,22 @@ class TestIAMController:
         assert res['mode'] == Mode.FROZEN.value
 
     @pytest.mark.order(5)
-    def test_attach_control(self, unwrap):
-        """Test attach_control method"""
+    def test_attach_partner(self, unwrap):
+        """Test attach_partner method"""
         try:
             iam = IAMController(pytest.account)
-            unwrap(iam.attach_control)(iam, 'crowdstrike', 'https://api.us-2.crowdstrike.com', 'test')
+            unwrap(iam.attach_partner)(iam, 'crowdstrike', 'https://api.us-2.crowdstrike.com', 'test')
         except Exception as e:
             assert 'Authentication failed with crowdstrike' in str(e)
 
     @pytest.mark.order(6)
-    def test_detach_control(self, unwrap):
-        """Test detach_control method"""
+    def test_detach_partner(self, unwrap):
+        """Test detach_partner method"""
         try:
             iam = IAMController(pytest.account)
-            unwrap(iam.detach_control)(iam, 'crowdstrike')
+            unwrap(iam.detach_partner)(iam, 'crowdstrike')
         except Exception as e:
-            assert 'No control by that name' in str(e)
+            assert 'No partner by that name' in str(e)
 
     @pytest.mark.order(after='test_detect_controller.py::TestDetectController::test_make_decision')
     def test_purge_account(self, unwrap):
