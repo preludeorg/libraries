@@ -97,12 +97,12 @@ class IAMController:
             raise Exception(res.text)
 
     @verify_credentials
-    def attach_control(self, name: str, api: str, user: str, secret: str = ''):
-        """ Attach a control to your account """
+    def attach_partner(self, name: str, api: str, user: str, secret: str = ''):
+        """ Attach a partner to your account """
         with Spinner():
             params = dict(name=name, api=api, user=user, secret=secret)
             res = requests.post(
-                f'{self.account.hq}/iam/control',
+                f'{self.account.hq}/iam/partner',
                 headers=self.account.headers,
                 json=params,
                 timeout=10
@@ -112,11 +112,11 @@ class IAMController:
             raise Exception(res.text)
 
     @verify_credentials
-    def detach_control(self, name: str):
-        """ Detach a control from your Detect account """
+    def detach_partner(self, name: str):
+        """ Detach a partner from your Detect account """
         with Spinner():
             res = requests.delete(
-                f'{self.account.hq}/iam/control',
+                f'{self.account.hq}/iam/partner',
                 headers=self.account.headers,
                 json=dict(name=name),
                 timeout=10

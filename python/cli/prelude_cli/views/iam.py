@@ -74,26 +74,26 @@ def delete_user(controller, handle):
     controller.delete_user(handle=handle)
 
 
-@iam.command('attach-control')
+@iam.command('attach-partner')
 @click.argument('name')
-@click.option('--api', required=True, help='API endpoint of the control')
+@click.option('--api', required=True, help='API endpoint of the partner')
 @click.option('--user', required=True, help='user identifier')
 @click.option('--secret', default='', help='secret for OAUTH use cases')
 @click.pass_obj
 @handle_api_error
-def attach_control(controller, name, api, user, secret):
-    """ Attach an EDR or SIEM to Detect """
-    controller.attach_control(name=name, api=api, user=user, secret=secret)
+def attach_partner(controller, name, api, user, secret):
+    """ Attach an EDR to Detect """
+    controller.attach_partner(name=name, api=api, user=user, secret=secret)
 
 
-@iam.command('detach-control')
+@iam.command('detach-partner')
 @click.confirmation_option(prompt='Are you sure?')
 @click.argument('name')
 @click.pass_obj
 @handle_api_error
-def detach_control(controller, name):
-    """ Detach an existing control from your account """
-    controller.detach_control(name=name)
+def detach_partner(controller, name):
+    """ Detach an existing partner from your account """
+    controller.detach_partner(name=name)
 
 
 @iam.command('purge')
