@@ -2,6 +2,7 @@ import Client from "./client";
 import BuildController from "./controllers/build";
 import DetectController from "./controllers/detect";
 import IAMController from "./controllers/iam";
+import ProbeController from "./controllers/probe";
 import { Credentials, ServiceConfig } from "./types";
 
 export class Service {
@@ -10,6 +11,7 @@ export class Service {
   build: BuildController;
   iam: IAMController;
   detect: DetectController;
+  probe: ProbeController;
 
   constructor(config: ServiceConfig) {
     this.#client = new Client(
@@ -21,6 +23,7 @@ export class Service {
     this.build = new BuildController(this.#client);
     this.iam = new IAMController(this.#client);
     this.detect = new DetectController(this.#client);
+    this.probe = new ProbeController(this.#client);
   }
 
   setCredentials(credentials: Credentials) {
