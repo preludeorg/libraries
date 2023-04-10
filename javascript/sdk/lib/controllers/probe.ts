@@ -15,10 +15,11 @@ export default class ProbeController {
       ...options,
       headers: {
         dos,
+        "Content-Type": "",
         ...(options.headers ?? {}),
       },
     });
 
-    return response.blob();
+    return response.text();
   }
 }
