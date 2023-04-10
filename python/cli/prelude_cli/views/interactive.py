@@ -772,7 +772,7 @@ class ListControls:
         TerminalMenu(menu.keys()).show()
 
 
-class AttachControl:
+class AttachPartner:
 
     def __init__(self, wiz: Wizard):
         self.wiz = wiz
@@ -787,10 +787,10 @@ class AttachControl:
         user = Prompt.ask('User or client ID', default=os.getlogin())
         secret = Prompt.ask('API token', default='password123')
         print(f'Attaching "{name}" to your account')
-        self.wiz.iam.attach_control(name=name, api=api, user=user, secret=secret)
+        self.wiz.iam.attach_partner(name=name, api=api, user=user, secret=secret)
 
 
-class DetachControl:
+class DetachPartner:
 
     def __init__(self, wiz: Wizard):
         self.wiz = wiz
@@ -808,7 +808,7 @@ class DetachControl:
 
         for name in menu.chosen_menu_entries:
             print(f'Detaching "{name}" from your account')
-            self.wiz.iam.detach_control(name=name)
+            self.wiz.iam.detach_partner(name=name)
 
 
 class DeleteAccount:
@@ -853,8 +853,8 @@ export const Permissions = {
         menu['Create user'] = CreateUser
         menu['Delete user'] = DeleteUser
         menu['List integrations'] = ListControls
-        menu['Attach integration'] = AttachControl
-        menu['Detach integration'] = DetachControl
+        menu['Attach integration'] = AttachPartner
+        menu['Detach integration'] = DetachPartner
         menu['Delete account'] = DeleteAccount
 
         while True:
