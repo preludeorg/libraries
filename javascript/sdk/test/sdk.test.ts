@@ -151,7 +151,7 @@ describe("SDK Test", () => {
     });
   });
 
-  describe.only("Probe Controller", () => {
+  describe("Probe Controller", () => {
     it("download should return a string", async () => {
       const service = new Service({
         host,
