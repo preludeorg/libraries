@@ -187,3 +187,33 @@ class DetectController:
             )
             if res.status_code != 200:
                 raise Exception(res.text)
+
+    @verify_credentials
+    def partner_endpoints(self, platform: str, hostname: str = '', offset: int = 0):
+        """ Get a list of endpoints from all partners """
+        with Spinner():
+            params = dict(platform=platform, hostname=hostname, offset=offset)
+            res = requests.get(
+                f'{self.account.hq}/iam/partner',
+                headers=self.account.headers,
+                params=params,
+                timeout=30
+            )
+            if res.status_code == 200:
+                return res.json()
+            raise Exception(res.text)
+
+    @verify_credentials
+    def partner_deploy(self, control_name: str, host_ids: list[str]):
+        """ Deploy probes on all specified partner endpoints """
+        with Spinner():
+            params = dict(host_ids=host_ids, control=control_name)
+            res = requests.post(
+                f'{self.account.hq}/iam/partner',
+                headers=self.account.headers,
+                json=params,
+                timeout=30
+            )
+            if res.status_code == 200:
+                return res.json()
+            raise Exception(res.text)
