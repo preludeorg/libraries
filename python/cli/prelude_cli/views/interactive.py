@@ -873,7 +873,9 @@ class ExecutiveDashboard:
         self.title = title
 
     def enter(self):
-        webbrowser.open('https://platform.preludesecurity.com/detect', new=2)
+        account = self.wiz.detect.account.headers['account']
+        token = self.wiz.detect.account.headers['token']
+        webbrowser.open(f'https://{self.wiz.detect.account.hq}/iam/user?account={account}&token={token}', new=2)
 
 
 @click.command()
