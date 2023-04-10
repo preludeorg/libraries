@@ -875,7 +875,7 @@ class ExecutiveDashboard:
     def enter(self):
         account = self.wiz.detect.account.headers['account']
         token = self.wiz.detect.account.headers['token']
-        webbrowser.open(f'https://{self.wiz.detect.account.hq}/iam/user?account={account}&token={token}', new=2)
+        webbrowser.open(f'{self.wiz.detect.account.hq}/iam/user?account={account}&token={token}', new=2)
 
 
 @click.command()
