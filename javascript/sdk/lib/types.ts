@@ -285,3 +285,29 @@ export interface AttachPartnerParams {
   user: string;
   secret?: string;
 }
+
+export interface EndpointsParams {
+  partnerName: string;
+  platform: string;
+  hostname?: string;
+  offset?: number;
+}
+
+export interface DeployParams {
+  partnerName: string;
+  hostIds: string[];
+}
+
+export type PartnerEndpoints = Record<
+  string,
+  {
+    hostname: string;
+    version: string;
+  }
+>;
+
+export interface DeployedEnpoint {
+  aid: string;
+  status: boolean;
+  errors: string[];
+}

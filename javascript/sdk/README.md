@@ -1,6 +1,6 @@
 # Prelude SDK
 
-Interact with the Prelude Service API via JavaScript. 
+Interact with the Prelude Service API via JavaScript.
 
 Install this package to write your own tooling that works with Build or Detect functionality.
 
@@ -14,11 +14,13 @@ Install this package to write your own tooling that works with Build or Detect f
 npm install @theprelude/sdk
 ```
 
-## Documentation 
+## Documentation
 
 TBD
 
 ## Testing
+
+> Note: To test partner controller functionality, you must set the `PARTNER_USER` and `PARTNER_SECRET` environment variable.
 
 ```bash
 yarn install
