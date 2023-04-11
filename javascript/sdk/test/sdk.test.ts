@@ -29,7 +29,7 @@ const createAccount = async () => {
 };
 
 describe("SDK Test", () => {
-  describe.only("IAM Controller", () => {
+  describe("IAM Controller", () => {
     const service = new Service({
       host,
     });
@@ -282,6 +282,51 @@ describe("SDK Test", () => {
       const result = await service.detect.getRecommendations();
       expect(result).to.have.lengthOf(1);
       expect(result[0].events[0].decision).toBe(1);
+    });
+  });
+
+  describe.runIf(
+    Boolean(process.env.PARTNER_USER) && Boolean(process.env.PARTNER_SECRET)
+  )("PartnerController", () => {
+    let deployEndpoint = "";
+    const service = new Service({
+      host,
+    });
+
+    beforeAll(async () => {
+      const credentials = await createAccount();
+      service.setCredentials(credentials);
+      await service.iam.attachPartner({
+        name: "crowdstrike",
+        api: "https://api.us-2.crowdstrike.com",
+        user: process.env.PARTNER_USER as string,
+        secret: process.env.PARTNER_SECRET as string,
+      });
+    });
+
+    afterAll(async () => {
+      await service.iam.purgeAccount();
+    });
+
+    it("endpoints should return an object", async () => {
+      const result = await service.partner.endpoints({
+        partnerName: "crowdstrike",
+        platform: "linux",
+      });
+
+      expect(result).to.be.a("object");
+      deployEndpoint = Object.keys(result)[0];
+    });
+
+    it("deploy should return and array", async () => {
+      const result = await service.partner.deploy({
+        partnerName: "crowdstrike",
+        hostIds: [deployEndpoint],
+      });
+
+      expect(result).to.be.a("array");
+      expect(result).to.have.lengthOf(1);
+      expect(result[0].aid).eq(deployEndpoint);
     });
   });
 });
