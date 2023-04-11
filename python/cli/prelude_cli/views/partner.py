@@ -13,7 +13,7 @@ def partner(ctx):
     ctx.obj = PartnerController(account=ctx.obj)
 
 
-@partner.command('partner-endpoints')
+@partner.command('endpoints')
 @click.option('--control_name', required=True, help='control name (e.g. "CrowdStrike")')
 @click.option('--platform', required=True, help='platform name (e.g. "windows")')
 @click.option('--hostname', default='', help='hostname pattern (e.g. "mycompany-c24oi444")')
@@ -25,7 +25,7 @@ def partner_endpoints(controller, control_name, platform, hostname, offset):
     print_json(controller.partner_endpoints(control_name=control_name, platform=platform, hostname=hostname, offset=offset))
 
 
-@partner.command('partner-deploy')
+@partner.command('deploy')
 @click.confirmation_option(prompt='Are you sure?')
 @click.option('--control_name', required=True, help='control name (e.g. "CrowdStrike")')
 @click.option('--host_ids', required=True, help='a list of host IDs to deploy to', type=list[str])
