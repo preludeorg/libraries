@@ -29,7 +29,8 @@
     "tslib": "^2.4.0",
     "typescript": "^4.6.4",
     "vite": "^3.1.0",
-    "vitest": "^0.30.0"
+    "vitest": "^0.30.0",
+    "node-fetch": "^3.3.1"
   },
   "description": "Use this utility if you want direct access to the Prelude API.",
   "directories": {
