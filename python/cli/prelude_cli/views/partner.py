@@ -22,13 +22,13 @@ def partner(ctx):
 @handle_api_error
 def partner_endpoints(controller, partner_name, platform, hostname, offset):
     """ Get a list of endpoints from all partners """
-    print_json(controller.partner_endpoints(partner_name=partner_name, platform=platform, hostname=hostname, offset=offset))
+    print_json(data=controller.partner_endpoints(partner_name=partner_name, platform=platform, hostname=hostname, offset=offset))
 
 
 @partner.command('deploy')
 @click.confirmation_option(prompt='Are you sure?')
 @click.option('--partner_name', required=True, help='partner name (e.g. "CrowdStrike")')
-@click.option('--host_ids', required=True, help='a list of host IDs to deploy to', type=list[str])
+@click.option('--host_ids', required=True, help='a list of host IDs to deploy to', multiple=True, default=[])
 @click.pass_obj
 @handle_api_error
 def detach_partner(controller, partner_name, host_ids):
