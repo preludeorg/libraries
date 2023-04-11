@@ -15,7 +15,7 @@ def partner(ctx):
 
 @partner.command('endpoints')
 @click.option('--control_name', required=True, help='control name (e.g. "CrowdStrike")')
-@click.option('--platform', required=True, help='platform name (e.g. "windows")')
+@click.option('--platform', required=True, help='platform name (e.g. "windows")', type=click.Choice(['windows', 'linux', 'darwin'], case_sensitive=False))
 @click.option('--hostname', default='', help='hostname pattern (e.g. "mycompany-c24oi444")')
 @click.option('--offset', default=0, help='API pagination offset', type=int)
 @click.pass_obj
