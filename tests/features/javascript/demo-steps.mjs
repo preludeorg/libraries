@@ -1,5 +1,5 @@
 import { Given, Then, When } from "@cucumber/cucumber";
-import { Service } from "@theprelude/sdk";
+import { Service } from "../../../javascript/sdk/dist/sdk.js";
 import assert from "assert";
 
 Given("I am signed in as a demo user", function () {
