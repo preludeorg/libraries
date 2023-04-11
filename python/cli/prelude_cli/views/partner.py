@@ -9,7 +9,7 @@ from prelude_sdk.controllers.partner_controller import PartnerController
 @click.group()
 @click.pass_context
 def partner(ctx):
-    """ Continuous security testing """
+    """ Partner system commands """
     ctx.obj = PartnerController(account=ctx.obj)
 
 
