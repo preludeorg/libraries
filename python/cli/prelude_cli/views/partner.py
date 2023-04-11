@@ -22,7 +22,7 @@ def partner(ctx):
 @handle_api_error
 def partner_endpoints(controller, partner_name, platform, hostname, offset):
     """ Get a list of endpoints from all partners """
-    print_json(data=controller.partner_endpoints(partner_name=partner_name, platform=platform, hostname=hostname, offset=offset))
+    print_json(data=controller.endpoints(partner_name=partner_name, platform=platform, hostname=hostname, offset=offset))
 
 
 @partner.command('deploy')
@@ -33,4 +33,4 @@ def partner_endpoints(controller, partner_name, platform, hostname, offset):
 @handle_api_error
 def detach_partner(controller, partner_name, host_ids):
     """ Detach an existing partner from your account """
-    controller.partner_deploy(partner_name=partner_name, host_ids=host_ids)
+    controller.deploy(partner_name=partner_name, host_ids=host_ids)
