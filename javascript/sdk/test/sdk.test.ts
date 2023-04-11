@@ -2,7 +2,6 @@ import { randomUUID } from "crypto";
 import { readFileSync } from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import fetch, { Headers, Request, Response } from 'node-fetch';
 import {
   afterAll,
   afterEach,
@@ -27,13 +26,6 @@ declare module "vitest" {
 const testEmail =
   process.env.EMAIL ?? "test@auto-accept.developer.preludesecurity.com";
 const host = process.env.API_HOST ?? "https://api.staging.preludesecurity.com";
-
-if (!globalThis.fetch) {
-  globalThis.fetch = fetch;
-  globalThis.Headers = Headers;
-  globalThis.Request = Request;
-  globalThis.Response = Response;
-}
 
 const createAccount = async () => {
   const service = new Service({
