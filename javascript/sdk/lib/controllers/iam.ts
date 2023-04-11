@@ -1,6 +1,7 @@
 import Client from "../client";
 import type {
   Account,
+  AttachPartnerParams,
   CreatedUser,
   Credentials,
   Permission,
@@ -66,6 +67,35 @@ export default class IAMController {
     });
 
     return true;
+  }
+
+  async attachPartner(
+    { name, api, user, secret = "" }: AttachPartnerParams,
+    options: RequestOptions = {}
+  ) {
+    const response = await this.#client.requestWithAuth(
+      `/iam/partner/${name}`,
+      {
+        method: "POST",
+        body: JSON.stringify({ api, user, secret }),
+        ...options,
+      }
+    );
+
+    return response.text();
+  }
+
+  async detachPartner(name: string, options: RequestOptions = {}) {
+    const response = await this.#client.requestWithAuth(
+      `/iam/partner/${name}`,
+      {
+        method: "DELETE",
+        body: JSON.stringify({}),
+        ...options,
+      }
+    );
+
+    return response.text();
   }
 
   async purgeAccount(options: RequestOptions = {}) {
