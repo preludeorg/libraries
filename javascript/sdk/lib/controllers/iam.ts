@@ -90,6 +90,7 @@ export default class IAMController {
       `/iam/partner/${name}`,
       {
         method: "DELETE",
+        body: JSON.stringify({}),
         ...options,
       }
     );
