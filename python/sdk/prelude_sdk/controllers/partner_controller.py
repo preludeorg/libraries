@@ -4,7 +4,7 @@ from prelude_sdk.spinner import Spinner
 from prelude_sdk.models.account import verify_credentials
 
 
-class PartnerController
+class PartnerController:
 
     def __init__(self, account):
         self.account = account
