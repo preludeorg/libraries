@@ -2,15 +2,7 @@ import { randomUUID } from "crypto";
 import { readFileSync } from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import {
-  afterAll,
-  afterEach,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-} from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { RunCodes, Service } from "../lib/main";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -37,54 +29,67 @@ const createAccount = async () => {
 };
 
 describe("SDK Test", () => {
-  describe("IAM Controller", () => {
-    it("newAccount should return a new account", async function () {
-      const service = new Service({
-        host,
-      });
+  describe.only("IAM Controller", () => {
+    const service = new Service({
+      host,
+    });
+
+    beforeAll(async () => {
       const account = await service.iam.newAccount(testEmail);
       expect(account).toHaveProperty("account");
       expect(account).toHaveProperty("token");
+      await sleep(4000);
+      service.setCredentials(account);
     });
 
-    describe.concurrent("with auth", () => {
-      beforeEach(async (context) => {
-        const credentials = await createAccount();
-        context.service = new Service({
-          host,
-          credentials,
-        });
-      });
+    afterAll(async () => {
+      await service.iam.purgeAccount();
+    });
 
-      afterEach(async (context) => {
-        await context.service.iam.purgeAccount();
-      });
+    it("getAccount should return the account", async () => {
+      const account = await service.iam.getAccount();
+      expect(account).toHaveProperty("whoami");
+      expect(account.whoami).eq(testEmail);
+    });
 
-      it("getAccount should return the account", async ({ service }) => {
-        const account = await service.iam.getAccount();
-        expect(account).toHaveProperty("whoami");
-        expect(account.whoami).eq(testEmail);
-      });
+    it("createUser should return an object with a value token that is a UUID4", async () => {
+      const result = await service.iam.createUser(3, "registration");
+      expect(result.token).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
+      );
+      const account = await service.iam.getAccount();
+      expect(account).toHaveProperty("users");
+      expect(account.users).toHaveLength(2);
+    });
 
-      it("createUser should return an object with a value token that is a UUID4", async ({
-        service,
-      }) => {
-        const result = await service.iam.createUser(3, "registration");
-        expect(result.token).toMatch(
-          /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
-        );
-        const account = await service.iam.getAccount();
-        expect(account).toHaveProperty("users");
-        expect(account.users).toHaveLength(2);
-      });
+    it("deleteUser should return a boolean true", async () => {
+      const result = await service.iam.deleteUser("registration");
+      expect(result).to.be.true;
+      const account = await service.iam.getAccount();
+      expect(account).toHaveProperty("users");
+      expect(account.users).to.have.lengthOf(1);
+    });
 
-      it("deleteUser should return a boolean true", async ({ service }) => {
-        const result = await service.iam.deleteUser("registration");
-        expect(result).to.be.true;
-        const account = await service.iam.getAccount();
-        expect(account).toHaveProperty("users");
-        expect(account.users).to.have.lengthOf(1);
+    it("attachControl should add a new control", async () => {
+      const result = await service.iam.attachPartner({
+        name: "crowdstrike",
+        api: "https://api.crowdstrike.com",
+        user: "test",
+        secret: "test",
       });
+      expect(result).to.be.a("string");
+      const account = await service.iam.getAccount();
+      expect(account).toHaveProperty("controls");
+      expect(account.controls).toHaveLength(1);
+      expect(account.controls).toEqual(expect.arrayContaining(["crowdstrike"]));
+    });
+
+    it("detachControl should remove a control", async () => {
+      const result = await service.iam.detachPartner("crowdstrike");
+      expect(result).to.be.a("string");
+      const account = await service.iam.getAccount();
+      expect(account).toHaveProperty("controls");
+      expect(account.controls).toHaveLength(0);
     });
   });
 

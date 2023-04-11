@@ -24,16 +24,9 @@ export interface User {
   permission: Permission;
 }
 
-export interface Control {
-  name: string;
-  api?: string;
-  username?: string;
-  secret?: string;
-}
-
 export interface Account {
   whoami: string;
-  controls: Control[];
+  controls: string[];
   users: User[];
 }
 
@@ -284,4 +277,11 @@ export interface RegisterEndpointParams {
 export interface DownloadParams {
   name: string;
   dos: Platform;
+}
+
+export interface AttachPartnerParams {
+  name: string;
+  api: string;
+  user: string;
+  secret?: string;
 }
