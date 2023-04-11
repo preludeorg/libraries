@@ -41,8 +41,8 @@ def list_tests(controller):
 @click.option('-t', '--tags', help='only enable for these tags (comma-separated list)', type=str, default='')
 @click.option('-r', '--run_code',
               help='provide a run_code',
-              default='daily', show_default=True,
-              type=click.Choice(['daily', 'weekly', 'monthly'], case_sensitive=False))
+              default=RunCode.DAILY.name, show_default=True,
+              type=click.Choice([r.name for r in RunCode], case_sensitive=False))
 @click.pass_obj
 @handle_api_error
 def activate_test(controller, test, run_code, tags):
