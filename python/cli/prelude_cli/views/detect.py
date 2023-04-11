@@ -164,4 +164,3 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos):
         filters['dos'] = dos
 
     print_json(data=controller.describe_activity(view=view, filters=filters))
-    

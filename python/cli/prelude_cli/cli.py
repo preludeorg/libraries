@@ -3,6 +3,7 @@ import click
 from prelude_cli.views.iam import iam
 from prelude_cli.views.build import build
 from prelude_cli.views.detect import detect
+from prelude_cli.views.partner import partner
 from prelude_sdk.models.account import Account
 from prelude_cli.views.configure import configure
 from prelude_cli.views.interactive import interactive as interactive_command
@@ -26,6 +27,7 @@ cli.add_command(iam)
 cli.add_command(configure)
 cli.add_command(detect)
 cli.add_command(build)
+cli.add_command(partner)
 
 
 if __name__ == '__main__':
