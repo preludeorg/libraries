@@ -22,3 +22,4 @@ jobs:
         echo -e '[default]\nhq = https://api.staging.preludesecurity.com\naccount = prelude-demo\ntoken = executive-demo' > ~/.prelude/keychain.ini
     - run: pip3 install -r requirements.txt
     - run: behave
+    
