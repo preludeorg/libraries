@@ -32,5 +32,5 @@ def partner_endpoints(controller, partner_name, platform, hostname, offset):
 @click.pass_obj
 @handle_api_error
 def partner_deploy(controller, partner_name, host_ids):
-    """ Detach an existing partner from your account """
+    """ Deploy probes to hosts associated to a partner """
     controller.deploy(partner_name=partner_name, host_ids=host_ids)
