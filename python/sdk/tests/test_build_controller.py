@@ -9,7 +9,7 @@ from tests import templates as templates
 from prelude_sdk.controllers.build_controller import BuildController
 
 
-@pytest.mark.order(after='test_iam_controller.py::TestIAMController::test_detach_control')
+@pytest.mark.order(after='test_iam_controller.py::TestIAMController::test_detach_partner')
 class TestBuildController:
 
     def setup_class(self):

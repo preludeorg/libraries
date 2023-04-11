@@ -29,7 +29,7 @@ def pause_for_manual_action(pytestconfig):
 
 def pytest_addoption(parser):
     parser.addoption("--api", default='https://api.staging.preludesecurity.com', action='store', help='API target for tests')
-    parser.addoption('--email', action='store', help='Email address to use for testing', required=True)
+    parser.addoption('--email', default='test@auto-accept.developer.preludesecurity.com', action='store', help='Email address to use for testing')
 
 
 @pytest.fixture(scope='session')

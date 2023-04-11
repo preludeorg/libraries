@@ -32,7 +32,7 @@ const createAccount = async () => {
     host,
   });
   const creds = await service.iam.newAccount(testEmail);
-  await sleep(3000);
+  await sleep(5000);
   return creds;
 };
 

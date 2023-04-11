@@ -22,9 +22,9 @@ TBD
 
 ## Testing
 
-To test the Python SDK and Probes, run the following commands:
+To test the Python SDK and Probes, run the following commands from the python/sdk/ directory:
 
 ```bash
-pip install -r python/sdk/tests/requirements.txt
+pip install -r tests/requirements.txt
 pytest tests --api https://api.preludesecurity.com --email <EMAIL>
 ```

@@ -56,13 +56,14 @@ class TestDetectController:
         assert len([test for test in res if test['test'] == pytest.test_id]) == 1
 
     def test_describe_activity(self, unwrap):
-        """Test spawn_probe_run_tests method"""
+        """Test describe_activity method"""
         try:
             subprocess.run([pytest.probe], capture_output=True, env={'PRELUDE_TOKEN': pytest.endpoint_token}, timeout=20)
         except subprocess.TimeoutExpired:
             describe_activity = unwrap(self.detect.describe_activity)(self.detect, filters={'endpoint_id': pytest.endpoint_id})
             assert len(describe_activity) == 2
-        os.remove(pytest.probe)
+        finally:
+            os.remove(pytest.probe)
 
     def test_disable_test(self, unwrap):
         """Test disable_test method"""
