@@ -100,9 +100,9 @@ class IAMController:
     def attach_partner(self, name: str, api: str, user: str, secret: str = ''):
         """ Attach a partner to your account """
         with Spinner():
-            params = dict(name=name, api=api, user=user, secret=secret)
+            params = dict(api=api, user=user, secret=secret)
             res = requests.post(
-                f'{self.account.hq}/iam/partner',
+                f'{self.account.hq}/iam/partner/{name}',
                 headers=self.account.headers,
                 json=params,
                 timeout=10
@@ -116,9 +116,8 @@ class IAMController:
         """ Detach a partner from your Detect account """
         with Spinner():
             res = requests.delete(
-                f'{self.account.hq}/iam/partner',
+                f'{self.account.hq}/iam/partner/{name}',
                 headers=self.account.headers,
-                json=dict(name=name),
                 timeout=10
             )
             if res.status_code == 200:
