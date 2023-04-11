@@ -31,6 +31,6 @@ def partner_endpoints(controller, partner_name, platform, hostname, offset):
 @click.option('--host_ids', required=True, help='a list of host IDs to deploy to', type=list[str])
 @click.pass_obj
 @handle_api_error
-def detach_partner(controller, partner_name, host_ids):
+def partner_deploy(controller, partner_name, host_ids):
     """ Detach an existing partner from your account """
     controller.partner_deploy(partner_name=partner_name, host_ids=host_ids)
