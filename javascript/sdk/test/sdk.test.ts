@@ -36,20 +36,16 @@ const createAccount = async () => {
   return creds;
 };
 
-describe("SDK Test", function () {
+describe("SDK Test", () => {
   describe("IAM Controller", () => {
-    it(
-      "newAccount should return a new account",
-      async function () {
-        const service = new Service({
-          host,
-        });
-        const account = await service.iam.newAccount(testEmail);
-        expect(account).toHaveProperty("account");
-        expect(account).toHaveProperty("token");
-      },
-      { timeout: 10000 }
-    );
+    it("newAccount should return a new account", async function () {
+      const service = new Service({
+        host,
+      });
+      const account = await service.iam.newAccount(testEmail);
+      expect(account).toHaveProperty("account");
+      expect(account).toHaveProperty("token");
+    });
 
     describe.concurrent("with auth", () => {
       beforeEach(async (context) => {
@@ -155,8 +151,17 @@ describe("SDK Test", function () {
     });
   });
 
-  describe("Probe Controller", function () {
-    it("download should return a string");
+  describe("Probe Controller", () => {
+    it("download should return a string", async () => {
+      const service = new Service({
+        host,
+      });
+      const result = await service.probe.download({
+        name: "nocturnal",
+        dos: "linux-arm64",
+      });
+      expect(result).to.be.a("string");
+    });
   });
 
   describe("Detect Controller", () => {

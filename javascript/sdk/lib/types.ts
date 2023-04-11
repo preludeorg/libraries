@@ -280,3 +280,8 @@ export interface RegisterEndpointParams {
   edr_id?: string;
   tags?: string;
 }
+
+export interface DownloadParams {
+  name: string;
+  dos: Platform;
+}
