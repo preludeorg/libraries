@@ -1,0 +1,14 @@
+{
+  "license": "MIT",
+  "scripts": {
+    "test": "cucumber-js"
+  },
+  "devDependencies": {
+    "@cucumber/cucumber": "^9.1.0"
+  },
+  "dependencies": {
+    "@theprelude/sdk": "^0.9.58",
+    "date-fns": "^2.29.3",
+    "node-fetch": "^3.3.1"
+  }
+}

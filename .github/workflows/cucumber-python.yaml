@@ -1,0 +1,24 @@
+name: Test Python
+
+on:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - 'tests/**'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup Python
+      uses: actions/setup-python@v4
+    - name: Create keychain file
+      run: |
+        mkdir ~/.prelude
+        echo -e '[default]\nhq = https://api.staging.preludesecurity.com\naccount = prelude-demo\ntoken = executive-demo' > ~/.prelude/keychain.ini
+    - run: pip3 install -r requirements.txt
+    - run: behave
