@@ -33,4 +33,8 @@ def partner_endpoints(controller, name, platform, hostname, offset):
 @handle_api_error
 def partner_deploy(controller, name, host_ids):
     """ Deploy probes to hosts associated to a partner """
+<<<<<<< Updated upstream
     controller.deploy(partner_name=name, host_ids=host_ids)
+=======
+    print_json(data=controller.deploy(partner_name=partner_name, host_ids=host_ids))
+>>>>>>> Stashed changes
