@@ -26,5 +26,5 @@ pip3 install -r requirements.txt
 
 Running the command from anywhere in the repo will find the tests
 ```
-pip3 install -r requirements.txt 
+behave
 ```
