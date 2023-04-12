@@ -123,3 +123,18 @@ class IAMController:
             if res.status_code == 200:
                 return res.text
             raise Exception(res.text)
+
+    @verify_credentials
+    def audit_logs(self, days: int = 7, limit: int = 1000):
+        """ Get audit logs from the last X days """
+        with Spinner():
+            params = dict(days=days, limit=limit)
+            res = requests.get(
+                f'{self.account.hq}/iam/audit',
+                headers=self.account.headers,
+                params=params,
+                timeout=30
+            )
+            if res.status_code == 200:
+                return res.json()
+            raise Exception(res.text)

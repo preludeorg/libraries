@@ -96,6 +96,16 @@ def detach_partner(controller, name):
     controller.detach_partner(name=name)
 
 
+@iam.command('logs')
+@click.option('-d', '--days', help='days back to search from today', default=7, type=int)
+@click.option('-l', '--limit', help='limit the number of results', default=1000, type=int)
+@click.pass_obj
+@handle_api_error
+def logs(controller, days, limit):
+    """ Get audit logs """
+    print_json(data=controller.audit_logs(days=days, limit=limit))
+
+
 @iam.command('purge')
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
