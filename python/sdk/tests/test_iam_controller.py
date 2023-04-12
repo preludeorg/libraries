@@ -66,7 +66,7 @@ class TestIAMController:
 
     @pytest.mark.order(4)
     def test_delete_user(self, unwrap):
-        """Test delete method"""
+        """Test delete_user method"""
         iam = IAMController(pytest.account)
         res = unwrap(iam.delete_user)(iam, handle='registration')
         res = unwrap(iam.get_account)(iam)

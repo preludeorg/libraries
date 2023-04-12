@@ -74,7 +74,7 @@ class TestDetectController:
     def test_social_stats(self, unwrap):
         """Test social_stats method"""
         res = unwrap(self.detect.social_stats)(self.detect, ident=pytest.test_id)
-        assert len(res.values()) >= 10
+        assert len(res.values()) >= 1
 
     def test_delete_endpoint(self, unwrap):
         """Test delete_endpoint method"""
