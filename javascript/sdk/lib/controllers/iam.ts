@@ -3,7 +3,8 @@ import type {
   Account,
   AttachPartnerParams,
   CreatedUser,
-  Credentials, Mode,
+  Credentials,
+  Mode,
   Permission,
   RequestOptions,
 } from "../types";
