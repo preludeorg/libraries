@@ -1,6 +1,7 @@
-import { randomUUID } from "crypto";
-import { readFileSync } from "fs";
 import path from "path";
+import { randomUUID } from "crypto";
+import { readFileSync, writeFileSync, unlinkSync } from "fs";
+import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { RunCodes, Service } from "../lib/main";
@@ -29,6 +30,8 @@ const createAccount = async () => {
 };
 
 describe("SDK Test", () => {
+  let probeName = "nocturnal";
+  
   describe("IAM Controller", () => {
     const service = new Service({
       host,
@@ -162,10 +165,11 @@ describe("SDK Test", () => {
         host,
       });
       const result = await service.probe.download({
-        name: "nocturnal",
+        name: probeName,
         dos: "linux-arm64",
       });
       expect(result).to.be.a("string");
+      await writeFileSync(`${probeName}.sh`, result, { mode: 0o755 });
     });
   });
 
@@ -192,6 +196,7 @@ describe("SDK Test", () => {
 
     afterAll(async () => {
       await service.iam.purgeAccount();
+      await unlinkSync(`${probeName}.sh`);
     });
 
     it("registerEndpoint should return a string with length 32", async () => {
@@ -245,7 +250,17 @@ describe("SDK Test", () => {
       );
     });
 
-    it("describeActivity should spawn a probe and run 2 tests");
+    it("describeActivity should spawn a probe and run 2 tests", async function () {
+      spawnSync(`./${probeName}.sh`, {
+        env: {
+          PRELUDE_TOKEN: endpointToken,
+        },
+        timeout: 20000,
+      });
+
+      const result = await service.detect.describeActivity({view: "logs"});
+      expect(result).toHaveLength(2);
+    });
 
     it("disableTest should remove the test from the queue", async function () {
       await service.detect.disableTest(activeTest);
@@ -253,9 +268,10 @@ describe("SDK Test", () => {
       expect(result).to.have.lengthOf(1);
     });
 
-    it(
-      "socialStats should an object that has values of a length greater than 1"
-    );
+    it("socialStats should return an object with a non-empty aray of values", async function () {
+      const result = await service.detect.socialStats(activeTest);
+      expect(Object.values(result)).to.have.length.greaterThan(1);
+    });
 
     it("deleteEndpoint should remove the endpoint from the list", async function () {
       await service.detect.deleteEndpoint(endpointId);

@@ -23,7 +23,6 @@ TBD
 > Note: To test partner controller functionality, you must set the `PARTNER_USER` and `PARTNER_SECRET` environment variable.
 
 ```bash
-yarn install
-yarn build
+yarn install && yarn build
 API='https://api.preludesecurity.com' yarn test
 ```
