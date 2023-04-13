@@ -49,6 +49,14 @@ describe("SDK Test", () => {
       await service.iam.purgeAccount();
     });
 
+    it("updateAccount should update the account", async () => {
+      const result = await service.iam.updateAccount(1);
+      expect(result).to.be.true;
+      const account = await service.iam.getAccount();
+      expect(account).toHaveProperty("mode");
+      expect(account.mode).eq(1);
+    });
+
     it("getAccount should return the account", async () => {
       const account = await service.iam.getAccount();
       expect(account).toHaveProperty("whoami");

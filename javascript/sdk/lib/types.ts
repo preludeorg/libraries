@@ -61,6 +61,13 @@ export const Permissions = {
 
 export type Permission = typeof Permissions[keyof typeof Permissions];
 
+export const Modes = {
+  MANUAL: 0,
+  FROZEN: 1,
+} as const;
+
+export type Mode = typeof Modes[keyof typeof Modes];
+
 export interface ComputeResult {
   name: string;
   steps: {

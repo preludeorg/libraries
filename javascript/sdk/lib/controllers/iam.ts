@@ -4,6 +4,7 @@ import type {
   AttachPartnerParams,
   CreatedUser,
   Credentials,
+  Mode,
   Permission,
   RequestOptions,
 } from "../types";
@@ -34,6 +35,20 @@ export default class IAMController {
       account: json.account_id,
       token: json.token,
     };
+  }
+
+
+  async updateAccount(
+    mode: Mode,
+    options: RequestOptions = {}
+  ) {
+    await this.#client.requestWithAuth("/iam/account", {
+      method: "PUT",
+      body: JSON.stringify({ mode }),
+      ...options,
+    });
+
+    return true;
   }
 
   async getAccount(options: RequestOptions = {}) {
