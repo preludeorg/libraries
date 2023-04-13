@@ -62,7 +62,8 @@ def create_user(controller, permission, handle, days):
         expires=expires
     )
     print_json(data=resp)
-    print("\nCheck your email to verifiy your account.\n")
+    if permission != Permission.SERVICE.name:
+        print("\nCheck your email to verify your account.\n")
 
 @iam.command('delete-user')
 @click.confirmation_option(prompt='Are you sure?')
