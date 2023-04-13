@@ -28,6 +28,7 @@ export interface Account {
   whoami: string;
   controls: string[];
   users: User[];
+  mode: Mode;
 }
 
 export interface CreatedUser {
@@ -298,6 +299,7 @@ export interface EndpointsParams {
   platform: string;
   hostname?: string;
   offset?: number;
+  count?: number;
 }
 
 export interface DeployParams {

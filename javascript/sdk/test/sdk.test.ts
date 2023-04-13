@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { readFileSync, writeFileSync, unlinkSync } from "fs";
+import { readFileSync, unlinkSync, writeFileSync } from "fs";
 import { spawnSync } from "node:child_process";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -31,7 +31,7 @@ const createAccount = async () => {
 
 describe("SDK Test", () => {
   let probeName = "nocturnal";
-  
+
   describe("IAM Controller", () => {
     const service = new Service({
       host,
@@ -266,7 +266,7 @@ describe("SDK Test", () => {
         timeout: 20000,
       });
 
-      const result = await service.detect.describeActivity({view: "logs"});
+      const result = await service.detect.describeActivity({ view: "logs" });
       expect(result).toHaveLength(2);
     });
 
@@ -341,6 +341,33 @@ describe("SDK Test", () => {
       expect(result).to.be.a("object");
       deployEndpoint = Object.keys(result)[0];
     });
+
+    it(
+      "endpoints should limit results by count and offset",
+      async () => {
+        const result = await service.partner.endpoints({
+          partnerName: "crowdstrike",
+          platform: "linux",
+          count: 1,
+          offset: 0,
+        });
+
+        expect(result).to.be.a("object");
+        expect(Object.keys(result)).to.have.lengthOf(1);
+
+        const result2 = await service.partner.endpoints({
+          partnerName: "crowdstrike",
+          platform: "linux",
+          count: 1,
+          offset: 1,
+        });
+
+        expect(result2).to.be.a("object");
+        expect(Object.keys(result2)).to.have.lengthOf(1);
+        expect(Object.keys(result2)[0]).not.eq(Object.keys(result)[0]);
+      },
+      { timeout: 10_000 }
+    );
 
     it("deploy should return and array", async () => {
       const result = await service.partner.deploy({
