@@ -65,6 +65,14 @@ class TestIAMController:
         assert len([user for user in res['users'] if user['handle'] == 'registration']) == 1
 
     @pytest.mark.order(4)
+    def test_delete_user(self, unwrap):
+        """Test delete_user method"""
+        iam = IAMController(pytest.account)
+        res = unwrap(iam.delete_user)(iam, handle='registration')
+        res = unwrap(iam.get_account)(iam)
+        assert len([user for user in res['users'] if user['handle'] == 'registration']) == 0
+
+    @pytest.mark.order(5)
     def test_attach_partner(self, unwrap):
         """Test attach_partner method"""
         try:
@@ -73,7 +81,7 @@ class TestIAMController:
         except Exception as e:
             assert 'Authentication failed with crowdstrike' in str(e)
 
-    @pytest.mark.order(5)
+    @pytest.mark.order(6)
     def test_detach_partner(self, unwrap):
         """Test detach_partner method"""
         try:
