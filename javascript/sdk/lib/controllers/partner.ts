@@ -16,13 +16,20 @@ export default class PartnerController {
 
   /** Get a list of endpoints from all partners */
   async endpoints(
-    { partnerName, platform, hostname = "", offset = 0 }: EndpointsParams,
+    {
+      partnerName,
+      platform,
+      hostname = "",
+      offset = 0,
+      count = 100,
+    }: EndpointsParams,
     options: RequestOptions = {}
   ): Promise<PartnerEndpoints> {
     const searchParams = new URLSearchParams({
       platform,
       hostname,
       offset: offset.toString(),
+      count: count.toString(),
     });
 
     const response = await this.#client.requestWithAuth(
