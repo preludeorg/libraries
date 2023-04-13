@@ -3,6 +3,7 @@ import uuid
 import click
 import shutil
 import socket
+import readline
 import webbrowser
 import prelude_cli.templates as templates
 import importlib.resources as pkg_resources
@@ -162,9 +163,13 @@ class DeployProbe:
 
     def enter(self):
         # register endpoint
-        host = Prompt.ask("Enter hostname of your probe:", default=socket.gethostname())
-        serial = Prompt.ask("Enter serial number of your probe:", default='1-2-3-4')
-        edr = Prompt.ask("[Optional] Enter edr_id of your endpoint:", default='')
+        default = socket.gethostname()
+        host = input(f'Enter hostname of your probe [{default}]: ') or default
+
+        default = '1-2-3-4'
+        serial = input(f'Enter serial number of your probe [{default}]: ') or default
+
+        edr = input(f'[Optional] Enter edr_id of your endpoint: ')
 
         print(f'Optionally, select a host type tag')
         systems = ['workstation', 'server', 'container', 'cloud']
@@ -579,13 +584,15 @@ class CreateTest:
     def enter(self):
         print('Tests should be in the form of a question')
         # save test
-        name = Prompt.ask('Enter a test name', default='Does my defense work?')
+        default = 'Does my defense work?'
+        name = input(f'Enter a test name [{default}]: ') or default
         test_id = str(uuid.uuid4())
         self.wiz.build.create_test(test_id=test_id, name=name)
 
         mapping = Confirm.ask('Add a classification, such as a rule, CVE or ATT&CK technique?')
         if mapping:
-            value = Prompt.ask('Enter a classification ID', default='VSR-2023-0')
+            default = 'VSR-2023-0'
+            value = input(f'Enter a classification ID [{default}]: ') or default
             self.wiz.build.map(test_id=test_id, x=value.replace(' ', ''))
 
         # construct test file
@@ -724,13 +731,14 @@ class CreateUser:
 
     def enter(self):
         print('All users share an account ID but have unique access tokens')
-        handle = Prompt.ask('Enter a user handle', default=os.getlogin())
+        default = 'test@email.com'
+        handle = input(f'Enter a user handle. All handles, except for those with SERVICE permissions, must be valid email addresses [{default}]: ') or default
         menu = [p.name for p in Permission if p != Permission.INVALID]
         answer = TerminalMenu(menu).show()
         expires = datetime.utcnow() + timedelta(days=365)
 
         creds = self.wiz.iam.create_user(handle=handle, permission=answer, expires=expires)
-        print(f'Created "{handle}" with token "{creds["token"]}"')
+        print(f'Created "{handle}" with token "{creds["token"]}". New users will receive an email to complete verification.')
 
 
 class DeleteUser:
@@ -781,11 +789,17 @@ class AttachPartner:
         print('Learn about integrations: https://docs.preludesecurity.com/docs/defensive-integrations')
         menu = ['crowdstrike']
         answer = TerminalMenu(menu).show()
-
         name = menu[answer]
-        api = Prompt.ask('API FQDN', default='https://api.us-2.crowdstrike.com')
-        user = Prompt.ask('User or client ID', default=os.getlogin())
-        secret = Prompt.ask('API token', default='password123')
+
+        default = 'https://api.us-2.crowdstrike.com'
+        api = input(f'API FQDN [{default}]: ') or default
+
+        default = os.getlogin()
+        user = input(f'User or client ID [{default}]: ') or default
+
+        default = 'password123'
+        secret = input(f'API token [{default}]: ') or default
+
         print(f'Attaching "{name}" to your account')
         self.wiz.iam.attach_partner(name=name, api=api, user=user, secret=secret)
 
@@ -911,7 +925,8 @@ def interactive(account):
             if not yes:
                 break
 
-            email = Prompt.ask('Enter your email handle')
+            default = 'test@email.com'
+            email = input(f'Enter your email handle [{default}]: ') or default
             wizard.iam.new_account(handle=email)
             keychain = PurePath(Path.home(), '.prelude', 'keychain.ini')
             print(f'Account created! Credentials are stored in your keychain: {keychain}')
