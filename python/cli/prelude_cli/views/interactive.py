@@ -9,6 +9,7 @@ import prelude_cli.templates as templates
 import importlib.resources as pkg_resources
 
 from rich import print
+from rich.rule import Rule
 from rich.console import Console
 from rich.padding import Padding
 from rich.markdown import Markdown
@@ -68,13 +69,15 @@ class Wizard:
             finish=datetime.combine(datetime.utcnow(), time.max)
         )
 
-    def splash(self, markdown: str, helper: str = None):
+    def splash(self, markdown: str, short: str, helper: str = None):
+        print(Rule(short))
         identifier = hash(markdown)
-        if identifier not in self.cached_splashes:
+        if not os.getenv('PRELUDE_NOSPLASH') and identifier not in self.cached_splashes:
             self.console.print(Markdown(markdown))
             self.cached_splashes.append(identifier)
             if helper:
                 print(Padding(helper, 1))
+            return
 
     def load_tests(self):
         try:
@@ -214,7 +217,7 @@ do
 
     @handle_api_error
     def enter(self):
-        self.wiz.splash(self.SPLASH, helper='Probes are 1 KB processes that run on endpoints and execute security tests')
+        self.wiz.splash(self.SPLASH, "PROBES", helper='Probes are 1 KB processes that run on endpoints and execute security tests')
 
         menu = OrderedDict()
         menu['Register new probe'] = DeployProbe
@@ -324,7 +327,7 @@ class RunCode(Enum):
 
     @handle_api_error
     def enter(self):
-        self.wiz.splash(self.SPLASH, helper='Verified Security Tests are designed to run continuously')
+        self.wiz.splash(self.SPLASH, "SCHEDULING", helper='Verified Security Tests are designed to run continuously')
 
         menu = OrderedDict()
         menu['View schedule'] = ViewSchedule
@@ -469,7 +472,7 @@ EXPLOIT_PREVENTED = 107
 
     @handle_api_error
     def enter(self):
-        self.wiz.splash(self.SPLASH, helper='Detect records a code for each executed test to explain what happened')
+        self.wiz.splash(self.SPLASH, "RESULTS", helper='Detect records a code for each executed test to explain what happened')
 
         menu = OrderedDict()
         menu['Full results: open executive dashboard'] = ExecutiveDashboard
@@ -628,7 +631,7 @@ class Build:
 
     @handle_api_error
     def enter(self):
-        self.wiz.splash(self.SPLASH, helper='Verified Security Tests (VST) are production-ready TTPs written in Go')
+        self.wiz.splash(self.SPLASH, "BUILD", helper='Verified Security Tests (VST) are production-ready TTPs written in Go')
 
         menu = OrderedDict()
         menu['Create new test'] = CreateTest
@@ -796,7 +799,7 @@ export const Permissions = {
 
     @handle_api_error
     def enter(self):
-        self.wiz.splash(self.SPLASH, helper='Prelude accounts can contain multiple users with different permissions')
+        self.wiz.splash(self.SPLASH, "IAM", helper='Prelude accounts can contain multiple users with different permissions')
 
         menu = OrderedDict()
         menu['List users'] = ListUser
@@ -833,7 +836,7 @@ class ExecutiveDashboard:
 def interactive(account):
     """ Interactive shell for Prelude Detect """
     wizard = Wizard(account=account)
-    wizard.splash(HELLO)
+    wizard.splash(HELLO, "WELCOME")
     wizard.load_tests()
     print(Padding(f'Your account has access to {len(wizard.tests)} Verified Security Tests', 1))
 
