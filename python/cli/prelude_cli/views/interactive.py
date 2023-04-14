@@ -343,12 +343,6 @@ class RunCode(Enum):
                 break
 
 
-class FiltersView:
-
-    def __init__(self, wiz: Wizard):
-        self.wiz = wiz
-
-
 class ViewDays:
 
     def __init__(self, wiz: Wizard):
@@ -387,7 +381,7 @@ class ViewRules:
             usage = item.get('usage')
             if usage:
                 entry = f'{self.wiz.normalize(rule["label"], 35)} {self.wiz.normalize(str(usage["failed"]), 15)} {self.wiz.normalize(str(usage["count"]), 15)}'
-            menu[entry] = None
+                menu[entry] = None
         TerminalMenu(menu.keys()).show()
 
 
