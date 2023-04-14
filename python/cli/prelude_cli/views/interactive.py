@@ -101,61 +101,6 @@ class Wizard:
         return f'{element[:chars - 2]}..' if len(element) > chars else (element or '').ljust(chars, " ")
 
 
-class ViewLogs:
-
-    def __init__(self, wiz: Wizard):
-        self.wiz = wiz
-
-
-    @handle_api_error
-    def enter(self, e: str):
-        while True:
-            try:
-                endpoint_id = e.split(' ')[0]
-                filters = self.wiz.filters.copy()
-                filters['endpoints'] = endpoint_id
-                logs = self.wiz.detect.describe_activity(view='logs', filters=filters)
-                print(f'> {endpoint_id} has {len(logs)} results over the last 30 days')
-
-                menu = OrderedDict()
-                for log in logs:
-                    entry = f'{self.wiz.normalize(log["date"], 30)} {self.wiz.normalize(ExitCode(log["status"]).name, 15)} {self.wiz.convert(log["test"])}'
-                    menu[entry] = None
-                TerminalMenu(menu.keys()).show()
-                break
-            except Exception:
-                break
-
-
-class ListProbes:
-
-    def __init__(self, wiz: Wizard):
-        self.wiz = wiz
-
-    @handle_api_error
-    def enter(self):
-        my_probes = self.wiz.detect.describe_activity(view='probes', filters=self.wiz.filters)
-        states = {x['state'] for x in my_probes}
-        dos = {x['dos'] for x in my_probes}
-        tags = {tag for x in my_probes for tag in x['tags']}
-        print(f'Last 30 days: {len(my_probes)} probes in {len(states)} states, across {len(dos)} operating systems, with {len(tags)} tags')
-
-        menu = OrderedDict()
-        legend = f'{self.wiz.normalize("endpoint_id", 20)} {self.wiz.normalize("os", 15)} {self.wiz.normalize("state", 15)} tags'
-        menu[legend] = None
-        for probe in my_probes:
-            entry = f'{self.wiz.normalize(probe["endpoint_id"], 20)} {self.wiz.normalize(probe["dos"], 15)} {self.wiz.normalize(probe["state"], 15)} {",".join(probe["tags"])}'
-            menu[entry] = ViewLogs
-
-        while True:
-            try:
-                index = TerminalMenu(menu.keys()).show()
-                answer = list(menu.items())
-                answer[index][1](self.wiz).enter(e=answer[index][0])
-            except Exception:
-                break
-
-
 class DeployProbe:
 
     def __init__(self, wiz: Wizard):
@@ -263,7 +208,6 @@ do
 
         menu = OrderedDict()
         menu['Register new probe'] = DeployProbe
-        menu['View probe results'] = ListProbes
         menu['Delete existing probe'] = DeleteProbe
 
         while True:
@@ -389,45 +333,6 @@ class FiltersView:
     def __init__(self, wiz: Wizard):
         self.wiz = wiz
 
-    def process(self, filters):
-        my_endpoints = self.wiz.detect.describe_activity(view='probes', filters=self.wiz.filters)
-
-        print('Filter results by probe tags?')
-        menu = TerminalMenu(
-            {tag for probe in my_endpoints for tag in probe['tags']},
-            multi_select=True,
-            show_multi_select_hint=True,
-            multi_select_select_on_accept=False,
-            multi_select_empty_ok=True
-        )
-        menu.show()
-        if menu.chosen_menu_entries:
-            filters['tags'] = ",".join(menu.chosen_menu_entries)
-
-        print('Filter results by operating system?')
-        menu = TerminalMenu(
-            {probe['dos'] for probe in my_endpoints},
-            multi_select=True,
-            show_multi_select_hint=True,
-            multi_select_select_on_accept=False,
-            multi_select_empty_ok=True
-        )
-        menu.show()
-        if menu.chosen_menu_entries:
-            filters['dos'] = ",".join(menu.chosen_menu_entries)
-
-        print('Filter results by tests?')
-        menu = TerminalMenu(
-            self.wiz.tests.values(),
-            multi_select=True,
-            show_multi_select_hint=True,
-            multi_select_select_on_accept=False,
-            multi_select_empty_ok=True
-        )
-        menu.show()
-        if menu.chosen_menu_entries:
-            filters['tests'] = ",".join([self.wiz.convert(i, reverse=True) for i in menu.chosen_menu_entries])
-
 
 class ViewDays:
 
@@ -436,7 +341,7 @@ class ViewDays:
 
     def enter(self):
         filters = self.wiz.filters.copy()
-        FiltersView(self.wiz).process(filters)
+        filters['start'] = datetime.combine(datetime.utcnow() - timedelta(days=14), time.min),
 
         days = self.wiz.detect.describe_activity(view='days', filters=filters)
         days.reverse()
@@ -457,7 +362,7 @@ class ViewRules:
 
     def enter(self):
         print(Padding('Detect classifies tests under rules, which analyze the surface area of operating systems', 1))
-        rules = self.wiz.detect.describe_activity(view='rules', filters=self.wiz.filters)
+        rules = self.wiz.detect.describe_activity(view='rules', filters=self.wiz.filters.copy())
 
         menu = OrderedDict()
         legend = f'{self.wiz.normalize("rule", 35)} {self.wiz.normalize("failed", 15)} {self.wiz.normalize("endpoints", 15)}'
@@ -465,7 +370,8 @@ class ViewRules:
         for item in rules:
             rule = item.get('rule')
             usage = item.get('usage')
-            entry = f'{self.wiz.normalize(rule["label"], 35)} {self.wiz.normalize(str(usage["failed"]), 15)} {self.wiz.normalize(str(usage["count"]), 15)}'
+            if usage:
+                entry = f'{self.wiz.normalize(rule["label"], 35)} {self.wiz.normalize(str(usage["failed"]), 15)} {self.wiz.normalize(str(usage["count"]), 15)}'
             menu[entry] = None
         TerminalMenu(menu.keys()).show()
 
@@ -482,7 +388,7 @@ class ViewInsights:
         menu = OrderedDict()
         legend = f'{self.wiz.normalize("unprotected", 15)} {self.wiz.normalize("protected", 15)} {self.wiz.normalize("dos", 15)} {"test"}'
         menu[legend] = None
-        for item in insights:
+        for item in insights[:10]:
             vol = item['volume']
             if vol['unprotected']:
                 entry = f'{self.wiz.normalize(str(vol["unprotected"]), 15)} {self.wiz.normalize(str(vol["protected"]), 15)} {self.wiz.normalize(item["dos"], 15)} {self.wiz.convert(item["test"])}'
@@ -554,8 +460,9 @@ EXPLOIT_PREVENTED = 107
         self.wiz.splash(self.SPLASH, helper='Detect records a code for each executed test to explain what happened')
 
         menu = OrderedDict()
-        menu['Results by day'] = ViewDays
-        menu['Results by rule'] = ViewRules
+        menu['Full results: open executive dashboard'] = ExecutiveDashboard
+        menu['Summary: results by day'] = ViewDays
+        menu['Summary: results by rule'] = ViewRules
         menu['Computer insights'] = ViewInsights
         menu['Human recommendations'] = ViewRecommendations
 
@@ -899,7 +806,7 @@ export const Permissions = {
 
 class ExecutiveDashboard:
 
-    def __init__(self, wiz: Wizard, title: str):
+    def __init__(self, wiz: Wizard, title: str = ''):
         self.wiz = wiz
         self.title = title
 
