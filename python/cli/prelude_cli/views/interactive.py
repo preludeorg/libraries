@@ -760,7 +760,7 @@ class DeleteUser:
             self.wiz.iam.delete_user(handle=handle)
 
 
-class ListControls:
+class ListPartners:
 
     def __init__(self, wiz: Wizard):
         self.wiz = wiz
@@ -768,14 +768,10 @@ class ListControls:
     def enter(self):
         account = self.wiz.iam.get_account()
         menu = OrderedDict()
-        legend = f'{self.wiz.normalize("name", 20)} {self.wiz.normalize("apî", 40)} {self.wiz.normalize("username", 10)} {self.wiz.normalize("secret", 10)}'
+        legend = f'{self.wiz.normalize("name", 20)}'
         menu[legend] = None
-        for control in account['controls']:
-            name = control['name']
-            api = control['api']
-            username = control['username']
-            secret = control['secret']
-            entry = f'{self.wiz.normalize(name, 20)} {self.wiz.normalize(api, 40)} {self.wiz.normalize(username, 10)} {self.wiz.normalize(secret, 10)} '
+        for name in account['controls']:
+            entry = f'{self.wiz.normalize(name, 20)}'
             menu[entry] = None
         TerminalMenu(menu.keys()).show()
 
@@ -811,13 +807,13 @@ class DetachPartner:
 
     def enter(self):
         account = self.wiz.iam.get_account()
-        controls = [ctrl['name'] for ctrl in account['controls']]
+        partners = account['controls']
 
-        if not controls:
-            print('No controls exist for this account')
+        if not partners:
+            print('No partners exist for this account')
             return
 
-        menu = TerminalMenu(controls, multi_select=True, show_multi_select_hint=True)
+        menu = TerminalMenu(partners, multi_select=True, show_multi_select_hint=True)
         menu.show()
 
         for name in menu.chosen_menu_entries:
@@ -866,9 +862,9 @@ export const Permissions = {
         menu['List users'] = ListUser
         menu['Create user'] = CreateUser
         menu['Delete user'] = DeleteUser
-        menu['List integrations'] = ListControls
-        menu['Attach integration'] = AttachPartner
-        menu['Detach integration'] = DetachPartner
+        menu['List partners'] = ListPartners
+        menu['Attach partner'] = AttachPartner
+        menu['Detach partner'] = DetachPartner
         menu['Delete account'] = DeleteAccount
 
         while True:
