@@ -388,7 +388,7 @@ class ViewInsights:
         menu = OrderedDict()
         legend = f'{self.wiz.normalize("unprotected", 15)} {self.wiz.normalize("protected", 15)} {self.wiz.normalize("dos", 15)} {"test"}'
         menu[legend] = None
-        for item in insights:
+        for item in insights[:10]:
             vol = item['volume']
             if vol['unprotected']:
                 entry = f'{self.wiz.normalize(str(vol["unprotected"]), 15)} {self.wiz.normalize(str(vol["protected"]), 15)} {self.wiz.normalize(item["dos"], 15)} {self.wiz.convert(item["test"])}'
