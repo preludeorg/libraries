@@ -20,10 +20,10 @@ from datetime import datetime, timedelta, time
 
 from prelude_cli.views.shared import handle_api_error
 from prelude_sdk.controllers.iam_controller import IAMController
-from prelude_sdk.models.codes import RunCode, ExitCode, Permission
 from prelude_sdk.controllers.build_controller import BuildController
 from prelude_sdk.controllers.probe_controller import ProbeController
 from prelude_sdk.controllers.detect_controller import DetectController
+from prelude_sdk.models.codes import RunCode, ExitCode, Permission, Decision
 
 
 HELLO="""
@@ -501,13 +501,34 @@ class ViewRecommendations:
         recommendations = self.wiz.detect.recommendations()
 
         if recommendations:
+            legend = f'{self.wiz.normalize("created", 15)} {self.wiz.normalize("user", 20)} {self.wiz.normalize("title", 40)} {"description"}'
+            menu[legend] = None
             for item in recommendations:
-                entry = f'{self.wiz.normalize(item["created"], 15)} {self.wiz.normalize(item["handle"], 20)} {self.wiz.normalize(item["title"], 50)} {item["description"]}'
-                menu[entry] = None
-            TerminalMenu(menu.keys()).show()
+                entry = f'{self.wiz.normalize(item["created"], 15)} {self.wiz.normalize(item["handle"], 20)} {self.wiz.normalize(item["title"], 40)} {item["description"]}'
+                menu[entry] = item
+            index = TerminalMenu(menu.keys()).show()
+
+            answer = list(menu.items())
+            AddDecision(self.wiz, answer[index][1]).enter()
+
         else:
             print('No recommendations are available')
 
+
+class AddDecision:
+
+    def __init__(self, wiz: Wizard, rec: dict):
+        self.wiz = wiz
+        self.rec = rec
+
+    def enter(self):
+        decision = Decision(self.rec['events'][0]['decision']).name if self.rec['events'] else "None"
+        print(f'Title: {self.rec["title"]}\nDecision: {decision}\nDescription: {self.rec["description"]}')
+
+        menu = ['cancel', 'approve', 'deny']
+        index = TerminalMenu(menu).show()
+        if index:
+            self.wiz.detect.make_decision(id=self.rec['id'], decision=Decision[menu[index].upper()].value)
 
 class Results:
 
