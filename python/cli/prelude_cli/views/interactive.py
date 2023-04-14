@@ -341,6 +341,7 @@ class ViewDays:
 
     def enter(self):
         filters = self.wiz.filters.copy()
+        filters['start'] = datetime.combine(datetime.utcnow() - timedelta(days=14), time.min),
 
         days = self.wiz.detect.describe_activity(view='days', filters=filters)
         days.reverse()
@@ -348,7 +349,7 @@ class ViewDays:
         menu = OrderedDict()
         legend = f'{self.wiz.normalize("date", 15)} {self.wiz.normalize("failed", 15)} {self.wiz.normalize("endpoints", 15)}'
         menu[legend] = None
-        for item in days[:14]:
+        for item in days:
             entry = f'{self.wiz.normalize(item["date"], 15)} {self.wiz.normalize(str(item["failed"]), 15)} {self.wiz.normalize(str(item["count"]), 15)}'
             menu[entry] = None
         TerminalMenu(menu.keys()).show()
