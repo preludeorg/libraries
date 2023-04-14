@@ -227,7 +227,7 @@ class ViewSchedule:
     def enter(self):
         menu = OrderedDict()
         queue = self.wiz.detect.list_queue()
-        print(f'You have {len(queue)} schedules')
+        print(f'You have {len(queue)} tests scheduled')
         legend = f'{self.wiz.normalize("schedule", 10)} {self.wiz.normalize("tag", 10)} {self.wiz.normalize("started", 15)} {"test"}'
         menu[legend] = None
         for item in queue:
@@ -236,7 +236,7 @@ class ViewSchedule:
         TerminalMenu(menu.keys()).show()
 
 
-class AddSchedule:
+class ScheduleTest:
 
     def __init__(self, wiz: Wizard):
         self.wiz = wiz
@@ -254,7 +254,7 @@ class AddSchedule:
         tests = {self.wiz.convert(i, reverse=True): i for i in list(menu.chosen_menu_entries)}
 
         print('How often do you want to run these tests?')
-        menu = [RunCode.DAILY.name, RunCode.WEEKLY.name, RunCode.MONTHLY.name]
+        menu = [r.name for r in RunCode if r != RunCode.INVALID]
         index = TerminalMenu(menu, multi_select=False).show()
         run_code = RunCode[menu[index]].value
 
@@ -271,27 +271,29 @@ class AddSchedule:
         tags = ",".join(menu.chosen_menu_entries or [])
 
         for test_id in tests:
-            print(f'Adding schedule for {tests[test_id]}')
+            print(f'Test [{tests[test_id]}] has been scheduled')
             self.wiz.detect.enable_test(ident=test_id, run_code=run_code, tags=tags)
         print('Probes check in every few hours to retrieve their scheduled tests')
 
 
-class DeleteSchedule:
+class DescheduleTest:
 
     def __init__(self, wiz: Wizard):
         self.wiz = wiz
 
     def enter(self):
         menu = TerminalMenu(
-            [self.wiz.convert(entry['test']) for entry in self.wiz.detect.list_queue()],
+            set([self.wiz.convert(entry['test']) for entry in self.wiz.detect.list_queue()]),
             multi_select=True,
             show_multi_select_hint=True,
+            multi_select_select_on_accept=False,
+            multi_select_empty_ok=True
         )
         menu.show()
 
         tests = {self.wiz.convert(i, reverse=True): i for i in list(menu.chosen_menu_entries)}
         for test_id in tests:
-            print(f'Removing schedule for {tests[test_id]}')
+            print(f'Test [{tests[test_id]}] has been descheduled')
             self.wiz.detect.disable_test(ident=test_id)
 
 
@@ -316,8 +318,8 @@ class RunCode(Enum):
 
         menu = OrderedDict()
         menu['View schedule'] = ViewSchedule
-        menu['Add schedule'] = AddSchedule
-        menu['Remove schedule'] = DeleteSchedule
+        menu['Schedule test'] = ScheduleTest
+        menu['Deschedule test'] = DescheduleTest
 
         while True:
             try:
