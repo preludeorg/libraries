@@ -173,14 +173,24 @@ class DeleteProbe:
         self.wiz = wiz
 
     def enter(self):
-        my_probes = [entry['endpoint_id'] for entry in self.wiz.detect.list_endpoints()]
-        print(f'You have {len(my_probes)} registered probes')
-        menu = TerminalMenu(my_probes, multi_select=True, show_multi_select_hint=True)
-        menu.show()
+        probes = self.wiz.detect.list_endpoints()
+        print(f'You have {len(probes)} registered probes')
 
-        for ep in menu.chosen_menu_entries:
-            print(f'Deleting "{ep}"')
-            self.wiz.detect.delete_endpoint(ident=ep)
+        menu = OrderedDict()
+        for p in probes:
+            entry = f'{self.wiz.normalize(p["host"], 50)} {self.wiz.normalize(p["endpoint_id"], 36)}'
+            menu[entry] = None
+        indexes = TerminalMenu(
+            menu,
+            multi_select=True,
+            show_multi_select_hint=True,
+            multi_select_select_on_accept=False,
+            multi_select_empty_ok=True
+        ).show()
+
+        for i in indexes:
+            self.wiz.detect.delete_endpoint(ident=probes[i]['endpoint_id'])
+            print(f'Deleted "{probes[i]["host"]}" ({probes[i]["endpoint_id"]})')
 
 
 class Probes:
