@@ -845,7 +845,7 @@ def interactive(account):
     while True:
         try:
             if not wizard.tests:
-                raise PermissionError('No local keychain found. Would you like to create a Prelude account?')
+                raise PermissionError('Account not found. Please check your keychain and profile. Otherwise, would you like to create a Prelude account?')
             
             index = TerminalMenu(menu.keys()).show()
             answer = list(menu.items())
