@@ -79,11 +79,9 @@ class Wizard:
                 print(Padding(helper, 1))
             return
 
+    @handle_api_error
     def load_tests(self):
-        try:
-            self.tests = {row['id']: row['name'] for row in self.detect.list_tests()}
-        except Exception:
-            pass
+        self.tests = {row['id']: row['name'] for row in self.detect.list_tests()}
 
     def my_tests(self):
         account_id = self.build.account.headers['account']
@@ -845,7 +843,7 @@ def interactive(account):
     while True:
         try:
             if not wizard.tests:
-                raise PermissionError('No local keychain found. Would you like to create a Prelude account?')
+                raise PermissionError('Account not found. Would you like to create a Prelude account?')
             
             index = TerminalMenu(menu.keys()).show()
             answer = list(menu.items())
