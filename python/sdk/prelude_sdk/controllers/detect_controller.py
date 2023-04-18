@@ -109,12 +109,13 @@ class DetectController:
                 raise Exception(res.text)
 
     @verify_credentials
-    def disable_test(self, ident):
+    def disable_test(self, ident: str, tags: str):
         """ Disable a test so endpoints will stop running it """
         with Spinner():
             res = requests.delete(
                 f'{self.account.hq}/detect/queue/{ident}',
                 headers=self.account.headers,
+                params=dict(tags=tags),
                 timeout=10
             )
             if res.status_code != 200:

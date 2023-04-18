@@ -67,7 +67,7 @@ class TestDetectController:
 
     def test_disable_test(self, unwrap):
         """Test disable_test method"""
-        unwrap(self.detect.disable_test)(self.detect, ident=pytest.test_id)
+        unwrap(self.detect.disable_test)(self.detect, ident=pytest.test_id, tags=self.tags)
         res = unwrap(self.detect.list_queue)(self.detect)
         assert len([test for test in res if test['test'] == pytest.test_id]) == 0
 

@@ -46,19 +46,20 @@ def list_tests(controller):
               type=click.Choice([r.name for r in RunCode], case_sensitive=False))
 @click.pass_obj
 @handle_api_error
-def activate_test(controller, test, run_code, tags):
+def enable_test(controller, test, run_code, tags):
     """ Add test to your queue """
     controller.enable_test(ident=test, run_code=RunCode[run_code.upper()].value, tags=tags)
 
 
 @detect.command('disable-test')
 @click.argument('test')
+@click.option('-t', '--tags', help='only disable for these tags (comma-separated list)', type=str, default='')
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
 @handle_api_error
-def deactivate_test(controller, test):
+def disable_test(controller, test, tags):
     """ Remove test from your queue """
-    controller.disable_test(ident=test)
+    controller.disable_test(ident=test, tags=tags)
 
 
 @detect.command('social-stats')
