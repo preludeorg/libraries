@@ -293,19 +293,19 @@ class DescheduleTest:
         self.wiz = wiz
 
     def enter(self):
-        menu = TerminalMenu(
-            set([self.wiz.convert(entry['test']) for entry in self.wiz.detect.list_queue()]),
+        queue = self.wiz.detect.list_queue()
+        menu = [f'{self.wiz.normalize(self.wiz.convert(q["test"]), 50)} tag: {self.wiz.normalize(q["tag"], 20)}' for q in queue]
+        indexes = TerminalMenu(
+            menu,
             multi_select=True,
             show_multi_select_hint=True,
             multi_select_select_on_accept=False,
             multi_select_empty_ok=True
-        )
-        menu.show()
+        ).show()
 
-        tests = {self.wiz.convert(i, reverse=True): i for i in list(menu.chosen_menu_entries)}
-        for test_id in tests:
-            print(f'Test [{tests[test_id]}] has been descheduled')
-            self.wiz.detect.disable_test(ident=test_id)
+        for i in indexes:
+            self.wiz.detect.disable_test(ident=queue[i]['test'], tags=queue[i]['tag'])
+            print(f'Test has been descheduled: [{menu[i]}]')
 
 
 class Schedule:
