@@ -271,9 +271,12 @@ describe("SDK Test", () => {
     });
 
     it("disableTest should remove the test from the queue", async function () {
-      await service.detect.disableTest(activeTest);
+      await service.detect.disableTest({
+        test: activeTest,
+        tags: tags,
+      });
       const result = await service.detect.listQueue();
-      expect(result).to.have.lengthOf(1);
+      expect(result).toHaveLength(1);
     });
 
     it("socialStats should return an object with a non-empty aray of values", async function () {

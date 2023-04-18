@@ -5,6 +5,7 @@ import {
   CreateRecommendation,
   DayResult,
   DecideRecommendation,
+  DisableTest,
   EnableTest,
   Insight,
   Probe,
@@ -101,8 +102,12 @@ export default class DetectController {
   }
 
   /** Disable a test so endpoints will stop running it */
-  async disableTest(test: string, options: RequestOptions = {}) {
-    await this.#client.requestWithAuth(`/detect/queue/${test}`, {
+  async disableTest(
+    { test, tags }: DisableTest,
+    options: RequestOptions = {}
+  ) {
+    const params = new URLSearchParams({ tags });
+    await this.#client.requestWithAuth(`/detect/queue/${test}?${params.toString()}`, {
       method: "DELETE",
       ...options,
     });

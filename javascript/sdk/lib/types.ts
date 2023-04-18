@@ -85,6 +85,11 @@ export interface EnableTest {
   tags: string;
 }
 
+export interface DisableTest {
+  test: string;
+  tags: string;
+}
+
 export interface Probe {
   endpoint_id: string;
   edr_id: string | null;
