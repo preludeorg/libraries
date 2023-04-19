@@ -25,7 +25,7 @@ class PartnerController:
             raise Exception(res.text)
 
     @verify_credentials
-    def deploy(self, partner_name: str, host_ids: list[str]):
+    def deploy(self, partner_name: str, host_ids: list):
         """ Deploy probes on all specified partner endpoints """
         with Spinner():
             params = dict(host_ids=host_ids)
