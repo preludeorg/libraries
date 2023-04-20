@@ -77,8 +77,8 @@ def delete_user(controller, handle):
 
 @iam.command('attach-partner')
 @click.argument('name')
-@click.option('--api', required=True, help='API endpoint of the partner')
-@click.option('--user', required=True, help='user identifier')
+@click.option('--api', default='', help='API endpoint of the partner')
+@click.option('--user', default='', help='user identifier')
 @click.option('--secret', default='', help='secret for OAUTH use cases')
 @click.pass_obj
 @handle_api_error
