@@ -97,7 +97,7 @@ class IAMController:
             raise Exception(res.text)
 
     @verify_credentials
-    def attach_partner(self, name: str, api: str, user: str, secret: str = ''):
+    def attach_partner(self, name: str, api: str, user: str, secret: str):
         """ Attach a partner to your account """
         with Spinner():
             params = dict(api=api, user=user, secret=secret)
