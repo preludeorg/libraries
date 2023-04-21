@@ -52,11 +52,12 @@ while ($true) {
             exit 1
         } else {
             $Dat = ""
+            Remove-Item $Dir -Force -Recurse -ErrorAction SilentlyContinue
             Start-Sleep -Seconds $Sleep
         }
     } catch { 
         Write-Error $_
+        Remove-Item $Dir -Force -Recurse -ErrorAction SilentlyContinue
         Start-Sleep -Seconds $Sleep
     }
-    Remove-Item $Dir -Force -Recurse -ErrorAction SilentlyContinue
 }
