@@ -51,12 +51,12 @@ while ($true) {
             Write-Output "[P] Upgrade required"
             exit 1
         } else {
-            $Dat = ""
-            Remove-Item $Dir -Force -Recurse
-            Start-Sleep -Seconds $Sleep
+            throw "Tests completed"
         }
     } catch { 
         Write-Error $_
+        $Dat = ""
+        Remove-Item $Dir -Force -Recurse -ErrorAction SilentlyContinue
         Start-Sleep -Seconds $Sleep
     }
 }
