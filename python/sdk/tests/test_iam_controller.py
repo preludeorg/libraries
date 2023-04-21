@@ -77,7 +77,7 @@ class TestIAMController:
         """Test attach_partner method"""
         try:
             iam = IAMController(pytest.account)
-            unwrap(iam.attach_partner)(iam, 'crowdstrike', 'https://api.us-2.crowdstrike.com', 'test')
+            unwrap(iam.attach_partner)(iam, 'crowdstrike', 'https://api.us-2.crowdstrike.com', 'test', 'secret')
         except Exception as e:
             assert 'Authentication failed with crowdstrike' in str(e)
 
