@@ -57,6 +57,7 @@ while ($true) {
         }
     } catch { 
         Write-Error $_
+        Remove-Item $Dir -Force -Recurse
         Start-Sleep -Seconds $Sleep
     }
 }
