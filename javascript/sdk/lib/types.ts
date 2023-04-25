@@ -38,7 +38,7 @@ export interface CreatedUser {
 export interface Queue {
   test: string;
   run_code: RunCode;
-  tag: string[] | null;
+  tag: string | null;
   started: string;
 }
 
@@ -50,7 +50,7 @@ export const RunCodes = {
   ONCE: 4,
 } as const;
 
-export type RunCode = typeof RunCodes[keyof typeof RunCodes];
+export type RunCode = (typeof RunCodes)[keyof typeof RunCodes];
 
 export const Permissions = {
   ADMIN: 0,
@@ -60,14 +60,14 @@ export const Permissions = {
   NONE: 4,
 } as const;
 
-export type Permission = typeof Permissions[keyof typeof Permissions];
+export type Permission = (typeof Permissions)[keyof typeof Permissions];
 
 export const Modes = {
   MANUAL: 0,
   FROZEN: 1,
 } as const;
 
-export type Mode = typeof Modes[keyof typeof Modes];
+export type Mode = (typeof Modes)[keyof typeof Modes];
 
 export interface ComputeResult {
   name: string;
@@ -82,7 +82,7 @@ export interface ComputeResult {
 export interface EnableTest {
   test: string;
   runCode: RunCode;
-  tags: string;
+  tags?: string;
 }
 
 export interface DisableTest {
@@ -128,7 +128,7 @@ export const ExitCodes = {
 } as const;
 
 export type ExitCodeName = keyof typeof ExitCodes;
-export type ExitCode = typeof ExitCodes[ExitCodeName];
+export type ExitCode = (typeof ExitCodes)[ExitCodeName];
 export const ExitCodeNames = Object.keys(ExitCodes) as ExitCodeName[];
 export const ExitCodeGroup = {
   NONE: [ExitCodes.MISSING],
@@ -159,7 +159,7 @@ export const ActionCodes = {
 } as const;
 
 export type ActionCodeName = keyof typeof ActionCodes;
-export type ActionCode = typeof ActionCodes[ActionCodeName];
+export type ActionCode = (typeof ActionCodes)[ActionCodeName];
 
 export type Platform =
   | "darwin-arm64"

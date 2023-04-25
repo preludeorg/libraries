@@ -91,7 +91,7 @@ export default class DetectController {
 
   /** Enable a test so endpoints will start running it */
   async enableTest(
-    { test, runCode, tags }: EnableTest,
+    { test, runCode, tags = "" }: EnableTest,
     options: RequestOptions = {}
   ) {
     await this.#client.requestWithAuth(`/detect/queue/${test}`, {
@@ -102,15 +102,15 @@ export default class DetectController {
   }
 
   /** Disable a test so endpoints will stop running it */
-  async disableTest(
-    { test, tags }: DisableTest,
-    options: RequestOptions = {}
-  ) {
+  async disableTest({ test, tags }: DisableTest, options: RequestOptions = {}) {
     const params = new URLSearchParams({ tags });
-    await this.#client.requestWithAuth(`/detect/queue/${test}?${params.toString()}`, {
-      method: "DELETE",
-      ...options,
-    });
+    await this.#client.requestWithAuth(
+      `/detect/queue/${test}?${params.toString()}`,
+      {
+        method: "DELETE",
+        ...options,
+      }
+    );
   }
 
   /** Search the NVD for a keyword  */
