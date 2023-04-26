@@ -725,6 +725,9 @@ class AttachPartner:
         default = 'https://api.us-2.crowdstrike.com'
         api = input(f'API FQDN [{default}]: ') or default
 
+        default = ''
+        tenant = input(f'Tenant ID [{default}]: ') or default
+
         default = os.getlogin()
         user = input(f'User or client ID [{default}]: ') or default
 
@@ -732,7 +735,7 @@ class AttachPartner:
         secret = input(f'API token [{default}]: ') or default
 
         print(f'Attaching "{name}" to your account')
-        self.wiz.iam.attach_partner(name=name, api=api, user=user, secret=secret)
+        self.wiz.iam.attach_partner(name=name, api=api, tenant=tenant, user=user, secret=secret)
 
 
 class DetachPartner:
