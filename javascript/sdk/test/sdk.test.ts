@@ -85,6 +85,7 @@ describe("SDK Test", () => {
       const result = await service.iam.attachPartner({
         name: "crowdstrike",
         api: "https://api.crowdstrike.com",
+        tenant: "",
         user: "test",
         secret: "test",
       });
@@ -326,6 +327,7 @@ describe("SDK Test", () => {
       await service.iam.attachPartner({
         name: "crowdstrike",
         api: "https://api.us-2.crowdstrike.com",
+        tenant: "",
         user: process.env.PARTNER_USER as string,
         secret: process.env.PARTNER_SECRET as string,
       });

@@ -295,6 +295,7 @@ export interface DownloadParams {
 export interface AttachPartnerParams {
   name: string;
   api: string;
+  tenant: string;
   user: string;
   secret?: string;
 }

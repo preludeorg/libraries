@@ -85,14 +85,14 @@ export default class IAMController {
   }
 
   async attachPartner(
-    { name, api, user, secret = "" }: AttachPartnerParams,
+    { name, api, tenant, user, secret = "" }: AttachPartnerParams,
     options: RequestOptions = {}
   ) {
     const response = await this.#client.requestWithAuth(
       `/iam/partner/${name}`,
       {
         method: "POST",
-        body: JSON.stringify({ api, user, secret }),
+        body: JSON.stringify({ api, tenant, user, secret }),
         ...options,
       }
     );
