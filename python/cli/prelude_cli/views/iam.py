@@ -78,13 +78,14 @@ def delete_user(controller, handle):
 @iam.command('attach-partner')
 @click.argument('name')
 @click.option('--api', default='', help='API endpoint of the partner')
+@click.option('--tenant', default='', help='tenant identifier')
 @click.option('--user', default='', help='user identifier')
 @click.option('--secret', default='', help='secret for OAUTH use cases')
 @click.pass_obj
 @handle_api_error
-def attach_partner(controller, name, api, user, secret):
+def attach_partner(controller, name, api, tenant, user, secret):
     """ Attach an EDR to Detect """
-    controller.attach_partner(name=name, api=api, user=user, secret=secret)
+    controller.attach_partner(name=name, api=api, tenant=tenant, user=user, secret=secret)
 
 
 @iam.command('detach-partner')
