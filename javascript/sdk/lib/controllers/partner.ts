@@ -1,5 +1,6 @@
 import Client from "../client";
 import {
+  AttachPartnerParams,
   DeployParams,
   DeployedEnpoint,
   EndpointsParams,
@@ -12,6 +13,34 @@ export default class PartnerController {
 
   constructor(client: Client) {
     this.#client = client;
+  }
+
+  async attachPartner(
+    { name, api, user, secret = "" }: AttachPartnerParams,
+    options: RequestOptions = {}
+  ) {
+    const response = await this.#client.requestWithAuth(
+      `/partner/attach/${name}`,
+      {
+        method: "POST",
+        body: JSON.stringify({ api, user, secret }),
+        ...options,
+      }
+    );
+
+    return response.text();
+  }
+
+  async detachPartner(name: string, options: RequestOptions = {}) {
+    const response = await this.#client.requestWithAuth(
+      `/partner/detach/${name}`,
+      {
+        method: "DELETE",
+        ...options,
+      }
+    );
+
+    return response.text();
   }
 
   /** Get a list of endpoints from all partners */
