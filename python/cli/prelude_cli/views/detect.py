@@ -109,35 +109,6 @@ def endpoints(controller, days):
     print_json(data=controller.list_endpoints(days=days))
 
 
-@detect.command('recommendations')
-@click.pass_obj
-@handle_api_error
-def recommendation(controller):
-    """ Print all security recommendations """
-    print_json(data=controller.recommendations())
-
-
-@detect.command('add-recommendation')
-@click.argument('title')
-@click.argument('description')
-@click.pass_obj
-@handle_api_error
-def add_recommendation(controller, title, description):
-    """ Create a new security recommendation """
-    controller.create_recommendation(title=title, description=description)
-
-
-@detect.command('decide-recommendation')
-@click.argument('id')
-@click.option('-d', '--decision', help='approve or deny the recommendation', default=Decision.APPROVE.name,
-              type=click.Choice([d.name for d in Decision], case_sensitive=False), show_default=True)
-@click.pass_obj
-@handle_api_error
-def decide_recommendation(controller, id, decision):
-    """ Update a security recommendation decision """
-    controller.make_decision(id=id, decision=Decision[decision.upper()].value)
-
-
 @detect.command('activity')
 @click.option('-v', '--view',
               help='retrieve a specific result view',

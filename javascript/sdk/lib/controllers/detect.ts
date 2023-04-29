@@ -2,16 +2,13 @@ import Client from "../client";
 import {
   Activity,
   ActivityQuery,
-  CreateRecommendation,
   DayResult,
-  DecideRecommendation,
   DisableTest,
   EnableTest,
   Insight,
   Probe,
   ProbeActivity,
   Queue,
-  Recommendation,
   RegisterEndpointParams,
   RequestOptions,
   RuleInfo,
@@ -195,46 +192,5 @@ export default class DetectController {
     );
 
     return await response.json();
-  }
-
-  /** Return a list of recommendations associated to an Account */
-  async getRecommendations(options: RequestOptions = {}) {
-    const response = await this.#client.requestWithAuth(
-      `/detect/recommendations`,
-      {
-        method: "GET",
-        ...options,
-      }
-    );
-
-    return (await response.json()) as Recommendation[];
-  }
-
-  /** Creates or updates a new security recommendation */
-  async putRecommendation(
-    params: CreateRecommendation | DecideRecommendation,
-    options: RequestOptions = {}
-  ): Promise<string> {
-    const response = await this.#client.requestWithAuth(
-      `/detect/recommendations`,
-      {
-        method: "POST",
-        body: JSON.stringify(params),
-        ...options,
-      }
-    );
-
-    return await response.text();
-  }
-  /** Updates a recommendation with a new event containing new decision */
-  async makeDecision(
-    params: DecideRecommendation,
-    options: RequestOptions = {}
-  ): Promise<void> {
-    await this.#client.requestWithAuth(`/detect/recommendations/${params.id}`, {
-      method: "POST",
-      body: JSON.stringify({ decision: params.decision }),
-      ...options,
-    });
   }
 }
