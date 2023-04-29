@@ -13,6 +13,28 @@ def partner(ctx):
     ctx.obj = PartnerController(account=ctx.obj)
 
 
+@partner.command('attach')
+@click.argument('name')
+@click.option('--api', default='', help='API endpoint of the partner')
+@click.option('--user', default='', help='user identifier')
+@click.option('--secret', default='', help='secret for OAUTH use cases')
+@click.pass_obj
+@handle_api_error
+def attach_partner(controller, name, api, user, secret):
+    """ Attach an EDR to Detect """
+    controller.attach(name=name, api=api, user=user, secret=secret)
+
+
+@partner.command('detach')
+@click.confirmation_option(prompt='Are you sure?')
+@click.argument('name')
+@click.pass_obj
+@handle_api_error
+def detach_partner(controller, name):
+    """ Detach an existing partner from your account """
+    controller.detach(name=name)
+
+
 @partner.command('endpoints')
 @click.option('--name', required=True, help='partner name (e.g. "CrowdStrike")')
 @click.option('--platform', required=True, help='platform name (e.g. "windows")', type=click.Choice(['windows', 'linux', 'darwin'], case_sensitive=False))
@@ -21,7 +43,7 @@ def partner(ctx):
 @click.pass_obj
 @handle_api_error
 def partner_endpoints(controller, name, platform, hostname, offset):
-    """ Get a list of endpoints from all partners """
+    """ Get a list of endpoints from a partner """
     print_json(data=controller.endpoints(partner_name=name, platform=platform, hostname=hostname, offset=offset))
 
 

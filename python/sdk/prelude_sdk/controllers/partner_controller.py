@@ -10,6 +10,34 @@ class PartnerController:
         self.account = account
 
     @verify_credentials
+    def attach(self, name: str, api: str, user: str, secret: str):
+        """ Attach a partner to your account """
+        with Spinner():
+            params = dict(api=api, user=user, secret=secret)
+            res = requests.post(
+                f'{self.account.hq}/iam/partner/{name}',
+                headers=self.account.headers,
+                json=params,
+                timeout=10
+            )
+            if res.status_code == 200:
+                return res.text
+            raise Exception(res.text)
+
+    @verify_credentials
+    def detach(self, name: str):
+        """ Detach a partner from your Detect account """
+        with Spinner():
+            res = requests.delete(
+                f'{self.account.hq}/iam/partner/{name}',
+                headers=self.account.headers,
+                timeout=10
+            )
+            if res.status_code == 200:
+                return res.text
+            raise Exception(res.text)
+        
+    @verify_credentials
     def endpoints(self, partner_name: str, platform: str, hostname: str = '', offset: int = 0):
         """ Get a list of endpoints from all partners """
         with Spinner():

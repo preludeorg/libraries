@@ -97,34 +97,6 @@ class IAMController:
             raise Exception(res.text)
 
     @verify_credentials
-    def attach_partner(self, name: str, api: str, user: str, secret: str):
-        """ Attach a partner to your account """
-        with Spinner():
-            params = dict(api=api, user=user, secret=secret)
-            res = requests.post(
-                f'{self.account.hq}/iam/partner/{name}',
-                headers=self.account.headers,
-                json=params,
-                timeout=10
-            )
-            if res.status_code == 200:
-                return res.text
-            raise Exception(res.text)
-
-    @verify_credentials
-    def detach_partner(self, name: str):
-        """ Detach a partner from your Detect account """
-        with Spinner():
-            res = requests.delete(
-                f'{self.account.hq}/iam/partner/{name}',
-                headers=self.account.headers,
-                timeout=10
-            )
-            if res.status_code == 200:
-                return res.text
-            raise Exception(res.text)
-
-    @verify_credentials
     def audit_logs(self, days: int = 7, limit: int = 1000):
         """ Get audit logs from the last X days """
         with Spinner():
