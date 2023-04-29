@@ -15,7 +15,7 @@ class PartnerController:
         with Spinner():
             params = dict(api=api, user=user, secret=secret)
             res = requests.post(
-                f'{self.account.hq}/iam/partner/{name}',
+                f'{self.account.hq}/partner/attach/{name}',
                 headers=self.account.headers,
                 json=params,
                 timeout=10
@@ -29,7 +29,7 @@ class PartnerController:
         """ Detach a partner from your Detect account """
         with Spinner():
             res = requests.delete(
-                f'{self.account.hq}/iam/partner/{name}',
+                f'{self.account.hq}/partner/detach/{name}',
                 headers=self.account.headers,
                 timeout=10
             )
