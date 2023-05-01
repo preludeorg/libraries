@@ -164,12 +164,12 @@ export default class DetectController {
     options?: RequestOptions
   ): Promise<ProbeActivity[]>;
   async describeActivity(
-    query: ActivityQuery & { view: "rules" },
+    query: ActivityQuery & { view: "units" },
     options?: RequestOptions
   ): Promise<RuleInfo[]>;
   async describeActivity(
     query: ActivityQuery & {
-      view: "days" | "logs" | "insights" | "probes" | "rules";
+      view: "days" | "logs" | "insights" | "probes" | "units";
     },
     options: RequestOptions = {}
   ) {
