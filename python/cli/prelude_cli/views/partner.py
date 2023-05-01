@@ -36,7 +36,7 @@ def detach_partner(controller, name):
 
 
 @partner.command('endpoints')
-@click.option('--name', required=True, help='partner name (e.g. "CrowdStrike")')
+@click.argument('name')
 @click.option('--platform', required=True, help='platform name (e.g. "windows")', type=click.Choice(['windows', 'linux', 'darwin'], case_sensitive=False))
 @click.option('--hostname', default='', help='hostname pattern (e.g. "mycompany-c24oi444")')
 @click.option('--offset', default=0, help='API pagination offset', type=int)
@@ -49,7 +49,7 @@ def partner_endpoints(controller, name, platform, hostname, offset):
 
 @partner.command('deploy')
 @click.confirmation_option(prompt='Are you sure?')
-@click.option('--name', required=True, help='partner name (e.g. "CrowdStrike")')
+@click.argument('name')
 @click.option('--host_ids', required=True, help='a list of host IDs to deploy to', multiple=True, default=[])
 @click.pass_obj
 @handle_api_error

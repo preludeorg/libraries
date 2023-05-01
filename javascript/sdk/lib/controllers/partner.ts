@@ -20,7 +20,7 @@ export default class PartnerController {
     options: RequestOptions = {}
   ) {
     const response = await this.#client.requestWithAuth(
-      `/partner/attach/${name}`,
+      `/partner/${name}`,
       {
         method: "POST",
         body: JSON.stringify({ api, user, secret }),
@@ -33,7 +33,7 @@ export default class PartnerController {
 
   async detachPartner(name: string, options: RequestOptions = {}) {
     const response = await this.#client.requestWithAuth(
-      `/partner/detach/${name}`,
+      `/partner/${name}`,
       {
         method: "DELETE",
         ...options,
@@ -62,7 +62,7 @@ export default class PartnerController {
     });
 
     const response = await this.#client.requestWithAuth(
-      `/partner/${partnerName}?${searchParams.toString()}`,
+      `/partner/endpoints/${partnerName}?${searchParams.toString()}`,
       {
         method: "GET",
         ...options,
@@ -78,7 +78,7 @@ export default class PartnerController {
     options: RequestOptions = {}
   ): Promise<DeployedEnpoint[]> {
     const response = await this.#client.requestWithAuth(
-      `/partner/${partnerName}`,
+      `/partner/deploy/${partnerName}`,
       {
         method: "POST",
         body: JSON.stringify({ host_ids: hostIds }),
