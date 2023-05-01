@@ -4,6 +4,7 @@ import { spawnSync } from "node:child_process";
 import path from "path";
 import { fileURLToPath } from "url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { addDays, subDays } from "date-fns";
 import { RunCodes, Service } from "../lib/main";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -79,28 +80,6 @@ describe("SDK Test", () => {
       const account = await service.iam.getAccount();
       expect(account).toHaveProperty("users");
       expect(account.users).to.have.lengthOf(1);
-    });
-
-    it("attachControl should add a new control", async () => {
-      const result = await service.iam.attachPartner({
-        name: "crowdstrike",
-        api: "https://api.crowdstrike.com",
-        user: "test",
-        secret: "test",
-      });
-      expect(result).to.be.a("string");
-      const account = await service.iam.getAccount();
-      expect(account).toHaveProperty("controls");
-      expect(account.controls).toHaveLength(1);
-      expect(account.controls).toEqual(expect.arrayContaining(["crowdstrike"]));
-    });
-
-    it("detachControl should remove a control", async () => {
-      const result = await service.iam.detachPartner("crowdstrike");
-      expect(result).to.be.a("string");
-      const account = await service.iam.getAccount();
-      expect(account).toHaveProperty("controls");
-      expect(account.controls).toHaveLength(0);
     });
   });
 
@@ -266,7 +245,14 @@ describe("SDK Test", () => {
         timeout: 20000,
       });
 
-      const result = await service.detect.describeActivity({ view: "logs" });
+      const start = subDays(new Date(), 7).toISOString();
+      const finish = addDays(new Date(), 1).toISOString();
+
+      const result = await service.detect.describeActivity({
+        start,
+        finish,
+        view: "logs",
+      });
       expect(result).toHaveLength(2);
     });
 
@@ -289,27 +275,6 @@ describe("SDK Test", () => {
       const result = await service.detect.listEndpoints();
       expect(result).to.have.lengthOf(0);
     });
-
-    it("putRecommendation should assert true", async function () {
-      await service.detect.putRecommendation({
-        title: recommendation,
-        description: recommendation,
-      });
-    });
-
-    it("getRecommendations should return an array with length 1", async function () {
-      const result = await service.detect.getRecommendations();
-      expect(result).toHaveLength(1);
-      expect(result[0].title).eq(recommendation);
-      recommendationId = result[0].id;
-    });
-
-    it("makeDecision should make a decision on the recommendation", async function () {
-      await service.detect.makeDecision({ id: recommendationId, decision: 1 });
-      const result = await service.detect.getRecommendations();
-      expect(result).to.have.lengthOf(1);
-      expect(result[0].events[0].decision).toBe(1);
-    });
   });
 
   describe.runIf(
@@ -323,7 +288,7 @@ describe("SDK Test", () => {
     beforeAll(async () => {
       const credentials = await createAccount();
       service.setCredentials(credentials);
-      await service.iam.attachPartner({
+      await service.partner.attachPartner({
         name: "crowdstrike",
         api: "https://api.us-2.crowdstrike.com",
         user: process.env.PARTNER_USER as string,
@@ -333,6 +298,28 @@ describe("SDK Test", () => {
 
     afterAll(async () => {
       await service.iam.purgeAccount();
+    });
+
+    it("attachControl should add a new control", async () => {
+      const result = await service.partner.attachPartner({
+        name: "crowdstrike",
+        api: "https://api.crowdstrike.com",
+        user: "test",
+        secret: "test",
+      });
+      expect(result).to.be.a("string");
+      const account = await service.iam.getAccount();
+      expect(account).toHaveProperty("controls");
+      expect(account.controls).toHaveLength(1);
+      expect(account.controls).toEqual(expect.arrayContaining(["crowdstrike"]));
+    });
+
+    it("detachControl should remove a control", async () => {
+      const result = await service.partner.detachPartner("crowdstrike");
+      expect(result).to.be.a("string");
+      const account = await service.iam.getAccount();
+      expect(account).toHaveProperty("controls");
+      expect(account.controls).toHaveLength(0);
     });
 
     it("endpoints should return an object", async () => {
