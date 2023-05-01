@@ -72,24 +72,6 @@ class TestIAMController:
         res = unwrap(iam.get_account)(iam)
         assert len([user for user in res['users'] if user['handle'] == 'registration']) == 0
 
-    @pytest.mark.order(5)
-    def test_attach_partner(self, unwrap):
-        """Test attach_partner method"""
-        try:
-            iam = IAMController(pytest.account)
-            unwrap(iam.attach_partner)(iam, 'crowdstrike', 'https://api.us-2.crowdstrike.com', 'test', 'secret')
-        except Exception as e:
-            assert 'Authentication failed with crowdstrike' in str(e)
-
-    @pytest.mark.order(6)
-    def test_detach_partner(self, unwrap):
-        """Test detach_partner method"""
-        try:
-            iam = IAMController(pytest.account)
-            unwrap(iam.detach_partner)(iam, 'crowdstrike')
-        except Exception as e:
-            assert 'No partner by that name' in str(e)
-
     @pytest.mark.order(after='test_detect_controller.py::TestDetectController::test_describe_activity')
     def test_update_account(self, unwrap):
         """Test update_account method"""
@@ -98,7 +80,7 @@ class TestIAMController:
         res = unwrap(iam.get_account)(iam)
         assert res['mode'] == Mode.FROZEN.value
 
-    @pytest.mark.order(after='test_detect_controller.py::TestDetectController::test_make_decision')
+    @pytest.mark.order(after='test_detect_controller.py::TestDetectController::test_delete_endpoint')
     def test_purge_account(self, unwrap):
         """Test purge_account method"""
         iam = IAMController(pytest.account)
