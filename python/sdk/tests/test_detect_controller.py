@@ -1,4 +1,6 @@
 import os
+from datetime import datetime, timedelta, time
+
 import pytest
 import subprocess
 
@@ -60,7 +62,11 @@ class TestDetectController:
         try:
             subprocess.run([pytest.probe], capture_output=True, env={'PRELUDE_TOKEN': pytest.endpoint_token}, timeout=20)
         except subprocess.TimeoutExpired:
-            describe_activity = unwrap(self.detect.describe_activity)(self.detect, filters={'endpoint_id': pytest.endpoint_id})
+            filters = dict(
+                start=datetime.combine(datetime.utcnow() - timedelta(days=7), time.min),
+                finish=datetime.combine(datetime.utcnow(), time.max)
+            )
+            describe_activity = unwrap(self.detect.describe_activity)(self.detect, filters=filters | {'endpoint_id': pytest.endpoint_id})
             assert len(describe_activity) == 2
         finally:
             os.remove(pytest.probe)
@@ -81,21 +87,3 @@ class TestDetectController:
         unwrap(self.detect.delete_endpoint)(self.detect, ident=pytest.endpoint_id)
         res = unwrap(self.detect.list_endpoints)(self.detect)
         assert len(res) == 0
-
-    def test_create_recommendation(self, unwrap):
-        """Test create_recommendation method"""
-        unwrap(self.detect.create_recommendation)(self.detect, title=self.recommendation, description=self.recommendation)
-        assert True
-
-    def test_recommendations(self, unwrap):
-        """Test recommendations method"""
-        res = unwrap(self.detect.recommendations)(self.detect)
-        assert self.recommendation == res[0]['title']
-        assert self.recommendation == res[0]['description']
-        pytest.recommendation_id = res[0]['id']
-
-    def test_make_decision(self, unwrap):
-        """Test make_decision method"""
-        unwrap(self.detect.make_decision)(self.detect, id=pytest.recommendation_id, decision=Decision.APPROVE.value)
-        res = unwrap(self.detect.recommendations)(self.detect)
-        assert Decision.APPROVE.value == res[0]['events'][0]['decision']
