@@ -110,23 +110,6 @@ export default class DetectController {
     );
   }
 
-  /** Search the NVD for a keyword  */
-  async search(
-    identifier: string,
-    options: RequestOptions = {}
-  ): Promise<SearchResults> {
-    const searchParams = new URLSearchParams({ identifier });
-    const response = await this.#client.requestWithAuth(
-      `/detect/search?${searchParams.toString()}`,
-      {
-        method: "GET",
-        ...options,
-      }
-    );
-
-    return await response.json();
-  }
-
   /** Pull social statistics for a specific test */
   async socialStats(
     test: string,

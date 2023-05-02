@@ -90,16 +90,6 @@ def queue(controller):
     print_json(data=controller.list_queue())
 
 
-@detect.command('search')
-@click.argument('cve')
-@click.pass_obj
-@handle_api_error
-def search(controller, cve):
-    """ Search the NVD for a specific CVE identifier """
-    print("This product uses the NVD API but is not endorsed or certified by the NVD.\n")
-    print_json(data=controller.search(identifier=cve))
-
-
 @detect.command('endpoints')
 @click.option('-d', '--days', help='only show endpoints that have run at least once in the past DAYS days', default=90, type=int)
 @click.pass_obj
