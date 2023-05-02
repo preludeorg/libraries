@@ -200,7 +200,7 @@ export interface RuleUsage {
   failed: number;
 }
 
-export interface RuleInfo {
+export interface Unit {
   rule: Rule | null;
   usage?: RuleUsage;
 }
