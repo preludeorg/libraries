@@ -187,7 +187,7 @@ export interface TestData {
   mappings: string[];
 }
 
-export interface Rule {
+export interface Unit {
   id: string;
   unit: string;
   definition: string;
@@ -200,8 +200,8 @@ export interface UnitUsage {
   failed: number;
 }
 
-export interface Unit {
-  rule: Rule | null;
+export interface UnitInfo {
+  rule: Unit | null;
   usage?: UnitUsage;
 }
 
