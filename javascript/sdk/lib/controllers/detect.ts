@@ -12,7 +12,6 @@ import {
   RegisterEndpointParams,
   RequestOptions,
   RuleInfo,
-  SearchResults,
   Stats,
   Test,
 } from "../types";
