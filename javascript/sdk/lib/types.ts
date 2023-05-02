@@ -188,10 +188,10 @@ export interface TestData {
 }
 
 export interface Rule {
-  label: string;
-  published: string;
+  id: string;
+  unit: string;
+  definition: string;
   description: string;
-  long_description: string;
 }
 
 export interface RuleUsage {
@@ -208,8 +208,8 @@ export interface RuleInfo {
 export type Stats = Record<Platform, Record<`${ExitCode}`, number>>;
 
 export interface ActivityQuery {
-  start?: string;
-  finish?: string;
+  start: string;
+  finish: string;
   tests?: string;
   result_id?: string;
   endpoints?: string;
