@@ -187,22 +187,22 @@ export interface TestData {
   mappings: string[];
 }
 
-export interface Unit {
+export interface Rule {
   id: string;
-  unit: string;
+  label: string;
   definition: string;
   description: string;
 }
 
-export interface UnitUsage {
+export interface RuleUsage {
   tests: string[];
   count: number;
   failed: number;
 }
 
-export interface UnitInfo {
-  rule: Unit | null;
-  usage?: UnitUsage;
+export interface RuleInfo {
+  rule: Rule | null;
+  usage?: RuleUsage;
 }
 
 export type Stats = Record<Platform, Record<`${ExitCode}`, number>>;
