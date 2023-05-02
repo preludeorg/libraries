@@ -63,8 +63,8 @@ class TestDetectController:
             subprocess.run([pytest.probe], capture_output=True, env={'PRELUDE_TOKEN': pytest.endpoint_token}, timeout=20)
         except subprocess.TimeoutExpired:
             filters = dict(
-                start=datetime.combine(datetime.utcnow() - timedelta(days=7), time.min),
-                finish=datetime.combine(datetime.utcnow(), time.max)
+                start=datetime.utcnow() - timedelta(days=7),
+                finish=datetime.utcnow() + timedelta(days=1)
             )
             describe_activity = unwrap(self.detect.describe_activity)(self.detect, filters=filters | {'endpoint_id': pytest.endpoint_id})
             assert len(describe_activity) == 2
