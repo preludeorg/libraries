@@ -187,29 +187,29 @@ export interface TestData {
   mappings: string[];
 }
 
-export interface Rule {
-  label: string;
-  published: string;
+export interface Unit {
+  id: string;
+  unit: string;
+  definition: string;
   description: string;
-  long_description: string;
 }
 
-export interface RuleUsage {
+export interface UnitUsage {
   tests: string[];
   count: number;
   failed: number;
 }
 
-export interface RuleInfo {
-  rule: Rule | null;
-  usage?: RuleUsage;
+export interface UnitInfo {
+  rule: Unit | null;
+  usage?: UnitUsage;
 }
 
 export type Stats = Record<Platform, Record<`${ExitCode}`, number>>;
 
 export interface ActivityQuery {
-  start?: string;
-  finish?: string;
+  start: string;
+  finish: string;
   tests?: string;
   result_id?: string;
   endpoints?: string;

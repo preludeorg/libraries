@@ -11,7 +11,7 @@ import {
   Queue,
   RegisterEndpointParams,
   RequestOptions,
-  RuleInfo,
+  UnitInfo,
   SearchResults,
   Stats,
   Test,
@@ -166,7 +166,7 @@ export default class DetectController {
   async describeActivity(
     query: ActivityQuery & { view: "units" },
     options?: RequestOptions
-  ): Promise<RuleInfo[]>;
+  ): Promise<UnitInfo[]>;
   async describeActivity(
     query: ActivityQuery & {
       view: "days" | "logs" | "insights" | "probes" | "units";
@@ -175,8 +175,8 @@ export default class DetectController {
   ) {
     const searchParams = new URLSearchParams();
     searchParams.set("view", query.view);
-    if (query.start) searchParams.set("start", query.start);
-    if (query.finish) searchParams.set("finish", query.finish);
+    searchParams.set("start", query.start);
+    searchParams.set("finish", query.finish);
     if (query.tests) searchParams.set("tests", query.tests);
     if (query.tags) searchParams.set("tags", query.tags);
     if (query.endpoints) searchParams.set("endpoints", query.endpoints);
