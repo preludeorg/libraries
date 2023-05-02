@@ -34,12 +34,13 @@ def get_test(controller, test_id):
 @build.command('create-test')
 @click.argument('name')
 @click.option('-t', '--test', help='test identifier', default=None, type=str)
+@click.option('-u', '--unit', help='unit identifier', default=None, type=str)
 @click.pass_obj
 @handle_api_error
-def create_test(controller, name, test):
+def create_test(controller, name, test, unit):
     """ Create or update a security test """
     test_id = test or str(uuid.uuid4())
-    controller.create_test(test_id=test_id, name=name)
+    controller.create_test(test_id=test_id, name=name, unit=unit)
 
     if not test:
         basename = f'{test_id}.go'
@@ -56,7 +57,6 @@ def create_test(controller, name, test):
 
 @build.command('delete-test')
 @click.argument('test')
-@click.option('-t', '--test', help='test identifier', default=None, type=str)
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
 @handle_api_error
@@ -107,23 +107,3 @@ def upload_attachment(controller, path, test):
     else:
         for obj in Path(path).rglob('*'):
             upload(p=Path(obj))
-
-
-@build.command('map')
-@click.argument('test')
-@click.argument('identifier')
-@click.pass_obj
-@handle_api_error
-def map(controller, test, identifier):
-    """ Map an identifier to a test """
-    print_json(data=controller.map(test_id=test, x=identifier))
-
-
-@build.command('unmap')
-@click.argument('test')
-@click.argument('identifier')
-@click.pass_obj
-@handle_api_error
-def unmap(controller, test, identifier):
-    """ Unmap an identifier from a test """
-    print_json(data=controller.unmap(test_id=test, x=identifier))

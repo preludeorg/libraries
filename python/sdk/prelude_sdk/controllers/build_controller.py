@@ -10,12 +10,13 @@ class BuildController:
         self.account = account
 
     @verify_credentials
-    def create_test(self, test_id, name):
+    def create_test(self, test_id, name, unit=None):
         """ Create or update a test """
         with Spinner():
+            body = dict(name=name) if unit is None else dict(name=name, unit=unit)
             res = requests.post(
                 f'{self.account.hq}/build/tests/{test_id}', 
-                json=dict(name=name),
+                json=body,
                 headers=self.account.headers,
                 timeout=10
             )
@@ -69,32 +70,6 @@ class BuildController:
                 f'{self.account.hq}/build/tests/{test_id}/{filename}',
                 data=data,
                 headers=h,
-                timeout=10
-            )
-            if not res.status_code == 200:
-                raise Exception(res.text)
-
-    @verify_credentials
-    def map(self, test_id: str, x: str):
-        """ Add a classification property to a test """
-        with Spinner():
-            res = requests.post(
-                f'{self.account.hq}/build/tests/{test_id}/map/{x}', 
-                json=dict(id=test_id),
-                headers=self.account.headers,
-                timeout=10
-            )
-            if not res.status_code == 200:
-                raise Exception(res.text)
-
-    @verify_credentials
-    def unmap(self, test_id: str, x: str):
-        """ Remove a classification property from a test """
-        with Spinner():
-            res = requests.delete(
-                f'{self.account.hq}/build/tests/{test_id}/map/{x}', 
-                json=dict(id=test_id),
-                headers=self.account.headers,
                 timeout=10
             )
             if not res.status_code == 200:

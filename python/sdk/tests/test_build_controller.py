@@ -16,11 +16,12 @@ class TestBuildController:
         """Setup the test class"""
         self.test_id = str(uuid.uuid4())
         self.test_name = 'test'
+        self.test_unit = 'SPU.1'
         self.build = BuildController(pytest.account)
 
     def test_create_test(self, unwrap):
         """Test create_test method"""
-        unwrap(self.build.create_test)(self.build, test_id=self.test_id, name=self.test_name)
+        unwrap(self.build.create_test)(self.build, test_id=self.test_id, name=self.test_name, unit=self.test_unit)
         assert True
 
     def test_get_test(self, unwrap):
@@ -47,20 +48,6 @@ class TestBuildController:
             f.write(res)
         assert os.path.isfile(f'{self.test_id}.go')
         os.remove(f'{self.test_id}.go')
-
-    def test_map(self, unwrap):
-        """Test map method"""
-        mapping = 'TEST'
-        unwrap(self.build.map)(self.build, test_id=self.test_id, x=mapping)
-        res = unwrap(self.build.get_test)(self.build, test_id=self.test_id)
-        assert mapping in res['mappings']
-
-    def test_unmap(self, unwrap):
-        """Test unmap method"""
-        mapping = 'TEST'
-        unwrap(self.build.unmap)(self.build, test_id=self.test_id, x=mapping)
-        res = unwrap(self.build.get_test)(self.build, test_id=self.test_id)
-        assert mapping not in res['mappings']
 
     def test_delete_test(self, unwrap):
         """Test delete_test method"""

@@ -1,10 +1,6 @@
 import Client from "../client";
 import type { RequestOptions, TestData } from "../types";
 
-interface MapParams {
-  testId: string;
-  key: string;
-}
 
 export default class BuildController {
   #client: Client;
@@ -17,11 +13,12 @@ export default class BuildController {
   async createTest(
     id: string,
     name: string,
+    unit: string,
     options: RequestOptions = {}
   ): Promise<void> {
     await this.#client.requestWithAuth(`/build/tests/${id}`, {
       method: "POST",
-      body: JSON.stringify({ name }),
+      body: JSON.stringify({ name, unit}),
       ...options,
     });
   }
@@ -80,29 +77,5 @@ export default class BuildController {
       body: JSON.stringify({ code }),
       ...options,
     });
-  }
-
-  async map(params: MapParams, options: RequestOptions = {}): Promise<string> {
-    const response = await this.#client.requestWithAuth(
-      `/build/tests/${params.testId}/map/${params.key}`,
-      {
-        method: "POST",
-        body: JSON.stringify({ id: params.testId }),
-        ...options,
-      }
-    );
-
-    return response.text();
-  }
-
-  async unmap(params: MapParams, options: RequestOptions = {}): Promise<void> {
-    await this.#client.requestWithAuth(
-      `/build/tests/${params.testId}/map/${params.key}`,
-      {
-        method: "DELETE",
-        body: JSON.stringify({ id: params.testId }),
-        ...options,
-      }
-    );
   }
 }

@@ -87,6 +87,7 @@ describe("SDK Test", () => {
     const testId = randomUUID();
     const testName = "test";
     const templateName = `${testId}.go`;
+    const testUnit = "SPU.1";
 
     const service = new Service({
       host,
@@ -102,13 +103,13 @@ describe("SDK Test", () => {
     });
 
     it("createTest should not throw an error", async () => {
-      await service.build.createTest(testId, testName);
+      await service.build.createTest(testId, testName, testUnit);
     });
 
     it("getTest should return a test object", async () => {
       const test = await service.build.getTest(testId);
       expect(test).toHaveProperty("attachments");
-      expect(test).toHaveProperty("mappings");
+      expect(test).toHaveProperty("unit");
     });
 
     it("upload should have an attachment in the getTest call", async () => {
@@ -127,18 +128,6 @@ describe("SDK Test", () => {
       const data = await service.build.download(testId, templateName);
       expect(data).toContain(testId);
       expect(data).toContain(testName);
-    });
-
-    it("map should add a mapping to the test", async () => {
-      await service.build.map({ testId, key: "test" });
-      const test = await service.build.getTest(testId);
-      expect(test.mappings).to.have.lengthOf(1);
-    });
-
-    it("unmap should remove the mapping from the test", async () => {
-      await service.build.unmap({ testId, key: "test" });
-      const test = await service.build.getTest(testId);
-      expect(test.mappings).to.have.lengthOf(0);
     });
 
     it("deleteTest should not throw an error", async () => {
