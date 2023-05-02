@@ -194,7 +194,7 @@ export interface Rule {
   description: string;
 }
 
-export interface RuleUsage {
+export interface UnitUsage {
   tests: string[];
   count: number;
   failed: number;
@@ -202,7 +202,7 @@ export interface RuleUsage {
 
 export interface Unit {
   rule: Rule | null;
-  usage?: RuleUsage;
+  usage?: UnitUsage;
 }
 
 export type Stats = Record<Platform, Record<`${ExitCode}`, number>>;
