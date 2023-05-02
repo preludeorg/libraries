@@ -134,17 +134,3 @@ class DetectController:
             if res.status_code == 200:
                 return res.json()
             raise Exception(res.text)
-
-    @verify_credentials
-    def search(self, identifier: str):
-        """ Search the NVD for a keyword """
-        with Spinner():
-            res = requests.get(
-                f'{self.account.hq}/detect/search',
-                headers=self.account.headers,
-                params=dict(identifier=identifier),
-                timeout=10
-            )
-            if res.status_code == 200:
-                return res.json()
-            raise Exception(res.text)
