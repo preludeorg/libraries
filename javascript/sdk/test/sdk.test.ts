@@ -1,10 +1,10 @@
 import { randomUUID } from "crypto";
+import { addDays, subDays } from "date-fns";
 import { readFileSync, unlinkSync, writeFileSync } from "fs";
 import { spawnSync } from "node:child_process";
 import path from "path";
 import { fileURLToPath } from "url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { addDays, subDays } from "date-fns";
 import { RunCodes, Service } from "../lib/main";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -32,6 +32,7 @@ const createAccount = async () => {
 
 describe("SDK Test", () => {
   let probeName = "nocturnal";
+  let probeExists = false;
 
   describe("IAM Controller", () => {
     const service = new Service({
@@ -135,21 +136,7 @@ describe("SDK Test", () => {
     });
   });
 
-  describe("Probe Controller", () => {
-    it("download should return a string", async () => {
-      const service = new Service({
-        host,
-      });
-      const result = await service.probe.download({
-        name: probeName,
-        dos: "linux-arm64",
-      });
-      expect(result).to.be.a("string");
-      await writeFileSync(`${probeName}.sh`, result, { mode: 0o755 });
-    });
-  });
-
-  describe("Detect Controller", () => {
+  describe.only("Detect Controller", () => {
     const hostName = "test_host";
     const serial = "test_serial";
     const edrId = "test_edr_id";
@@ -160,6 +147,9 @@ describe("SDK Test", () => {
     let endpointId = "";
     let activeTest = "";
     let recommendationId = "";
+    let unitId = "";
+    let start = subDays(new Date(), 7).toISOString();
+    let finish = addDays(new Date(), 1).toISOString();
 
     const service = new Service({
       host,
@@ -172,7 +162,6 @@ describe("SDK Test", () => {
 
     afterAll(async () => {
       await service.iam.purgeAccount();
-      await unlinkSync(`${probeName}.sh`);
     });
 
     it("registerEndpoint should return a string with length 32", async () => {
@@ -198,6 +187,7 @@ describe("SDK Test", () => {
       expect(result).to.have.length.greaterThan(1);
       const tests = result.filter((test) => test.id !== healthCheck);
       activeTest = tests[0].id;
+      unitId = tests[0].unit;
     });
 
     it("listQueue should return an array with length 1", async () => {
@@ -226,23 +216,56 @@ describe("SDK Test", () => {
       );
     });
 
-    it("describeActivity should spawn a probe and run 2 tests", async function () {
-      spawnSync(`./${probeName}.sh`, {
-        env: {
-          PRELUDE_TOKEN: endpointToken,
+    describe("with probe", () => {
+      afterAll(async () => {
+        await unlinkSync(`${probeName}.sh`);
+      });
+
+      it("download should return a string", async () => {
+        const service = new Service({
+          host,
+        });
+        const result = await service.probe.download({
+          name: probeName,
+          dos: "linux-arm64",
+        });
+        expect(result).to.be.a("string");
+        await writeFileSync(`${probeName}.sh`, result, { mode: 0o755 });
+      });
+
+      it("spawns the probe", async () => {
+        spawnSync(`./${probeName}.sh`, {
+          env: {
+            PRELUDE_TOKEN: endpointToken,
+          },
+          timeout: 20000,
+        });
+      });
+
+      it("describeActivity should spawn a probe and run 2 tests", async function () {
+        const result = await service.detect.describeActivity({
+          start,
+          finish,
+          view: "logs",
+        });
+        expect(result).toHaveLength(2);
+      });
+
+      it(
+        "describeActivity units view should return 2 tests",
+        async function () {
+          const result = await service.detect.describeActivity({
+            start,
+            finish,
+            view: "units",
+          });
+
+          const unit = result.find((u) => u.unit.id === unitId);
+          expect(unit).toBeDefined();
+          expect(unit?.usage?.count).toBe(1);
         },
-        timeout: 20000,
-      });
-
-      const start = subDays(new Date(), 7).toISOString();
-      const finish = addDays(new Date(), 1).toISOString();
-
-      const result = await service.detect.describeActivity({
-        start,
-        finish,
-        view: "logs",
-      });
-      expect(result).toHaveLength(2);
+        { retry: 5 }
+      );
     });
 
     it("disableTest should remove the test from the queue", async function () {

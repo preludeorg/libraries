@@ -11,9 +11,9 @@ import {
   Queue,
   RegisterEndpointParams,
   RequestOptions,
-  RuleInfo,
   Stats,
   Test,
+  UnitInfo,
 } from "../types";
 
 export default class DetectController {
@@ -148,7 +148,7 @@ export default class DetectController {
   async describeActivity(
     query: ActivityQuery & { view: "units" },
     options?: RequestOptions
-  ): Promise<RuleInfo[]>;
+  ): Promise<UnitInfo[]>;
   async describeActivity(
     query: ActivityQuery & {
       view: "days" | "logs" | "insights" | "probes" | "units";

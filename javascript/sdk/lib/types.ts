@@ -17,6 +17,8 @@ export interface Test {
   account_id: string;
   id: string;
   name: string;
+  unit: string;
+  code?: string;
 }
 
 export interface User {
@@ -187,22 +189,22 @@ export interface TestData {
   mappings: string[];
 }
 
-export interface Rule {
+export interface Unit {
   id: string;
   label: string;
   definition: string;
   description: string;
 }
 
-export interface RuleUsage {
+export interface UnitUsage {
   tests: string[];
   count: number;
   failed: number;
 }
 
-export interface RuleInfo {
-  rule: Rule | null;
-  usage?: RuleUsage;
+export interface UnitInfo {
+  unit: Unit;
+  usage?: UnitUsage;
 }
 
 export type Stats = Record<Platform, Record<`${ExitCode}`, number>>;
