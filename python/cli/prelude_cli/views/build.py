@@ -82,12 +82,11 @@ def download(controller, test):
     with Spinner():
         attachments = controller.get_test(test_id=test).get('attachments')
 
-    for attach in attachments:
-        if Path(attach).suffix:
-            with Spinner():
+        for attach in attachments:
+            if Path(attach).suffix:
                 code = controller.download(test_id=test, filename=attach)
-            with open(PurePath(test, attach), 'wb') as f:
-                f.write(code)
+                with open(PurePath(test, attach), 'wb') as f:
+                    f.write(code)
 
 
 @build.command('upload')
