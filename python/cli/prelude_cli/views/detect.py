@@ -1,7 +1,7 @@
 import click
 
 from rich import print_json
-from datetime import datetime, timedelta, time
+from datetime import datetime, timedelta
 
 from prelude_sdk.models.codes import RunCode
 from prelude_cli.views.shared import handle_api_error, Spinner
