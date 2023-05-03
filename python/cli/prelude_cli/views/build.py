@@ -50,7 +50,7 @@ def create_test(controller, name, test, unit, alert):
         basename = f'{test_id}.go'
         template = pkg_resources.read_text(templates, 'template.go')
         template = template.replace('$ID', test_id)
-        template = template.replace('$NAME', name or '')
+        template = template.replace('$NAME', name)
         template = template.replace('$UNIT', unit or '')
         template = template.replace('$CREATED', str(datetime.utcnow()))
         with Spinner():
