@@ -34,7 +34,7 @@ def get_test(controller, test_id):
 
 
 @build.command('create-test')
-@click.option('-n', '--name', help='name of test', default=None, type=str)
+@click.argument('name')
 @click.option('-t', '--test', help='test identifier', default=None, type=str)
 @click.option('-u', '--unit', help='unit identifier', default=None, type=str)
 @click.option('-a', '--alert', help='alert identifier [CVE ID, Advisory ID, etc]', default=None, type=str)
