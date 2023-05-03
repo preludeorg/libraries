@@ -8,7 +8,7 @@ from rich import print_json
 from datetime import datetime
 from pathlib import Path, PurePath
 
-from prelude_cli.views.shared import handle_api_error
+from prelude_cli.views.shared import handle_api_error, Spinner
 from prelude_sdk.controllers.build_controller import BuildController
 
 
@@ -28,7 +28,9 @@ def build(ctx):
 @handle_api_error
 def get_test(controller, test_id):
     """ List properties for a test """
-    print_json(data=controller.get_test(test_id=test_id))
+    with Spinner():
+        data = controller.get_test(test_id=test_id)
+    print_json(data=data)
 
 
 @build.command('create-test')
@@ -40,7 +42,8 @@ def get_test(controller, test_id):
 def create_test(controller, name, test, unit):
     """ Create or update a security test """
     test_id = test or str(uuid.uuid4())
-    controller.create_test(test_id=test_id, name=name, unit=unit)
+    with Spinner():
+        controller.create_test(test_id=test_id, name=name, unit=unit)
 
     if not test:
         basename = f'{test_id}.go'
@@ -48,7 +51,8 @@ def create_test(controller, name, test, unit):
         template = template.replace('$ID', test_id)
         template = template.replace('$NAME', name)
         template = template.replace('$CREATED', str(datetime.utcnow()))
-        controller.upload(test_id=test_id, filename=basename, data=template)
+        with Spinner():
+            controller.upload(test_id=test_id, filename=basename, data=template)
 
         with open(basename, 'w') as test_code:
             test_code.write(template)
@@ -62,7 +66,8 @@ def create_test(controller, name, test, unit):
 @handle_api_error
 def delete_test(controller, test):
     """ Delete a test """
-    controller.delete_test(test_id=test)
+    with Spinner():
+        controller.delete_test(test_id=test)
     click.secho(f'Deleted {test}', fg='green')
 
 
@@ -74,10 +79,13 @@ def download(controller, test):
     """ Download a test to your local environment """
     click.secho(f'Downloading {test}')
     Path(test).mkdir(parents=True, exist_ok=True)
+    with Spinner():
+        attachments = controller.get_test(test_id=test).get('attachments')
 
-    for attach in controller.get_test(test_id=test).get('attachments'):
+    for attach in attachments:
         if Path(attach).suffix:
-            code = controller.download(test_id=test, filename=attach)
+            with Spinner():
+                code = controller.download(test_id=test, filename=attach)
             with open(PurePath(test, attach), 'wb') as f:
                 f.write(code)
 
@@ -97,7 +105,8 @@ def upload_attachment(controller, path, test):
 
     def upload(p: Path):
         with open(p, 'rb') as data:
-            controller.upload(test_id=identifier, filename=p.name, data=data.read(), binary=True)
+            with Spinner():
+                controller.upload(test_id=identifier, filename=p.name, data=data.read(), binary=True)
             click.secho(f'Uploaded {path}', fg='green')
 
     identifier = test or test_id()

@@ -3,8 +3,8 @@ import click
 from rich import print_json
 from datetime import datetime, timedelta
 
-from prelude_cli.views.shared import handle_api_error
 from prelude_sdk.models.codes import Permission, Mode
+from prelude_cli.views.shared import handle_api_error, Spinner
 from prelude_sdk.controllers.iam_controller import IAMController
 
 
@@ -21,8 +21,10 @@ def iam(ctx):
 @click.confirmation_option(prompt='Overwrite local account credentials for selected profile?')
 def register_account(controller):
     """ Register a new account """
-    creds = controller.new_account(handle=click.prompt('Enter a handle'))
-    print_json(data=creds)
+    handle = click.prompt('Enter a handle')
+    with Spinner():
+        data = controller.new_account(handle=handle)
+    print_json(data=data)
     print("\nCheck your email to verify your account.\n")
 
 
@@ -35,7 +37,8 @@ def register_account(controller):
 @handle_api_error
 def update_account(controller, mode):
     """ Update an account """
-    controller.update_account(mode=Mode[mode.upper()].value)
+    with Spinner():
+        controller.update_account(mode=Mode[mode.upper()].value)
 
 
 @iam.command('account')
@@ -43,7 +46,9 @@ def update_account(controller, mode):
 @handle_api_error
 def describe_account(controller):
     """ Get account details """
-    print_json(data=controller.get_account())
+    with Spinner():
+        data = controller.get_account()
+    print_json(data=data)
 
 
 @iam.command('create-user')
@@ -56,12 +61,13 @@ def describe_account(controller):
 def create_user(controller, permission, handle, days):
     """ Create a new user in your account """
     expires = datetime.utcnow() + timedelta(days=days)
-    resp = controller.create_user(
-        handle=handle, 
-        permission=Permission[permission.upper()].value, 
-        expires=expires
-    )
-    print_json(data=resp)
+    with Spinner():
+        data = controller.create_user(
+            handle=handle,
+            permission=Permission[permission.upper()].value,
+            expires=expires
+        )
+    print_json(data=data)
     if permission != Permission.SERVICE.name:
         print("\nCheck your email to verify your account.\n")
 
@@ -72,7 +78,8 @@ def create_user(controller, permission, handle, days):
 @handle_api_error
 def delete_user(controller, handle):
     """ Remove a user from your account """
-    controller.delete_user(handle=handle)
+    with Spinner():
+        controller.delete_user(handle=handle)
 
 
 @iam.command('logs')
@@ -82,7 +89,9 @@ def delete_user(controller, handle):
 @handle_api_error
 def logs(controller, days, limit):
     """ Get audit logs """
-    print_json(data=controller.audit_logs(days=days, limit=limit))
+    with Spinner():
+        data = controller.audit_logs(days=days, limit=limit)
+    print_json(data=data)
 
 
 @iam.command('purge')
@@ -91,4 +100,5 @@ def logs(controller, days, limit):
 @handle_api_error
 def purge(controller):
     """ Delete your account """
-    controller.purge_account()
+    with Spinner():
+        controller.purge_account()
