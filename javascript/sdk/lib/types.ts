@@ -18,7 +18,7 @@ export interface Test {
   id: string;
   name: string;
   unit: string;
-  code?: string;
+  alert: string;
 }
 
 export interface User {
