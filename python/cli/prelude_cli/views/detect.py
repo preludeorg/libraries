@@ -3,8 +3,8 @@ import click
 from rich import print_json
 from datetime import datetime, timedelta, time
 
-from prelude_cli.views.shared import handle_api_error
-from prelude_sdk.models.codes import Decision, RunCode
+from prelude_sdk.models.codes import RunCode
+from prelude_cli.views.shared import handle_api_error, Spinner
 from prelude_sdk.controllers.detect_controller import DetectController
 
 
@@ -25,7 +25,8 @@ def detect(ctx):
 @handle_api_error
 def register_endpoint(controller, host, serial_num, edr_id, tags, endpoint_id):
     """ Register a new endpoint """
-    token = controller.register_endpoint(host=host, serial_num=serial_num, edr_id=edr_id, tags=tags, endpoint_id=endpoint_id)
+    with Spinner():
+        token = controller.register_endpoint(host=host, serial_num=serial_num, edr_id=edr_id, tags=tags, endpoint_id=endpoint_id)
     click.secho(token)
 
 
@@ -34,7 +35,9 @@ def register_endpoint(controller, host, serial_num, edr_id, tags, endpoint_id):
 @handle_api_error
 def list_tests(controller):
     """ List all security tests """
-    print_json(data=controller.list_tests())
+    with Spinner():
+        data = controller.list_tests()
+    print_json(data=data)
 
 
 @detect.command('enable-test')
@@ -48,7 +51,8 @@ def list_tests(controller):
 @handle_api_error
 def enable_test(controller, test, run_code, tags):
     """ Add test to your queue """
-    controller.enable_test(ident=test, run_code=RunCode[run_code.upper()].value, tags=tags)
+    with Spinner():
+        controller.enable_test(ident=test, run_code=RunCode[run_code.upper()].value, tags=tags)
 
 
 @detect.command('disable-test')
@@ -59,7 +63,8 @@ def enable_test(controller, test, run_code, tags):
 @handle_api_error
 def disable_test(controller, test, tags):
     """ Remove test from your queue """
-    controller.disable_test(ident=test, tags=tags)
+    with Spinner():
+        controller.disable_test(ident=test, tags=tags)
 
 
 @detect.command('social-stats')
@@ -69,7 +74,9 @@ def disable_test(controller, test, tags):
 @handle_api_error
 def social_statistics(controller, test, days):
     """ Pull social statistics for a specific test """
-    print_json(data=controller.social_stats(ident=test, days=days))
+    with Spinner():
+        data = controller.social_stats(ident=test, days=days)
+    print_json(data=data)
 
 
 @detect.command('delete-endpoint')
@@ -79,7 +86,8 @@ def social_statistics(controller, test, days):
 @handle_api_error
 def delete_endpoint(controller, endpoint_id):
     """Delete a probe/endpoint"""
-    controller.delete_endpoint(ident=endpoint_id)
+    with Spinner():
+        controller.delete_endpoint(ident=endpoint_id)
 
 
 @detect.command('queue')
@@ -87,7 +95,9 @@ def delete_endpoint(controller, endpoint_id):
 @handle_api_error
 def queue(controller):
     """ List all tests in your active queue """
-    print_json(data=controller.list_queue())
+    with Spinner():
+        data = controller.list_queue()
+    print_json(data=data)
 
 
 @detect.command('endpoints')
@@ -96,7 +106,9 @@ def queue(controller):
 @handle_api_error
 def endpoints(controller, days):
     """ List all active endpoints associated to your account """
-    print_json(data=controller.list_endpoints(days=days))
+    with Spinner():
+        data = controller.list_endpoints(days=days)
+    print_json(data=data)
 
 
 @detect.command('activity')
@@ -126,4 +138,6 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos):
     if dos:
         filters['dos'] = dos
 
-    print_json(data=controller.describe_activity(view=view, filters=filters))
+    with Spinner():
+        data = controller.describe_activity(view=view, filters=filters)
+    print_json(data=data)

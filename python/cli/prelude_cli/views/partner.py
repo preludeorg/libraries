@@ -2,7 +2,7 @@ import click
 
 from rich import print_json
 
-from prelude_cli.views.shared import handle_api_error
+from prelude_cli.views.shared import handle_api_error, Spinner
 from prelude_sdk.controllers.partner_controller import PartnerController
 
 
@@ -22,7 +22,8 @@ def partner(ctx):
 @handle_api_error
 def attach_partner(controller, name, api, user, secret):
     """ Attach an EDR to Detect """
-    controller.attach(name=name, api=api, user=user, secret=secret)
+    with Spinner():
+        controller.attach(name=name, api=api, user=user, secret=secret)
 
 
 @partner.command('detach')
@@ -32,7 +33,8 @@ def attach_partner(controller, name, api, user, secret):
 @handle_api_error
 def detach_partner(controller, name):
     """ Detach an existing partner from your account """
-    controller.detach(name=name)
+    with Spinner():
+        controller.detach(name=name)
 
 
 @partner.command('endpoints')
@@ -44,7 +46,9 @@ def detach_partner(controller, name):
 @handle_api_error
 def partner_endpoints(controller, name, platform, hostname, offset):
     """ Get a list of endpoints from a partner """
-    print_json(data=controller.endpoints(partner_name=name, platform=platform, hostname=hostname, offset=offset))
+    with Spinner():
+        data = controller.endpoints(partner_name=name, platform=platform, hostname=hostname, offset=offset)
+    print_json(data=data)
 
 
 @partner.command('deploy')
@@ -55,4 +59,6 @@ def partner_endpoints(controller, name, platform, hostname, offset):
 @handle_api_error
 def partner_deploy(controller, name, host_ids):
     """ Deploy probes to hosts associated to a partner """
-    print_json(data=controller.deploy(partner_name=name, host_ids=host_ids))
+    with Spinner():
+        data = controller.deploy(partner_name=name, host_ids=host_ids)
+    print_json(data=data)
