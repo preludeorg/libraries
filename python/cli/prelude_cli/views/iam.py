@@ -22,8 +22,12 @@ def iam(ctx):
 def register_account(controller):
     """ Register a new account """
     handle = click.prompt('Enter a handle')
+    first = click.prompt('(Optional) Enter your first name', default='', show_default=False)
+    last = click.prompt('(Optional) Enter your last name', default='', show_default=False)
+    company = click.prompt('(Optional) Enter your company', default='', show_default=False)
+
     with Spinner():
-        data = controller.new_account(handle=handle)
+        data = controller.new_account(handle=handle, first=first, last=last, company=company)
     print_json(data=data)
     print("\nCheck your email to verify your account.\n")
 

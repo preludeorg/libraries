@@ -10,10 +10,10 @@ class IAMController:
         self.account = account
 
     @verify_credentials
-    def new_account(self, handle: str):
+    def new_account(self, handle: str, first: str = '', last: str = '', company: str = ''):
         res = requests.post(
             url=f'{self.account.hq}/iam/account',
-            json=dict(handle=handle),
+            json=dict(handle=handle, first=first, last=last, company=company),
             headers=self.account.headers,
             timeout=10
         )
