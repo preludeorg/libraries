@@ -9,13 +9,13 @@ class BuildController:
         self.account = account
 
     @verify_credentials
-    def create_test(self, test_id, name, unit=None, code=None):
+    def create_test(self, test_id, name, unit=None, alert=None):
         """ Create or update a test """
         body = dict(name=name)
         if unit is not None:
             body['unit'] = unit
-        if code is not None:
-            body['code'] = code
+        if alert is not None:
+            body['alert'] = alert
         res = requests.post(
             f'{self.account.hq}/build/tests/{test_id}',
             json=body,

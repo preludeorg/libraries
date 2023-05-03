@@ -37,14 +37,14 @@ def get_test(controller, test_id):
 @click.argument('name')
 @click.option('-t', '--test', help='test identifier', default=None, type=str)
 @click.option('-u', '--unit', help='unit identifier', default=None, type=str)
-@click.option('-c', '--code', help='code identifier [CVE ID, Advisory ID, etc]', default=None, type=str)
+@click.option('-a', '--alert', help='alert identifier [CVE ID, Advisory ID, etc]', default=None, type=str)
 @click.pass_obj
 @handle_api_error
-def create_test(controller, name, test, unit, code):
+def create_test(controller, name, test, unit, alert):
     """ Create or update a security test """
     test_id = test or str(uuid.uuid4())
     with Spinner():
-        controller.create_test(test_id=test_id, name=name, unit=unit, code=code)
+        controller.create_test(test_id=test_id, name=name, unit=unit, alert=alert)
 
     if not test:
         basename = f'{test_id}.go'
