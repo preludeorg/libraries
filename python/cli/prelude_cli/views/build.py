@@ -34,7 +34,7 @@ def get_test(controller, test_id):
 
 
 @build.command('create-test')
-@click.argument('name')
+@click.option('-n', '--name', help='name of test', default=None, type=str)
 @click.option('-t', '--test', help='test identifier', default=None, type=str)
 @click.option('-u', '--unit', help='unit identifier', default=None, type=str)
 @click.option('-a', '--alert', help='alert identifier [CVE ID, Advisory ID, etc]', default=None, type=str)
@@ -50,7 +50,8 @@ def create_test(controller, name, test, unit, alert):
         basename = f'{test_id}.go'
         template = pkg_resources.read_text(templates, 'template.go')
         template = template.replace('$ID', test_id)
-        template = template.replace('$NAME', name)
+        template = template.replace('$NAME', name or '')
+        template = template.replace('$UNIT', unit or '')
         template = template.replace('$CREATED', str(datetime.utcnow()))
         with Spinner():
             controller.upload(test_id=test_id, filename=basename, data=template)
