@@ -1,3 +1,4 @@
+import time
 import uuid
 import pytest
 
@@ -40,8 +41,11 @@ class TestIAMController:
         pytest.account = Account(hq=api)
         iam = IAMController(pytest.account)
         res = unwrap(iam.new_account)(iam, handle=email)
-        with pause_for_manual_action:
-            input("Press ENTER to continue testing after verifying the account...\n")
+        if email.endswith('@auto-accept.developer.preludesecurity.com'):
+            time.sleep(5)
+        else:
+            with pause_for_manual_action:
+                input("Press ENTER to continue testing after verifying the account...\n")
         pytest.account.headers['account'] = res['account_id']
         pytest.account.headers['token'] = res['token']
         assert len(pytest.account.headers['account']) == 32
