@@ -1,7 +1,7 @@
 import click
 
 from rich import print_json
-from datetime import datetime, timedelta, time
+from datetime import datetime, timedelta
 
 from prelude_sdk.models.codes import RunCode
 from prelude_cli.views.shared import handle_api_error, Spinner
@@ -126,8 +126,8 @@ def endpoints(controller, days):
 def describe_activity(controller, days, view, tests, tags, endpoints, dos):
     """ View my Detect results """
     filters = dict(
-        start=datetime.combine(datetime.utcnow() - timedelta(days=days), time.min),
-        finish=datetime.combine(datetime.utcnow(), time.max)
+        start=datetime.utcnow() - timedelta(days=days),
+        finish=datetime.utcnow() + timedelta(days=1)
     )
     if tests:
         filters['tests'] = tests
