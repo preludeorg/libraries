@@ -88,7 +88,7 @@ describe("SDK Test", () => {
     const testId = randomUUID();
     const testName = "test";
     const templateName = `${testId}.go`;
-    const testUnit = "SPU.1";
+    const testUnit = "AV";
 
     const service = new Service({
       host,

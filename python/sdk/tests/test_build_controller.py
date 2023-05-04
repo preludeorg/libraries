@@ -16,7 +16,7 @@ class TestBuildController:
         """Setup the test class"""
         self.test_id = str(uuid.uuid4())
         self.test_name = 'test'
-        self.test_unit = 'SPU.1'
+        self.test_unit = 'AV'
         self.build = BuildController(pytest.account)
 
     def test_create_test(self, unwrap):
@@ -29,6 +29,7 @@ class TestBuildController:
         res = unwrap(self.build.get_test)(self.build, test_id=self.test_id)
         assert res['id'] == self.test_id
         assert res['name'] == self.test_name
+        assert res['unit'] == self.test_unit
 
     def test_upload(self, unwrap):
         """Test upload method"""
