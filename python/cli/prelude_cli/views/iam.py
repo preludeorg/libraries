@@ -18,12 +18,16 @@ def iam(ctx):
 @iam.command('create-account')
 @click.pass_obj
 @handle_api_error
+@click.option('-m', '--method',
+              help='provide a registration method',
+              default='email', show_default=True,
+              type=click.Choice(['email', 'bypass'], case_sensitive=False))
 @click.confirmation_option(prompt='Overwrite local account credentials for selected profile?')
-def register_account(controller):
+def register_account(controller, method):
     """ Register a new account """
     handle = click.prompt('Enter a handle')
     with Spinner():
-        data = controller.new_account(handle=handle)
+        data = controller.new_account(handle=handle, method=method)
     print_json(data=data)
     print("\nCheck your email to verify your account.\n")
 
