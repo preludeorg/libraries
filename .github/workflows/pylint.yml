@@ -28,5 +28,5 @@ jobs:
           --disable=missing-class-docstring \
           --disable=broad-exception-raised \
           --disable=missing-function-docstring \
-          --disable=training-whitespace \
+          --disable=trailing-whitespace \
           $(git ls-files '*.py')
