@@ -29,6 +29,4 @@ jobs:
           --disable=broad-exception-raised \
           --disable=missing-function-docstring \
           --disable=trailing-whitespace \
-          --disable=broad-exception-caught \ 
-          --max-line-length=150 \
           $(git ls-files '*.py')
