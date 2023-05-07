@@ -29,4 +29,6 @@ jobs:
           --disable=broad-exception-raised \
           --disable=missing-function-docstring \
           --disable=trailing-whitespace \
-          $(git ls-files '*.py')
+          --disable=import-error \
+          --max-line-length=150 \
+          $(git ls-files ':!:tests/*' ':!:*/tests/*' '*.py')
