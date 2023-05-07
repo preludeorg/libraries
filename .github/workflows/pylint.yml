@@ -31,5 +31,4 @@ jobs:
           --disable=trailing-whitespace \
           --disable=broad-exception-caught \ 
           --disable=import-error \
-          --max-line-length=150 \
           $(git ls-files '*.py')
