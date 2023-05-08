@@ -8,17 +8,19 @@ param(
 $PRELUDE_API = if ($env:PRELUDE_API) { $env:PRELUDE_API } else { "https://api.preludesecurity.com" };
 $PRELUDE_DIR = if ($env:PRELUDE_DIR) { $env:PRELUDE_DIR } else { ".vst" };
 $DOS = "windows-x86_64"
+$PROTECTED = @(0,9,15,100,104,105,106,107,126,127)
 
 $symbols = [PSCustomObject] @{
     CHECKMARK = ([char]8730)
 }
 
 $Tests = [ordered]@{
-    "39de298a-911d-4a3b-aed4-1e8281010a9a" = "Health check"
-    "3ebbda49-738c-4799-a8fb-206630cf609e" = "Will a long running VST be stopped properly?"
-    "2e705bac-a889-4283-9a8e-a12358fa1d09" = "Will your computer quarantine Royal Ransomware?"
-    "b74ad239-2ddd-4b1e-b608-8397a43c7c54" = "Will your computer quarantine a malicious Office document?"
-    "ca9b22be-93d5-4902-95f4-4bc43a817b73" = "Will your computer quarantine Colour-Blind malware?"
+    "39de298a-911d-4a3b-aed4-1e8281010a9a" = "Health Check"
+    "3ebbda49-738c-4799-a8fb-206630cf609e" = "Long Running VST"
+    "2e705bac-a889-4283-9a8e-a12358fa1d09" = "Royal Ransomware"
+    "b74ad239-2ddd-4b1e-b608-8397a43c7c54" = "Malicious Office Document"
+    "ca9b22be-93d5-4902-95f4-4bc43a817b73" = "Colour-Blind Trojan"
+    "5ec67dd1-f6a3-4a5e-9d33-62bb64a339f0" = "LockBit Ransomware"
 }
 $Results = [ordered]@{}
 
@@ -52,9 +54,9 @@ function ExecuteTest {
     Start-Sleep -Seconds 1
     try {
         $p = Start-Process -FilePath $Temp -Wait -NoNewWindow -PassThru
-        if ($p.ExitCode -in 100,9,17,18,105,127 ) {
-            if (($Name -eq 'Health Check' -or $Name -eq 'Will a long running VST be stopped properly?') -and $p.ExitCode -ne 100) {
-                Write-Host -ForegroundColor Yellow "[!] Health check should not be quarantined or blocked"
+        if ($p.ExitCode -in $PROTECTED ) {
+            if (($Name -eq 'Health Check' -or $Name -eq 'Long Running VST') -and $p.ExitCode -ne 100) {
+                Write-Host -ForegroundColor Yellow "[!] Health checks should not be quarantined or blocked"
             } else {
                 Write-Host -ForegroundColor Green "[$($symbols.CHECKMARK)] Executed test: control test passed"
             }
@@ -63,7 +65,7 @@ function ExecuteTest {
         }
         return $p.ExitCode
     } catch [System.InvalidOperationException] {
-        if (($Name -eq 'Health Check' -or $Name -eq 'Will a long running VST be stopped properly?') -and $p.ExitCode -ne 100) {
+        if (($Name -eq 'Health Check' -or $Name -eq 'Long Running VST') -and $p.ExitCode -ne 100) {
             Write-Host -ForegroundColor Yellow "[!] Health check should not be quarantined or blocked"
         } else {
             Write-Host -ForegroundColor Green "[$($symbols.CHECKMARK)] Executed test: control test passed"
@@ -111,7 +113,7 @@ function RunDemo {
     ExecuteCleanup
     PostResults $Id $TestResult
 
-    if ($TestResult -in 100,9,17,18,105,127 ) {
+    if ($TestResult -in $PROTECTED ) {
         $Results[$Name] = "PROTECTED"
     } elseif ($TestResult -eq 101) {
         $Results[$Name] = "UNPROTECTED"

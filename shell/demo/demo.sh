@@ -9,22 +9,25 @@ NC=$(tput sgr0)
 PRELUDE_API=${PRELUDE_API:="https://api.preludesecurity.com"}
 PRELUDE_TOKEN=$1
 PRELUDE_DIR=${PRELUDE_DIR:=".vst"}
+PROTECTED="0 9 15 100 104 105 106 107 126 127"
 
 dos=$(uname -s)-$(uname -m)
 
 declare -a tests=(
-  '39de298a-911d-4a3b-aed4-1e8281010a9a'    # Health check
-  '3ebbda49-738c-4799-a8fb-206630cf609e'    # Will a long running VST be stopped properly?
-  '2e705bac-a889-4283-9a8e-a12358fa1d09'    # Will your computer quarantine Royal Ransomware?
-  'b74ad239-2ddd-4b1e-b608-8397a43c7c54'    # Will your computer quarantine a malicious Office document?
-  'ca9b22be-93d5-4902-95f4-4bc43a817b73'    # Will your computer quarantine Colour-Blind malware?
+  '39de298a-911d-4a3b-aed4-1e8281010a9a'    # Health Check
+  '3ebbda49-738c-4799-a8fb-206630cf609e'    # Long Running VST
+  '2e705bac-a889-4283-9a8e-a12358fa1d09'    # Royal Ransomware
+  'b74ad239-2ddd-4b1e-b608-8397a43c7c54'    # Malicious Office Document
+  'ca9b22be-93d5-4902-95f4-4bc43a817b73'    # Colour-Blind Trojan
+  '5ec67dd1-f6a3-4a5e-9d33-62bb64a339f0'    # LockBit Ransomware
 )
 declare -a names=(
-  'Health check'
-  'Will a long running VST be stopped properly?'
-  'Will your computer quarantine Royal Ransomware?'
-  'Will your computer quarantine a malicious Office document?'
-  'Will your computer quarantine Colour-Blind malware?'
+  'Health Check'
+  'Long Running VST'
+  'Royal Ransomware'
+  'Malicious Office Document'
+  'Colour-Blind Trojan'
+  'LockBit Ransomware'
 )
 declare -a results
 
@@ -58,9 +61,9 @@ function execute_test {
     sleep 1 && tput cuu 1 && tput el
     $_temp
     local _res=$?
-    if ( echo "100 9 17 18 105 127" | grep -w -q $_res );then
-        if [[ ("$_test_name" == 'Health check' || "$_test_name" == 'Will a long running VST be stopped properly?') ]] && [ $_res != 100 ];then
-          echo -e "${YELLOW}[!] Health check should not be quarantined or blocked${NC}"
+    if ( echo $PROTECTED | grep -w -q $_res );then
+        if [[ ("$_test_name" == 'Health Check' || "$_test_name" == 'Long Running VST') ]] && [ $_res != 100 ];then
+          echo -e "${YELLOW}[!] Health checks should not be quarantined or blocked${NC}"
         else
           echo -e "${GREEN}[✓] Executed test: control test passed${NC}"
         fi
@@ -103,7 +106,7 @@ function run_demo {
     local _res=$?
     execute_cleanup $_temp
     post_results $_test_id $_res
-    if ( echo "100 9 17 18 105 127" | grep -w -q $_res );then
+    if ( echo $PROTECTED | grep -w -q $_res );then
         results+=( "${GREEN}${_test_name}\tPROTECTED${NC}" )
     elif [ $_res -eq 101 ];then
         results+=( "${RED}${_test_name}\tUNPROTECTED${NC}" )
