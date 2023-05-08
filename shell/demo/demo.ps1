@@ -16,7 +16,6 @@ $symbols = [PSCustomObject] @{
 
 $Tests = [ordered]@{
     "39de298a-911d-4a3b-aed4-1e8281010a9a" = "Health Check"
-    "3ebbda49-738c-4799-a8fb-206630cf609e" = "Long Running VST"
     "2e705bac-a889-4283-9a8e-a12358fa1d09" = "Royal Ransomware"
     "b74ad239-2ddd-4b1e-b608-8397a43c7c54" = "Malicious Office Document"
     "ca9b22be-93d5-4902-95f4-4bc43a817b73" = "Colour-Blind Trojan"
@@ -55,7 +54,7 @@ function ExecuteTest {
     try {
         $p = Start-Process -FilePath $Temp -Wait -NoNewWindow -PassThru
         if ($p.ExitCode -in $PROTECTED ) {
-            if (($Name -eq 'Health Check' -or $Name -eq 'Long Running VST') -and $p.ExitCode -ne 100) {
+            if ($Name -eq 'Health Check' -and $p.ExitCode -ne 100) {
                 Write-Host -ForegroundColor Yellow "[!] Health checks should not be quarantined or blocked"
             } else {
                 Write-Host -ForegroundColor Green "[$($symbols.CHECKMARK)] Executed test: control test passed"
@@ -65,7 +64,7 @@ function ExecuteTest {
         }
         return $p.ExitCode
     } catch [System.InvalidOperationException] {
-        if (($Name -eq 'Health Check' -or $Name -eq 'Long Running VST') -and $p.ExitCode -ne 100) {
+        if ($Name -eq 'Health Check' -and $p.ExitCode -ne 100) {
             Write-Host -ForegroundColor Yellow "[!] Health check should not be quarantined or blocked"
         } else {
             Write-Host -ForegroundColor Green "[$($symbols.CHECKMARK)] Executed test: control test passed"

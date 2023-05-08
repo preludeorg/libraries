@@ -15,7 +15,6 @@ dos=$(uname -s)-$(uname -m)
 
 declare -a tests=(
   '39de298a-911d-4a3b-aed4-1e8281010a9a'    # Health Check
-  '3ebbda49-738c-4799-a8fb-206630cf609e'    # Long Running VST
   '2e705bac-a889-4283-9a8e-a12358fa1d09'    # Royal Ransomware
   'b74ad239-2ddd-4b1e-b608-8397a43c7c54'    # Malicious Office Document
   'ca9b22be-93d5-4902-95f4-4bc43a817b73'    # Colour-Blind Trojan
@@ -23,7 +22,6 @@ declare -a tests=(
 )
 declare -a names=(
   'Health Check'
-  'Long Running VST'
   'Royal Ransomware'
   'Malicious Office Document'
   'Colour-Blind Trojan'
@@ -62,7 +60,7 @@ function execute_test {
     $_temp
     local _res=$?
     if ( echo $PROTECTED | grep -w -q $_res );then
-        if [[ ("$_test_name" == 'Health Check' || "$_test_name" == 'Long Running VST') ]] && [ $_res != 100 ];then
+        if [[ "$_test_name" == 'Health Check' ]] && [ $_res != 100 ];then
           echo -e "${YELLOW}[!] Health checks should not be quarantined or blocked${NC}"
         else
           echo -e "${GREEN}[✓] Executed test: control test passed${NC}"
