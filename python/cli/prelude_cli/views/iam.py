@@ -19,13 +19,15 @@ def iam(ctx):
 @click.pass_obj
 @handle_api_error
 @click.confirmation_option(prompt='Overwrite local account credentials for selected profile?')
-def register_account(controller):
+@click.option('-b', '--bypass', help='bypass email verification', is_flag=True, default=False)
+def register_account(controller, bypass):
     """ Register a new account """
-    handle = click.prompt('Enter a handle')
+    email = click.prompt('Enter an email')
     with Spinner():
-        data = controller.new_account(handle=handle)
+        data = controller.new_account(handle=email, bypass=bypass)
     print_json(data=data)
-    print("\nCheck your email to verify your account.\n")
+    if not bypass:
+        print("\nCheck your email to verify your account.\n")
 
 
 @iam.command('update-account')
