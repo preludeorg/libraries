@@ -21,11 +21,12 @@ def iam(ctx):
 @click.option('-b', '--bypass', help='bypass email verification', is_flag=True, default=False)
 def register_account(controller, bypass):
     """ Register a new account """
-    handle = click.prompt('Enter a handle')
+    email = click.prompt('Enter an email')
     with Spinner():
-        data = controller.new_account(handle=handle, bypass=bypass)
+        data = controller.new_account(handle=email, bypass=bypass)
     print_json(data=data)
-    print("\nCheck your email to verify your account.\n")
+    if not bypass:
+        print("\nCheck your email to verify your account.\n")
 
 
 @iam.command('update-account')
