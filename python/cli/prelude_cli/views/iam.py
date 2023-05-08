@@ -18,6 +18,7 @@ def iam(ctx):
 @iam.command('create-account')
 @click.pass_obj
 @handle_api_error
+@click.confirmation_option(prompt='Overwrite local account credentials for selected profile?')
 @click.option('-b', '--bypass', help='bypass email verification', is_flag=True, default=False)
 def register_account(controller, bypass):
     """ Register a new account """
