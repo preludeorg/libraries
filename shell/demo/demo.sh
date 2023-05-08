@@ -14,17 +14,9 @@ PROTECTED="0 9 15 100 104 105 106 107 126 127"
 dos=$(uname -s)-$(uname -m)
 
 declare -a tests=(
-  '39de298a-911d-4a3b-aed4-1e8281010a9a'    # Health Check
-  '2e705bac-a889-4283-9a8e-a12358fa1d09'    # Royal Ransomware
-  'b74ad239-2ddd-4b1e-b608-8397a43c7c54'    # Malicious Office Document
-  'ca9b22be-93d5-4902-95f4-4bc43a817b73'    # Colour-Blind Trojan
   '5ec67dd1-f6a3-4a5e-9d33-62bb64a339f0'    # LockBit Ransomware
 )
 declare -a names=(
-  'Health Check'
-  'Royal Ransomware'
-  'Malicious Office Document'
-  'Colour-Blind Trojan'
   'LockBit Ransomware'
 )
 declare -a results
@@ -60,11 +52,7 @@ function execute_test {
     $_temp
     local _res=$?
     if ( echo $PROTECTED | grep -w -q $_res );then
-        if [[ "$_test_name" == 'Health Check' ]] && [ $_res != 100 ];then
-          echo -e "${YELLOW}[!] Health checks should not be quarantined or blocked${NC}"
-        else
-          echo -e "${GREEN}[✓] Executed test: control test passed${NC}"
-        fi
+        echo -e "${GREEN}[✓] Executed test: control test passed${NC}"
     elif [ $_res -eq 101 ];then
         echo -e "${RED}[!] Executed test: control test failed${NC}"
     else
@@ -112,19 +100,11 @@ function run_demo {
         results+=( "${YELLOW}${_test_name}\tERROR${NC}" )
     fi
     echo -e "\n###########################################################################################################"
-    if [[ $1 == 1 ]];then
-        echo -e "\n\nCompleted Health Check tests. Beginning quarantine tests.\n"
-        echo -e "\n###########################################################################################################"
-    fi
     sleep 3
 }
 
 mkdir -p $PRELUDE_DIR
 trap 'rm -rf -- "$PRELUDE_DIR"' EXIT
-
-echo -e "\n###########################################################################################################"
-echo -e "\n\nRunning safety checks to ensure quarantine tests will run as expected.\n"
-echo -e "\n###########################################################################################################"
 
 for i in "${!tests[@]}"
 do
@@ -132,9 +112,5 @@ do
 done
 
 rm -rf $PRELUDE_DIR
-
-echo -e "###########################################################################################################"
-echo -e "\nSummary of test results:\n"
-paste <(printf "%b\n" "${results[@]}") | column -ts $'\t'
 
 echo -e "\n[*] Go to https://platform.preludesecurity.com to register for an account\n"
