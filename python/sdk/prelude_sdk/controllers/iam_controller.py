@@ -10,9 +10,9 @@ class IAMController:
         self.account = account
 
     @verify_credentials
-    def new_account(self, handle: str, bypass: bool = False):
+    def new_account(self, handle: str):
         res = requests.post(
-            url=f'{self.account.hq}/iam/account{"?method=bypass" if bypass else ""}',
+            url=f'{self.account.hq}/iam/account',
             json=dict(handle=handle),
             headers=self.account.headers,
             timeout=10
