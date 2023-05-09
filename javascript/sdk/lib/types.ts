@@ -127,6 +127,7 @@ export const ExitCodes = {
   EXPLOIT_PREVENTED: 107,
   ENDPOINT_BLOCKED: 126,
   QUARANTINED_2: 127,
+  PROCESS_KILLED_3: 137,
   UNEXPECTED: 256,
 } as const;
 
@@ -145,6 +146,7 @@ export const ExitCodeGroup = {
     ExitCodes.OUTBOUND_SECURE,
     ExitCodes.ENDPOINT_BLOCKED,
     ExitCodes.EXPLOIT_PREVENTED,
+    ExitCodes.PROCESS_KILLED_3,
   ],
   UNPROTECTED: [ExitCodes.UNPROTECTED],
   ERROR: [
