@@ -9,7 +9,7 @@ $ProgressPreference = 'SilentlyContinue'
 $PRELUDE_API = if ($env:PRELUDE_API) { $env:PRELUDE_API } else { "https://api.preludesecurity.com" };
 $PRELUDE_DIR = if ($env:PRELUDE_DIR) { $env:PRELUDE_DIR } else { ".vst" };
 $DOS = "windows-x86_64"
-$PROTECTED = @(0,9,15,100,104,105,106,107,126,127)
+$PROTECTED = @(0,9,15,100,104,105,106,107,126,127,137)
 
 $symbols = [PSCustomObject] @{
     CHECKMARK = ([char]8730)

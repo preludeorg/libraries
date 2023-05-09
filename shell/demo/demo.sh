@@ -9,7 +9,7 @@ NC=$(tput sgr0)
 PRELUDE_API=${PRELUDE_API:="https://api.preludesecurity.com"}
 PRELUDE_TOKEN=$1
 PRELUDE_DIR=${PRELUDE_DIR:=".vst"}
-PROTECTED="0 9 15 100 104 105 106 107 126 127"
+PROTECTED="0 9 15 100 104 105 106 107 126 127 137"
 
 dos=$(uname -s)-$(uname -m)
 
