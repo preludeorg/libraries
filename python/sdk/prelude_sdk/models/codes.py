@@ -53,6 +53,7 @@ class ExitCode(Enum):
     EXPLOIT_PREVENTED = 107
     ENDPOINT_BLOCKED = 126
     QUARANTINED_2 = 127
+    PROCESS_KILLED_3 = 137
     UNEXPECTED = 256
 
     @classmethod
@@ -87,7 +88,8 @@ class State(Enum):
                 ExitCode.NOT_RELEVANT,
                 ExitCode.OUTBOUND_SECURE,
                 ExitCode.ENDPOINT_BLOCKED,
-                ExitCode.EXPLOIT_PREVENTED
+                ExitCode.EXPLOIT_PREVENTED,
+                ExitCode.PROCESS_KILLED_3
             ],
             State.UNPROTECTED: [ExitCode.UNPROTECTED],
             State.ERROR: [
