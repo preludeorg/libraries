@@ -1,4 +1,4 @@
-name: Platform-us-east-1 - shell probes (demo / nocturnal / raindrop scripts) deploy
+name: us1 - shell probes (demo / nocturnal / raindrop scripts) deploy
 
 on:
   push:
@@ -12,9 +12,9 @@ jobs:
   build_ubuntu:
 
     runs-on: ubuntu-latest
-    environment: platform-us-east-1
+    environment: us1
 
-    name: Platform-us-east-1 - shell probes (demo / nocturnal / raindrop scripts) deploy
+    name: us1 - shell probes (demo / nocturnal / raindrop scripts) deploy
 
     steps:
       - name: Check out code. 
@@ -23,9 +23,9 @@ jobs:
       - id: shell_probes_composite
         uses: ./.github/actions/shell_probes
         with:
-          environment: platform-us-east-1
+          environment: us1
           s3_bucket: ${{ secrets.BUCKET_NAME }}
           aws_region: ${{ secrets.BUCKET_REGION }}
-          aws_access_key_id: ${{ secrets.PLATFORM_US_EAST_1_S3_DEPLOYMENT_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.PLATFORM_US_EAST_1_S3_DEPLOYMENT_SECRET_KEY  }}
+          aws_access_key_id: ${{ secrets.US1_S3_DEPLOYMENT_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.US1_S3_DEPLOYMENT_SECRET_ACCESS_KEY  }}
           slack_workflow_url: ${{ secrets.SLACK_GIT_DEPLOYMENT_WORKFLOW }}
