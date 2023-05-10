@@ -225,7 +225,7 @@ export interface ActivityQuery {
 
 export interface DayResult {
   count: number;
-  date: string;
+  datetime: string;
   failed: number;
 }
 
