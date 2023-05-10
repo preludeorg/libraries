@@ -54,7 +54,7 @@ while ($true) {
             throw "Tests completed"
         }
     } catch { 
-        Write-Error $_
+        Write-Output $_
         $Dat = ""
         Remove-Item $Dir -Force -Recurse -ErrorAction SilentlyContinue
         Start-Sleep -Seconds $Sleep
