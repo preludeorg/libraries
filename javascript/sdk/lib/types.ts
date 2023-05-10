@@ -25,6 +25,7 @@ export interface Test {
 export interface User {
   handle: string;
   permission: Permission;
+  expires: string;
 }
 
 export interface Account {
