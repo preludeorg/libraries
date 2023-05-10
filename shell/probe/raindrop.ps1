@@ -53,8 +53,8 @@ while ($true) {
         } else {
             throw "Tests completed"
         }
-    } catch { 
-        Write-Output $_
+    } catch {
+        Write-Output $_.Exception
         $Dat = ""
         Remove-Item $Dir -Force -Recurse -ErrorAction SilentlyContinue
         Start-Sleep -Seconds $Sleep
