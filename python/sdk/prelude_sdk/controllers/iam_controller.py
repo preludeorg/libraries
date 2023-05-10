@@ -10,10 +10,10 @@ class IAMController:
         self.account = account
 
     @verify_credentials
-    def new_account(self, handle: str):
+    def new_account(self, handle: str, name: str = ''):
         res = requests.post(
             url=f'{self.account.hq}/iam/account',
-            json=dict(handle=handle),
+            json=dict(handle=handle, name=name),
             headers=self.account.headers,
             timeout=10
         )
@@ -40,12 +40,12 @@ class IAMController:
         return res.text
 
     @verify_credentials
-    def update_account(self, mode: int):
+    def update_account(self, mode: int, name: str = ''):
         """ Update properties on an account """
         res = requests.put(
             f'{self.account.hq}/iam/account',
             headers=self.account.headers,
-            json=dict(mode=mode),
+            json=dict(mode=mode, name=name),
             timeout=10
         )
         if res.status_code != 200:

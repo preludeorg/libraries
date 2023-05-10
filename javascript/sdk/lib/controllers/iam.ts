@@ -17,11 +17,12 @@ export default class IAMController {
 
   async newAccount(
     handle: string,
+    name: string = "",
     options: RequestOptions = {}
   ): Promise<Credentials> {
     const response = await this.#client.request("/iam/account", {
       method: "POST",
-      body: JSON.stringify({ handle }),
+      body: JSON.stringify({ handle, name }),
       ...options,
     });
 
@@ -39,11 +40,12 @@ export default class IAMController {
 
   async updateAccount(
     mode: Mode,
+    name: string = "",
     options: RequestOptions = {}
   ) {
     await this.#client.requestWithAuth("/iam/account", {
       method: "PUT",
-      body: JSON.stringify({ mode }),
+      body: JSON.stringify({ mode, name }),
       ...options,
     });
 

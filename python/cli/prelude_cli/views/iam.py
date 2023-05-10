@@ -18,27 +18,29 @@ def iam(ctx):
 @iam.command('create-account')
 @click.pass_obj
 @handle_api_error
+@click.option('-n', '--name', help='provide an account name', type=str, default='')
 @click.confirmation_option(prompt='Overwrite local account credentials for selected profile?')
-def register_account(controller):
+def register_account(controller, name):
     """ Register a new account """
     email = click.prompt('Enter an email')
     with Spinner():
-        data = controller.new_account(handle=email)
+        data = controller.new_account(handle=email, name=name)
     print_json(data=data)
     print("\nCheck your email to verify your account.\n")
 
 
 @iam.command('update-account')
+@click.option('-n', '--name', help='provide an account name', type=str, default='')
 @click.option('-m', '--mode',
               help='provide a mode',
               default=Mode.MANUAL.name, show_default=True,
               type=click.Choice([m.name for m in Mode], case_sensitive=False))
 @click.pass_obj
 @handle_api_error
-def update_account(controller, mode):
+def update_account(controller, mode, name):
     """ Update an account """
     with Spinner():
-        controller.update_account(mode=Mode[mode.upper()].value)
+        controller.update_account(mode=Mode[mode.upper()].value, name=name)
 
 
 @iam.command('account')
