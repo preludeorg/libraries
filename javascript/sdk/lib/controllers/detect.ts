@@ -1,5 +1,6 @@
 import Client from "../client";
 import {
+  Account,
   Activity,
   ActivityQuery,
   DayResult,
@@ -67,12 +68,14 @@ export default class DetectController {
   }
 
   async listQueue(options: RequestOptions = {}): Promise<Queue[]> {
-    const response = await this.#client.requestWithAuth("/detect/queue", {
+    const response = await this.#client.requestWithAuth("/iam/account", {
       method: "GET",
       ...options,
     });
 
-    return await response.json();
+    const account = (await response.json()) as Account;
+
+    return account.queue as Queue[];
   }
 
   /** List all tests available to an account */

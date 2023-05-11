@@ -68,12 +68,13 @@ class DetectController:
     def list_queue(self):
         """ List all tests in the queue """
         res = requests.get(
-            f'{self.account.hq}/detect/queue',
+            f'{self.account.hq}/iam/account',
             headers=self.account.headers,
             timeout=10
         )
         if res.status_code == 200:
-            return res.json()
+            account = res.json()
+            return account['queue']
         raise Exception(res.text)
 
     @verify_credentials
