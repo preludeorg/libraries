@@ -53,8 +53,8 @@ def describe_account(controller):
 
 
 @iam.command('create-user')
-@click.option('-d', '--days', help='days this user should remain active', default=365, type=int)
-@click.option('-p', '--permission', help='provide a permission level', default=Permission.SERVICE.name,
+@click.option('-d', '--days', help='days this user will remain active', default=365, type=int)
+@click.option('-p', '--permission', help='user permission level', default=Permission.SERVICE.name,
               type=click.Choice([p.name for p in Permission if p != Permission.INVALID], case_sensitive=False), show_default=True)
 @click.option('-n', '--name', help='name of user', default='', type=str)
 @click.argument('email')

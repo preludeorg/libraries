@@ -13,7 +13,7 @@ class IAMController:
     def new_account(self, user_email: str, user_name: str):
         res = requests.post(
             url=f'{self.account.hq}/iam/account',
-            json=dict(handle=user_email, name=user_name),
+            json=dict(handle=user_email, user_name=user_name),
             headers=self.account.headers,
             timeout=10
         )
