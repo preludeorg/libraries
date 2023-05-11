@@ -10,10 +10,10 @@ class IAMController:
         self.account = account
 
     @verify_credentials
-    def new_account(self, handle: str):
+    def new_account(self, user_email: str, user_name: str):
         res = requests.post(
             url=f'{self.account.hq}/iam/account',
-            json=dict(handle=handle),
+            json=dict(handle=user_email, user_name=user_name),
             headers=self.account.headers,
             timeout=10
         )
@@ -64,11 +64,11 @@ class IAMController:
         raise Exception(res.text)
 
     @verify_credentials
-    def create_user(self, permission: int, handle: str, expires: datetime):
+    def create_user(self, permission: int, email: str, name: str, expires: datetime):
         """ Create a new user inside an account """
         res = requests.post(
             url=f'{self.account.hq}/iam/user',
-            json=dict(permission=permission, handle=handle, expires=expires.isoformat()),
+            json=dict(permission=permission, handle=email, name=name, expires=expires.isoformat()),
             headers=self.account.headers,
             timeout=10
         )

@@ -40,7 +40,7 @@ class TestIAMController:
         """Test new_account method"""
         pytest.account = Account(hq=api)
         iam = IAMController(pytest.account)
-        res = unwrap(iam.new_account)(iam, handle=email)
+        res = unwrap(iam.new_account)(iam, user_email=email, user_name='Bob')
         if email.endswith('@auto-accept.developer.preludesecurity.com'):
             time.sleep(5)
         else:
@@ -63,7 +63,7 @@ class TestIAMController:
     def test_create_user(self, unwrap):
         """Test create_user method"""
         iam = IAMController(pytest.account)
-        res = unwrap(iam.create_user)(iam, handle='registration', permission=Permission.SERVICE.value, expires=(datetime.utcnow() + timedelta(days=1)))
+        res = unwrap(iam.create_user)(iam, email='registration', permission=Permission.SERVICE.value, name='Rob', expires=(datetime.utcnow() + timedelta(days=1)))
         assert check_if_string_is_uuid(res['token'])
         res = unwrap(iam.get_account)(iam)
         assert len([user for user in res['users'] if user['handle'] == 'registration']) == 1
