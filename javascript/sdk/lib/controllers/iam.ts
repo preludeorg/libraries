@@ -37,6 +37,24 @@ export default class IAMController {
   }
 
 
+  async loginToken(
+    token: string,
+    options: RequestOptions = {}
+  ): Promise<Credentials> {
+    const searchParams = new URLSearchParams();
+    searchParams.set("token", token);
+    const response = await this.#client.request(`/iam/account/login?${searchParams.toString()}`, {
+      method: "GET",
+      ...options,
+    });
+
+    const json = await response.json();
+
+    return {
+      account: json.account_id,
+      token: json.oauth_token,
+    };
+  }
   async updateAccount(
     mode: Mode,
     options: RequestOptions = {}
