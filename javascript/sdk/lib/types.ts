@@ -33,6 +33,7 @@ export interface Account {
   controls: string[];
   users: User[];
   mode: Mode;
+  queue: Queue[];
 }
 
 export interface CreatedUser {
