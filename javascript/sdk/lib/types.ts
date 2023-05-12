@@ -36,6 +36,18 @@ export interface Account {
   queue: Queue[];
 }
 
+export interface CreateAccountParams {
+  email: string;
+  name: string;
+}
+
+export interface CreateUserParams {
+  permission: Permission;
+  handle: string;
+  name: string;
+  expires: string;
+}
+
 export interface CreatedUser {
   token: string;
 }

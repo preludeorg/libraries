@@ -1,10 +1,11 @@
 import Client from "../client";
 import type {
   Account,
+  CreateAccountParams,
+  CreateUserParams,
   CreatedUser,
   Credentials,
   Mode,
-  Permission,
   RequestOptions,
 } from "../types";
 
@@ -16,12 +17,12 @@ export default class IAMController {
   }
 
   async newAccount(
-    handle: string,
+    { email, name }: CreateAccountParams,
     options: RequestOptions = {}
   ): Promise<Credentials> {
     const response = await this.#client.request("/iam/account", {
       method: "POST",
-      body: JSON.stringify({ handle }),
+      body: JSON.stringify({ handle: email, user_name: name }),
       ...options,
     });
 
@@ -36,11 +37,7 @@ export default class IAMController {
     };
   }
 
-
-  async updateAccount(
-    mode: Mode,
-    options: RequestOptions = {}
-  ) {
+  async updateAccount(mode: Mode, options: RequestOptions = {}) {
     await this.#client.requestWithAuth("/iam/account", {
       method: "PUT",
       body: JSON.stringify({ mode }),
@@ -60,13 +57,12 @@ export default class IAMController {
   }
 
   async createUser(
-    permission: Permission,
-    handle: string,
+    { permission, handle, name, expires }: CreateUserParams,
     options: RequestOptions = {}
   ) {
     const response = await this.#client.requestWithAuth("/iam/user", {
       method: "POST",
-      body: JSON.stringify({ permission, handle }),
+      body: JSON.stringify({ permission, handle, name, expires }),
       ...options,
     });
 
