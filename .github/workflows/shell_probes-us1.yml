@@ -20,6 +20,14 @@ jobs:
       - name: Check out code. 
         uses: actions/checkout@v3
       
+      - name: Env Conversion
+        shell: bash
+        run: |
+          for i in shell/probe/nocturnal.sh shell/probe/raindrop.ps1; do
+            echo "Staging substitution for ${i}"
+            sed -i 's/prelude-account-prod-us-west-1.s3.amazonaws.com/${{ secrets.BUCKET_NAME }}.s3.amazonaws.com/g' ${i}
+          done
+
       - id: shell_probes_composite
         uses: ./.github/actions/shell_probes
         with:
