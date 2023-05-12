@@ -25,7 +25,10 @@ const createAccount = async () => {
   const service = new Service({
     host,
   });
-  const creds = await service.iam.newAccount(testEmail);
+  const creds = await service.iam.newAccount({
+    email: testEmail,
+    name: "test",
+  });
   await sleep(5000);
   return creds;
 };
@@ -40,7 +43,10 @@ describe("SDK Test", () => {
     });
 
     beforeAll(async () => {
-      const account = await service.iam.newAccount(testEmail);
+      const account = await service.iam.newAccount({
+        email: testEmail,
+        name: "test",
+      });
       expect(account).toHaveProperty("account");
       expect(account).toHaveProperty("token");
       await sleep(4000);
@@ -66,7 +72,12 @@ describe("SDK Test", () => {
     });
 
     it("createUser should return an object with a value token that is a UUID4", async () => {
-      const result = await service.iam.createUser(3, "registration");
+      const result = await service.iam.createUser({
+        permission: 3,
+        handle: "registration",
+        name: "registration",
+        expires: addDays(new Date(), 1).toISOString(),
+      });
       expect(result.token).toMatch(
         /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
       );
