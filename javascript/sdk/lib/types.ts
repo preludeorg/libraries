@@ -26,6 +26,7 @@ export interface User {
   handle: string;
   permission: Permission;
   expires: string;
+  name: string;
 }
 
 export interface Account {
