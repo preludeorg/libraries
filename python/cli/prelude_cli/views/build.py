@@ -56,7 +56,10 @@ def create_test(controller, name, test, unit, alert):
         with Spinner():
             controller.upload(test_id=test_id, filename=basename, data=template)
 
-        with open(basename, 'w') as test_code:
+        test_dir = PurePath(test_id, basename)
+        Path(test_id).mkdir(parents=True, exist_ok=True)
+        
+        with open(test_dir, 'w', encoding='utf8') as test_code:
             test_code.write(template)
             click.secho(f'Created {basename}', fg='green')
 
