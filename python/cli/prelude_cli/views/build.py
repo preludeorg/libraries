@@ -108,7 +108,7 @@ def upload_attachment(controller, path, test):
         with open(p, 'rb') as data:
             with Spinner():
                 controller.upload(test_id=identifier, filename=p.name, data=data.read(), binary=True)
-            click.secho(f'Uploaded {path}', fg='green')
+            click.secho(f'Uploaded {p.name}', fg='green')
 
     identifier = test or test_id()
     
