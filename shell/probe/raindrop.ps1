@@ -36,7 +36,7 @@ while ($true) {
             'token' = FromEnv "PRELUDE_TOKEN"
             'dos' = $Dos
             'dat' = $Dat
-            'version' = "1.0"
+            'version' = "1.1"
         }
         $Response = Invoke-WebRequest -URI $Api -UseBasicParsing -Headers $Headers -MaximumRedirection 1 -OutFile $Vst -PassThru
         $Test = $Response.BaseResponse.ResponseUri.AbsolutePath.Split("/")[-1].Split("_")[0]
