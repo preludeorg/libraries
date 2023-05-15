@@ -6,7 +6,7 @@ You must have a [Prelude Account](https://docs.preludesecurity.com/docs/prelude-
 
 ## What's here
 
-Libraries are organized by language and categorized into Probes, SDK(s), and tests.
+Libraries are organized by language and categorized into Probes, SDK(s), and Tests.
 
 ### Probes
 A [probe](https://docs.preludesecurity.com/recipes/probes) is an endpoint process that knows how to run security tests. Probes are lightweight and open-source.
