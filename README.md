@@ -6,7 +6,7 @@ You must have a [Prelude Account](https://docs.preludesecurity.com/docs/prelude-
 
 ## What's here
 
-Libraries are organized by language and categorized into Probes and SDK(s).
+Libraries are organized by language and categorized into Probes, SDK(s), and Endpoint modules.
 
 ### Probes
 A [probe](https://docs.preludesecurity.com/recipes/probes) is an endpoint process that knows how to run security tests. Probes are lightweight and open-source.
@@ -14,3 +14,7 @@ A [probe](https://docs.preludesecurity.com/recipes/probes) is an endpoint proces
 ### SDK
 
 Software Development Kit (SDK) allows you to build your own tooling against the Prelude Service API. The [Prelude CLI](https://docs.preludesecurity.com/recipes/cli) is an example application built on top of the Python SDK.
+
+### Endpoint
+
+Endpoint is a module that contains a collection of common functions for engaging with an endpoint. Functions include the ability to read and write files, locate installed applications, or run shell commands.
