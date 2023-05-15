@@ -17,4 +17,4 @@ Software Development Kit (SDK) allows you to build your own tooling against the 
 
 ### Tests
 
-Securit tests are production ready TTPs. Tests from this repository are automatically loaded into Detect and can be run immediately on any endpoint.
+Security tests are production ready TTPs. Tests from this repository are automatically loaded into Detect and can be run immediately on any endpoint.
