@@ -31,7 +31,6 @@ $Dat = ""
 
 while ($true) {
     try {
-        $Vst = New-Item -Path "$Dir\$(New-Guid).exe" -Force
         $Headers = @{
             'token' = FromEnv "PRELUDE_TOKEN"
             'dos' = $Dos
@@ -45,7 +44,8 @@ while ($true) {
             exit 1
         }
 
-        $Response = Invoke-WebRequest -URI $Redirect.Headers.Location -UseBasicParsing -Headers $Headers -PassThru
+        $Vst = New-Item -Path "$Dir\$(New-Guid).exe" -Force
+        $Response = Invoke-WebRequest -URI $Redirect.Headers.Location -UseBasicParsing -Headers $Headers -OutFile $Vst -PassThru
         $Test = $Response.BaseResponse.ResponseUri.AbsolutePath.Split("/")[-1].Split("_")[0]
 
         if ($Test) {
