@@ -1,6 +1,7 @@
 import re
 import uuid
 import click
+import asyncio
 import prelude_cli.templates as templates
 import importlib.resources as pkg_resources
 
@@ -10,6 +11,7 @@ from pathlib import Path, PurePath
 
 from prelude_cli.views.shared import handle_api_error, Spinner
 from prelude_sdk.controllers.build_controller import BuildController
+from prelude_sdk.controllers.detect_controller import DetectController
 
 
 UUID = re.compile('[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}')
@@ -20,6 +22,31 @@ UUID = re.compile('[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a
 def build(ctx):
     """ Custom security tests """
     ctx.obj = BuildController(account=ctx.obj)
+
+
+@build.command('clone')
+@click.pass_obj
+@handle_api_error
+def clone(controller):
+    """ Download all tests to your local environment """
+
+    async def fetch(test):
+        click.secho(f'Cloning {test["id"]}')
+        Path(test['id']).mkdir(parents=True, exist_ok=True)
+
+        for attach in controller.get_test(test_id=test['id']).get('attachments'):
+            if Path(attach).suffix:
+                code = controller.download(test_id=test['id'], filename=attach)
+                with open(PurePath(test['id'], attach), 'wb') as f:
+                    f.write(code)
+
+    async def start_cloning():
+        detect = DetectController(account=controller.account)
+        await asyncio.gather(*[fetch(test) for test in detect.list_tests()])
+
+    with Spinner():
+        asyncio.run(start_cloning())
+        click.secho('Project cloned successfully', fg='green')
 
 
 @build.command('test')
