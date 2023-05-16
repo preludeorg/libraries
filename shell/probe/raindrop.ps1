@@ -42,14 +42,14 @@ while ($true) {
         $Test = $Response.BaseResponse.ResponseUri.AbsolutePath.Split("/")[-1].Split("_")[0]
     
         if ($Test) {
-            if ($CA -eq $Response.BaseResponse.ResponseUri.Authority) {
+            if ($Test -icontains "upgrade") {
+                Write-Output "[P] Upgrade required"
+                exit 1
+            } elseif ($CA -eq $Response.BaseResponse.ResponseUri.Authority) {
                 Write-Output "[P] Running $Test [$Vst]"
                 $Code = Execute $Vst   
                 $Dat = "${Test}:$Code"
             }
-        } elseif ($Response.BaseResponse.ResponseUri -contains "upgrade") {
-            Write-Output "[P] Upgrade required"
-            exit 1
         } else {
             throw "Tests completed"
         }
