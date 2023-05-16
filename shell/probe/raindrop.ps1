@@ -31,29 +31,25 @@ $Dat = ""
 
 while ($true) {
     try {
+        $Vst = New-Item -Path "$Dir\$(New-Guid).exe" -Force
         $Headers = @{
             'token' = FromEnv "PRELUDE_TOKEN"
             'dos' = $Dos
             'dat' = $Dat
             'version' = "1.1"
         }
-
-        $Redirect = Invoke-WebRequest -URI $Api -UseBasicParsing -Headers $Headers -MaximumRedirection 0
-        if ($Redirect.Headers.Location -contains "upgrade") {
-            Write-Output "[P] Upgrade required"
-            exit 1
-        }
-
-        $Vst = New-Item -Path "$Dir\$(New-Guid).exe" -Force
-        $Response = Invoke-WebRequest -URI $Redirect.Headers.Location -UseBasicParsing -OutFile $Vst -PassThru
+        $Response = Invoke-WebRequest -URI $Api -UseBasicParsing -Headers $Headers -MaximumRedirection 1 -OutFile $Vst -PassThru
         $Test = $Response.BaseResponse.ResponseUri.AbsolutePath.Split("/")[-1].Split("_")[0]
-
+    
         if ($Test) {
             if ($CA -eq $Response.BaseResponse.ResponseUri.Authority) {
                 Write-Output "[P] Running $Test [$Vst]"
-                $Code = Execute $Vst
+                $Code = Execute $Vst   
                 $Dat = "${Test}:$Code"
             }
+        } elseif ($Response.BaseResponse.ResponseUri -contains "upgrade") {
+            Write-Output "[P] Upgrade required"
+            exit 1
         } else {
             throw "Tests completed"
         }
