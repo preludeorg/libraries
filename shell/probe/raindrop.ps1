@@ -47,7 +47,7 @@ while ($true) {
                 exit 1
             } elseif ($CA -eq $Response.BaseResponse.ResponseUri.Authority) {
                 Write-Output "[P] Running $Test [$Vst]"
-                $Code = Execute $Vst   
+                $Code = Execute $Vst
                 $Dat = "${Test}:$Code"
             }
         } else {
