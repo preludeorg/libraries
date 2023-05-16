@@ -45,7 +45,7 @@ while ($true) {
         }
 
         $Vst = New-Item -Path "$Dir\$(New-Guid).exe" -Force
-        $Response = Invoke-WebRequest -URI $Redirect.Headers.Location -UseBasicParsing -Headers $Headers -OutFile $Vst -PassThru
+        $Response = Invoke-WebRequest -URI $Redirect.Headers.Location -UseBasicParsing -OutFile $Vst -PassThru
         $Test = $Response.BaseResponse.ResponseUri.AbsolutePath.Split("/")[-1].Split("_")[0]
 
         if ($Test) {
