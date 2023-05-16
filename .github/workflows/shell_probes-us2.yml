@@ -1,6 +1,7 @@
 name: us2 - shell probes (demo / nocturnal / raindrop scripts) deploy
 
 on:
+  pull_request:
   push:
     branches:
       - master
@@ -25,7 +26,7 @@ jobs:
         run: |
           for i in shell/probe/nocturnal.sh shell/probe/raindrop.ps1; do
             echo "Staging substitution for ${i}"
-            sed -i 's/prelude-account-prod-us-west-1.s3.amazonaws.com/${{ secrets.BUCKET_NAME }}.s3.amazonaws.com/g' ${i}
+            sed -i 's/prelude-account-us1-us-west-1.s3.amazonaws.com/${{ secrets.BUCKET_NAME }}.s3.amazonaws.com/g' ${i}
             sed -i 's!api.preludesecurity.com!api.us2.preludesecurity.com!g' ${i}
           done
 

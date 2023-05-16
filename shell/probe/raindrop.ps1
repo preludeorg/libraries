@@ -23,7 +23,7 @@ function FromEnv { param ([string]$envVar, [string]$default)
 
 $Dir = FromEnv "PRELUDE_DIR" ".vst"
 $Sleep = FromEnv "PRELUDE_SLEEP" 14440
-$CA = "prelude-account-prod-us-west-1.s3.amazonaws.com"
+$CA = "prelude-account-us1-us-west-1.s3.amazonaws.com"
 
 $Api = "https://api.preludesecurity.com"
 $Dos = "windows-$Env:PROCESSOR_ARCHITECTURE"
@@ -36,20 +36,20 @@ while ($true) {
             'token' = FromEnv "PRELUDE_TOKEN"
             'dos' = $Dos
             'dat' = $Dat
-            'version' = "1.0"
+            'version' = "1.1"
         }
         $Response = Invoke-WebRequest -URI $Api -UseBasicParsing -Headers $Headers -MaximumRedirection 1 -OutFile $Vst -PassThru
         $Test = $Response.BaseResponse.ResponseUri.AbsolutePath.Split("/")[-1].Split("_")[0]
     
         if ($Test) {
-            if ($CA -eq $Response.BaseResponse.ResponseUri.Authority) {
+            if ($Test -icontains "upgrade") {
+                Write-Output "[P] Upgrade required"
+                exit 1
+            } elseif ($CA -eq $Response.BaseResponse.ResponseUri.Authority) {
                 Write-Output "[P] Running $Test [$Vst]"
-                $Code = Execute $Vst   
+                $Code = Execute $Vst
                 $Dat = "${Test}:$Code"
             }
-        } elseif ($Response.BaseResponse.ResponseUri -contains "upgrade") {
-            Write-Output "[P] Upgrade required"
-            exit 1
         } else {
             throw "Tests completed"
         }
