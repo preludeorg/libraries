@@ -25,7 +25,7 @@ $Dir = FromEnv "PRELUDE_DIR" ".vst"
 $Sleep = FromEnv "PRELUDE_SLEEP" 14440
 $CA = "prelude-account-us1-us-west-1.s3.amazonaws.com"
 
-$Api = "https://api.preludesecurity.com"
+$Api = "https://api.us2.preludesecurity.com"
 $Dos = "windows-$Env:PROCESSOR_ARCHITECTURE"
 $Dat = ""
 
@@ -38,18 +38,22 @@ while ($true) {
             'dat' = $Dat
             'version' = "1.1"
         }
-        $Response = Invoke-WebRequest -URI $Api -UseBasicParsing -Headers $Headers -MaximumRedirection 1 -OutFile $Vst -PassThru
+
+        $Redirect = Invoke-WebRequest -URI $Api -UseBasicParsing -Headers $Headers -MaximumRedirection 0
+        if ($Redirect.Headers.Location -contains "upgrade") {
+            Write-Output "[P] Upgrade required"
+            exit 1
+        }
+
+        $Response = Invoke-WebRequest -URI $Redirect.Headers.Location -UseBasicParsing -Headers $Headers -PassThru
         $Test = $Response.BaseResponse.ResponseUri.AbsolutePath.Split("/")[-1].Split("_")[0]
-    
+
         if ($Test) {
             if ($CA -eq $Response.BaseResponse.ResponseUri.Authority) {
                 Write-Output "[P] Running $Test [$Vst]"
-                $Code = Execute $Vst   
+                $Code = Execute $Vst
                 $Dat = "${Test}:$Code"
             }
-        } elseif ($Response.BaseResponse.ResponseUri -contains "upgrade") {
-            Write-Output "[P] Upgrade required"
-            exit 1
         } else {
             throw "Tests completed"
         }
