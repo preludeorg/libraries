@@ -1,6 +1,7 @@
 import re
 import uuid
 import click
+import asyncio
 import prelude_cli.templates as templates
 import importlib.resources as pkg_resources
 
@@ -28,17 +29,23 @@ def build(ctx):
 @handle_api_error
 def clone(controller):
     """ Download all tests to your local environment """
-    with Spinner():
-        detect = DetectController(account=controller.account)
-        for test in detect.list_tests():
-            click.secho(f'Cloning {test["id"]}')
-            Path(test['id']).mkdir(parents=True, exist_ok=True)
 
-            for attach in controller.get_test(test_id=test['id']).get('attachments'):
-                if Path(attach).suffix:
-                    code = controller.download(test_id=test['id'], filename=attach)
-                    with open(PurePath(test['id'], attach), 'wb') as f:
-                        f.write(code)
+    async def fetch(test):
+        click.secho(f'Cloning {test["id"]}')
+        Path(test['id']).mkdir(parents=True, exist_ok=True)
+
+        for attach in controller.get_test(test_id=test['id']).get('attachments'):
+            if Path(attach).suffix:
+                code = controller.download(test_id=test['id'], filename=attach)
+                with open(PurePath(test['id'], attach), 'wb') as f:
+                    f.write(code)
+
+    async def start_cloning():
+        detect = DetectController(account=controller.account)
+        await asyncio.gather(*[fetch(test) for test in detect.list_tests()])
+
+    with Spinner():
+        asyncio.run(start_cloning())
         click.secho('Project cloned successfully', fg='green')
 
 
