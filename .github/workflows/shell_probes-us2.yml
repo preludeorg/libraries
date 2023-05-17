@@ -37,4 +37,3 @@ jobs:
           aws_region: ${{ secrets.BUCKET_REGION }}
           aws_access_key_id: ${{ secrets.US2_S3_DEPLOYMENT_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.US2_S3_DEPLOYMENT_SECRET_ACCESS_KEY  }}
-          slack_workflow_url: ${{ secrets.SLACK_GIT_DEPLOYMENT_WORKFLOW }}
