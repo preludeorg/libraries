@@ -19,7 +19,7 @@ declare module "vitest" {
 
 const testEmail =
   process.env.EMAIL ?? "test@auto-accept.developer.preludesecurity.com";
-const host = process.env.API_HOST ?? "https://api.staging.preludesecurity.com";
+const host = process.env.API_HOST ?? "https://api.us2.preludesecurity.com";
 
 const createAccount = async () => {
   const service = new Service({

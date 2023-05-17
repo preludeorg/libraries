@@ -24,5 +24,5 @@ TBD
 
 ```bash
 yarn install && yarn build
-API='https://api.preludesecurity.com' yarn test
+API_HOST='https://api.preludesecurity.com' yarn test
 ```
