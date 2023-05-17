@@ -1,7 +1,6 @@
 name: us2 - shell probes (demo / nocturnal / raindrop scripts) deploy
 
 on:
-  pull_request:
   push:
     branches:
       - master
