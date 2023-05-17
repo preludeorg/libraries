@@ -3,6 +3,7 @@ description: Copy script to s3
 inputs:
   environment:
     description: "Describe the environment for slack webhooks"
+    required: true
   s3_bucket:
     description: 'Where to push probes'
     required: true
@@ -17,7 +18,6 @@ inputs:
     required: true
   slack_workflow_url:
     description: 'Where to send the slack webhook'
-    required: true
 
 runs:
   using: "composite"
@@ -28,16 +28,6 @@ runs:
         aws-region: ${{ inputs.aws_region }}
         aws-access-key-id: ${{ inputs.aws_access_key_id }}
         aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
-
-    - name: Staging Conversion
-      if: ${{ inputs.environment == 'staging' }}
-      shell: bash
-      run: |
-        for i in shell/probe/nocturnal.sh shell/probe/raindrop.ps1; do
-          echo "Staging substitution for ${i}"
-          sed -i 's/prelude-account-prod-us-west-1.s3.amazonaws.com/prelude-account-staging-us-west-1.s3.amazonaws.com/g' ${i}
-          sed -i 's!api.preludesecurity.com!api.staging.preludesecurity.com!g' ${i}
-        done
 
     - name: Copy files to the s3 with the AWS CLI
       shell: bash
@@ -65,7 +55,7 @@ runs:
 
 
     - name: Send custom JSON data to Slack workflow
-      if: inputs.environment == 'prod' && always()
+      if: startswith(input.slack_workflow_url, 'http')  && always()
       id: slack
       uses: slackapi/slack-github-action@v1.23.0
       with:
