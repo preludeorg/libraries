@@ -55,7 +55,7 @@ runs:
 
 
     - name: Send custom JSON data to Slack workflow
-      if: startswith(input.slack_workflow_url, 'http')  && always()
+      if: startswith(inputs.slack_workflow_url, 'http')  && always()
       id: slack
       uses: slackapi/slack-github-action@v1.23.0
       with:
