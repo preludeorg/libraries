@@ -16,7 +16,7 @@ class TestBuildController:
         """Setup the test class"""
         self.test_id = str(uuid.uuid4())
         self.test_name = 'test'
-        self.test_unit = 'AV'
+        self.test_unit = 'av'
         self.build = BuildController(pytest.account)
 
     def test_create_test(self, unwrap):
