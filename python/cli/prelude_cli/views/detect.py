@@ -111,11 +111,21 @@ def endpoints(controller, days):
     print_json(data=data)
 
 
+@detect.command('advisories')
+@click.pass_obj
+@handle_api_error
+def endpoints(controller):
+    """ List all Prelude advisories """
+    with Spinner():
+        data = controller.list_advisories()
+    print_json(data=data)
+
+
 @detect.command('activity')
 @click.option('-v', '--view',
               help='retrieve a specific result view',
               default='logs', show_default=True,
-              type=click.Choice(['logs', 'days', 'insights', 'probes', 'units']))
+              type=click.Choice(['logs', 'days', 'insights', 'probes', 'advisories']))
 @click.option('-d', '--days', help='days to look back', default=30, type=int)
 @click.option('--tests', help='comma-separated list of test IDs', type=str)
 @click.option('--tags', help='comma-separated list of tags', type=str)

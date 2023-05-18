@@ -87,3 +87,13 @@ class TestDetectController:
         unwrap(self.detect.delete_endpoint)(self.detect, ident=pytest.endpoint_id)
         res = unwrap(self.detect.list_endpoints)(self.detect)
         assert len(res) == 0
+
+    def test_list_advisories(self, unwrap):
+        """Test list_advisories method"""
+        res = unwrap(self.detect.list_advisories)(self.detect)
+        assert len(res) > 0
+        assert 'id' in res[0]
+        assert 'name' in res[0]
+        assert 'link' in res[0]
+        assert 'summary' in res[0]
+
