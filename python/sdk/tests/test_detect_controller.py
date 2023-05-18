@@ -44,6 +44,20 @@ class TestDetectController:
         tests = [test for test in res if test['id'] != self.health_check]
         pytest.test_id = tests[0]['id']
 
+    def test_get_test(self, unwrap):
+        """Test get_test method"""
+        res = unwrap(self.detect.get_test)(self.detect, test_id=pytest.test_id)
+        assert res['id'] == pytest.test_id
+
+    def test_download(self, unwrap):
+        """Test download method"""
+        res = unwrap(self.detect.download)(self.detect, test_id=pytest.test_id, filename=f'{pytest.test_id}.go')
+        assert res is not None
+        with open(f'{pytest.test_id}.go', 'wb') as f:
+            f.write(res)
+        assert os.path.isfile(f'{pytest.test_id}.go')
+        os.remove(f'{pytest.test_id}.go')
+
     def test_list_queue(self, unwrap):
         """Test list_queue method"""
         res = unwrap(self.detect.list_queue)(self.detect)

@@ -29,19 +29,18 @@ def build(ctx):
 @handle_api_error
 def clone(controller):
     """ Download all tests to your local environment """
-
+    detect = DetectController(account=controller.account)
     async def fetch(test):
         click.secho(f'Cloning {test["id"]}')
         Path(test['id']).mkdir(parents=True, exist_ok=True)
 
-        for attach in controller.get_test(test_id=test['id']).get('attachments'):
+        for attach in detect.get_test(test_id=test['id']).get('attachments'):
             if Path(attach).suffix:
-                code = controller.download(test_id=test['id'], filename=attach)
+                code = detect.download(test_id=test['id'], filename=attach)
                 with open(PurePath(test['id'], attach), 'wb') as f:
                     f.write(code)
 
     async def start_cloning():
-        detect = DetectController(account=controller.account)
         await asyncio.gather(*[fetch(test) for test in detect.list_tests()])
 
     with Spinner():
@@ -56,7 +55,7 @@ def clone(controller):
 def get_test(controller, test_id):
     """ List properties for a test """
     with Spinner():
-        data = controller.get_test(test_id=test_id)
+        data = DetectController(account=controller.account).get_test(test_id=test_id)
     print_json(data=data)
 
 
@@ -112,11 +111,12 @@ def download(controller, test):
     click.secho(f'Downloading {test}')
     Path(test).mkdir(parents=True, exist_ok=True)
     with Spinner():
-        attachments = controller.get_test(test_id=test).get('attachments')
+        detect = DetectController(account=controller.account)
+        attachments = detect.get_test(test_id=test).get('attachments')
 
         for attach in attachments:
             if Path(attach).suffix:
-                code = controller.download(test_id=test, filename=attach)
+                code = detect.download(test_id=test, filename=attach)
                 with open(PurePath(test, attach), 'wb') as f:
                     f.write(code)
 

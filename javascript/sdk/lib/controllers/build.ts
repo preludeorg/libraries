@@ -37,7 +37,7 @@ export default class BuildController {
     options: RequestOptions = {}
   ): Promise<TestData> {
     const response = await this.#client.requestWithAuth(
-      `/build/tests/${testId}`,
+      `/detect/tests/${testId}`,
       {
         ...options,
       }
@@ -53,7 +53,7 @@ export default class BuildController {
     options: RequestOptions = {}
   ): Promise<string> {
     const response = await this.#client.requestWithAuth(
-      `/build/tests/${testId}/${filename}`,
+      `/detect/tests/${testId}/${filename}`,
       {
         ...options,
         headers: {
