@@ -3,6 +3,8 @@ import {
   Account,
   Activity,
   ActivityQuery,
+  Advisory,
+  AdvisoryInfo,
   DayResult,
   DisableTest,
   EnableTest,
@@ -14,7 +16,6 @@ import {
   RequestOptions,
   Stats,
   Test,
-  UnitInfo,
 } from "../types";
 
 export default class DetectController {
@@ -130,6 +131,15 @@ export default class DetectController {
     return await response.json();
   }
 
+  /** List advisories */
+  async listAdvisories(options: RequestOptions = {}): Promise<Advisory[]> {
+    const response = await this.#client.requestWithAuth(`/detect/advisories`, {
+      method: "GET",
+      ...options,
+    });
+    return await response.json();
+  }
+
   /** Get logs for an Account */
   async describeActivity(
     query: ActivityQuery & { view: "logs" },
@@ -149,12 +159,12 @@ export default class DetectController {
     options?: RequestOptions
   ): Promise<ProbeActivity[]>;
   async describeActivity(
-    query: ActivityQuery & { view: "units" },
+    query: ActivityQuery & { view: "advisories" },
     options?: RequestOptions
-  ): Promise<UnitInfo[]>;
+  ): Promise<AdvisoryInfo[]>;
   async describeActivity(
     query: ActivityQuery & {
-      view: "days" | "logs" | "insights" | "probes" | "units";
+      view: "days" | "logs" | "insights" | "probes" | "advisories";
     },
     options: RequestOptions = {}
   ) {

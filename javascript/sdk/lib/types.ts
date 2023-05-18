@@ -207,22 +207,23 @@ export interface TestData {
   mappings: string[];
 }
 
-export interface Unit {
-  id: string;
-  label: string;
-  definition: string;
-  description: string;
-}
-
-export interface UnitUsage {
-  tests: string[];
+export interface AdvisoryUsage {
   count: number;
   failed: number;
 }
 
-export interface UnitInfo {
-  unit: Unit;
-  usage?: UnitUsage;
+export interface AdvisoryInfo {
+  id: string;
+  usage: AdvisoryUsage;
+}
+
+export interface Advisory {
+  account_id: string;
+  created: string;
+  id: string;
+  name: string;
+  link: string;
+  summary: string;
 }
 
 export type Stats = Record<Platform, Record<`${ExitCode}`, number>>;
