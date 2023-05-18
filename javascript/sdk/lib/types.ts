@@ -207,13 +207,6 @@ export interface TestData {
   mappings: string[];
 }
 
-export interface Unit {
-  id: string;
-  label: string;
-  definition: string;
-  description: string;
-}
-
 export interface AdvisoryUsage {
   count: number;
   failed: number;
@@ -221,10 +214,12 @@ export interface AdvisoryUsage {
 
 export interface AdvisoryInfo {
   id: string;
-  usage?: AdvisoryUsage;
+  usage: AdvisoryUsage;
 }
 
 export interface Advisory {
+  account: string;
+  created: string;
   id: string;
   name: string;
   link: string;
