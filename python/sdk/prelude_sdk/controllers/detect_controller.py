@@ -75,6 +75,18 @@ class DetectController:
         raise Exception(res.text)
 
     @verify_credentials
+    def list_advisories(self):
+        """ List advisories """
+        res = requests.get(
+            f'{self.account.hq}/detect/advisories',
+            headers=self.account.headers,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
     def describe_activity(self, filters: dict, view: str = 'logs'):
         """ Get report for an Account """
         params = dict(view=view, **filters)
