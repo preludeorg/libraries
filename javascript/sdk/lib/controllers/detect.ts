@@ -1,6 +1,5 @@
 import Client from "../client";
 import {
-  Account,
   Activity,
   ActivityQuery,
   Advisory,
@@ -11,7 +10,6 @@ import {
   Insight,
   Probe,
   ProbeActivity,
-  Queue,
   RegisterEndpointParams,
   RequestOptions,
   Stats,
@@ -26,14 +24,57 @@ export default class DetectController {
     this.#client = client;
   }
 
-  /** Register (or re-register) an endpoint to your account */
-  async registerEndpoint(
-    { host, serial_num, edr_id = "", tags = "" }: RegisterEndpointParams,
+  /** Get properties of an existing test */
+  async getTest(
+    testId: string,
+    options: RequestOptions = {}
+  ): Promise<TestData> {
+    const response = await this.#client.requestWithAuth(
+      `/detect/tests/${testId}`,
+      {
+        ...options,
+      }
+    );
+
+    return await response.json();
+  }
+
+  /** Clone a test file or attachment */
+  async download(
+    testId: string,
+    filename: string,
     options: RequestOptions = {}
   ): Promise<string> {
+    const response = await this.#client.requestWithAuth(
+      `/detect/tests/${testId}/${filename}`,
+      {
+        ...options,
+        headers: {
+          "Content-Type": "",
+          ...(options.headers ?? {}),
+        },
+      }
+    );
+    return response.text();
+  }
+
+  /** Register (or re-register) an endpoint to your account */
+  async registerEndpoint(
+    {
+      host,
+      serial_num,
+      edr_id = "",
+      tags = "",
+      endpoint_id = "",
+    }: RegisterEndpointParams,
+    options: RequestOptions = {}
+  ): Promise<string> {
+    const params = endpoint_id
+      ? { endpoint_id, tags, edr_id, host }
+      : { id: `${host}:${serial_num}:${edr_id}`, tags };
     const response = await this.#client.requestWithAuth("/detect/endpoint", {
       method: "POST",
-      body: JSON.stringify({ id: `${host}:${serial_num}:${edr_id}`, tags }),
+      body: JSON.stringify(params),
       ...options,
     });
 
@@ -54,7 +95,7 @@ export default class DetectController {
 
   /** List all endpoints on your account */
   async listEndpoints(
-    days: number = 7,
+    days: number = 90,
     options: RequestOptions = {}
   ): Promise<Probe[]> {
     const searchParams = new URLSearchParams({ days: days.toString() });
@@ -67,69 +108,6 @@ export default class DetectController {
     );
 
     return (await response.json()) as Probe[];
-  }
-
-  async listQueue(options: RequestOptions = {}): Promise<Queue[]> {
-    const response = await this.#client.requestWithAuth("/iam/account", {
-      method: "GET",
-      ...options,
-    });
-
-    const account = (await response.json()) as Account;
-
-    return account.queue as Queue[];
-  }
-
-  /** List all tests available to an account */
-  async listTests(options: RequestOptions = {}): Promise<Test[]> {
-    const response = await this.#client.requestWithAuth("/detect/tests", {
-      method: "GET",
-      ...options,
-    });
-
-    return await response.json();
-  }
-
-  /** Enable a test so endpoints will start running it */
-  async enableTest(
-    { test, runCode, tags = "" }: EnableTest,
-    options: RequestOptions = {}
-  ) {
-    await this.#client.requestWithAuth(`/detect/queue/${test}`, {
-      method: "POST",
-      body: JSON.stringify({ code: runCode, tags }),
-      ...options,
-    });
-  }
-
-  /** Disable a test so endpoints will stop running it */
-  async disableTest({ test, tags }: DisableTest, options: RequestOptions = {}) {
-    const params = new URLSearchParams({ tags });
-    await this.#client.requestWithAuth(
-      `/detect/queue/${test}?${params.toString()}`,
-      {
-        method: "DELETE",
-        ...options,
-      }
-    );
-  }
-
-  /** Pull social statistics for a specific test */
-  async socialStats(
-    test: string,
-    days: number = 30,
-    options: RequestOptions = {}
-  ): Promise<Stats> {
-    const searchParams = new URLSearchParams({ days: days.toString() });
-    const response = await this.#client.requestWithAuth(
-      `/detect/${test}/social?${searchParams.toString()}`,
-      {
-        method: "GET",
-        ...options,
-      }
-    );
-
-    return await response.json();
   }
 
   /** List advisories */
@@ -190,37 +168,55 @@ export default class DetectController {
     return await response.json();
   }
 
-  /** Get properties of an existing test */
-  async getTest(
-    testId: string,
+  /** List all tests available to an account */
+  async listTests(options: RequestOptions = {}): Promise<Test[]> {
+    const response = await this.#client.requestWithAuth("/detect/tests", {
+      method: "GET",
+      ...options,
+    });
+
+    return await response.json();
+  }
+
+  /** Enable a test so endpoints will start running it */
+  async enableTest(
+    { test, runCode, tags = "" }: EnableTest,
     options: RequestOptions = {}
-  ): Promise<TestData> {
-    const response = await this.#client.requestWithAuth(
-      `/detect/tests/${testId}`,
+  ) {
+    await this.#client.requestWithAuth(`/detect/queue/${test}`, {
+      method: "POST",
+      body: JSON.stringify({ code: runCode, tags }),
+      ...options,
+    });
+  }
+
+  /** Disable a test so endpoints will stop running it */
+  async disableTest({ test, tags }: DisableTest, options: RequestOptions = {}) {
+    const params = new URLSearchParams({ tags });
+    await this.#client.requestWithAuth(
+      `/detect/queue/${test}?${params.toString()}`,
       {
+        method: "DELETE",
+        ...options,
+      }
+    );
+  }
+
+  /** Pull social statistics for a specific test */
+  async socialStats(
+    test: string,
+    days: number = 30,
+    options: RequestOptions = {}
+  ): Promise<Stats> {
+    const searchParams = new URLSearchParams({ days: days.toString() });
+    const response = await this.#client.requestWithAuth(
+      `/detect/${test}/social?${searchParams.toString()}`,
+      {
+        method: "GET",
         ...options,
       }
     );
 
     return await response.json();
-  }
-
-  /** Clone a test file or attachment */
-  async download(
-    testId: string,
-    filename: string,
-    options: RequestOptions = {}
-  ): Promise<string> {
-    const response = await this.#client.requestWithAuth(
-      `/detect/tests/${testId}/${filename}`,
-      {
-        ...options,
-        headers: {
-          "Content-Type": "",
-          ...(options.headers ?? {}),
-        },
-      }
-    );
-    return response.text();
   }
 }
