@@ -1,6 +1,5 @@
 import Client from "../client";
-import type { RequestOptions, TestData } from "../types";
-
+import type { RequestOptions } from "../types";
 
 export default class BuildController {
   #client: Client;
@@ -18,7 +17,7 @@ export default class BuildController {
   ): Promise<void> {
     await this.#client.requestWithAuth(`/build/tests/${id}`, {
       method: "POST",
-      body: JSON.stringify({ name, unit}),
+      body: JSON.stringify({ name, unit }),
       ...options,
     });
   }
@@ -29,40 +28,6 @@ export default class BuildController {
       method: "DELETE",
       ...options,
     });
-  }
-
-  /** Get properties of an existing test */
-  async getTest(
-    testId: string,
-    options: RequestOptions = {}
-  ): Promise<TestData> {
-    const response = await this.#client.requestWithAuth(
-      `/detect/tests/${testId}`,
-      {
-        ...options,
-      }
-    );
-
-    return await response.json();
-  }
-
-  /** Clone a test file or attachment */
-  async download(
-    testId: string,
-    filename: string,
-    options: RequestOptions = {}
-  ): Promise<string> {
-    const response = await this.#client.requestWithAuth(
-      `/detect/tests/${testId}/${filename}`,
-      {
-        ...options,
-        headers: {
-          "Content-Type": "",
-          ...(options.headers ?? {}),
-        },
-      }
-    );
-    return response.text();
   }
 
   /** Upload a test or attachment */
