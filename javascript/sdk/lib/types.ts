@@ -18,7 +18,7 @@ export interface Test {
   id: string;
   name: string;
   unit: string;
-  alert: string;
+  advisory: string;
   created: string;
 }
 
