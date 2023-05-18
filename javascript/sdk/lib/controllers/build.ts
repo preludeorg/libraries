@@ -10,13 +10,13 @@ export default class BuildController {
 
   /** Create or update a test */
   async createTest(
-    id: string,
+    testId: string,
     name: string,
     unit: string,
-    advisory: string,
+    advisory: string = "",
     options: RequestOptions = {}
   ): Promise<void> {
-    await this.#client.requestWithAuth(`/build/tests/${id}`, {
+    await this.#client.requestWithAuth(`/build/tests/${testId}`, {
       method: "POST",
       body: JSON.stringify({ name, unit, advisory }),
       ...options,
@@ -24,8 +24,11 @@ export default class BuildController {
   }
 
   /** Delete an existing test */
-  async deleteTest(id: string, options: RequestOptions = {}): Promise<void> {
-    await this.#client.requestWithAuth(`/build/tests/${id}`, {
+  async deleteTest(
+    testId: string,
+    options: RequestOptions = {}
+  ): Promise<void> {
+    await this.#client.requestWithAuth(`/build/tests/${testId}`, {
       method: "DELETE",
       ...options,
     });
@@ -35,12 +38,12 @@ export default class BuildController {
   async upload(
     testId: string,
     filename: string,
-    code: string,
+    data: BodyInit,
     options: RequestOptions = {}
   ): Promise<void> {
     await this.#client.requestWithAuth(`/build/tests/${testId}/${filename}`, {
       method: "POST",
-      body: JSON.stringify({ code }),
+      body: data,
       ...options,
     });
   }

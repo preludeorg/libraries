@@ -37,6 +37,17 @@ export default class IAMController {
     };
   }
 
+  /** Delete an account and all things in it */
+  async purgeAccount(options: RequestOptions = {}) {
+    const response = await this.#client.requestWithAuth("/iam/account", {
+      method: "DELETE",
+      ...options,
+    });
+
+    return response.text();
+  }
+
+  /** Update properties on an account */
   async updateAccount(mode: Mode, options: RequestOptions = {}) {
     await this.#client.requestWithAuth("/iam/account", {
       method: "PUT",
@@ -47,6 +58,7 @@ export default class IAMController {
     return true;
   }
 
+  /** Get account properties */
   async getAccount(options: RequestOptions = {}) {
     const response = await this.#client.requestWithAuth("/iam/account", {
       method: "GET",
@@ -56,19 +68,21 @@ export default class IAMController {
     return (await response.json()) as Account;
   }
 
+  /** Create a new user inside an account */
   async createUser(
-    { permission, handle, name, expires }: CreateUserParams,
+    { permission, email, name, expires }: CreateUserParams,
     options: RequestOptions = {}
   ) {
     const response = await this.#client.requestWithAuth("/iam/user", {
       method: "POST",
-      body: JSON.stringify({ permission, handle, name, expires }),
+      body: JSON.stringify({ permission, handle: email, name, expires }),
       ...options,
     });
 
     return (await response.json()) as CreatedUser;
   }
 
+  /** Delete a user from an account */
   async deleteUser(handle: string, options: RequestOptions = {}) {
     await this.#client.requestWithAuth("/iam/user", {
       method: "DELETE",
@@ -79,12 +93,24 @@ export default class IAMController {
     return true;
   }
 
-  async purgeAccount(options: RequestOptions = {}) {
-    const response = await this.#client.requestWithAuth("/iam/account", {
-      method: "DELETE",
-      ...options,
+  /** Get audit logs from the last X days */
+  async auditLogs(
+    days: number = 7,
+    limit: number = 1000,
+    options: RequestOptions = {}
+  ) {
+    const searchParams = new URLSearchParams({
+      days: days.toString(),
+      limit: limit.toString(),
     });
+    const response = await this.#client.requestWithAuth(
+      `iam/audit?${searchParams.toString()}`,
+      {
+        method: "GET",
+        ...options,
+      }
+    );
 
-    return response.text();
+    return await response.json();
   }
 }

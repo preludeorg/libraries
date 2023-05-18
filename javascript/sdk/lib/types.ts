@@ -44,7 +44,7 @@ export interface CreateAccountParams {
 
 export interface CreateUserParams {
   permission: Permission;
-  handle: string;
+  email: string;
   name: string;
   expires: string;
 }
@@ -306,6 +306,7 @@ export interface RegisterEndpointParams {
   serial_num: string;
   edr_id?: string;
   tags?: string;
+  endpoint_id: string;
 }
 
 export interface DownloadParams {
