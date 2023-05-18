@@ -214,15 +214,21 @@ export interface Unit {
   description: string;
 }
 
-export interface UnitUsage {
-  tests: string[];
+export interface AdvisoryUsage {
   count: number;
   failed: number;
 }
 
-export interface UnitInfo {
-  unit: Unit;
-  usage?: UnitUsage;
+export interface AdvisoryInfo {
+  id: string;
+  usage?: AdvisoryUsage;
+}
+
+export interface Advisory {
+  id: string;
+  name: string;
+  link: string;
+  summary: string;
 }
 
 export type Stats = Record<Platform, Record<`${ExitCode}`, number>>;
