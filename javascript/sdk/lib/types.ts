@@ -218,7 +218,7 @@ export interface AdvisoryInfo {
 }
 
 export interface Advisory {
-  account: string;
+  account_id: string;
   created: string;
   id: string;
   name: string;
