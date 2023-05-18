@@ -1,10 +1,13 @@
 import click
+import asyncio 
 
 from rich import print_json
+from pathlib import Path, PurePath
 from datetime import datetime, timedelta
 
 from prelude_sdk.models.codes import RunCode
 from prelude_cli.views.shared import handle_api_error, Spinner
+from prelude_sdk.controllers.iam_controller import IAMController
 from prelude_sdk.controllers.detect_controller import DetectController
 
 
@@ -26,8 +29,14 @@ def detect(ctx):
 def register_endpoint(controller, host, serial_num, edr_id, tags, endpoint_id):
     """ Register a new endpoint """
     with Spinner():
-        token = controller.register_endpoint(host=host, serial_num=serial_num, edr_id=edr_id, tags=tags, endpoint_id=endpoint_id)
-    click.secho(token)
+        token = controller.register_endpoint(
+            host=host, 
+            serial_num=serial_num, 
+            edr_id=edr_id, 
+            tags=tags, 
+            endpoint_id=endpoint_id
+        )
+        click.secho(token)
 
 
 @detect.command('tests')
@@ -38,6 +47,34 @@ def list_tests(controller):
     with Spinner():
         data = controller.list_tests()
     print_json(data=data)
+
+
+@detect.command('test')
+@click.argument('test_id')
+@click.pass_obj
+@handle_api_error
+def get_test(controller, test_id):
+    """ List properties for a test """
+    with Spinner():
+        print_json(data=controller.get_test(test_id=test_id))
+
+
+@detect.command('download')
+@click.argument('test')
+@click.pass_obj
+@handle_api_error
+def download(controller, test):
+    """ Download a test to your local environment """
+    click.secho(f'Downloading {test}')
+    Path(test).mkdir(parents=True, exist_ok=True)
+    with Spinner():
+        attachments = controller.get_test(test_id=test).get('attachments')
+
+        for attach in attachments:
+            if Path(attach).suffix:
+                code = controller.download(test_id=test, filename=attach)
+                with open(PurePath(test, attach), 'wb') as f:
+                    f.write(code)
 
 
 @detect.command('enable-test')
@@ -96,8 +133,9 @@ def delete_endpoint(controller, endpoint_id):
 def queue(controller):
     """ List all tests in your active queue """
     with Spinner():
-        data = controller.list_queue()
-    print_json(data=data)
+        iam = IAMController(account=controller.account)
+        queue = iam.get_account().get('queue')
+        print_json(data=queue)
 
 
 @detect.command('endpoints')
@@ -117,8 +155,31 @@ def endpoints(controller, days):
 def advisories(controller):
     """ List all Prelude advisories """
     with Spinner():
-        data = controller.list_advisories()
-    print_json(data=data)
+        print_json(data=controller.list_advisories())
+
+
+@detect.command('clone')
+@click.pass_obj
+@handle_api_error
+def clone(controller):
+    """ Download all tests to your local environment """
+    
+    async def fetch(test):
+        click.secho(f'Cloning {test["id"]}')
+        Path(test['id']).mkdir(parents=True, exist_ok=True)
+
+        for attach in controller.get_test(test_id=test['id']).get('attachments'):
+            if Path(attach).suffix:
+                code = controller.download(test_id=test['id'], filename=attach)
+                with open(PurePath(test['id'], attach), 'wb') as f:
+                    f.write(code)
+
+    async def start_cloning():
+        await asyncio.gather(*[fetch(test) for test in detect.list_tests()])
+
+    with Spinner():
+        asyncio.run(start_cloning())
+        click.secho('Project cloned successfully', fg='green')
 
 
 @detect.command('activity')

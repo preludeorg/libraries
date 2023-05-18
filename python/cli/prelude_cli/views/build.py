@@ -1,17 +1,14 @@
 import re
 import uuid
 import click
-import asyncio
 import prelude_cli.templates as templates
 import importlib.resources as pkg_resources
 
-from rich import print_json
 from datetime import datetime
 from pathlib import Path, PurePath
 
 from prelude_cli.views.shared import handle_api_error, Spinner
 from prelude_sdk.controllers.build_controller import BuildController
-from prelude_sdk.controllers.detect_controller import DetectController
 
 
 UUID = re.compile('[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}')
@@ -24,53 +21,18 @@ def build(ctx):
     ctx.obj = BuildController(account=ctx.obj)
 
 
-@build.command('clone')
-@click.pass_obj
-@handle_api_error
-def clone(controller):
-    """ Download all tests to your local environment """
-    detect = DetectController(account=controller.account)
-    async def fetch(test):
-        click.secho(f'Cloning {test["id"]}')
-        Path(test['id']).mkdir(parents=True, exist_ok=True)
-
-        for attach in detect.get_test(test_id=test['id']).get('attachments'):
-            if Path(attach).suffix:
-                code = detect.download(test_id=test['id'], filename=attach)
-                with open(PurePath(test['id'], attach), 'wb') as f:
-                    f.write(code)
-
-    async def start_cloning():
-        await asyncio.gather(*[fetch(test) for test in detect.list_tests()])
-
-    with Spinner():
-        asyncio.run(start_cloning())
-        click.secho('Project cloned successfully', fg='green')
-
-
-@build.command('test')
-@click.argument('test_id')
-@click.pass_obj
-@handle_api_error
-def get_test(controller, test_id):
-    """ List properties for a test """
-    with Spinner():
-        data = DetectController(account=controller.account).get_test(test_id=test_id)
-    print_json(data=data)
-
-
 @build.command('create-test')
 @click.argument('name')
 @click.option('-t', '--test', help='test identifier', default=None, type=str)
 @click.option('-u', '--unit', required=True, help='unit identifier', default=None, type=str)
-@click.option('-a', '--alert', help='alert identifier [CVE ID, Advisory ID, etc]', default=None, type=str)
+@click.option('-a', '--advisory', help='alert identifier [CVE ID, Advisory ID, etc]', default=None, type=str)
 @click.pass_obj
 @handle_api_error
-def create_test(controller, name, test, unit, alert):
+def create_test(controller, name, test, unit, advisory):
     """ Create or update a security test """
     test_id = test or str(uuid.uuid4())
     with Spinner():
-        controller.create_test(test_id=test_id, name=name, unit=unit, alert=alert)
+        controller.create_test(test_id=test_id, name=name, unit=unit, advisory=advisory)
 
     if not test:
         basename = f'{test_id}.go'
@@ -79,6 +41,7 @@ def create_test(controller, name, test, unit, alert):
         template = template.replace('$NAME', name)
         template = template.replace('$UNIT', unit or '')
         template = template.replace('$CREATED', str(datetime.utcnow()))
+        
         with Spinner():
             controller.upload(test_id=test_id, filename=basename, data=template)
 
@@ -102,25 +65,6 @@ def delete_test(controller, test):
     click.secho(f'Deleted {test}', fg='green')
 
 
-@build.command('download')
-@click.argument('test')
-@click.pass_obj
-@handle_api_error
-def download(controller, test):
-    """ Download a test to your local environment """
-    click.secho(f'Downloading {test}')
-    Path(test).mkdir(parents=True, exist_ok=True)
-    with Spinner():
-        detect = DetectController(account=controller.account)
-        attachments = detect.get_test(test_id=test).get('attachments')
-
-        for attach in attachments:
-            if Path(attach).suffix:
-                code = detect.download(test_id=test, filename=attach)
-                with open(PurePath(test, attach), 'wb') as f:
-                    f.write(code)
-
-
 @build.command('upload')
 @click.argument('path', type=click.Path(exists=True))
 @click.option('-t', '--test', help='test identifier', default=None, type=str)
@@ -137,7 +81,12 @@ def upload_attachment(controller, path, test):
     def upload(p: Path):
         with open(p, 'rb') as data:
             with Spinner():
-                controller.upload(test_id=identifier, filename=p.name, data=data.read(), binary=True)
+                controller.upload(
+                    test_id=identifier, 
+                    filename=p.name, 
+                    data=data.read(), 
+                    binary=True
+                )
             click.secho(f'Uploaded {p.name}', fg='green')
 
     identifier = test or test_id()
