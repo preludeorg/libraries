@@ -114,7 +114,7 @@ def endpoints(controller, days):
 @detect.command('advisories')
 @click.pass_obj
 @handle_api_error
-def endpoints(controller):
+def advisories(controller):
     """ List all Prelude advisories """
     with Spinner():
         data = controller.list_advisories()
