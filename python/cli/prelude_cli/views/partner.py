@@ -23,7 +23,8 @@ def partner(ctx):
 def attach_partner(controller, name, api, user, secret):
     """ Attach an EDR to Detect """
     with Spinner():
-        controller.attach(name=name, api=api, user=user, secret=secret)
+        data = controller.attach(name=name, api=api, user=user, secret=secret)
+    print_json(data=data)
 
 
 @partner.command('detach')
