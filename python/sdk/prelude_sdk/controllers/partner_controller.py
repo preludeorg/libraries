@@ -35,9 +35,9 @@ class PartnerController:
         raise Exception(res.text)
         
     @verify_credentials
-    def endpoints(self, partner_name: str, platform: str, hostname: str = '', offset: int = 0):
+    def endpoints(self, partner_name: str, platform: str, hostname: str = '', offset: int = 0, count: int = 100):
         """ Get a list of endpoints from all partners """
-        params = dict(platform=platform, hostname=hostname, offset=offset)
+        params = dict(platform=platform, hostname=hostname, offset=offset, count=count)
         res = requests.get(
             f'{self.account.hq}/partner/endpoints/{partner_name}',
             headers=self.account.headers,

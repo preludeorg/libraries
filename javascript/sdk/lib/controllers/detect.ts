@@ -24,40 +24,6 @@ export default class DetectController {
     this.#client = client;
   }
 
-  /** Get properties of an existing test */
-  async getTest(
-    testId: string,
-    options: RequestOptions = {}
-  ): Promise<TestData> {
-    const response = await this.#client.requestWithAuth(
-      `/detect/tests/${testId}`,
-      {
-        ...options,
-      }
-    );
-
-    return await response.json();
-  }
-
-  /** Clone a test file or attachment */
-  async download(
-    testId: string,
-    filename: string,
-    options: RequestOptions = {}
-  ): Promise<string> {
-    const response = await this.#client.requestWithAuth(
-      `/detect/tests/${testId}/${filename}`,
-      {
-        ...options,
-        headers: {
-          "Content-Type": "",
-          ...(options.headers ?? {}),
-        },
-      }
-    );
-    return response.text();
-  }
-
   /** Register (or re-register) an endpoint to your account */
   async registerEndpoint(
     {
@@ -186,6 +152,40 @@ export default class DetectController {
     });
 
     return await response.json();
+  }
+
+  /** Get properties of an existing test */
+  async getTest(
+    testId: string,
+    options: RequestOptions = {}
+  ): Promise<TestData> {
+    const response = await this.#client.requestWithAuth(
+      `/detect/tests/${testId}`,
+      {
+        ...options,
+      }
+    );
+
+    return await response.json();
+  }
+
+  /** Clone a test file or attachment */
+  async download(
+    testId: string,
+    filename: string,
+    options: RequestOptions = {}
+  ): Promise<string> {
+    const response = await this.#client.requestWithAuth(
+      `/detect/tests/${testId}/${filename}`,
+      {
+        ...options,
+        headers: {
+          "Content-Type": "",
+          ...(options.headers ?? {}),
+        },
+      }
+    );
+    return response.text();
   }
 
   /** Enable a test so endpoints will start running it */

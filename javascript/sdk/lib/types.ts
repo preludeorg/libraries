@@ -61,21 +61,22 @@ export interface Queue {
 }
 
 export const RunCodes = {
+  INVALID: -1,
   DEBUG: 0,
   DAILY: 1,
   WEEKLY: 2,
   MONTHLY: 3,
-  ONCE: 4,
 } as const;
 
 export type RunCode = (typeof RunCodes)[keyof typeof RunCodes];
 
 export const Permissions = {
+  INVALID: -1,
   ADMIN: 0,
   EXECUTIVE: 1,
   BUILD: 2,
   SERVICE: 3,
-  NONE: 4,
+  PRELUDE: 4,
 } as const;
 
 export type Permission = (typeof Permissions)[keyof typeof Permissions];
@@ -83,6 +84,7 @@ export type Permission = (typeof Permissions)[keyof typeof Permissions];
 export const Modes = {
   MANUAL: 0,
   FROZEN: 1,
+  AUTOPILOT: 2,
 } as const;
 
 export type Mode = (typeof Modes)[keyof typeof Modes];
@@ -128,6 +130,7 @@ export interface SearchResults {
 
 export const ExitCodes = {
   MISSING: -1,
+  REMOVED: 0,
   ERROR: 1,
   MALFORMED_VST: 2,
   PROCESS_KILLED_1: 9,
@@ -152,6 +155,7 @@ export const ExitCodeNames = Object.keys(ExitCodes) as ExitCodeName[];
 export const ExitCodeGroup = {
   NONE: [ExitCodes.MISSING],
   PROTECTED: [
+    ExitCodes.REMOVED,
     ExitCodes.PROTECTED,
     ExitCodes.QUARANTINED_1,
     ExitCodes.QUARANTINED_2,

@@ -4,7 +4,8 @@ from datetime import datetime, timedelta, time
 import pytest
 import subprocess
 
-from prelude_sdk.models.codes import Decision, RunCode
+from prelude_sdk.models.codes import RunCode
+from prelude_sdk.controllers.iam_controller import IAMController
 from prelude_sdk.controllers.detect_controller import DetectController
 
 
@@ -20,22 +21,16 @@ class TestDetectController:
         self.health_check = '39de298a-911d-4a3b-aed4-1e8281010a9a'
         self.recommendation = 'Test'
         self.detect = DetectController(pytest.account)
+        self.iam = IAMController(pytest.account)
 
-    def test_register_endpoint(self, unwrap):
-        """Test register_endpoint method"""
-        res = unwrap(self.detect.register_endpoint)(self.detect, host=self.host, serial_num=self.serial, edr_id=self.edr_id, tags=self.tags)
-        assert len(res) == 32
-        pytest.endpoint_token = res
-
-    def test_list_endpoints(self, unwrap):
-        """Test list_endpoints method"""
-        res = unwrap(self.detect.list_endpoints)(self.detect)
+    def test_list_advisories(self, unwrap):
+        """Test list_advisories method"""
+        res = unwrap(self.detect.list_advisories)(self.detect)
         assert len(res) > 0
-        assert self.host == res[0]['host']
-        assert self.serial == res[0]['serial_num']
-        assert self.edr_id == res[0]['edr_id']
-        assert self.tags in res[0]['tags']
-        pytest.endpoint_id = res[0]['endpoint_id']
+        assert 'id' in res[0]
+        assert 'name' in res[0]
+        assert 'source' in res[0]
+        assert 'published' in res[0]
 
     def test_list_tests(self, unwrap):
         """Test list_tests method"""
@@ -58,18 +53,27 @@ class TestDetectController:
         assert os.path.isfile(f'{pytest.test_id}.go')
         os.remove(f'{pytest.test_id}.go')
 
-    def test_list_queue(self, unwrap):
-        """Test list_queue method"""
-        res = unwrap(self.detect.list_queue)(self.detect)
+    def test_register_endpoint(self, unwrap):
+        """Test register_endpoint method"""
+        res = unwrap(self.detect.register_endpoint)(self.detect, host=self.host, serial_num=self.serial, edr_id=self.edr_id, tags=self.tags)
+        assert len(res) == 32
+        pytest.endpoint_token = res
+
+    def test_list_endpoints(self, unwrap):
+        """Test list_endpoints method"""
+        res = unwrap(self.detect.list_endpoints)(self.detect)
         assert len(res) > 0
-        assert self.health_check == res[0]['test']
-        assert RunCode.DAILY.value == res[0]['run_code']
+        assert self.host == res[0]['host']
+        assert self.serial == res[0]['serial_num']
+        assert self.edr_id == res[0]['edr_id']
+        assert self.tags in res[0]['tags']
+        pytest.endpoint_id = res[0]['endpoint_id']
 
     def test_enable_test(self, unwrap):
         """Test enable_test method"""
         unwrap(self.detect.enable_test)(self.detect, ident=pytest.test_id, run_code=RunCode.DEBUG.value, tags=self.tags)
-        res = unwrap(self.detect.list_queue)(self.detect)
-        assert len([test for test in res if test['test'] == pytest.test_id]) == 1
+        queue = unwrap(self.iam.get_account)(self.iam)['queue']
+        assert len([test for test in queue if test['test'] == pytest.test_id]) == 1
 
     def test_describe_activity(self, unwrap):
         """Test describe_activity method"""
@@ -88,8 +92,8 @@ class TestDetectController:
     def test_disable_test(self, unwrap):
         """Test disable_test method"""
         unwrap(self.detect.disable_test)(self.detect, ident=pytest.test_id, tags=self.tags)
-        res = unwrap(self.detect.list_queue)(self.detect)
-        assert len([test for test in res if test['test'] == pytest.test_id]) == 0
+        queue = unwrap(self.iam.get_account)(self.iam)['queue']
+        assert len([test for test in queue if test['test'] == pytest.test_id]) == 0
 
     def test_social_stats(self, unwrap):
         """Test social_stats method"""
@@ -101,13 +105,4 @@ class TestDetectController:
         unwrap(self.detect.delete_endpoint)(self.detect, ident=pytest.endpoint_id)
         res = unwrap(self.detect.list_endpoints)(self.detect)
         assert len(res) == 0
-
-    def test_list_advisories(self, unwrap):
-        """Test list_advisories method"""
-        res = unwrap(self.detect.list_advisories)(self.detect)
-        assert len(res) > 0
-        assert 'id' in res[0]
-        assert 'name' in res[0]
-        assert 'link' in res[0]
-        assert 'summary' in res[0]
 

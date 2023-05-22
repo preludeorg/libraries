@@ -9,30 +9,6 @@ class DetectController:
         self.account = account
 
     @verify_credentials
-    def get_test(self, test_id):
-        """ Get properties of an existing test """
-        res = requests.get(
-            f'{self.account.hq}/detect/tests/{test_id}',
-            headers=self.account.headers,
-            timeout=10
-        )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
-
-    @verify_credentials
-    def download(self, test_id, filename):
-        """ Clone a test file or attachment"""
-        res = requests.get(
-            f'{self.account.hq}/detect/tests/{test_id}/{filename}',
-            headers=self.account.headers,
-            timeout=10
-        )
-        if res.status_code == 200:
-            return res.content
-        raise Exception(res.text)
-
-    @verify_credentials
     def register_endpoint(self, host, serial_num, edr_id, tags, endpoint_id=None):
         """ Register (or re-register) an endpoint to your account """
         params = dict(id=f'{host}:{serial_num}:{edr_id}', tags=tags) if not endpoint_id else \
@@ -112,6 +88,30 @@ class DetectController:
         )
         if res.status_code == 200:
             return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def get_test(self, test_id):
+        """ Get properties of an existing test """
+        res = requests.get(
+            f'{self.account.hq}/detect/tests/{test_id}',
+            headers=self.account.headers,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def download(self, test_id, filename):
+        """ Clone a test file or attachment"""
+        res = requests.get(
+            f'{self.account.hq}/detect/tests/{test_id}/{filename}',
+            headers=self.account.headers,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.content
         raise Exception(res.text)
 
     @verify_credentials
