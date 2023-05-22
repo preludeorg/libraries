@@ -13,7 +13,7 @@ export default class BuildController {
     testId: string,
     name: string,
     unit: string,
-    advisory: string = "",
+    advisory?: string,
     options: RequestOptions = {}
   ): Promise<void> {
     await this.#client.requestWithAuth(`/build/tests/${testId}`, {
