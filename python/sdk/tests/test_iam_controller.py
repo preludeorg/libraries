@@ -84,7 +84,7 @@ class TestIAMController:
         res = unwrap(iam.get_account)(iam)
         assert res['mode'] == Mode.FROZEN.value
 
-    @pytest.mark.order(after='test_iam_controller.py::TestIAMController::test_audit_logs')
+    @pytest.mark.order(after='test_detect_controller.py::TestDetectController::test_delete_endpoint')
     def test_purge_account(self, unwrap):
         """Test purge_account method"""
         iam = IAMController(pytest.account)
