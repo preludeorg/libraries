@@ -218,12 +218,10 @@ export interface AdvisoryInfo {
 }
 
 export interface Advisory {
-  account_id: string;
-  created: string;
   id: string;
   name: string;
-  link: string;
-  summary: string;
+  source: string;
+  published: string;
 }
 
 export type Stats = Record<Platform, Record<`${ExitCode}`, number>>;
