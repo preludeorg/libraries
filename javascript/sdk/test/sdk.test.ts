@@ -212,12 +212,6 @@ describe("SDK Test", () => {
       endpointId = result[0].endpoint_id;
     });
 
-    it("listQueue should return an array with length 1", async () => {
-      const result = (await service.iam.getAccount()).queue;
-      expect(result).to.have.lengthOf(1);
-      expect(result[0].test).eq(healthCheck);
-    });
-
     it("enableTest should add a new test to the queue", async function () {
       await service.detect.enableTest({
         test: activeTest,

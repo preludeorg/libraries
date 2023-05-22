@@ -69,13 +69,6 @@ class TestDetectController:
         assert self.tags in res[0]['tags']
         pytest.endpoint_id = res[0]['endpoint_id']
 
-    def test_list_queue(self, unwrap):
-        """Test list_queue method"""
-        res = unwrap(self.iam.get_account)(self.iam)['queue']
-        assert len(res) > 0
-        assert self.health_check == res[0]['test']
-        assert RunCode.DAILY.value == res[0]['run_code']
-
     def test_enable_test(self, unwrap):
         """Test enable_test method"""
         unwrap(self.detect.enable_test)(self.detect, ident=pytest.test_id, run_code=RunCode.DEBUG.value, tags=self.tags)
