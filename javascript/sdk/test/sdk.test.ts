@@ -74,7 +74,7 @@ describe("SDK Test", () => {
     it("createUser should return an object with a value token that is a UUID4", async () => {
       const result = await service.iam.createUser({
         permission: 3,
-        handle: "registration",
+        email: "registration",
         name: "registration",
         expires: addDays(new Date(), 1).toISOString(),
       });
@@ -118,12 +118,6 @@ describe("SDK Test", () => {
       await service.build.createTest(testId, testName, testUnit);
     });
 
-    it("getTest should return a test object", async () => {
-      const test = await service.build.getTest(testId);
-      expect(test).toHaveProperty("attachments");
-      expect(test).toHaveProperty("unit");
-    });
-
     it("upload should have an attachment in the getTest call", async () => {
       const file = readFileSync(`${__dirname}/templates/template.go`, "utf8");
       let data = file.toString();
@@ -131,15 +125,9 @@ describe("SDK Test", () => {
       data = data.replace("$NAME", testName);
       data = data.replace("$CREATED", new Date().toISOString());
       await service.build.upload(testId, templateName, data);
-      const test = await service.build.getTest(testId);
+      const test = await service.detect.getTest(testId);
       expect(test.attachments).to.have.lengthOf(1);
       expect(test.attachments[0]).to.be.equal(templateName);
-    });
-
-    it("download should return the same data as the upload", async () => {
-      const data = await service.build.download(testId, templateName);
-      expect(data).toContain(testId);
-      expect(data).toContain(testName);
     });
 
     it("deleteTest should not throw an error", async () => {
@@ -153,14 +141,16 @@ describe("SDK Test", () => {
     const edrId = "test_edr_id";
     const tags = "test_tag";
     const healthCheck = "39de298a-911d-4a3b-aed4-1e8281010a9a";
-    const recommendation = "Test";
     let endpointToken = "";
     let endpointId = "";
     let activeTest = "";
-    let recommendationId = "";
     let unitId = "";
     let start = subDays(new Date(), 7).toISOString();
     let finish = addDays(new Date(), 1).toISOString();
+    const testId = randomUUID();
+    const testName = "test";
+    const templateName = `${testId}.go`;
+    const testUnit = "AV";
 
     const service = new Service({
       host,
@@ -175,12 +165,33 @@ describe("SDK Test", () => {
       await service.iam.purgeAccount();
     });
 
+    it("getTest should return a test object", async () => {
+      await service.build.createTest(testId, testName, testUnit);
+      const test = await service.detect.getTest(testId);
+      expect(test).toHaveProperty("attachments");
+      expect(test).toHaveProperty("unit");
+    });
+
+    it("download should return the same data as the upload", async () => {
+      const file = readFileSync(`${__dirname}/templates/template.go`, "utf8");
+      let data = file.toString();
+      data = data.replace("$ID", testId);
+      data = data.replace("$NAME", testName);
+      data = data.replace("$CREATED", new Date().toISOString());
+      await service.build.upload(testId, templateName, data);
+      const test = await service.detect.getTest(testId);
+      const download = await service.detect.download(testId, templateName);
+      expect(download).toContain(testId);
+      expect(download).toContain(testName);
+    });
+
     it("registerEndpoint should return a string with length 32", async () => {
       const result = await service.detect.registerEndpoint({
         host: hostName,
         serial_num: serial,
         edr_id: edrId,
         tags,
+        endpoint_id: "",
       });
       expect(result).toHaveLength(32);
       endpointToken = result;
@@ -193,6 +204,11 @@ describe("SDK Test", () => {
       endpointId = result[0].endpoint_id;
     });
 
+    it("listAdvisories should return an arary greater than 0", async () => {
+      const result = await service.detect.listAdvisories();
+      expect(result).length > 0;
+    });
+
     it("listTests should return an array with length greater that 1", async () => {
       const result = await service.detect.listTests();
       expect(result).to.have.length.greaterThan(1);
@@ -202,7 +218,7 @@ describe("SDK Test", () => {
     });
 
     it("listQueue should return an array with length 1", async () => {
-      const result = await service.detect.listQueue();
+      const result = (await service.iam.getAccount()).queue;
       expect(result).to.have.lengthOf(1);
       expect(result[0].test).eq(healthCheck);
     });
@@ -214,7 +230,7 @@ describe("SDK Test", () => {
         tags: tags,
       });
 
-      const result = await service.detect.listQueue();
+      const result = (await service.iam.getAccount()).queue;
 
       expect(result).toHaveLength(2);
       expect(result).toEqual(
@@ -268,7 +284,7 @@ describe("SDK Test", () => {
         test: activeTest,
         tags: tags,
       });
-      const result = await service.detect.listQueue();
+      const result = (await service.iam.getAccount()).queue;
       expect(result).toHaveLength(1);
     });
 
