@@ -101,15 +101,6 @@ class State(Enum):
         }
 
 
-class Decision(Enum):
-    NONE = 0
-    APPROVE = 1
-    DENY = 2
-
-    @classmethod
-    def _missing_(cls, value):
-        return Decision.NONE
-
 class DOS(Enum):
     none = 'none'
     arm64 = 'arm64'

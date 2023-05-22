@@ -7,6 +7,7 @@ from importlib.resources import files
 
 from tests import templates as templates
 from prelude_sdk.controllers.build_controller import BuildController
+from prelude_sdk.controllers.detect_controller import DetectController
 
 
 @pytest.mark.order(after='test_partner_controller.py::TestPartnerController::test_detach_partner')
@@ -17,6 +18,7 @@ class TestBuildController:
         self.test_id = str(uuid.uuid4())
         self.test_name = 'test'
         self.build = BuildController(pytest.account)
+        self.detect = DetectController(pytest.account)
 
     def test_create_test(self, unwrap):
         """Test create_test method"""
@@ -30,7 +32,7 @@ class TestBuildController:
         template = template.replace('$NAME', self.test_name)
         template = template.replace('$CREATED', str(datetime.utcnow()))
         unwrap(self.build.upload)(self.build, test_id=self.test_id, filename=f'{self.test_id}.go', data=template)
-        res = unwrap(self.build.get_test)(self.build, test_id=self.test_id)
+        res = unwrap(self.detect.get_test)(self.detect, test_id=self.test_id)
         assert f'{self.test_id}.go' in res['attachments']
 
     def test_delete_test(self, unwrap):

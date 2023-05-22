@@ -35,7 +35,6 @@ const createAccount = async () => {
 
 describe("SDK Test", () => {
   let probeName = "nocturnal";
-  let probeExists = false;
 
   describe("IAM Controller", () => {
     const service = new Service({
@@ -144,7 +143,6 @@ describe("SDK Test", () => {
     let endpointToken = "";
     let endpointId = "";
     let activeTest = "";
-    let unitId = "";
     let start = subDays(new Date(), 7).toISOString();
     let finish = addDays(new Date(), 1).toISOString();
     const testId = randomUUID();
@@ -165,11 +163,22 @@ describe("SDK Test", () => {
       await service.iam.purgeAccount();
     });
 
+    it("listAdvisories should return an array greater than 0", async () => {
+      const result = await service.detect.listAdvisories();
+      expect(result).length > 0;
+    });
+
+    it("listTests should return an array with length greater that 1", async () => {
+      const result = await service.detect.listTests();
+      expect(result).to.have.length.greaterThan(1);
+    });
+
     it("getTest should return a test object", async () => {
       await service.build.createTest(testId, testName, testUnit);
       const test = await service.detect.getTest(testId);
       expect(test).toHaveProperty("attachments");
       expect(test).toHaveProperty("unit");
+      activeTest = testId
     });
 
     it("download should return the same data as the upload", async () => {
@@ -179,7 +188,6 @@ describe("SDK Test", () => {
       data = data.replace("$NAME", testName);
       data = data.replace("$CREATED", new Date().toISOString());
       await service.build.upload(testId, templateName, data);
-      const test = await service.detect.getTest(testId);
       const download = await service.detect.download(testId, templateName);
       expect(download).toContain(testId);
       expect(download).toContain(testName);
@@ -202,19 +210,6 @@ describe("SDK Test", () => {
       expect(result).toHaveLength(1);
       expect(result[0].host).eq(hostName);
       endpointId = result[0].endpoint_id;
-    });
-
-    it("listAdvisories should return an arary greater than 0", async () => {
-      const result = await service.detect.listAdvisories();
-      expect(result).length > 0;
-    });
-
-    it("listTests should return an array with length greater that 1", async () => {
-      const result = await service.detect.listTests();
-      expect(result).to.have.length.greaterThan(1);
-      const tests = result.filter((test) => test.id !== healthCheck);
-      activeTest = tests[0].id;
-      unitId = tests[0].unit;
     });
 
     it("listQueue should return an array with length 1", async () => {
