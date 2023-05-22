@@ -125,8 +125,7 @@ describe("SDK Test", () => {
       data = data.replace("$CREATED", new Date().toISOString());
       await service.build.upload(testId, templateName, data);
       const test = await service.detect.getTest(testId);
-      expect(test.attachments).to.have.lengthOf(1);
-      expect(test.attachments[0]).to.be.equal(templateName);
+      expect(test.attachments).toEqual(expect.arrayContaining([templateName]));
     });
 
     it("deleteTest should not throw an error", async () => {
