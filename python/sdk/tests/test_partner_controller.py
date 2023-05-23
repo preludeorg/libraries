@@ -2,6 +2,7 @@ import pytest
 from prelude_sdk.controllers.partner_controller import PartnerController
 
 
+@pytest.mark.order(after='test_iam_controller.py::TestIAMController::test_new_account')
 class TestPartnerController:
 
     def test_attach_partner(self, unwrap):

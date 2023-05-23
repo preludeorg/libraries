@@ -23,6 +23,7 @@ class TestBuildController:
     def test_create_test(self, unwrap):
         """Test create_test method"""
         unwrap(self.build.create_test)(self.build, test_id=self.test_id, name=self.test_name, unit='bulletin')
+        pytest.test_id = self.test_id
         assert True
 
     def test_upload(self, unwrap):
@@ -35,7 +36,8 @@ class TestBuildController:
         res = unwrap(self.detect.get_test)(self.detect, test_id=self.test_id)
         assert f'{self.test_id}.go' in res['attachments']
 
+    @pytest.mark.order(after='test_detect_controller.py::TestDetectController::test_disable_test')
     def test_delete_test(self, unwrap):
         """Test delete_test method"""
-        unwrap(self.build.delete_test)(self.build, test_id=self.test_id)
+        unwrap(self.build.delete_test)(self.build, test_id=pytest.test_id)
         assert True
