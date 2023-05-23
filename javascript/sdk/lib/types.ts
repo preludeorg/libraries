@@ -218,7 +218,7 @@ export interface TestUsage {
 
 export interface TestActivity {
   id: string;
-  usafe: TestUsage;
+  usage: TestUsage;
 }
 
 export interface AdvisoryUsage {
