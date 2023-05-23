@@ -176,7 +176,7 @@ def clone(controller):
                     f.write(code)
 
     async def start_cloning():
-        await asyncio.gather(*[fetch(test) for test in detect.list_tests()])
+        await asyncio.gather(*[fetch(test) for test in controller.list_tests()])
 
     with Spinner():
         asyncio.run(start_cloning())
