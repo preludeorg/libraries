@@ -9,7 +9,7 @@ from prelude_sdk.controllers.iam_controller import IAMController
 from prelude_sdk.controllers.detect_controller import DetectController
 
 
-@pytest.mark.order(after='test_probe_controller.py::TestProbeController::test_download')
+@pytest.mark.order(after='test_build_controller.py::TestBuildController::test_upload')
 class TestDetectController:
 
     def setup_class(self):
@@ -36,8 +36,6 @@ class TestDetectController:
         """Test list_tests method"""
         res = unwrap(self.detect.list_tests)(self.detect)
         assert len(res) > 0
-        tests = [test for test in res if test['id'] != self.health_check]
-        pytest.test_id = tests[0]['id']
 
     def test_get_test(self, unwrap):
         """Test get_test method"""
@@ -75,6 +73,7 @@ class TestDetectController:
         queue = unwrap(self.iam.get_account)(self.iam)['queue']
         assert len([test for test in queue if test['test'] == pytest.test_id]) == 1
 
+    @pytest.mark.order(after='test_probe_controller.py::TestProbeController::test_download')
     def test_describe_activity(self, unwrap):
         """Test describe_activity method"""
         try:
@@ -89,17 +88,20 @@ class TestDetectController:
         finally:
             os.remove(pytest.probe)
 
+    @pytest.mark.order(after='test_describe_activity')
     def test_disable_test(self, unwrap):
         """Test disable_test method"""
         unwrap(self.detect.disable_test)(self.detect, ident=pytest.test_id, tags=self.tags)
         queue = unwrap(self.iam.get_account)(self.iam)['queue']
         assert len([test for test in queue if test['test'] == pytest.test_id]) == 0
 
+    @pytest.mark.order(after='test_describe_activity')
     def test_social_stats(self, unwrap):
         """Test social_stats method"""
-        res = unwrap(self.detect.social_stats)(self.detect, ident=pytest.test_id)
+        res = unwrap(self.detect.social_stats)(self.detect, ident=self.health_check)
         assert len(res.values()) >= 1
 
+    @pytest.mark.order(after='test_social_stats')
     def test_delete_endpoint(self, unwrap):
         """Test delete_endpoint method"""
         unwrap(self.detect.delete_endpoint)(self.detect, ident=pytest.endpoint_id)
