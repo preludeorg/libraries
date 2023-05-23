@@ -211,6 +211,16 @@ export interface TestData {
   mappings: string[];
 }
 
+export interface TestUsage {
+  count: number;
+  failed: number;
+}
+
+export interface TestActivity {
+  id: string;
+  usage: TestUsage;
+}
+
 export interface AdvisoryUsage {
   count: number;
   failed: number;
