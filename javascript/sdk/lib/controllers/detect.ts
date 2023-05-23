@@ -14,6 +14,7 @@ import {
   RequestOptions,
   Stats,
   Test,
+  TestActivity,
   TestData,
 } from "../types";
 
@@ -118,8 +119,12 @@ export default class DetectController {
     options?: RequestOptions
   ): Promise<AdvisoryInfo[]>;
   async describeActivity(
+    query: ActivityQuery & { view: "tests" },
+    options?: RequestOptions
+  ): Promise<TestActivity[]>;
+  async describeActivity(
     query: ActivityQuery & {
-      view: "days" | "logs" | "insights" | "probes" | "advisories";
+      view: "days" | "logs" | "insights" | "probes" | "advisories" | "tests";
     },
     options: RequestOptions = {}
   ) {
