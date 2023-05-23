@@ -58,6 +58,5 @@ class PartnerController:
             json=params,
             timeout=30
         )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        if not res.status_code == 200:
+            raise Exception(res.text)
