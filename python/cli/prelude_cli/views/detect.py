@@ -192,10 +192,11 @@ def clone(controller):
 @click.option('--tests', help='comma-separated list of test IDs', type=str)
 @click.option('--tags', help='comma-separated list of tags', type=str)
 @click.option('--endpoints', help='comma-separated list of endpoint IDs', type=str)
+@click.option('--status', help='comma-separated list of status numbers', type=str)
 @click.option('--dos', help='comma-separated list of DOS', type=str)
 @click.pass_obj
 @handle_api_error
-def describe_activity(controller, days, view, tests, tags, endpoints, dos):
+def describe_activity(controller, days, view, tests, tags, endpoints, status, dos):
     """ View my Detect results """
     filters = dict(
         start=datetime.utcnow() - timedelta(days=days),
@@ -207,6 +208,8 @@ def describe_activity(controller, days, view, tests, tags, endpoints, dos):
         filters['tags'] = tags
     if endpoints:
         filters['endpoints'] = endpoints
+    if status:
+        filters['statuses'] = status
     if dos:
         filters['dos'] = dos
 
