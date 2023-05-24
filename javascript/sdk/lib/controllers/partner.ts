@@ -77,7 +77,7 @@ export default class PartnerController {
     { partnerName, hostIds }: DeployParams,
     options: RequestOptions = {}
   ): Promise<DeployedEnpoint[]> {
-    const response = await this.#client.requestWithAuth(
+    await this.#client.requestWithAuth(
       `/partner/deploy/${partnerName}`,
       {
         method: "POST",
@@ -85,7 +85,5 @@ export default class PartnerController {
         ...options,
       }
     );
-
-    return response.json();
   }
 }
