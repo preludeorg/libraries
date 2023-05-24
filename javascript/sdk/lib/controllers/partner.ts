@@ -76,7 +76,7 @@ export default class PartnerController {
   async deploy(
     { partnerName, hostIds }: DeployParams,
     options: RequestOptions = {}
-  ): Promise<DeployedEnpoint[]> {
+  ): Promise<Void> {
     await this.#client.requestWithAuth(
       `/partner/deploy/${partnerName}`,
       {
