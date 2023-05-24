@@ -353,9 +353,3 @@ export type PartnerEndpoints = Record<
     version: string;
   }
 >;
-
-export interface DeployedEnpoint {
-  aid: string;
-  status: boolean;
-  errors: string[];
-}

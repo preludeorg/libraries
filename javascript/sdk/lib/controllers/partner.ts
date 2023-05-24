@@ -2,7 +2,6 @@ import Client from "../client";
 import {
   AttachPartnerParams,
   DeployParams,
-  DeployedEnpoint,
   EndpointsParams,
   PartnerEndpoints,
   RequestOptions,
@@ -19,26 +18,20 @@ export default class PartnerController {
     { name, api, user, secret = "" }: AttachPartnerParams,
     options: RequestOptions = {}
   ) {
-    const response = await this.#client.requestWithAuth(
-      `/partner/${name}`,
-      {
-        method: "POST",
-        body: JSON.stringify({ api, user, secret }),
-        ...options,
-      }
-    );
+    const response = await this.#client.requestWithAuth(`/partner/${name}`, {
+      method: "POST",
+      body: JSON.stringify({ api, user, secret }),
+      ...options,
+    });
 
     return response.text();
   }
 
   async detachPartner(name: string, options: RequestOptions = {}) {
-    const response = await this.#client.requestWithAuth(
-      `/partner/${name}`,
-      {
-        method: "DELETE",
-        ...options,
-      }
-    );
+    const response = await this.#client.requestWithAuth(`/partner/${name}`, {
+      method: "DELETE",
+      ...options,
+    });
 
     return response.text();
   }
@@ -77,13 +70,10 @@ export default class PartnerController {
     { partnerName, hostIds }: DeployParams,
     options: RequestOptions = {}
   ): Promise<void> {
-    await this.#client.requestWithAuth(
-      `/partner/deploy/${partnerName}`,
-      {
-        method: "POST",
-        body: JSON.stringify({ host_ids: hostIds }),
-        ...options,
-      }
-    );
+    await this.#client.requestWithAuth(`/partner/deploy/${partnerName}`, {
+      method: "POST",
+      body: JSON.stringify({ host_ids: hostIds }),
+      ...options,
+    });
   }
 }
