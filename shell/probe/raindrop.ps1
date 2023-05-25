@@ -4,8 +4,9 @@ function Execute {
     Param([String]$File)
 
     try {
-        $R = (Start-Process -FilePath $File -Wait -NoNewWindow -PassThru).ExitCode
-        $Code = if (Test-Path $File) {$R} Else {127}
+        $R = Start-Process -FilePath $File -Wait -NoNewWindow -PassThru
+        $handle = $R.Handle
+        $Code = if (Test-Path $File) {$R.ExitCode} Else {127}
         return $Code
     } catch [System.UnauthorizedAccessException] {
         return 126
