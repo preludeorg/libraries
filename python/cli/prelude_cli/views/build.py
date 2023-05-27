@@ -41,16 +41,17 @@ def create_test(controller, name, test, unit, advisory):
         template = template.replace('$NAME', name)
         template = template.replace('$UNIT', unit or '')
         template = template.replace('$CREATED', str(datetime.utcnow()))
-        
-        with Spinner():
-            controller.upload(test_id=test_id, filename=basename, data=template)
 
         test_dir = PurePath(test_id, basename)
         Path(test_id).mkdir(parents=True, exist_ok=True)
-        
+
         with open(test_dir, 'w', encoding='utf8') as test_code:
             test_code.write(template)
             click.secho(f'Created {basename}', fg='green')
+
+        with Spinner():
+            controller.upload(test_id=test_id, file=test_dir)
+        click.secho(f'Uploaded {basename}', fg='green')
 
 
 @build.command('delete-test')
@@ -79,15 +80,9 @@ def upload_attachment(controller, path, test):
         raise FileNotFoundError('You must supply a test ID or include it in the path')
 
     def upload(p: Path):
-        with open(p, 'rb') as data:
-            with Spinner():
-                controller.upload(
-                    test_id=identifier, 
-                    filename=p.name, 
-                    data=data.read(), 
-                    binary=True
-                )
-            click.secho(f'Uploaded {p.name}', fg='green')
+        with Spinner():
+            controller.upload(test_id=identifier, file=p)
+        click.secho(f'Uploaded {p.name}', fg='green')
 
     identifier = test or test_id()
     

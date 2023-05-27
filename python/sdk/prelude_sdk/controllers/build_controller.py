@@ -36,14 +36,17 @@ class BuildController:
             raise Exception(res.text)
 
     @verify_credentials
-    def upload(self, test_id, filename, data, binary=False):
+    def upload(self, test_id, file):
         """ Upload a test or attachment """
-        h = self.account.headers | ({'Content-Type': 'application/octet-stream'} if binary else {})
         res = requests.post(
-            f'{self.account.hq}/build/tests/{test_id}/{filename}',
-            data=data,
-            headers=h,
+            f'{self.account.hq}/build/tests/{test_id}/{file.name}',
+            headers=self.account.headers,
             timeout=10
         )
+        if not res.status_code == 200:
+            raise Exception(res.text)
+
+        with open(file, 'rb') as data:
+            res = requests.put(res.text, data=data)
         if not res.status_code == 200:
             raise Exception(res.text)
