@@ -1,3 +1,4 @@
+import os
 import requests
 
 from prelude_sdk.models.account import verify_credentials
@@ -46,25 +47,10 @@ class BuildController:
         if not res.status_code == 200:
             raise Exception(res.text)
         res = res.json()
-        print(res['fields'].keys())
 
-        # import logging
-        # from requests_toolbelt.multipart import encoder
-        # import http.client as http_client
-        # http_client.HTTPConnection.debuglevel = 1
-        # logging.basicConfig(filename='mahina.log', level=logging.DEBUG)
-        # requests_log = logging.getLogger("requests.packages.urllib3")
+        if os.path.getsize(file) > res['max_content_length']:
+            raise Exception('File size must be under 1MB')
 
-        fields_str = " ".join(f"-F '{k}={v}'" for k, v in res["fields"].items())
-        print(f"curl -v -X POST {fields_str} -F 'file=@{file}' {res['url']}")
-
-        # with open(file, 'rb') as data:
-        #     files = {'file': data}
-        try:
-            files = {'file': open(file, 'rb')}
-            res = requests.post(res['url'], data=res['fields'], files=files)
-            print(res.status_code)
-            if not res.status_code == 204:
-                raise Exception(res.text)
-        except Exception as e:
-            print(e)
+        res = requests.post(res['url'], data=res['fields'], files={'file': open(file, 'rb')})
+        if not res.status_code == 204:
+            raise Exception(res.text)
