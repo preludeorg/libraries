@@ -138,6 +138,7 @@ describe("SDK Test", () => {
     const serial = "test_serial";
     const edrId = "test_edr_id";
     const tags = "test_tag";
+    const healthCheck = "39de298a-911d-4a3b-aed4-1e8281010a9a";
     let endpointToken = "";
     let endpointId = "";
     let activeTest = "";
@@ -230,6 +231,15 @@ describe("SDK Test", () => {
       );
     });
 
+    it("disableTest should remove the test from the queue", async function () {
+      await service.detect.disableTest({
+        test: activeTest,
+        tags: tags,
+      });
+      const result = (await service.iam.getAccount()).queue;
+      expect(result).toHaveLength(1);
+    });
+
     describe("with probe", () => {
       afterAll(async () => {
         unlinkSync(`${probeName}.sh`);
@@ -256,27 +266,18 @@ describe("SDK Test", () => {
         });
       });
 
-      it("describeActivity should spawn a probe and run 2 tests", async function () {
+      it("describeActivity should return logs of 1 ran test", async function () {
         const result = await service.detect.describeActivity({
           start,
           finish,
           view: "logs",
         });
-        expect(result).toHaveLength(2);
+        expect(result).toHaveLength(1);
       });
-    });
-
-    it("disableTest should remove the test from the queue", async function () {
-      await service.detect.disableTest({
-        test: activeTest,
-        tags: tags,
-      });
-      const result = (await service.iam.getAccount()).queue;
-      expect(result).toHaveLength(1);
     });
 
     it("socialStats should return an object with a non-empty array of values", async function () {
-      const result = await service.detect.socialStats(activeTest);
+      const result = await service.detect.socialStats(healthCheck);
       expect(Object.values(result)).to.have.length.greaterThanOrEqual(1);
     });
 
@@ -287,7 +288,9 @@ describe("SDK Test", () => {
     });
   });
 
-  describe.only("PartnerController", () => {
+  describe.runIf(
+    Boolean(process.env.PARTNER_USER) && Boolean(process.env.PARTNER_SECRET)
+  )("PartnerController", () => {
     let deployEndpoint = "";
     const service = new Service({
       host,
@@ -296,12 +299,6 @@ describe("SDK Test", () => {
     beforeAll(async () => {
       const credentials = await createAccount();
       service.setCredentials(credentials);
-      await service.partner.attachPartner({
-        name: "crowdstrike",
-        api: "https://api.us-2.crowdstrike.com",
-        user: process.env.PARTNER_USER as string,
-        secret: process.env.PARTNER_SECRET as string,
-      });
     });
 
     afterAll(async () => {
@@ -314,8 +311,8 @@ describe("SDK Test", () => {
         const result = await service.partner.attachPartner({
           name: "crowdstrike",
           api: "https://api.us-2.crowdstrike.com",
-          user: "test",
-          secret: "test",
+          user: process.env.PARTNER_USER as string,
+          secret: process.env.PARTNER_SECRET as string,
         });
         expect(result).to.be.a("string");
         const account = await service.iam.getAccount();
