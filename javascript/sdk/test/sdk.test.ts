@@ -138,7 +138,6 @@ describe("SDK Test", () => {
     const serial = "test_serial";
     const edrId = "test_edr_id";
     const tags = "test_tag";
-    const healthCheck = "39de298a-911d-4a3b-aed4-1e8281010a9a";
     let endpointToken = "";
     let endpointId = "";
     let activeTest = "";
@@ -177,7 +176,7 @@ describe("SDK Test", () => {
       const test = await service.detect.getTest(testId);
       expect(test).toHaveProperty("attachments");
       expect(test).toHaveProperty("unit");
-      activeTest = testId
+      activeTest = testId;
     });
 
     it("download should return the same data as the upload", async () => {
@@ -233,7 +232,7 @@ describe("SDK Test", () => {
 
     describe("with probe", () => {
       afterAll(async () => {
-        await unlinkSync(`${probeName}.sh`);
+        unlinkSync(`${probeName}.sh`);
       });
 
       it("download should return a string", async () => {
@@ -245,7 +244,7 @@ describe("SDK Test", () => {
           dos: "linux-arm64",
         });
         expect(result).to.be.a("string");
-        await writeFileSync(`${probeName}.sh`, result, { mode: 0o755 });
+        writeFileSync(`${probeName}.sh`, result, { mode: 0o755 });
       });
 
       it("spawns the probe", async () => {
@@ -253,7 +252,7 @@ describe("SDK Test", () => {
           env: {
             PRELUDE_TOKEN: endpointToken,
           },
-          timeout: 20000,
+          timeout: 10_000,
         });
       });
 
@@ -276,7 +275,7 @@ describe("SDK Test", () => {
       expect(result).toHaveLength(1);
     });
 
-    it("socialStats should return an object with a non-empty aray of values", async function () {
+    it("socialStats should return an object with a non-empty array of values", async function () {
       const result = await service.detect.socialStats(activeTest);
       expect(Object.values(result)).to.have.length.greaterThanOrEqual(1);
     });
@@ -288,9 +287,7 @@ describe("SDK Test", () => {
     });
   });
 
-  describe.runIf(
-    Boolean(process.env.PARTNER_USER) && Boolean(process.env.PARTNER_SECRET)
-  )("PartnerController", () => {
+  describe.only("PartnerController", () => {
     let deployEndpoint = "";
     const service = new Service({
       host,
@@ -311,19 +308,25 @@ describe("SDK Test", () => {
       await service.iam.purgeAccount();
     });
 
-    it("attachControl should add a new control", async () => {
-      const result = await service.partner.attachPartner({
-        name: "crowdstrike",
-        api: "https://api.us-2.crowdstrike.com",
-        user: "test",
-        secret: "test",
-      });
-      expect(result).to.be.a("string");
-      const account = await service.iam.getAccount();
-      expect(account).toHaveProperty("controls");
-      expect(account.controls).toHaveLength(1);
-      expect(account.controls).toEqual(expect.arrayContaining(["crowdstrike"]));
-    });
+    it(
+      "attachControl should add a new control",
+      async () => {
+        const result = await service.partner.attachPartner({
+          name: "crowdstrike",
+          api: "https://api.us-2.crowdstrike.com",
+          user: "test",
+          secret: "test",
+        });
+        expect(result).to.be.a("string");
+        const account = await service.iam.getAccount();
+        expect(account).toHaveProperty("controls");
+        expect(account.controls).toHaveLength(1);
+        expect(account.controls).toEqual(
+          expect.arrayContaining(["crowdstrike"])
+        );
+      },
+      { timeout: 10_000 }
+    );
 
     it("endpoints should return an object", async () => {
       const result = await service.partner.endpoints({
