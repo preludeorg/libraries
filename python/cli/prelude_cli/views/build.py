@@ -95,4 +95,7 @@ def upload_attachment(controller, path, test):
         upload(p=Path(path))
     else:
         for obj in Path(path).rglob('*'):
-            upload(p=Path(obj))
+            try:
+                upload(p=Path(obj))
+            except ValueError as e:
+                click.secho(e.args[0], fg='red')
