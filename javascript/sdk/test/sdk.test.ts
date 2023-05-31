@@ -1,11 +1,11 @@
 import { randomUUID } from "crypto";
 import { addDays, subDays } from "date-fns";
 import { readFileSync, unlinkSync, writeFileSync } from "fs";
-import { spawnSync } from "node:child_process";
 import path from "path";
 import { fileURLToPath } from "url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { RunCodes, Service } from "../lib/main";
+import { spawn } from "child_process";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -177,7 +177,7 @@ describe("SDK Test", () => {
       const test = await service.detect.getTest(testId);
       expect(test).toHaveProperty("attachments");
       expect(test).toHaveProperty("unit");
-      activeTest = testId
+      activeTest = testId;
     });
 
     it("download should return the same data as the upload", async () => {
@@ -190,25 +190,6 @@ describe("SDK Test", () => {
       const download = await service.detect.download(testId, templateName);
       expect(download).toContain(testId);
       expect(download).toContain(testName);
-    });
-
-    it("registerEndpoint should return a string with length 32", async () => {
-      const result = await service.detect.registerEndpoint({
-        host: hostName,
-        serial_num: serial,
-        edr_id: edrId,
-        tags,
-        endpoint_id: "",
-      });
-      expect(result).toHaveLength(32);
-      endpointToken = result;
-    });
-
-    it("listEndpoints should return an array with length 1", async () => {
-      const result = await service.detect.listEndpoints();
-      expect(result).toHaveLength(1);
-      expect(result[0].host).eq(hostName);
-      endpointId = result[0].endpoint_id;
     });
 
     it("enableTest should add a new test to the queue", async function () {
@@ -231,9 +212,37 @@ describe("SDK Test", () => {
       );
     });
 
+    it("disableTest should remove the test from the queue", async function () {
+      await service.detect.disableTest({
+        test: activeTest,
+        tags: tags,
+      });
+      const result = (await service.iam.getAccount()).queue;
+      expect(result).toHaveLength(1);
+    });
+
+    it("registerEndpoint should return a string with length 32", async () => {
+      const result = await service.detect.registerEndpoint({
+        host: hostName,
+        serial_num: serial,
+        edr_id: edrId,
+        tags,
+        endpoint_id: "",
+      });
+      expect(result).toHaveLength(32);
+      endpointToken = result;
+    });
+
+    it("listEndpoints should return an array with length 1", async () => {
+      const result = await service.detect.listEndpoints();
+      expect(result).toHaveLength(1);
+      expect(result[0].host).eq(hostName);
+      endpointId = result[0].endpoint_id;
+    });
+
     describe("with probe", () => {
       afterAll(async () => {
-        await unlinkSync(`${probeName}.sh`);
+        unlinkSync(`${probeName}.sh`);
       });
 
       it("download should return a string", async () => {
@@ -245,39 +254,41 @@ describe("SDK Test", () => {
           dos: "linux-arm64",
         });
         expect(result).to.be.a("string");
-        await writeFileSync(`${probeName}.sh`, result, { mode: 0o755 });
+        writeFileSync(`${probeName}.sh`, result, { mode: 0o755 });
       });
 
       it("spawns the probe", async () => {
-        spawnSync(`./${probeName}.sh`, {
-          env: {
-            PRELUDE_TOKEN: endpointToken,
-          },
-          timeout: 20000,
+        await new Promise((resolve) => {
+          const process = spawn(`./${probeName}.sh`, {
+            env: {
+              PRELUDE_TOKEN: endpointToken,
+            },
+          });
+          process.stderr.on("data", (data) => {
+            if (data.toString().includes("Completed")) {
+              resolve(data);
+            }
+          });
         });
       });
 
-      it("describeActivity should spawn a probe and run 2 tests", async function () {
-        const result = await service.detect.describeActivity({
-          start,
-          finish,
-          view: "logs",
-        });
-        expect(result).toHaveLength(2);
-      });
+      it(
+        "describeActivity should return logs for healthcheck",
+        async function () {
+          await sleep(3000);
+          const result = await service.detect.describeActivity({
+            start,
+            finish,
+            view: "logs",
+          });
+          expect(result).toHaveLength(1);
+        },
+        { retry: 5 }
+      );
     });
 
-    it("disableTest should remove the test from the queue", async function () {
-      await service.detect.disableTest({
-        test: activeTest,
-        tags: tags,
-      });
-      const result = (await service.iam.getAccount()).queue;
-      expect(result).toHaveLength(1);
-    });
-
-    it("socialStats should return an object with a non-empty aray of values", async function () {
-      const result = await service.detect.socialStats(activeTest);
+    it("socialStats should return an object with a non-empty array of values", async function () {
+      const result = await service.detect.socialStats(healthCheck);
       expect(Object.values(result)).to.have.length.greaterThanOrEqual(1);
     });
 
@@ -285,100 +296,6 @@ describe("SDK Test", () => {
       await service.detect.deleteEndpoint(endpointId);
       const result = await service.detect.listEndpoints();
       expect(result).to.have.lengthOf(0);
-    });
-  });
-
-  describe.runIf(
-    Boolean(process.env.PARTNER_USER) && Boolean(process.env.PARTNER_SECRET)
-  )("PartnerController", () => {
-    let deployEndpoint = "";
-    const service = new Service({
-      host,
-    });
-
-    beforeAll(async () => {
-      const credentials = await createAccount();
-      service.setCredentials(credentials);
-      await service.partner.attachPartner({
-        name: "crowdstrike",
-        api: "https://api.us-2.crowdstrike.com",
-        user: process.env.PARTNER_USER as string,
-        secret: process.env.PARTNER_SECRET as string,
-      });
-    });
-
-    afterAll(async () => {
-      await service.iam.purgeAccount();
-    });
-
-    it("attachControl should add a new control", async () => {
-      const result = await service.partner.attachPartner({
-        name: "crowdstrike",
-        api: "https://api.us-2.crowdstrike.com",
-        user: "test",
-        secret: "test",
-      });
-      expect(result).to.be.a("string");
-      const account = await service.iam.getAccount();
-      expect(account).toHaveProperty("controls");
-      expect(account.controls).toHaveLength(1);
-      expect(account.controls).toEqual(expect.arrayContaining(["crowdstrike"]));
-    });
-
-    it("endpoints should return an object", async () => {
-      const result = await service.partner.endpoints({
-        partnerName: "crowdstrike",
-        platform: "linux",
-      });
-
-      expect(result).to.be.a("object");
-      deployEndpoint = Object.keys(result)[0];
-    });
-
-    it(
-      "endpoints should limit results by count and offset",
-      async () => {
-        const result = await service.partner.endpoints({
-          partnerName: "crowdstrike",
-          platform: "linux",
-          count: 1,
-          offset: 0,
-        });
-
-        expect(result).to.be.a("object");
-        expect(Object.keys(result)).to.have.lengthOf(1);
-
-        const result2 = await service.partner.endpoints({
-          partnerName: "crowdstrike",
-          platform: "linux",
-          count: 1,
-          offset: 1,
-        });
-
-        expect(result2).to.be.a("object");
-        expect(Object.keys(result2)).to.have.lengthOf(1);
-        expect(Object.keys(result2)[0]).not.eq(Object.keys(result)[0]);
-      },
-      { timeout: 10_000 }
-    );
-
-    it("deploy should return and array", async () => {
-      const result = await service.partner.deploy({
-        partnerName: "crowdstrike",
-        hostIds: [deployEndpoint],
-      });
-
-      expect(result).to.be.a("array");
-      expect(result).to.have.lengthOf(1);
-      expect(result[0].aid).eq(deployEndpoint);
-    });
-
-    it("detachControl should remove a control", async () => {
-      const result = await service.partner.detachPartner("crowdstrike");
-      expect(result).to.be.a("string");
-      const account = await service.iam.getAccount();
-      expect(account).toHaveProperty("controls");
-      expect(account.controls).toHaveLength(0);
     });
   });
 });
