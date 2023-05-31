@@ -15,7 +15,7 @@ export type RequestOptions = Omit<RequestInit, "method" | "body">;
 
 export interface Test {
   account_id: string;
-  test_id: string;
+  id: string;
   name: string;
   unit: string;
   advisory: string;

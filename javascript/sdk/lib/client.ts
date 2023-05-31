@@ -17,6 +17,12 @@ function combineHeaders(...headers: HeadersInit[]): HeadersInit {
   return headers.reduce((acc, h) => ({ ...acc, ...h }), {});
 }
 
+class APIError extends Error {
+  constructor(message: string, public status: number) {
+    super(message);
+    this.name = "APIError";
+  }
+}
 export default class Client {
   #host: URL;
   #credentials?: Credentials;
@@ -58,7 +64,7 @@ export default class Client {
     }
 
     if (!response.ok) {
-      throw Error(await response.text());
+      throw new APIError(await response.text(), response.status);
     }
 
     return response;
