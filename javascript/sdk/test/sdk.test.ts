@@ -133,7 +133,7 @@ describe("SDK Test", () => {
     });
   });
 
-  describe.only("Detect Controller", () => {
+  describe("Detect Controller", () => {
     const hostName = "test_host";
     const serial = "test_serial";
     const edrId = "test_edr_id";
