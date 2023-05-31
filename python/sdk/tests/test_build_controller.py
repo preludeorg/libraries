@@ -10,7 +10,6 @@ from prelude_sdk.controllers.build_controller import BuildController
 from prelude_sdk.controllers.detect_controller import DetectController
 
 
-@pytest.mark.order(after='test_partner_controller.py::TestPartnerController::test_detach_partner')
 class TestBuildController:
 
     def setup_class(self):
