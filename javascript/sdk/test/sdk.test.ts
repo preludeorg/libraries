@@ -122,7 +122,8 @@ describe("SDK Test", () => {
       let data = file.toString();
       data = data.replace("$ID", testId);
       data = data.replace("$NAME", testName);
-      data = data.replace("$CREATED", new Date().toISOString());
+      data = data.replace("$UNIT", testUnit);
+      data = data.replace("$GENERATED", new Date().toISOString());
       await service.build.upload(testId, templateName, data);
       const test = await service.detect.getTest(testId);
       expect(test.attachments).toEqual(expect.arrayContaining([templateName]));
@@ -185,7 +186,8 @@ describe("SDK Test", () => {
       let data = file.toString();
       data = data.replace("$ID", testId);
       data = data.replace("$NAME", testName);
-      data = data.replace("$CREATED", new Date().toISOString());
+      data = data.replace("$UNIT", testUnit);
+      data = data.replace("$GENERATED", new Date().toISOString());
       await service.build.upload(testId, templateName, data);
       const download = await service.detect.download(testId, templateName);
       expect(download).toContain(testId);
@@ -210,15 +212,6 @@ describe("SDK Test", () => {
           }),
         ])
       );
-    });
-
-    it("disableTest should remove the test from the queue", async function () {
-      await service.detect.disableTest({
-        test: activeTest,
-        tags: tags,
-      });
-      const result = (await service.iam.getAccount()).queue;
-      expect(result).toHaveLength(1);
     });
 
     it("registerEndpoint should return a string with length 32", async () => {
@@ -257,23 +250,31 @@ describe("SDK Test", () => {
         writeFileSync(`${probeName}.sh`, result, { mode: 0o755 });
       });
 
-      it("spawns the probe", async () => {
-        await new Promise((resolve) => {
-          const process = spawn(`./${probeName}.sh`, {
-            env: {
-              PRELUDE_TOKEN: endpointToken,
-            },
+      it(
+        "spawns the probe",
+        async () => {
+          await new Promise((resolve) => {
+            const process = spawn(`./${probeName}.sh`, {
+              env: {
+                PRELUDE_TOKEN: endpointToken,
+              },
+            });
+            let count = 0;
+            process.stderr.on("data", (data) => {
+              if (data.toString().includes("Completed")) {
+                count++;
+              }
+              if (count === 2) {
+                resolve(data);
+              }
+            });
           });
-          process.stderr.on("data", (data) => {
-            if (data.toString().includes("Completed")) {
-              resolve(data);
-            }
-          });
-        });
-      });
+        },
+        { timeout: 30_000 }
+      );
 
       it(
-        "describeActivity should return logs for healthcheck",
+        "describeActivity should return logs for 2 tests",
         async function () {
           await sleep(3000);
           const result = await service.detect.describeActivity({
@@ -281,7 +282,7 @@ describe("SDK Test", () => {
             finish,
             view: "logs",
           });
-          expect(result).toHaveLength(1);
+          expect(result).toHaveLength(2);
         },
         { retry: 5 }
       );
@@ -290,6 +291,15 @@ describe("SDK Test", () => {
     it("socialStats should return an object with a non-empty array of values", async function () {
       const result = await service.detect.socialStats(healthCheck);
       expect(Object.values(result)).to.have.length.greaterThanOrEqual(1);
+    });
+
+    it("disableTest should remove the test from the queue", async function () {
+      await service.detect.disableTest({
+        test: activeTest,
+        tags: tags,
+      });
+      const result = (await service.iam.getAccount()).queue;
+      expect(result).toHaveLength(1);
     });
 
     it("deleteEndpoint should remove the endpoint from the list", async function () {

@@ -1,7 +1,8 @@
 /*
 ID: $ID
 NAME: $NAME
-CREATED: $CREATED
+UNIT: $UNIT
+GENERATED: $GENERATED
 */
 package main
 
@@ -14,7 +15,7 @@ func test() {
 }
 
 func clean() {
-	Endpoint.Stop(100)
+	println("[+] Cleaning up")
 }
 
 func main() {
