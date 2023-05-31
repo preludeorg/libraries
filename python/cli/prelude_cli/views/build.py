@@ -40,7 +40,7 @@ def create_test(controller, name, test, unit, advisory):
         template = template.replace('$ID', test_id)
         template = template.replace('$NAME', name)
         template = template.replace('$UNIT', unit or '')
-        template = template.replace('$CREATED', str(datetime.utcnow()))
+        template = template.replace('$GENERATED', str(datetime.utcnow()))
         
         with Spinner():
             controller.upload(test_id=test_id, filename=basename, data=template)
