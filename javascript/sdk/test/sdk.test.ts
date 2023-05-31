@@ -362,15 +362,23 @@ describe("SDK Test", () => {
       { timeout: 10_000 }
     );
 
-    it("deploy should return and array", async () => {
-      const result = await service.partner.deploy({
+    it("deploy should return an object with an endpoint", async () => {
+      await service.partner.deploy({
         partnerName: "crowdstrike",
         hostIds: [deployEndpoint],
       });
 
-      expect(result).to.be.a("array");
-      expect(result).to.have.lengthOf(1);
-      expect(result[0].aid).eq(deployEndpoint);
+      const result = await service.partner.endpoints({
+        partnerName: "crowdstrike",
+        platform: "linux",
+        count: 1,
+        offset: 0,
+      });
+
+      expect(result).to.be.a("object");
+      expect(result[Object.keys(result)[0]]).to.have.property("hostname");
+      expect(result[Object.keys(result)[0]]).to.have.property("version");
+      expect(Object.keys(result).length).to.equal(1);
     });
 
     it("detachControl should remove a control", async () => {
