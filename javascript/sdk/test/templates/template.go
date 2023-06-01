@@ -2,7 +2,7 @@
 ID: $ID
 NAME: $NAME
 UNIT: $UNIT
-GENERATED: $GENERATED
+CREATED: $CREATED
 */
 package main
 

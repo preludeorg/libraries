@@ -123,7 +123,7 @@ describe("SDK Test", () => {
       data = data.replace("$ID", testId);
       data = data.replace("$NAME", testName);
       data = data.replace("$UNIT", testUnit);
-      data = data.replace("$GENERATED", new Date().toISOString());
+      data = data.replace("$CREATED", new Date().toISOString());
       await service.build.upload(testId, templateName, data);
       const test = await service.detect.getTest(testId);
       expect(test.attachments).toEqual(expect.arrayContaining([templateName]));
@@ -187,7 +187,7 @@ describe("SDK Test", () => {
       data = data.replace("$ID", testId);
       data = data.replace("$NAME", testName);
       data = data.replace("$UNIT", testUnit);
-      data = data.replace("$GENERATED", new Date().toISOString());
+      data = data.replace("$CREATED", new Date().toISOString());
       await service.build.upload(testId, templateName, data);
       const download = await service.detect.download(testId, templateName);
       expect(download).toContain(testId);
