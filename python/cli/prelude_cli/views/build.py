@@ -25,14 +25,21 @@ def build(ctx):
 @click.argument('name')
 @click.option('-t', '--test', help='test identifier', default=None, type=str)
 @click.option('-u', '--unit', required=True, help='unit identifier', default=None, type=str)
+@click.option('-c', '--created', help='override default created date', default=None, type=str)
 @click.option('-a', '--advisory', help='alert identifier [CVE ID, Advisory ID, etc]', default=None, type=str)
 @click.pass_obj
 @handle_api_error
-def create_test(controller, name, test, unit, advisory):
+def create_test(controller, name, test, unit, created, advisory):
     """ Create or update a security test """
     test_id = test or str(uuid.uuid4())
     with Spinner():
-        controller.create_test(test_id=test_id, name=name, unit=unit, advisory=advisory)
+        controller.create_test(
+            test_id=test_id,
+            name=name,
+            unit=unit,
+            created=created,
+            advisory=advisory
+        )
 
     if not test:
         basename = f'{test_id}.go'
@@ -40,7 +47,7 @@ def create_test(controller, name, test, unit, advisory):
         template = template.replace('$ID', test_id)
         template = template.replace('$NAME', name)
         template = template.replace('$UNIT', unit or '')
-        template = template.replace('$GENERATED', str(datetime.utcnow()))
+        template = template.replace('$CREATED', str(datetime.utcnow()))
         
         with Spinner():
             controller.upload(test_id=test_id, filename=basename, data=template)
