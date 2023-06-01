@@ -13,12 +13,13 @@ export default class BuildController {
     testId: string,
     name: string,
     unit: string,
+    published?: string,
     advisory?: string,
     options: RequestOptions = {}
   ): Promise<void> {
     await this.#client.requestWithAuth(`/build/tests/${testId}`, {
       method: "POST",
-      body: JSON.stringify({ name, unit, advisory }),
+      body: JSON.stringify({ name, unit, published, advisory }),
       ...options,
     });
   }
