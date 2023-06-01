@@ -18,7 +18,6 @@ export interface Test {
   id: string;
   name: string;
   unit: string;
-  published: string;
   advisory: string;
 }
 

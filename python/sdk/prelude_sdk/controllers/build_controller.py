@@ -9,12 +9,10 @@ class BuildController:
         self.account = account
 
     @verify_credentials
-    def create_test(self, test_id, name, unit, published=None, advisory=None):
+    def create_test(self, test_id, name, unit, advisory=None):
         """ Create or update a test """
         body = dict(name=name, unit=unit)
 
-        if published:
-            body['published'] = published
         if advisory:
             body['advisory'] = advisory
 
