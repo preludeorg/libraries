@@ -25,11 +25,11 @@ def build(ctx):
 @click.argument('name')
 @click.option('-t', '--test', help='test identifier', default=None, type=str)
 @click.option('-u', '--unit', required=True, help='unit identifier', default=None, type=str)
-@click.option('-c', '--created', help='override default created date', default=None, type=str)
+@click.option('-p', '--published', help='override default published date', default=None, type=str)
 @click.option('-a', '--advisory', help='alert identifier [CVE ID, Advisory ID, etc]', default=None, type=str)
 @click.pass_obj
 @handle_api_error
-def create_test(controller, name, test, unit, created, advisory):
+def create_test(controller, name, test, unit, published, advisory):
     """ Create or update a security test """
     test_id = test or str(uuid.uuid4())
     with Spinner():
@@ -37,7 +37,7 @@ def create_test(controller, name, test, unit, created, advisory):
             test_id=test_id,
             name=name,
             unit=unit,
-            created=created,
+            published=published,
             advisory=advisory
         )
 
