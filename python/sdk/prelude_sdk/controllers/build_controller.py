@@ -9,10 +9,32 @@ class BuildController:
         self.account = account
 
     @verify_credentials
-    def create_test(self, test_id, name, unit, advisory=None):
+    def create_test(self, name, unit, advisory=None, test_id=None):
         """ Create or update a test """
         body = dict(name=name, unit=unit)
+        if advisory:
+            body['advisory'] = advisory
+        if test_id:
+            body['id'] = test_id
 
+        res = requests.post(
+            f'{self.account.hq}/build/tests',
+            json=body,
+            headers=self.account.headers,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def update_test(self, test_id, name=None, unit=None, advisory=None):
+        """ Update a test """
+        body = dict()
+        if name:
+            body['name'] = name
+        if unit:
+            body['unit'] = unit
         if advisory:
             body['advisory'] = advisory
 
@@ -22,8 +44,9 @@ class BuildController:
             headers=self.account.headers,
             timeout=10
         )
-        if not res.status_code == 200:
-            raise Exception(res.text)
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
 
     @verify_credentials
     def delete_test(self, test_id):

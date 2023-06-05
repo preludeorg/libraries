@@ -9,19 +9,41 @@ class DetectController:
         self.account = account
 
     @verify_credentials
-    def register_endpoint(self, host, serial_num, edr_id, tags, endpoint_id=None):
+    def register_endpoint(self, host, serial_num, edr_id='', tags=None):
         """ Register (or re-register) an endpoint to your account """
-        params = dict(id=f'{host}:{serial_num}:{edr_id}', tags=tags) if not endpoint_id else \
-            dict(endpoint_id=endpoint_id, tags=tags, edr_id=edr_id, host=host)
+        body = dict(id=f'{host}:{serial_num}:{edr_id}')
+        if tags:
+            body['tags'] = tags
+
         res = requests.post(
             f'{self.account.hq}/detect/endpoint',
             headers=self.account.headers,
-            json=params,
+            json=body,
             timeout=10
         )
         if res.status_code == 200:
             return res.text
         raise Exception(res.text)
+
+    @verify_credentials
+    def update_endpoint(self, endpoint_id, host=None, edr_id=None, tags=None):
+        """ Update an endpoint in your account """
+        body = dict()
+        if host:
+            body['host'] = host
+        if edr_id:
+            body['edr_id'] = edr_id
+        if tags:
+            body['tags'] = tags
+
+        res = requests.post(
+            f'{self.account.hq}/detect/endpoint/{endpoint_id}',
+            headers=self.account.headers,
+            json=body,
+            timeout=10
+        )
+        if res.status_code != 200:
+            raise Exception(res.text)
 
     @verify_credentials
     def delete_endpoint(self, ident: str):
