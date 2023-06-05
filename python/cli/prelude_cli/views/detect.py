@@ -22,21 +22,37 @@ def detect(ctx):
 @click.option('-h', '--host', help='hostname of this machine', type=str, required=True)
 @click.option('-s', '--serial_num', help='serial number of this machine', type=str, required=True)
 @click.option('-e', '--edr_id', help='EDR id', type=str, default='')
-@click.option('-t', '--tags', help='a comma-separated list of tags for this endpoint', type=str, default='')
-@click.option('-i', '--endpoint_id', help='update a specific endpoint_id with the provided values', type=str, default='')
+@click.option('-t', '--tags', help='a comma-separated list of tags for this endpoint', type=str, default=None)
 @click.pass_obj
 @handle_api_error
-def register_endpoint(controller, host, serial_num, edr_id, tags, endpoint_id):
+def register_endpoint(controller, host, serial_num, edr_id, tags):
     """ Register a new endpoint """
     with Spinner():
         token = controller.register_endpoint(
             host=host, 
             serial_num=serial_num, 
             edr_id=edr_id, 
-            tags=tags, 
-            endpoint_id=endpoint_id
+            tags=tags
         )
-        click.secho(token)
+    click.secho(token)
+
+
+@detect.command('update-endpoint')
+@click.argument('endpoint_id')
+@click.option('-h', '--host', help='hostname of this machine', type=str, default=None)
+@click.option('-e', '--edr_id', help='EDR id', type=str, default=None)
+@click.option('-t', '--tags', help='a comma-separated list of tags for this endpoint', type=str, default=None)
+@click.pass_obj
+@handle_api_error
+def update_endpoint(controller, endpoint_id, host, edr_id, tags):
+    """ Register a new endpoint """
+    with Spinner():
+        ep = controller.update_endpoint(
+            endpoint_id=endpoint_id,
+            host=host,
+            edr_id=edr_id,
+            tags=tags
+        )
 
 
 @detect.command('tests')

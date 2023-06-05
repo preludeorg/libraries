@@ -4,6 +4,7 @@ import click
 import prelude_cli.templates as templates
 import importlib.resources as pkg_resources
 
+from rich import print_json
 from datetime import datetime
 from pathlib import Path, PurePath
 
@@ -23,39 +24,59 @@ def build(ctx):
 
 @build.command('create-test')
 @click.argument('name')
-@click.option('-t', '--test', help='test identifier', default=None, type=str)
-@click.option('-u', '--unit', required=True, help='unit identifier', default=None, type=str)
+@click.option('-u', '--unit', required=True, help='unit identifier', type=str)
 @click.option('-a', '--advisory', help='alert identifier [CVE ID, Advisory ID, etc]', default=None, type=str)
+@click.option('-t', '--test', help='test identifier', default=None, type=str)
 @click.pass_obj
 @handle_api_error
-def create_test(controller, name, test, unit, advisory):
+def create_test(controller, name, unit, advisory, test):
     """ Create or update a security test """
-    test_id = test or str(uuid.uuid4())
     with Spinner():
-        controller.create_test(
-            test_id=test_id,
+        t = controller.create_test(
             name=name,
             unit=unit,
-            advisory=advisory
+            advisory=advisory,
+            test_id=test
         )
 
     if not test:
-        basename = f'{test_id}.go'
+        basename = f'{t["id"]}.go'
         template = pkg_resources.read_text(templates, 'template.go')
-        template = template.replace('$ID', test_id)
+        template = template.replace('$ID', t['id'])
         template = template.replace('$NAME', name)
         template = template.replace('$UNIT', unit or '')
         template = template.replace('$CREATED', str(datetime.utcnow()))
         
         with Spinner():
-            controller.upload(test_id=test_id, filename=basename, data=template)
+            controller.upload(test_id=t['id'], filename=basename, data=template)
+            t['attachments'] = [basename]
 
-        test_dir = PurePath(test_id, basename)
-        Path(test_id).mkdir(parents=True, exist_ok=True)
+        test_dir = PurePath(t['id'], basename)
+        Path(t['id']).mkdir(parents=True, exist_ok=True)
         
         with open(test_dir, 'w', encoding='utf8') as test_code:
             test_code.write(template)
-            click.secho(f'Created {basename}', fg='green')
+
+    print_json(data=t)
+
+
+@build.command('update-test')
+@click.argument('test')
+@click.option('-n', '--name', help='test name', default=None, type=str)
+@click.option('-u', '--unit', help='unit identifier', default=None, type=str)
+@click.option('-a', '--advisory', help='alert identifier [CVE ID, Advisory ID, etc]', default=None, type=str)
+@click.pass_obj
+@handle_api_error
+def update_test(controller, test, name, unit, advisory):
+    """ Create or update a security test """
+    with Spinner():
+        test = controller.update_test(
+            test_id=test,
+            name=name,
+            unit=unit,
+            advisory=advisory
+        )
+    print_json(data=test)
 
 
 @build.command('delete-test')
