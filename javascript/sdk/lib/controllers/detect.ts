@@ -28,7 +28,7 @@ export default class DetectController {
 
   /** Register (or re-register) an endpoint to your account */
   async registerEndpoint(
-    { host, serial_num, edr_id = "", tags = "" }: RegisterEndpointParams,
+    { host, serial_num, edr_id, tags }: RegisterEndpointParams,
     options: RequestOptions = {}
   ): Promise<string> {
     const response = await this.#client.requestWithAuth("/detect/endpoint", {
@@ -42,7 +42,7 @@ export default class DetectController {
 
   /** Update an endpoint in your account */
   async updateEndpoint(
-    { endpoint_id, host = "", edr_id = "", tags = "" }: UpdateEndpointParams,
+    { endpoint_id, host, edr_id, tags }: UpdateEndpointParams,
     options: RequestOptions = {}
   ): Promise<void> {
     await this.#client.requestWithAuth(`/detect/endpoint/${endpoint_id}`, {
