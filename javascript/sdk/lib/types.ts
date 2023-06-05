@@ -317,7 +317,13 @@ export interface RegisterEndpointParams {
   serial_num: string;
   edr_id?: string;
   tags?: string;
+}
+
+export interface UpdateEndpointParams {
   endpoint_id: string;
+  host?: string;
+  edr_id?: string;
+  tags?: string;
 }
 
 export interface DownloadParams {
