@@ -18,7 +18,7 @@ export default class BuildController {
   ): Promise<Test> {
     const response = await this.#client.requestWithAuth(`/build/tests`, {
       method: "POST",
-      body: JSON.stringify({ name, unit, advisory, testId }),
+      body: JSON.stringify({ name, unit, advisory, id: testId }),
       ...options,
     });
 
