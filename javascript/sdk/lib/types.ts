@@ -356,5 +356,6 @@ export type PartnerEndpoints = Record<
   {
     hostname: string;
     version: string;
+    state: string;
   }
 >;
