@@ -56,18 +56,16 @@ class IAMController:
             json=body,
             timeout=10
         )
-        if res.status_code != 200:
-            raise Exception(res.text)
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
 
     @verify_credentials
-    def get_account(self, company: str = ''):
+    def get_account(self):
         """ Get account properties """
-        params = dict(company=company)
-
         res = requests.get(
             f'{self.account.hq}/iam/account',
             headers=self.account.headers,
-            params=params,
             timeout=10
         )
         if res.status_code == 200:

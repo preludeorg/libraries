@@ -23,8 +23,9 @@ def register_account(controller):
     """ Register a new account """
     email = click.prompt('Enter your email')
     name = click.prompt('(Optional) Enter your name', default='', show_default=False)
+    company = click.prompt('(Optional) Enter your associated company', default='', show_default=False)
     with Spinner():
-        data = controller.new_account(user_email=email, user_name=name)
+        data = controller.new_account(user_email=email, user_name=name, company=company)
     print_json(data=data)
     print("\nCheck your email to verify your account.\n")
 
@@ -34,12 +35,20 @@ def register_account(controller):
               help='provide a mode',
               default=Mode.MANUAL.name, show_default=True,
               type=click.Choice([m.name for m in Mode], case_sensitive=False))
+@click.option('-c', '--company',
+              help='provide an associated company',
+              default='', show_default=True,
+              type=str)
 @click.pass_obj
 @handle_api_error
-def update_account(controller, mode):
+def update_account(controller, mode, company):
     """ Update an account """
     with Spinner():
-        controller.update_account(mode=Mode[mode.upper()].value)
+        data = controller.update_account(
+            mode=Mode[mode.upper()].value,
+            company=company
+        )
+    print_json(data)
 
 
 @iam.command('account')
