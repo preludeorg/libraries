@@ -97,6 +97,7 @@ describe("SDK Test", () => {
   describe("Build Controller", async () => {
     const testId = randomUUID();
     const testName = "test";
+    const updatedTestName = "updatedTest";
     const templateName = `${testId}.go`;
     const testUnit = "AV";
 
@@ -113,8 +114,14 @@ describe("SDK Test", () => {
       await service.iam.purgeAccount();
     });
 
-    it("createTest should not throw an error", async () => {
-      await service.build.createTest(testName, testUnit, undefined, testId);
+    it("createTest should return created test", async () => {
+      const response = await service.build.createTest(
+        testName,
+        testUnit,
+        undefined,
+        testId
+      );
+      expect(response.name).eq(testName);
     });
 
     it("upload should have an attachment in the getTest call", async () => {
@@ -129,6 +136,11 @@ describe("SDK Test", () => {
       expect(test.attachments).toEqual(expect.arrayContaining([templateName]));
     });
 
+    it("updateTest should return updated test", async () => {
+      const response = await service.build.updateTest(testId, updatedTestName);
+      expect(response.name).eq(updatedTestName);
+    });
+
     it("deleteTest should not throw an error", async () => {
       await service.build.deleteTest(testId);
     });
@@ -139,6 +151,7 @@ describe("SDK Test", () => {
     const serial = "test_serial";
     const edrId = "test_edr_id";
     const tags = "test_tag";
+    const updatedTags = "updated_test_tag";
     const healthCheck = "39de298a-911d-4a3b-aed4-1e8281010a9a";
     let endpointToken = "";
     let endpointId = "";
@@ -230,6 +243,15 @@ describe("SDK Test", () => {
       expect(result).toHaveLength(1);
       expect(result[0].host).eq(hostName);
       endpointId = result[0].endpoint_id;
+    });
+
+    it("updateEndpoint should return an endpoint with updated tags", async () => {
+      await service.detect.updateEndpoint({
+        endpoint_id: endpointId,
+        tags: updatedTags,
+      });
+      const result = await service.detect.listEndpoints();
+      expect(result[0].tags[0]).eq(updatedTags);
     });
 
     describe("with probe", () => {
