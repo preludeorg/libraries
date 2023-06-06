@@ -114,7 +114,7 @@ describe("SDK Test", () => {
     });
 
     it("createTest should not throw an error", async () => {
-      await service.build.createTest(testName, testUnit, testId);
+      await service.build.createTest(testName, testUnit, undefined, testId);
     });
 
     it("upload should have an attachment in the getTest call", async () => {
@@ -174,7 +174,7 @@ describe("SDK Test", () => {
     });
 
     it("getTest should return a test object", async () => {
-      await service.build.createTest(testId, testName, testUnit);
+      await service.build.createTest(testName, testUnit, undefined, testId);
       const test = await service.detect.getTest(testId);
       expect(test).toHaveProperty("attachments");
       expect(test).toHaveProperty("unit");
