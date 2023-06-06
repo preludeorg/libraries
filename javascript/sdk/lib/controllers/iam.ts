@@ -53,25 +53,21 @@ export default class IAMController {
     company?: string,
     options: RequestOptions = {}
   ) {
-    await this.#client.requestWithAuth("/iam/account", {
+    const response = await this.#client.requestWithAuth("/iam/account", {
       method: "PUT",
       body: JSON.stringify({ mode, company }),
       ...options,
     });
 
-    return true;
+    return (await response.json()) as Account;
   }
 
   /** Get account properties */
-  async getAccount(company: string = "", options: RequestOptions = {}) {
-    const searchParams = new URLSearchParams({ company: company.toString() });
-    const response = await this.#client.requestWithAuth(
-      `/iam/account?${searchParams.toString()}`,
-      {
-        method: "GET",
-        ...options,
-      }
-    );
+  async getAccount(options: RequestOptions = {}) {
+    const response = await this.#client.requestWithAuth("/iam/account", {
+      method: "GET",
+      ...options,
+    });
 
     return (await response.json()) as Account;
   }

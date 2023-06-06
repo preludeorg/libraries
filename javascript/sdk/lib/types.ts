@@ -34,6 +34,7 @@ export interface Account {
   users: User[];
   mode: Mode;
   queue: Queue[];
+  company: string;
 }
 
 export interface CreateAccountParams {
