@@ -18,6 +18,7 @@ class TestDetectController:
         self.serial = 'test_serial'
         self.edr_id = 'test_edr_id'
         self.tags = 'test_tag'
+        self.updated_tags = 'updated_test_tag'
         self.health_check = '39de298a-911d-4a3b-aed4-1e8281010a9a'
         self.recommendation = 'Test'
         self.detect = DetectController(pytest.account)
@@ -87,6 +88,13 @@ class TestDetectController:
             assert len(describe_activity) == 2
         finally:
             os.remove(pytest.probe)
+    
+    @pytest.mark.order(after='test_describe_activity')
+    def test_update_endpoint(self, unwrap):
+        """Test update_endpoint method"""
+        unwrap(self.detect.update_endpoint)(self.detect, endpoint_id=pytest.endpoint_id, tags=self.updated_tags)
+        res = unwrap(self.detect.list_endpoints)(self.detect)
+        assert res[0]['tags'][0] == self.updated_tags
 
     @pytest.mark.order(after='test_describe_activity')
     def test_disable_test(self, unwrap):

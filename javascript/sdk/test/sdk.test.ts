@@ -194,18 +194,23 @@ describe("SDK Test", () => {
       activeTest = testId;
     });
 
-    it("download should return the same data as the upload", async () => {
-      const file = readFileSync(`${__dirname}/templates/template.go`, "utf8");
-      let data = file.toString();
-      data = data.replace("$ID", testId);
-      data = data.replace("$NAME", testName);
-      data = data.replace("$UNIT", testUnit);
-      data = data.replace("$CREATED", new Date().toISOString());
-      await service.build.upload(testId, templateName, data);
-      const download = await service.detect.download(testId, templateName);
-      expect(download).toContain(testId);
-      expect(download).toContain(testName);
-    });
+    it(
+      "download should return the same data as the upload",
+      async () => {
+        const file = readFileSync(`${__dirname}/templates/template.go`, "utf8");
+        let data = file.toString();
+        data = data.replace("$ID", testId);
+        data = data.replace("$NAME", testName);
+        data = data.replace("$UNIT", testUnit);
+        data = data.replace("$CREATED", new Date().toISOString());
+        await service.build.upload(testId, templateName, data);
+        await sleep(5000);
+        const download = await service.detect.download(testId, templateName);
+        expect(download).toContain(testId);
+        expect(download).toContain(testName);
+      },
+      { timeout: 10_000 }
+    );
 
     it("enableTest should add a new test to the queue", async function () {
       await service.detect.enableTest({
@@ -245,15 +250,6 @@ describe("SDK Test", () => {
       endpointId = result[0].endpoint_id;
     });
 
-    it("updateEndpoint should return an endpoint with updated tags", async () => {
-      await service.detect.updateEndpoint({
-        endpoint_id: endpointId,
-        tags: updatedTags,
-      });
-      const result = await service.detect.listEndpoints();
-      expect(result[0].tags[0]).eq(updatedTags);
-    });
-
     describe("with probe", () => {
       afterAll(async () => {
         unlinkSync(`${probeName}.sh`);
@@ -291,7 +287,7 @@ describe("SDK Test", () => {
             });
           });
         },
-        { timeout: 30_000 }
+        { timeout: 10_000 }
       );
 
       it(
@@ -307,6 +303,15 @@ describe("SDK Test", () => {
         },
         { retry: 5 }
       );
+    });
+
+    it("updateEndpoint should return an endpoint with updated tags", async () => {
+      await service.detect.updateEndpoint({
+        endpoint_id: endpointId,
+        tags: updatedTags,
+      });
+      const result = await service.detect.listEndpoints();
+      expect(result[0].tags[0]).eq(updatedTags);
     });
 
     it("socialStats should return an object with a non-empty array of values", async function () {
