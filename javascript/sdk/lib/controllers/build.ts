@@ -1,5 +1,5 @@
 import Client from "../client";
-import type { RequestOptions } from "../types";
+import type { RequestOptions, Test } from "../types";
 
 export default class BuildController {
   #client: Client;
@@ -10,17 +10,39 @@ export default class BuildController {
 
   /** Create or update a test */
   async createTest(
-    testId: string,
     name: string,
     unit: string,
     advisory?: string,
+    testId?: string,
     options: RequestOptions = {}
-  ): Promise<void> {
-    await this.#client.requestWithAuth(`/build/tests/${testId}`, {
+  ): Promise<Test> {
+    const response = await this.#client.requestWithAuth(`/build/tests`, {
       method: "POST",
-      body: JSON.stringify({ name, unit, advisory }),
+      body: JSON.stringify({ name, unit, advisory, id: testId }),
       ...options,
     });
+
+    return await response.json();
+  }
+
+  /** Update a test */
+  async updateTest(
+    testId: string,
+    name?: string,
+    unit?: string,
+    advisory?: string,
+    options: RequestOptions = {}
+  ): Promise<Test> {
+    const response = await this.#client.requestWithAuth(
+      `/build/tests/${testId}`,
+      {
+        method: "POST",
+        body: JSON.stringify({ name, unit, advisory }),
+        ...options,
+      }
+    );
+
+    return await response.json();
   }
 
   /** Delete an existing test */

@@ -16,6 +16,7 @@ import {
   Test,
   TestActivity,
   TestData,
+  UpdateEndpointParams,
 } from "../types";
 
 export default class DetectController {
@@ -27,25 +28,28 @@ export default class DetectController {
 
   /** Register (or re-register) an endpoint to your account */
   async registerEndpoint(
-    {
-      host,
-      serial_num,
-      edr_id = "",
-      tags = "",
-      endpoint_id = "",
-    }: RegisterEndpointParams,
+    { host, serial_num, edr_id = "", tags }: RegisterEndpointParams,
     options: RequestOptions = {}
   ): Promise<string> {
-    const params = endpoint_id
-      ? { endpoint_id, tags, edr_id, host }
-      : { id: `${host}:${serial_num}:${edr_id}`, tags };
     const response = await this.#client.requestWithAuth("/detect/endpoint", {
       method: "POST",
-      body: JSON.stringify(params),
+      body: JSON.stringify({ id: `${host}:${serial_num}:${edr_id}`, tags }),
       ...options,
     });
 
     return response.text();
+  }
+
+  /** Update an endpoint in your account */
+  async updateEndpoint(
+    { endpoint_id, host, edr_id, tags }: UpdateEndpointParams,
+    options: RequestOptions = {}
+  ): Promise<void> {
+    await this.#client.requestWithAuth(`/detect/endpoint/${endpoint_id}`, {
+      method: "POST",
+      body: JSON.stringify({ host, edr_id, tags }),
+      ...options,
+    });
   }
 
   /** Delete an endpoint from your account */
