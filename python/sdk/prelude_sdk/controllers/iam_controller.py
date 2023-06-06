@@ -10,10 +10,14 @@ class IAMController:
         self.account = account
 
     @verify_credentials
-    def new_account(self, user_email: str, user_name: str):
+    def new_account(self, user_email: str, user_name: str, company: str = None):
+        body = dict(handle=user_email, user_name=user_name)
+        if company:
+            body['company'] = company
+
         res = requests.post(
             url=f'{self.account.hq}/iam/account',
-            json=dict(handle=user_email, user_name=user_name),
+            json=body,
             headers=self.account.headers,
             timeout=10
         )
@@ -40,23 +44,30 @@ class IAMController:
         return res.text
 
     @verify_credentials
-    def update_account(self, mode: int):
+    def update_account(self, mode: int, company: str = None):
         """ Update properties on an account """
+        body = dict(mode=mode)
+        if company:
+            body['company'] = company
+
         res = requests.put(
             f'{self.account.hq}/iam/account',
             headers=self.account.headers,
-            json=dict(mode=mode),
+            json=body,
             timeout=10
         )
         if res.status_code != 200:
             raise Exception(res.text)
 
     @verify_credentials
-    def get_account(self):
+    def get_account(self, company: str = ''):
         """ Get account properties """
+        params = dict(company=company)
+
         res = requests.get(
             f'{self.account.hq}/iam/account',
             headers=self.account.headers,
+            params=params,
             timeout=10
         )
         if res.status_code == 200:

@@ -39,6 +39,7 @@ export interface Account {
 export interface CreateAccountParams {
   email: string;
   name: string;
+  company?: string;
 }
 
 export interface CreateUserParams {
