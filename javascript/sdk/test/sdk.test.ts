@@ -97,6 +97,7 @@ describe("SDK Test", () => {
   describe("Build Controller", async () => {
     const testId = randomUUID();
     const testName = "test";
+    const updatedTestName = "updatedTest";
     const templateName = `${testId}.go`;
     const testUnit = "AV";
 
@@ -113,8 +114,14 @@ describe("SDK Test", () => {
       await service.iam.purgeAccount();
     });
 
-    it("createTest should not throw an error", async () => {
-      await service.build.createTest(testId, testName, testUnit);
+    it("createTest should return created test", async () => {
+      const response = await service.build.createTest(
+        testName,
+        testUnit,
+        undefined,
+        testId
+      );
+      expect(response.name).eq(testName);
     });
 
     it("upload should have an attachment in the getTest call", async () => {
@@ -129,6 +136,11 @@ describe("SDK Test", () => {
       expect(test.attachments).toEqual(expect.arrayContaining([templateName]));
     });
 
+    it("updateTest should return updated test", async () => {
+      const response = await service.build.updateTest(testId, updatedTestName);
+      expect(response.name).eq(updatedTestName);
+    });
+
     it("deleteTest should not throw an error", async () => {
       await service.build.deleteTest(testId);
     });
@@ -139,6 +151,7 @@ describe("SDK Test", () => {
     const serial = "test_serial";
     const edrId = "test_edr_id";
     const tags = "test_tag";
+    const updatedTags = "updated_test_tag";
     const healthCheck = "39de298a-911d-4a3b-aed4-1e8281010a9a";
     let endpointToken = "";
     let endpointId = "";
@@ -174,25 +187,30 @@ describe("SDK Test", () => {
     });
 
     it("getTest should return a test object", async () => {
-      await service.build.createTest(testId, testName, testUnit);
+      await service.build.createTest(testName, testUnit, undefined, testId);
       const test = await service.detect.getTest(testId);
       expect(test).toHaveProperty("attachments");
       expect(test).toHaveProperty("unit");
       activeTest = testId;
     });
 
-    it("download should return the same data as the upload", async () => {
-      const file = readFileSync(`${__dirname}/templates/template.go`, "utf8");
-      let data = file.toString();
-      data = data.replace("$ID", testId);
-      data = data.replace("$NAME", testName);
-      data = data.replace("$UNIT", testUnit);
-      data = data.replace("$CREATED", new Date().toISOString());
-      await service.build.upload(testId, templateName, data);
-      const download = await service.detect.download(testId, templateName);
-      expect(download).toContain(testId);
-      expect(download).toContain(testName);
-    });
+    it(
+      "download should return the same data as the upload",
+      async () => {
+        const file = readFileSync(`${__dirname}/templates/template.go`, "utf8");
+        let data = file.toString();
+        data = data.replace("$ID", testId);
+        data = data.replace("$NAME", testName);
+        data = data.replace("$UNIT", testUnit);
+        data = data.replace("$CREATED", new Date().toISOString());
+        await service.build.upload(testId, templateName, data);
+        await sleep(5000);
+        const download = await service.detect.download(testId, templateName);
+        expect(download).toContain(testId);
+        expect(download).toContain(testName);
+      },
+      { timeout: 10_000 }
+    );
 
     it("enableTest should add a new test to the queue", async function () {
       await service.detect.enableTest({
@@ -220,7 +238,6 @@ describe("SDK Test", () => {
         serial_num: serial,
         edr_id: edrId,
         tags,
-        endpoint_id: "",
       });
       expect(result).toHaveLength(32);
       endpointToken = result;
@@ -270,7 +287,7 @@ describe("SDK Test", () => {
             });
           });
         },
-        { timeout: 30_000 }
+        { timeout: 10_000 }
       );
 
       it(
@@ -286,6 +303,15 @@ describe("SDK Test", () => {
         },
         { retry: 5 }
       );
+    });
+
+    it("updateEndpoint should return an endpoint with updated tags", async () => {
+      await service.detect.updateEndpoint({
+        endpoint_id: endpointId,
+        tags: updatedTags,
+      });
+      const result = await service.detect.listEndpoints();
+      expect(result[0].tags[0]).eq(updatedTags);
     });
 
     it("socialStats should return an object with a non-empty array of values", async function () {
