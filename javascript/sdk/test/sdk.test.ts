@@ -114,7 +114,7 @@ describe("SDK Test", () => {
     });
 
     it("createTest should not throw an error", async () => {
-      await service.build.createTest(testId, testName, testUnit);
+      await service.build.createTest(testName, testUnit, testId);
     });
 
     it("upload should have an attachment in the getTest call", async () => {
@@ -220,7 +220,6 @@ describe("SDK Test", () => {
         serial_num: serial,
         edr_id: edrId,
         tags,
-        endpoint_id: "",
       });
       expect(result).toHaveLength(32);
       endpointToken = result;
