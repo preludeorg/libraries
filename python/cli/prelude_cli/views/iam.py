@@ -36,7 +36,7 @@ def register_account(controller):
               default=Mode.MANUAL.name, show_default=True,
               type=click.Choice([m.name for m in Mode], case_sensitive=False))
 @click.option('-c', '--company',
-              help='provide an associated company',
+              help='provide your associated company',
               default='', show_default=True,
               type=str)
 @click.pass_obj
