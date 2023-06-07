@@ -39,15 +39,15 @@ export interface Account {
 
 export interface CreateAccountParams {
   email: string;
-  name: string;
+  name?: string;
   company?: string;
 }
 
 export interface CreateUserParams {
   permission: Permission;
   email: string;
-  name: string;
-  expires: string;
+  name?: string;
+  expires?: string;
 }
 
 export interface CreatedUser {

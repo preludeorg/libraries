@@ -17,7 +17,7 @@ export default class IAMController {
   }
 
   async newAccount(
-    { email, name, company = "" }: CreateAccountParams,
+    { email, name, company }: CreateAccountParams,
     options: RequestOptions = {}
   ): Promise<Credentials> {
     const response = await this.#client.request("/iam/account", {
@@ -49,7 +49,7 @@ export default class IAMController {
 
   /** Update properties on an account */
   async updateAccount(
-    mode: Mode,
+    mode?: Mode,
     company?: string,
     options: RequestOptions = {}
   ) {
