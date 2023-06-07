@@ -53,6 +53,7 @@ def update_endpoint(controller, endpoint_id, host, edr_id, tags):
             edr_id=edr_id,
             tags=tags
         )
+    print_json(data=ep)
 
 
 @detect.command('tests')
@@ -72,7 +73,8 @@ def list_tests(controller):
 def get_test(controller, test_id):
     """ List properties for a test """
     with Spinner():
-        print_json(data=controller.get_test(test_id=test_id))
+        data = controller.get_test(test_id=test_id)
+    print_json(data=data)
 
 
 @detect.command('download')
@@ -151,7 +153,7 @@ def queue(controller):
     with Spinner():
         iam = IAMController(account=controller.account)
         queue = iam.get_account().get('queue')
-        print_json(data=queue)
+    print_json(data=queue)
 
 
 @detect.command('endpoints')
@@ -172,7 +174,8 @@ def endpoints(controller, days):
 def advisories(controller, year):
     """ List all Prelude advisories """
     with Spinner():
-        print_json(data=controller.list_advisories(year=year))
+        data = controller.list_advisories(year=year)
+    print_json(data=data)
 
 
 @detect.command('clone')
