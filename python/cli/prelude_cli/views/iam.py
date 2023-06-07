@@ -22,8 +22,8 @@ def iam(ctx):
 def register_account(controller):
     """ Register a new account """
     email = click.prompt('Enter your email')
-    name = click.prompt('(Optional) Enter your name', default=None, show_default=False)
-    company = click.prompt('(Optional) Enter your associated company', default=None, show_default=False)
+    name = click.prompt('(Optional) Enter your name', default='', show_default=False)
+    company = click.prompt('(Optional) Enter your associated company', default='', show_default=False)
     with Spinner():
         data = controller.new_account(user_email=email, user_name=name, company=company)
     print_json(data=data)
@@ -48,7 +48,7 @@ def update_account(controller, mode, company):
             mode=Mode[mode.upper()].value if mode else None,
             company=company
         )
-    print_json(data)
+    print_json(data=data)
 
 
 @iam.command('account')
