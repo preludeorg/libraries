@@ -22,8 +22,8 @@ def iam(ctx):
 def register_account(controller):
     """ Register a new account """
     email = click.prompt('Enter your email')
-    name = click.prompt('(Optional) Enter your name', default='', show_default=False)
-    company = click.prompt('(Optional) Enter your associated company', default='', show_default=False)
+    name = click.prompt('(Optional) Enter your name', default=None, show_default=False)
+    company = click.prompt('(Optional) Enter your associated company', default=None, show_default=False)
     with Spinner():
         data = controller.new_account(user_email=email, user_name=name, company=company)
     print_json(data=data)
@@ -33,11 +33,11 @@ def register_account(controller):
 @iam.command('update-account')
 @click.option('-m', '--mode',
               help='provide a mode',
-              default=Mode.MANUAL.name, show_default=True,
+              default=None, show_default=False,
               type=click.Choice([m.name for m in Mode], case_sensitive=False))
 @click.option('-c', '--company',
               help='provide your associated company',
-              default='', show_default=True,
+              default=None, show_default=False,
               type=str)
 @click.pass_obj
 @handle_api_error
@@ -45,7 +45,7 @@ def update_account(controller, mode, company):
     """ Update an account """
     with Spinner():
         data = controller.update_account(
-            mode=Mode[mode.upper()].value,
+            mode=Mode[mode.upper()].value if mode else None,
             company=company
         )
     print_json(data)
@@ -64,7 +64,7 @@ def describe_account(controller):
 @click.option('-d', '--days', help='days this user will remain active', default=365, type=int)
 @click.option('-p', '--permission', help='user permission level', default=Permission.SERVICE.name,
               type=click.Choice([p.name for p in Permission if p != Permission.INVALID], case_sensitive=False), show_default=True)
-@click.option('-n', '--name', help='name of user', default='', type=str)
+@click.option('-n', '--name', help='name of user', default=None, show_default=False, type=str)
 @click.argument('email')
 @click.pass_obj
 @handle_api_error

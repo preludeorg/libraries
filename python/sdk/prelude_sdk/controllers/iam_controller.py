@@ -10,8 +10,10 @@ class IAMController:
         self.account = account
 
     @verify_credentials
-    def new_account(self, user_email: str, user_name: str, company: str = None):
-        body = dict(handle=user_email, user_name=user_name)
+    def new_account(self, user_email: str, user_name: str = None, company: str = None):
+        body = dict(handle=user_email)
+        if user_name:
+            body['user_name'] = user_name
         if company:
             body['company'] = company
 
@@ -44,9 +46,11 @@ class IAMController:
         return res.text
 
     @verify_credentials
-    def update_account(self, mode: int, company: str = None):
+    def update_account(self, mode: int = None, company: str = None):
         """ Update properties on an account """
-        body = dict(mode=mode)
+        body = dict()
+        if mode:
+            body['mode'] = mode
         if company:
             body['company'] = company
 
@@ -73,11 +77,17 @@ class IAMController:
         raise Exception(res.text)
 
     @verify_credentials
-    def create_user(self, permission: int, email: str, name: str, expires: datetime):
+    def create_user(self, permission: int, email: str, expires: datetime = None, name: str = None):
         """ Create a new user inside an account """
+        body = dict(permission=permission, handle=email)
+        if name:
+            body['name'] = name
+        if expires:
+            body['expires'] = expires.isoformat()
+
         res = requests.post(
             url=f'{self.account.hq}/iam/user',
-            json=dict(permission=permission, handle=email, name=name, expires=expires.isoformat()),
+            json=body,
             headers=self.account.headers,
             timeout=10
         )
