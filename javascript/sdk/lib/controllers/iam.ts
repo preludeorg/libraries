@@ -17,12 +17,12 @@ export default class IAMController {
   }
 
   async newAccount(
-    { email, name }: CreateAccountParams,
+    { email, name, company = "" }: CreateAccountParams,
     options: RequestOptions = {}
   ): Promise<Credentials> {
     const response = await this.#client.request("/iam/account", {
       method: "POST",
-      body: JSON.stringify({ handle: email, user_name: name }),
+      body: JSON.stringify({ handle: email, user_name: name, company }),
       ...options,
     });
 
@@ -48,14 +48,18 @@ export default class IAMController {
   }
 
   /** Update properties on an account */
-  async updateAccount(mode: Mode, options: RequestOptions = {}) {
-    await this.#client.requestWithAuth("/iam/account", {
+  async updateAccount(
+    mode: Mode,
+    company?: string,
+    options: RequestOptions = {}
+  ) {
+    const response = await this.#client.requestWithAuth("/iam/account", {
       method: "PUT",
-      body: JSON.stringify({ mode }),
+      body: JSON.stringify({ mode, company }),
       ...options,
     });
 
-    return true;
+    return (await response.json()) as Account;
   }
 
   /** Get account properties */

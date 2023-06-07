@@ -34,11 +34,13 @@ export interface Account {
   users: User[];
   mode: Mode;
   queue: Queue[];
+  company: string;
 }
 
 export interface CreateAccountParams {
   email: string;
   name: string;
+  company?: string;
 }
 
 export interface CreateUserParams {
