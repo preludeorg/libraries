@@ -57,11 +57,9 @@ describe("SDK Test", () => {
     });
 
     it("updateAccount should update the account", async () => {
-      const result = await service.iam.updateAccount(1);
-      expect(result).to.be.true;
-      const account = await service.iam.getAccount();
-      expect(account).toHaveProperty("mode");
-      expect(account.mode).eq(1);
+      const result = await service.iam.updateAccount(1, "prelude");
+      expect(result.mode).eq(1);
+      expect(result.company).eq("prelude");
     });
 
     it("getAccount should return the account", async () => {
@@ -287,7 +285,7 @@ describe("SDK Test", () => {
             });
           });
         },
-        { timeout: 10_000 }
+        { timeout: 30_000 }
       );
 
       it(

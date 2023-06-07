@@ -35,6 +35,10 @@ def check_if_string_is_uuid(string):
 
 class TestIAMController:
 
+    def setup_class(self):
+        """Setup the test class"""
+        self.company = 'prelude'
+
     @pytest.mark.order(1)
     def test_new_account(self, unwrap, pause_for_manual_action, email, api):
         """Test new_account method"""
@@ -77,9 +81,9 @@ class TestIAMController:
     def test_update_account(self, unwrap):
         """Test update_account method"""
         iam = IAMController(pytest.account)
-        unwrap(iam.update_account)(iam, mode=Mode.FROZEN.value)
-        res = unwrap(iam.get_account)(iam)
+        res = unwrap(iam.update_account)(iam, mode=Mode.FROZEN.value, company=self.company)
         assert res['mode'] == Mode.FROZEN.value
+        assert res['company'] == self.company
 
     @pytest.mark.order(after='test_update_account')
     def test_purge_account(self, unwrap):
