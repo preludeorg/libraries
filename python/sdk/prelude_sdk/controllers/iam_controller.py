@@ -49,7 +49,7 @@ class IAMController:
     def update_account(self, mode: int = None, company: str = None):
         """ Update properties on an account """
         body = dict()
-        if mode:
+        if mode != None:
             body['mode'] = mode
         if company:
             body['company'] = company
