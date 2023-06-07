@@ -35,6 +35,7 @@ const createAccount = async () => {
 
 describe("SDK Test", () => {
   let probeName = "nocturnal";
+  const company = "prelude";
 
   describe("IAM Controller", () => {
     const service = new Service({
@@ -57,7 +58,7 @@ describe("SDK Test", () => {
     });
 
     it("updateAccount should update the account", async () => {
-      const result = await service.iam.updateAccount(1, "prelude");
+      const result = await service.iam.updateAccount(1, company);
       expect(result.mode).eq(1);
       expect(result.company).eq("prelude");
     });
