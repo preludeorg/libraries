@@ -57,7 +57,8 @@ def update_account(controller, mode, company):
 def describe_account(controller):
     """ Get account details """
     with Spinner():
-        print_json(data=controller.get_account())
+        data = controller.get_account()
+    print_json(data=data)
 
 
 @iam.command('create-user')

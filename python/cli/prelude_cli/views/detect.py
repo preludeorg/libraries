@@ -199,7 +199,7 @@ def clone(controller):
 
     with Spinner():
         asyncio.run(start_cloning())
-        click.secho('Project cloned successfully', fg='green')
+    click.secho('Project cloned successfully', fg='green')
 
 
 @detect.command('activity')
