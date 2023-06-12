@@ -300,6 +300,13 @@ export interface ProbeActivity {
   edr_id: string | null;
 }
 
+export interface MetricsActivity {
+  account_id: string;
+  endpoints: number;
+  tests: number;
+  company: string;
+}
+
 export interface CreateRecommendation {
   title: string;
   description: string;
