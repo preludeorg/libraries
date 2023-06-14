@@ -29,6 +29,7 @@ export interface User {
 }
 
 export interface Account {
+  account_id: string;
   whoami: string;
   controls: string[];
   users: User[];
@@ -305,6 +306,9 @@ export interface MetricsActivity {
   endpoints: number;
   tests: number;
   company: string;
+  unique_tests: number;
+  custom_tests: number;
+  tests_by_endpoint_by_day: number;
 }
 
 export interface CreateRecommendation {
