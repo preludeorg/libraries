@@ -215,6 +215,7 @@ export interface TestData {
 
 export interface TestUsage {
   count: number;
+  not_relevant: number;
   failed: number;
 }
 
@@ -225,6 +226,7 @@ export interface TestActivity {
 
 export interface AdvisoryUsage {
   count: number;
+  not_relevant: number;
   failed: number;
 }
 
