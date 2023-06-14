@@ -310,7 +310,6 @@ export interface MetricsActivity {
   company: string;
   unique_tests: number;
   custom_tests: number;
-  tests_by_endpoint_by_day: number;
 }
 
 export interface CreateRecommendation {
