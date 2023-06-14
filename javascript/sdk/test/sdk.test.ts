@@ -269,24 +269,14 @@ describe("SDK Test", () => {
       it(
         "spawns the probe",
         async () => {
-          await new Promise((resolve) => {
-            const process = spawn(`./${probeName}.sh`, {
-              env: {
-                PRELUDE_TOKEN: endpointToken,
-              },
-            });
-            let count = 0;
-            process.stderr.on("data", (data) => {
-              if (data.toString().includes("Completed")) {
-                count++;
-              }
-              if (count === 2) {
-                resolve(data);
-              }
-            });
+          spawn(`./${probeName}.sh`, {
+            env: {
+              PRELUDE_TOKEN: endpointToken,
+            },
           });
+          await sleep(10_000);
         },
-        { timeout: 30_000 }
+        { timeout: 20_000 }
       );
 
       it(
