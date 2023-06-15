@@ -55,7 +55,7 @@ To use these files in your project:
 1. Ensure both Dockerfile and entrypoint.sh are in your project directory.
 2. Make sure the entrypoint.sh file is executable (`chmod +x entrypoint.sh`).
 3. Build the Docker image by running `docker build -t my-image .` from the project directory.
-4. Run a container from your image with `docker run -it my-image`.
+4. Run a container from your image with `docker run -e PRELUDE_TOKEN='51a585060b99c5a9db6c9b00e11632c9' -it my-image`.
 
 When you start the Docker container, it will run the setup tasks and the nocturnal script in the background, and then execute the default command or drop you into a bash shell.
 
