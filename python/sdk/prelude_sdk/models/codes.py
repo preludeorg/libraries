@@ -7,21 +7,28 @@ class RunCode(Enum):
     DAILY = 1
     WEEKLY = 2
     MONTHLY = 3
+    MONDAY = 10
+    TUESDAY = 11
+    WEDNESDAY = 12
+    THURSDAY = 13
+    FRIDAY = 14
+    SATURDAY = 15
+    SUNDAY = 16
 
     @classmethod
     def _missing_(cls, value):
         return RunCode.INVALID
-    
+
 
 class Mode(Enum):
-     MANUAL = 0
-     FROZEN = 1
-     AUTOPILOT = 2
+    MANUAL = 0
+    FROZEN = 1
+    AUTOPILOT = 2
 
-     @classmethod
-     def _missing_(cls, value):
-         return Mode.MANUAL
-     
+    @classmethod
+    def _missing_(cls, value):
+        return Mode.MANUAL
+ 
 
 class Permission(Enum):
     INVALID = -1
@@ -29,7 +36,6 @@ class Permission(Enum):
     EXECUTIVE = 1
     BUILD = 2
     SERVICE = 3
-    PRELUDE = 4
 
     @classmethod
     def _missing_(cls, value):
@@ -51,6 +57,8 @@ class ExitCode(Enum):
     QUARANTINED_1 = 105
     OUTBOUND_SECURE = 106
     EXPLOIT_PREVENTED = 107
+    NO_TEST = 108
+    IS_RELEVANT = 109
     ENDPOINT_BLOCKED = 126
     QUARANTINED_2 = 127
     PROCESS_KILLED_3 = 137
@@ -73,9 +81,10 @@ class State(Enum):
     PROTECTED = 1
     UNPROTECTED = 2
     ERROR = 3
+    NOT_RELEVANT = 4
 
     @classmethod
-    def mapping(self):
+    def mapping(cls):
         return {
             State.NONE: [ExitCode.MISSING],
             State.PROTECTED: [
@@ -86,17 +95,25 @@ class State(Enum):
                 ExitCode.PROCESS_KILLED_1,
                 ExitCode.PROCESS_KILLED_2,
                 ExitCode.NOT_RELEVANT,
+                ExitCode.NO_TEST,
                 ExitCode.OUTBOUND_SECURE,
                 ExitCode.ENDPOINT_BLOCKED,
                 ExitCode.EXPLOIT_PREVENTED,
                 ExitCode.PROCESS_KILLED_3
             ],
-            State.UNPROTECTED: [ExitCode.UNPROTECTED],
+            State.UNPROTECTED: [
+                ExitCode.UNPROTECTED,
+                ExitCode.IS_RELEVANT,
+            ],
             State.ERROR: [
                 ExitCode.ERROR,
                 ExitCode.MALFORMED_VST,
                 ExitCode.TIMEOUT,
                 ExitCode.UNEXPECTED
+            ],
+            State.NOT_RELEVANT: [
+                ExitCode.NOT_RELEVANT,
+                ExitCode.NO_TEST
             ]
         }
 
@@ -114,5 +131,5 @@ class DOS(Enum):
         try:
             arch = dos.split('-', 1)[-1]
             return dos[:-len(arch)].lower() + cls[arch.lower()].value
-        except (KeyError, IndexError) as e:
+        except (KeyError, IndexError, AttributeError) as e:
             return cls.none.value
