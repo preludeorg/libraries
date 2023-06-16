@@ -7,7 +7,7 @@ This guide will help you understand how to leverage the provided Dockerfile and 
 The project contains the following files:
 
 - `Dockerfile`: This file is used by Docker to build an image.
-- `entrypoint.sh`: Thisx script is executed when a container is run from the Docker image.
+- `entrypoint.sh`: This script is executed when a container is run from the Docker image.
 
 ## Dockerfile
 
