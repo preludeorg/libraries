@@ -1,8 +1,5 @@
 import { createDockerDesktopClient } from '@docker/extension-api-client';
-import {
-  DockerDesktopClient,
-  ExecOptions,
-} from '@docker/extension-api-client-types/dist/v1';
+import { DockerDesktopClient } from '@docker/extension-api-client-types/dist/v1';
 import { DockerContainer, ProbeStatus } from './types';
 import {
   Credentials,
@@ -50,14 +47,12 @@ export default class DockerCli {
       '-c',
       `"echo '${base64ProbeCode}' | base64 -d > /tmp/nocturnal && chmod +x /tmp/nocturnal"`,
     ]);
-    await this.#ddClient.docker.cli.exec(
-      'exec',
-      [containerId, '/bin/sh', '-c', '"/tmp/nocturnal &"'],
-      {
-        Detach: true,
-        Env: ['PRELUDE_TOKEN=' + endpointToken],
-      } as ExecOptions,
-    );
+    await this.#ddClient.docker.cli.exec('exec', [
+      containerId,
+      '/bin/sh',
+      '-c',
+      `"PRELUDE_TOKEN=${endpointToken} /tmp/nocturnal >/tmp/prelude.log 2>&1 &"`,
+    ]);
     return ProbeStatus.Running;
   }
 
