@@ -19,17 +19,19 @@ const style = {
 
 export function CredentialModal({
   docker,
+  credentials,
   setCredentials,
   modal,
   setModal,
 }: {
   docker: DockerCli;
+  credentials: Credentials | null;
   setCredentials: (credentials: Credentials | null) => void;
   modal: boolean;
   setModal: (modal: boolean) => void;
 }) {
-  const [account, setUsername] = useState('');
-  const [token, setPassword] = useState('');
+  const [account, setUsername] = useState(credentials?.account || '');
+  const [token, setPassword] = useState(credentials?.token || '');
 
   const handleSave = () => {
     if (!account || !token) {
@@ -60,6 +62,7 @@ export function CredentialModal({
         </Typography>
         <br />
         <TextField
+          error={!account}
           id="account"
           label="Account"
           variant="outlined"
@@ -68,6 +71,7 @@ export function CredentialModal({
           fullWidth
         />
         <TextField
+          error={!token}
           id="token"
           label="Token"
           variant="outlined"

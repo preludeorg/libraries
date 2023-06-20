@@ -15,7 +15,9 @@ export function App() {
   const [containers, setContainers] = useState<DockerContainer[]>([]);
   const [refreshInterval] = useState(5 * 1000);
   const [alert, setAlert] = useState<ActionAlert | null>(null);
-  const [credentials, setCredentials] = useState<Credentials | null>(null);
+  const [credentials, setCredentials] = useState<Credentials | null>(
+    docker.getCredentials(),
+  );
   const [configCreds, setConfigCreds] = useState(false);
 
   const isSelected = (id: string) => selected.indexOf(id) !== -1;
@@ -106,13 +108,7 @@ export function App() {
     refreshContainers();
   };
 
-  useEffect(() => {
-    const credentials = localStorage.getItem('credentials');
-    if (credentials) {
-      setCredentials(JSON.parse(credentials) as Credentials);
-    }
-    refreshContainers();
-  }, []);
+  useEffect(refreshContainers, []);
   useEffect(() => {
     if (refreshInterval && refreshInterval > 0) {
       const interval = setInterval(refreshContainers, refreshInterval);
@@ -148,6 +144,7 @@ export function App() {
       )}
       <CredentialModal
         docker={docker}
+        credentials={credentials}
         setCredentials={setCredentials}
         modal={configCreds}
         setModal={setConfigCreds}

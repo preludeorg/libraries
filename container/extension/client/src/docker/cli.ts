@@ -20,6 +20,10 @@ export default class DockerCli {
     this.#service = new Service({
       host: 'https://api.preludesecurity.com',
     });
+    const credentials = localStorage.getItem('credentials');
+    if (credentials) {
+      this.setCredentials(JSON.parse(credentials) as Credentials);
+    }
   }
 
   setCredentials(credentials: Credentials) {
@@ -27,8 +31,8 @@ export default class DockerCli {
     this.#service.setCredentials(credentials);
   }
 
-  getCredentials(): boolean {
-    return !!this.#service.credentials;
+  getCredentials(): Credentials | null {
+    return this.#service.credentials || null;
   }
 
   async listContainers(): Promise<DockerContainer[]> {
