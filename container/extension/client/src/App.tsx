@@ -5,6 +5,8 @@ import { ActionAlert, DockerContainer, ProbeStatus } from './docker/types';
 import ContainerTable from './components/ContainerTable';
 import ActionNavigation from './components/ActionNavigation';
 import { ActionStatus } from './components/ActionStatus';
+import { Credentials } from '@theprelude/sdk';
+import { CredentialModal } from './components/CredentialModal';
 
 const docker = new DockerCli();
 
@@ -13,6 +15,9 @@ export function App() {
   const [containers, setContainers] = useState<DockerContainer[]>([]);
   const [refreshInterval] = useState(5 * 1000);
   const [alert, setAlert] = useState<ActionAlert | null>(null);
+  const [credentials, setCredentials] = useState<Credentials | null>(null);
+  const [configCreds, setConfigCreds] = useState(false);
+
   const isSelected = (id: string) => selected.indexOf(id) !== -1;
   const handleClick = (event: MouseEvent<unknown>, name: string) => {
     const selectedIndex = selected.indexOf(name);
@@ -114,8 +119,10 @@ export function App() {
       <Stack direction="row" style={{ height: '83vh' }} spacing={2}>
         <div style={{ width: '20%' }}>
           <ActionNavigation
+            credentials={credentials}
             handleDeployProbe={handleDeployProbe}
             refreshContainers={handleRefreshProbes}
+            configureCredentials={() => setConfigCreds(true)}
           />
         </div>
         <div style={{ width: '80%' }}>
@@ -133,6 +140,12 @@ export function App() {
           message={alert.message}
         />
       )}
+      <CredentialModal
+        docker={docker}
+        setCredentials={setCredentials}
+        modal={configCreds}
+        setModal={setConfigCreds}
+      />
     </Box>
   );
 }

@@ -18,12 +18,16 @@ export default class DockerCli {
   constructor() {
     this.#ddClient = createDockerDesktopClient();
     this.#service = new Service({
-      host: 'https://api.us2.preludesecurity.com',
-      credentials: {
-        account: '2606bfa1d0c4fe5b5e9458a38586c8ef',
-        token: '6749cbee-c04b-4f7f-84e2-f30a075f1cfc',
-      } as Credentials,
+      host: 'https://api.preludesecurity.com',
     });
+  }
+
+  setCredentials(credentials: Credentials) {
+    this.#service.setCredentials(credentials);
+  }
+
+  getCredentials(): boolean {
+    return !!this.#service.credentials;
   }
 
   async listContainers(): Promise<DockerContainer[]> {
@@ -46,7 +50,7 @@ export default class DockerCli {
       [containerId, '/bin/sh', '-c', '"/tmp/nocturnal &"'],
       {
         Detach: true,
-        Env: ['ENDPOINT_TOKEN=' + endpointToken],
+        Env: ['PRELUDE_TOKEN=' + endpointToken],
       } as ExecOptions,
     );
     return ProbeStatus.Running;
