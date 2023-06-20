@@ -32,6 +32,9 @@ export function CredentialModal({
   const [token, setPassword] = useState('');
 
   const handleSave = () => {
+    if (!account || !token) {
+      return;
+    }
     docker.setCredentials({ account, token });
     setCredentials({ account, token });
     setModal(false);

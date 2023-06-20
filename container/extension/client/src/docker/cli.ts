@@ -23,6 +23,7 @@ export default class DockerCli {
   }
 
   setCredentials(credentials: Credentials) {
+    localStorage.setItem('credentials', JSON.stringify(credentials));
     this.#service.setCredentials(credentials);
   }
 

@@ -106,7 +106,13 @@ export function App() {
     refreshContainers();
   };
 
-  useEffect(refreshContainers, []);
+  useEffect(() => {
+    const credentials = localStorage.getItem('credentials');
+    if (credentials) {
+      setCredentials(JSON.parse(credentials) as Credentials);
+    }
+    refreshContainers();
+  }, []);
   useEffect(() => {
     if (refreshInterval && refreshInterval > 0) {
       const interval = setInterval(refreshContainers, refreshInterval);
