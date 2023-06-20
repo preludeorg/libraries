@@ -25,18 +25,18 @@ def build(ctx):
 @build.command('create-test')
 @click.argument('name')
 @click.option('-u', '--unit', required=True, help='unit identifier', type=str)
-@click.option('-a', '--advisory', help='alert identifier [CVE ID, Advisory ID, etc]', default=None, type=str)
 @click.option('-t', '--test', help='test identifier', default=None, type=str)
+@click.option('-a', '--advisory', default=None, hidden=True, type=str)
 @click.pass_obj
 @handle_api_error
-def create_test(controller, name, unit, advisory, test):
+def create_test(controller, name, unit, test, advisory):
     """ Create or update a security test """
     with Spinner():
         t = controller.create_test(
             name=name,
             unit=unit,
-            advisory=advisory,
-            test_id=test
+            test_id=test,
+            advisory=advisory
         )
 
     if not test:
