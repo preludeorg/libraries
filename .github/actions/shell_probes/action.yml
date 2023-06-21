@@ -1,4 +1,4 @@
-name: Deploy (demo / nocturnal / raindrop scripts)
+name: Deploy (demo / nocturnal / raindrop / vision scripts)
 description: Copy script to s3
 inputs:
   environment:
@@ -41,6 +41,10 @@ runs:
 
         for a in ${NIX_ARCHS[@]}; do  
           aws s3 cp shell/probe/nocturnal.sh s3://${{ inputs.s3_bucket }}/prelude/probes/nocturnal/nocturnal_${a}
+        done 
+
+        for a in linux-x86_64; do  
+          aws s3 cp shell/probe/vision.sh s3://${{ inputs.s3_bucket }}/prelude/probes/vision/vision_${a}
         done 
 
         WIN_ARCHS=(windows-x86_64)        
