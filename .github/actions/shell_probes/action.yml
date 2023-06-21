@@ -1,4 +1,4 @@
-name: Deploy (demo / nocturnal / raindrop scripts)
+name: Deploy (demo / nocturnal / raindrop / vision scripts)
 description: Copy script to s3
 inputs:
   environment:

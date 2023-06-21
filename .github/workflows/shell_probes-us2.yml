@@ -1,4 +1,4 @@
-name: us2 - shell probes (demo / nocturnal / raindrop scripts) deploy
+name: us2 - shell probes (demo / nocturnal / raindrop / vision scripts) deploy
 
 on:
   push:
