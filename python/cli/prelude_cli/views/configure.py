@@ -4,7 +4,7 @@ from configparser import ConfigParser, MissingSectionHeaderError
 
 
 @click.command()
-@click.option('-f', '--file', help="path to credentials file (.ini)", default=None, type=click.Path(exists=True))
+@click.option('-f', '--file', help="path to credentials (.ini) file", default=None, type=click.Path(exists=True))
 @click.pass_obj
 def configure(account, file):
     """ Configure your local keychain """
@@ -15,7 +15,7 @@ def configure(account, file):
 
     if file:
         config = ConfigParser()
-        
+
         try:
             config.read(file)
             profile = config.sections()[0]
