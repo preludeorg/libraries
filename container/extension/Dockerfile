@@ -16,11 +16,11 @@ LABEL org.opencontainers.image.title="Prelude Detect" \
     org.opencontainers.image.description="Install Prelude probes into running containers" \
     org.opencontainers.image.vendor="Prelude Research, Inc." \
     com.docker.desktop.extension.api.version="0.3.4" \
-    com.docker.extension.screenshots="" \
+    com.docker.extension.screenshots="[{\"alt\":\"Marketplace Entry\",\"url\":\"https://files.readme.io/77845d7-CleanShot_2023-06-20_at_16.25.592x.png\"},{\"alt\":\"Extension UI\",\"url\":\"https://files.readme.io/d7e8696-CleanShot_2023-06-20_at_16.27.472x.png\"}]" \
     com.docker.desktop.extension.icon="https://uploads-ssl.webflow.com/63403a034e35d0ce90c01fb1/6491cb89750423dce274f594_Prelude_Logo_Inverse.svg" \
     com.docker.extension.detailed-description="View all available containers on your local system, run probes inside those containers if they have the necessary dependencies." \
     com.docker.extension.publisher-url="https://www.preludesecurity.com" \
-    com.docker.extension.additional-urls="https://platform.preludesecurity.com" \
+    com.docker.extension.additional-urls="[{\"title\":\"Documentation\",\"url\":\"https://docs.preludesecurity.com\"},{\"title\":\"Platform\",\"url\":\"https://platform.preludesecurity.com\"}]" \
     com.docker.extension.categories="security,testing-tools" \
     com.docker.extension.changelog="<p>Extension changelog<ul> <li>Initial release</li></ul></p>"
 
