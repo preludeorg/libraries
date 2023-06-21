@@ -14,6 +14,7 @@ class RunCode(Enum):
     FRIDAY = 14
     SATURDAY = 15
     SUNDAY = 16
+    FIRST_OF_MONTH = 20
 
     @classmethod
     def _missing_(cls, value):
@@ -131,5 +132,5 @@ class DOS(Enum):
         try:
             arch = dos.split('-', 1)[-1]
             return dos[:-len(arch)].lower() + cls[arch.lower()].value
-        except (KeyError, IndexError, AttributeError) as e:
+        except (KeyError, IndexError, AttributeError):
             return cls.none.value
