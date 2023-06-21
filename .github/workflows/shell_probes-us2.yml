@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: us2
 
-    name: us2 - shell probes (demo / nocturnal / raindrop scripts) deploy
+    name: us2 - shell probes (demo / nocturnal / raindrop / vision scripts) deploy
 
     steps:
       - name: Check out code. 
@@ -23,7 +23,7 @@ jobs:
       - name: Env Conversion
         shell: bash
         run: |
-          for i in shell/probe/nocturnal.sh shell/probe/raindrop.ps1; do
+          for i in shell/probe/nocturnal.sh shell/probe/raindrop.ps1 shell/probe/vision.sh; do
             echo "Staging substitution for ${i}"
             sed -i 's/prelude-account-us1-us-west-1.s3.amazonaws.com/${{ secrets.BUCKET_NAME }}.s3.amazonaws.com/g' ${i}
             sed -i 's!api.preludesecurity.com!api.us2.preludesecurity.com!g' ${i}
