@@ -68,6 +68,14 @@ export const RunCodes = {
   DAILY: 1,
   WEEKLY: 2,
   MONTHLY: 3,
+  MONDAY: 10,
+  TUESDAY: 11,
+  WEDNESDAY: 12,
+  THURSDAY: 13,
+  FRIDAY: 14,
+  SATURDAY: 15,
+  SUNDAY: 16,
+  FIRST_OF_MONTH: 20,
 } as const;
 
 export type RunCode = (typeof RunCodes)[keyof typeof RunCodes];
