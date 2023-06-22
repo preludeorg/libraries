@@ -32,6 +32,8 @@ def build(ctx):
 @handle_api_error
 def create_test(controller, name, unit, test, techniques, advisory):
     """ Create or update a security test """
+    if techniques:
+        techniques=techniques.split(',')
     with Spinner():
         t = controller.create_test(
             name=name,
@@ -72,6 +74,8 @@ def create_test(controller, name, unit, test, techniques, advisory):
 @handle_api_error
 def update_test(controller, test, name, unit, techniques, advisory):
     """ Create or update a security test """
+    if techniques:
+        techniques=techniques.split(',')
     with Spinner():
         test = controller.update_test(
             test_id=test,
