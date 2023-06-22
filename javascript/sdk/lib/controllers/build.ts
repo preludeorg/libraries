@@ -12,13 +12,14 @@ export default class BuildController {
   async createTest(
     name: string,
     unit: string,
+    techniques?: string,
     advisory?: string,
     testId?: string,
     options: RequestOptions = {}
   ): Promise<Test> {
     const response = await this.#client.requestWithAuth(`/build/tests`, {
       method: "POST",
-      body: JSON.stringify({ name, unit, advisory, id: testId }),
+      body: JSON.stringify({ name, unit, techniques, advisory, id: testId }),
       ...options,
     });
 
@@ -30,6 +31,7 @@ export default class BuildController {
     testId: string,
     name?: string,
     unit?: string,
+    techniques?: string,
     advisory?: string,
     options: RequestOptions = {}
   ): Promise<Test> {
@@ -37,7 +39,7 @@ export default class BuildController {
       `/build/tests/${testId}`,
       {
         method: "POST",
-        body: JSON.stringify({ name, unit, advisory }),
+        body: JSON.stringify({ name, unit, techniques, advisory }),
         ...options,
       }
     );
