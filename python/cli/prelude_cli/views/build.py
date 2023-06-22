@@ -26,16 +26,18 @@ def build(ctx):
 @click.argument('name')
 @click.option('-u', '--unit', required=True, help='unit identifier', type=str)
 @click.option('-t', '--test', help='test identifier', default=None, type=str)
+@click.option('-q', '--techniques', help='comma-separated list of valid MITRE ATT&CK codes [e.g. T1557,T1040]', default=None, type=str)
 @click.option('-a', '--advisory', default=None, hidden=True, type=str)
 @click.pass_obj
 @handle_api_error
-def create_test(controller, name, unit, test, advisory):
+def create_test(controller, name, unit, test, techniques, advisory):
     """ Create or update a security test """
     with Spinner():
         t = controller.create_test(
             name=name,
             unit=unit,
             test_id=test,
+            techniques=techniques,
             advisory=advisory
         )
 
@@ -64,16 +66,18 @@ def create_test(controller, name, unit, test, advisory):
 @click.argument('test')
 @click.option('-n', '--name', help='test name', default=None, type=str)
 @click.option('-u', '--unit', help='unit identifier', default=None, type=str)
-@click.option('-a', '--advisory', help='alert identifier [CVE ID, Advisory ID, etc]', default=None, type=str)
+@click.option('-q', '--techniques', help='comma-separated list of valid MITRE ATT&CK codes [e.g. T1557,T1040]', default=None, type=str)
+@click.option('-a', '--advisory', help='alert identifier [CVE ID, Advisory ID, etc]', default=None, hidden=True, type=str)
 @click.pass_obj
 @handle_api_error
-def update_test(controller, test, name, unit, advisory):
+def update_test(controller, test, name, unit, techniques, advisory):
     """ Create or update a security test """
     with Spinner():
         test = controller.update_test(
             test_id=test,
             name=name,
             unit=unit,
+            techniques=techniques,
             advisory=advisory
         )
     print_json(data=test)
