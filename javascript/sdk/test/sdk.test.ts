@@ -118,6 +118,7 @@ describe("SDK Test", () => {
         testName,
         testUnit,
         undefined,
+        undefined,
         testId
       );
       expect(response.name).eq(testName);
@@ -186,7 +187,13 @@ describe("SDK Test", () => {
     });
 
     it("getTest should return a test object", async () => {
-      await service.build.createTest(testName, testUnit, undefined, testId);
+      await service.build.createTest(
+        testName,
+        testUnit,
+        undefined,
+        undefined,
+        testId
+      );
       const test = await service.detect.getTest(testId);
       expect(test).toHaveProperty("attachments");
       expect(test).toHaveProperty("unit");
