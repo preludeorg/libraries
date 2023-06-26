@@ -87,7 +87,6 @@ export const Permissions = {
   EXECUTIVE: 1,
   BUILD: 2,
   SERVICE: 3,
-  PRELUDE: 4,
 } as const;
 
 export type Permission = (typeof Permissions)[keyof typeof Permissions];
