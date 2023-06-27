@@ -153,6 +153,8 @@ export const ExitCodes = {
   QUARANTINED_1: 105,
   OUTBOUND_SECURE: 106,
   EXPLOIT_PREVENTED: 107,
+  NO_TEST: 108,
+  IS_RELEVANT: 109,
   ENDPOINT_BLOCKED: 126,
   QUARANTINED_2: 127,
   PROCESS_KILLED_3: 137,
@@ -172,18 +174,20 @@ export const ExitCodeGroup = {
     ExitCodes.PROCESS_KILLED_1,
     ExitCodes.PROCESS_KILLED_2,
     ExitCodes.NOT_RELEVANT,
+    ExitCodes.NO_TEST,
     ExitCodes.OUTBOUND_SECURE,
     ExitCodes.ENDPOINT_BLOCKED,
     ExitCodes.EXPLOIT_PREVENTED,
     ExitCodes.PROCESS_KILLED_3,
   ],
-  UNPROTECTED: [ExitCodes.UNPROTECTED],
+  UNPROTECTED: [ExitCodes.UNPROTECTED, ExitCodes.IS_RELEVANT],
   ERROR: [
     ExitCodes.ERROR,
     ExitCodes.MALFORMED_VST,
     ExitCodes.TIMEOUT,
     ExitCodes.UNEXPECTED,
   ],
+  NOT_RELEVANT: [ExitCodes.NOT_RELEVANT, ExitCodes.NO_TEST],
 } as const;
 
 export const ActionCodes = {
