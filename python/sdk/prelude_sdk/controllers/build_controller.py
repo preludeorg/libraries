@@ -37,9 +37,9 @@ class BuildController:
             body['name'] = name
         if unit:
             body['unit'] = unit
-        if techniques:
+        if techniques is not None:
             body['techniques'] = techniques
-        if advisory:
+        if advisory is not None:
             body['advisory'] = advisory
 
         res = requests.post(
