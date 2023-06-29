@@ -31,9 +31,9 @@ class DetectController:
         body = dict()
         if host:
             body['host'] = host
-        if edr_id:
+        if edr_id is not None:
             body['edr_id'] = edr_id
-        if tags:
+        if tags is not None:
             body['tags'] = tags
 
         res = requests.post(
