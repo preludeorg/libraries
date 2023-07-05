@@ -155,6 +155,7 @@ export const ExitCodes = {
   EXPLOIT_PREVENTED: 107,
   NO_TEST: 108,
   IS_RELEVANT: 109,
+  FALSE_POSITIVE: 110,
   ENDPOINT_BLOCKED: 126,
   QUARANTINED_2: 127,
   PROCESS_KILLED_3: 137,
@@ -186,6 +187,7 @@ export const ExitCodeGroup = {
     ExitCodes.MALFORMED_VST,
     ExitCodes.TIMEOUT,
     ExitCodes.UNEXPECTED,
+    ExitCodes.FALSE_POSITIVE,
   ],
   NOT_RELEVANT: [ExitCodes.NOT_RELEVANT, ExitCodes.NO_TEST],
 } as const;

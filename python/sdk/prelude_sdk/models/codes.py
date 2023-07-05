@@ -60,6 +60,7 @@ class ExitCode(Enum):
     EXPLOIT_PREVENTED = 107
     NO_TEST = 108
     IS_RELEVANT = 109
+    FALSE_POSITIVE = 110
     ENDPOINT_BLOCKED = 126
     QUARANTINED_2 = 127
     PROCESS_KILLED_3 = 137
@@ -110,7 +111,8 @@ class State(Enum):
                 ExitCode.ERROR,
                 ExitCode.MALFORMED_VST,
                 ExitCode.TIMEOUT,
-                ExitCode.UNEXPECTED
+                ExitCode.UNEXPECTED,
+                ExitCode.FALSE_POSITIVE
             ],
             State.NOT_RELEVANT: [
                 ExitCode.NOT_RELEVANT,
