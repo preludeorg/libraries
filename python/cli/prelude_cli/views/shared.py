@@ -1,11 +1,9 @@
-import sys
 import time
 import click
 import threading
 
-
+from rich.progress import Progress, SpinnerColumn, TextColumn
 from functools import wraps
-
 
 def handle_api_error(func):
     @wraps(func)
@@ -16,34 +14,33 @@ def handle_api_error(func):
             click.secho(e.args[0], fg='red')
     return handler
 
-
-class Spinner:
+class Spinner(): 
     busy = False
-    delay = 0.1
+    description = None
+    progress = None
 
-    @staticmethod
-    def spinning_cursor():
-        while 1:
-            for cursor in '|/-\\': yield cursor
-
-    def __init__(self, delay=None):
-        self.spinner_generator = self.spinning_cursor()
-        if delay and float(delay): self.delay = delay
+    def __init__(self, description='Loading'):
+       self.description = description
+       self.progress = Progress(
+            SpinnerColumn(style="green", spinner_name="line"),
+            TextColumn('[green]{}'.format(description)),
+            transient=True
+        )
 
     def spinner_task(self):
-        while self.busy:
-            sys.stdout.write(next(self.spinner_generator))
-            sys.stdout.flush()
-            time.sleep(self.delay)
-            sys.stdout.write('\b')
-            sys.stdout.flush()
-
+        with self.progress:
+            task = self.progress.add_task(self.description, track=False)
+            while self.busy:
+                self.progress.update(task)
+                time.sleep(0.02)
+        
     def __enter__(self):
         self.busy = True
         threading.Thread(target=self.spinner_task).start()
-
+    
     def __exit__(self, exception, value, tb):
         self.busy = False
-        time.sleep(self.delay)
+        self.progress.stop()
         if exception is not None:
             return False
+        

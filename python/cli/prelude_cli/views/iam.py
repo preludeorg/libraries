@@ -56,7 +56,7 @@ def update_account(controller, mode, company):
 @handle_api_error
 def describe_account(controller):
     """ Get account details """
-    with Spinner():
+    with Spinner(description='Fetching account details'):
         data = controller.get_account()
     print_json(data=data)
 
