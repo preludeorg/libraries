@@ -37,10 +37,9 @@ class Spinner():
     def __enter__(self):
         self.busy = True
         threading.Thread(target=self.spinner_task).start()
-    
+
     def __exit__(self, exception, value, tb):
         self.busy = False
         self.progress.stop()
         if exception is not None:
             return False
-        
