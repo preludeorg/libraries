@@ -3,10 +3,13 @@ package Endpoint
 import (
 	"fmt"
 	"io/fs"
+	"net"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strconv"
+	"sync"
 	"time"
 )
 
@@ -126,7 +129,7 @@ func IsSecure() bool {
 	} else if runtime.GOOS == "android" {
 		return true
 	}
-        println("[-] Endpoint is not secure by design")
+	println("[-] Endpoint is not secure by design")
 	return false
 }
 
@@ -138,4 +141,61 @@ func pwd(filename string) string {
 	}
 	filePath := filepath.Join(filepath.Dir(bin), filename)
 	return filePath
+}
+
+type PortScan struct{}
+
+func (s *PortScan) ScanPort(protocol, hostname string, port int) bool {
+	address := hostname + ":" + strconv.Itoa(port)
+	conn, err := net.DialTimeout(protocol, address, 2*time.Second)
+
+	if err != nil {
+		return false
+	}
+	defer conn.Close()
+	return true
+}
+
+func (s *PortScan) ScanHosts(ports ...int) []string {
+	HostArray := []string{}
+	interfaces, err := net.Interfaces()
+	if err != nil {
+		println(err)
+	}
+
+	var wg sync.WaitGroup
+	var mutex sync.Mutex
+
+	for _, i := range interfaces {
+		if i.Flags&net.FlagUp == 0 {
+			continue
+		}
+		if i.Flags&net.FlagLoopback != 0 {
+			continue
+		}
+		addrs, err := i.Addrs()
+		if err != nil {
+			println(err)
+		}
+		for _, addr := range addrs {
+			ip, ok := addr.(*net.IPNet)
+			if ok && ip.IP.To4() != nil {
+				host := ip.IP.String()
+				wg.Add(len(ports))
+				for _, port := range ports {
+					go func(host string, port int) {
+						defer wg.Done()
+						if s.ScanPort("tcp", host, port) {
+							HostArray = append(HostArray, host)
+							mutex.Lock()
+							fmt.Printf("[+] Host: %s is up on port %d\n", host, port)
+							mutex.Unlock()
+						}
+					}(host, port)
+				}
+			}
+		}
+	}
+	wg.Wait()
+	return HostArray
 }
