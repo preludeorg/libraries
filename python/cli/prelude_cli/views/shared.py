@@ -21,4 +21,4 @@ class Spinner(Progress):
             transient=True, 
             refresh_per_second=10
         )
-        self.add_task(description, track=False)
+        self.add_task(description)
