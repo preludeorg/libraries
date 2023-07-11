@@ -16,14 +16,12 @@ def handle_api_error(func):
 
 class Spinner(): 
     busy = False
-    description = None
-    progress = None
 
     def __init__(self, description='Loading'):
        self.description = description
        self.progress = Progress(
-            SpinnerColumn(style="green", spinner_name="line"),
-            TextColumn('[green]{}'.format(description)),
+            SpinnerColumn(style='green', spinner_name='line'),
+            TextColumn(f'[green]{description}'),
             transient=True
         )
 
