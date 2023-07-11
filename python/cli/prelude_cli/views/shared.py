@@ -12,6 +12,7 @@ def handle_api_error(func):
             click.secho(e.args[0], fg='red')
     return handler
 
+
 class Spinner(Progress): 
     def __init__(self, description='Loading'): 
         super().__init__(
@@ -20,5 +21,4 @@ class Spinner(Progress):
             transient=True, 
             refresh_per_second=10
         )
-        task = self.add_task(description, track=False)
-        self.update(task)
+        self.add_task(description, track=False)
