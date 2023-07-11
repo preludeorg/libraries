@@ -1,7 +1,7 @@
 import click
 
-from rich.progress import Progress, TextColumn, SpinnerColumn
 from functools import wraps
+from rich.progress import Progress, TextColumn, SpinnerColumn
 
 def handle_api_error(func):
     @wraps(func)
