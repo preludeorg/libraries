@@ -29,10 +29,14 @@ export interface User {
   name: string;
 }
 
+export interface Control {
+  name: string;
+  api: string;
+}
 export interface Account {
   account_id: string;
   whoami: string;
-  controls: string[];
+  controls: Control[];
   users: User[];
   mode: Mode;
   queue: Queue[];
