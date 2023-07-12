@@ -32,7 +32,7 @@ def build(ctx):
 @handle_api_error
 def create_test(controller, name, unit, test, techniques, advisory):
     """ Create or update a security test """
-    with Spinner():
+    with Spinner(description='Adding new test'):
         t = controller.create_test(
             name=name,
             unit=unit,
@@ -49,7 +49,7 @@ def create_test(controller, name, unit, test, techniques, advisory):
         template = template.replace('$UNIT', unit or '')
         template = template.replace('$CREATED', str(datetime.utcnow()))
         
-        with Spinner():
+        with Spinner(description='Applying default template to new test'):
             controller.upload(test_id=t['id'], filename=basename, data=template)
             t['attachments'] = [basename]
 
@@ -72,7 +72,7 @@ def create_test(controller, name, unit, test, techniques, advisory):
 @handle_api_error
 def update_test(controller, test, name, unit, techniques, advisory):
     """ Create or update a security test """
-    with Spinner():
+    with Spinner(description='Updating test'):
         test = controller.update_test(
             test_id=test,
             name=name,
@@ -90,7 +90,7 @@ def update_test(controller, test, name, unit, techniques, advisory):
 @handle_api_error
 def delete_test(controller, test):
     """ Delete a test """
-    with Spinner():
+    with Spinner(description='Removing test'):
         controller.delete_test(test_id=test)
     click.secho(f'Deleted {test}', fg='green')
 
@@ -110,7 +110,7 @@ def upload_attachment(controller, path, test):
 
     def upload(p: Path):
         with open(p, 'rb') as data:
-            with Spinner():
+            with Spinner(description='Uploading to test'):
                 controller.upload(
                     test_id=identifier, 
                     filename=p.name, 

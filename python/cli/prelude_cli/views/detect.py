@@ -27,7 +27,7 @@ def detect(ctx):
 @handle_api_error
 def register_endpoint(controller, host, serial_num, edr_id, tags):
     """ Register a new endpoint """
-    with Spinner():
+    with Spinner(description='Registering endpoint'):
         token = controller.register_endpoint(
             host=host, 
             serial_num=serial_num, 
@@ -46,7 +46,7 @@ def register_endpoint(controller, host, serial_num, edr_id, tags):
 @handle_api_error
 def update_endpoint(controller, endpoint_id, host, edr_id, tags):
     """ Register a new endpoint """
-    with Spinner():
+    with Spinner(description='Updating endpoint'):
         ep = controller.update_endpoint(
             endpoint_id=endpoint_id,
             host=host,
@@ -61,7 +61,7 @@ def update_endpoint(controller, endpoint_id, host, edr_id, tags):
 @handle_api_error
 def list_tests(controller):
     """ List all security tests """
-    with Spinner():
+    with Spinner(description='Fetching all security tests'):
         data = controller.list_tests()
     print_json(data=data)
 
@@ -72,7 +72,7 @@ def list_tests(controller):
 @handle_api_error
 def get_test(controller, test_id):
     """ List properties for a test """
-    with Spinner():
+    with Spinner(description='Fetching data for test'):
         data = controller.get_test(test_id=test_id)
     print_json(data=data)
 
@@ -85,7 +85,7 @@ def download(controller, test):
     """ Download a test to your local environment """
     click.secho(f'Downloading {test}')
     Path(test).mkdir(parents=True, exist_ok=True)
-    with Spinner():
+    with Spinner(description='Downloading test'):
         attachments = controller.get_test(test_id=test).get('attachments')
 
         for attach in attachments:
@@ -106,7 +106,7 @@ def download(controller, test):
 @handle_api_error
 def enable_test(controller, test, run_code, tags):
     """ Add test to your queue """
-    with Spinner():
+    with Spinner(description='Enabling test'):
         controller.enable_test(ident=test, run_code=RunCode[run_code.upper()].value, tags=tags)
 
 
@@ -118,7 +118,7 @@ def enable_test(controller, test, run_code, tags):
 @handle_api_error
 def disable_test(controller, test, tags):
     """ Remove test from your queue """
-    with Spinner():
+    with Spinner(description='Disabling test'):
         controller.disable_test(ident=test, tags=tags)
 
 
@@ -129,7 +129,7 @@ def disable_test(controller, test, tags):
 @handle_api_error
 def social_statistics(controller, test, days):
     """ Pull social statistics for a specific test """
-    with Spinner():
+    with Spinner(description='Fetching social statistics'):
         data = controller.social_stats(ident=test, days=days)
     print_json(data=data)
 
@@ -141,7 +141,7 @@ def social_statistics(controller, test, days):
 @handle_api_error
 def delete_endpoint(controller, endpoint_id):
     """Delete a probe/endpoint"""
-    with Spinner():
+    with Spinner(description='Deleting endpoint'):
         controller.delete_endpoint(ident=endpoint_id)
 
 
@@ -150,7 +150,7 @@ def delete_endpoint(controller, endpoint_id):
 @handle_api_error
 def queue(controller):
     """ List all tests in your active queue """
-    with Spinner():
+    with Spinner(description='Fetching active tests from queue'):
         iam = IAMController(account=controller.account)
         queue = iam.get_account().get('queue')
     print_json(data=queue)
@@ -162,7 +162,7 @@ def queue(controller):
 @handle_api_error
 def endpoints(controller, days):
     """ List all active endpoints associated to your account """
-    with Spinner():
+    with Spinner(description='Fetching endpoints'):
         data = controller.list_endpoints(days=days)
     print_json(data=data)
 
@@ -173,7 +173,7 @@ def endpoints(controller, days):
 @handle_api_error
 def advisories(controller, year):
     """ List all Prelude advisories """
-    with Spinner():
+    with Spinner(description='Fetching advisories'):
         data = controller.list_advisories(year=year)
     print_json(data=data)
 
@@ -197,7 +197,7 @@ def clone(controller):
     async def start_cloning():
         await asyncio.gather(*[fetch(test) for test in controller.list_tests()])
 
-    with Spinner():
+    with Spinner(description='Downloading all tests'):
         asyncio.run(start_cloning())
     click.secho('Project cloned successfully', fg='green')
 
@@ -232,6 +232,6 @@ def describe_activity(controller, days, view, tests, tags, endpoints, status, do
     if dos:
         filters['dos'] = dos
 
-    with Spinner():
+    with Spinner(description='Fetching activity'):
         data = controller.describe_activity(view=view, filters=filters)
     print_json(data=data)

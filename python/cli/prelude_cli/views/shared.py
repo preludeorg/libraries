@@ -17,7 +17,7 @@ class Spinner(Progress):
     def __init__(self, description='Loading'): 
         super().__init__(
             SpinnerColumn(style='green', spinner_name='line'),
-            TextColumn(f'[green]{description}'),
+            TextColumn(f'[green]{description}...'),
             transient=True, 
             refresh_per_second=10
         )

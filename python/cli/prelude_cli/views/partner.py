@@ -22,7 +22,7 @@ def partner(ctx):
 @handle_api_error
 def attach_partner(controller, name, api, user, secret):
     """ Attach an EDR to Detect """
-    with Spinner():
+    with Spinner(description='Attaching partner'):
         data = controller.attach(name=name, api=api, user=user, secret=secret)
     print_json(data=data)
 
@@ -34,7 +34,7 @@ def attach_partner(controller, name, api, user, secret):
 @handle_api_error
 def detach_partner(controller, name):
     """ Detach an existing partner from your account """
-    with Spinner():
+    with Spinner(description='Detaching partner'):
         controller.detach(name=name)
 
 
@@ -47,7 +47,7 @@ def detach_partner(controller, name):
 @handle_api_error
 def partner_endpoints(controller, name, platform, hostname, offset):
     """ Get a list of endpoints from a partner """
-    with Spinner():
+    with Spinner(description='Fetching endpoints from partner'):
         data = controller.endpoints(partner_name=name, platform=platform, hostname=hostname, offset=offset)
     print_json(data=data)
 
@@ -60,6 +60,6 @@ def partner_endpoints(controller, name, platform, hostname, offset):
 @handle_api_error
 def partner_deploy(controller, name, host_ids):
     """ Deploy probes to hosts associated to a partner """
-    with Spinner():
+    with Spinner(description='Deploying probes to hosts'):
         data = controller.deploy(partner_name=name, host_ids=host_ids)
     print_json(data=data)
