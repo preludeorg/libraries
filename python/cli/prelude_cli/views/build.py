@@ -32,7 +32,7 @@ def build(ctx):
 @handle_api_error
 def create_test(controller, name, unit, test, techniques, advisory):
     """ Create or update a security test """
-    with Spinner(description='Adding new test'):
+    with Spinner(description='Creating new test'):
         t = controller.create_test(
             name=name,
             unit=unit,
