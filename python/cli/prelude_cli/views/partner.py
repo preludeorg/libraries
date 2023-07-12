@@ -15,7 +15,7 @@ def partner(ctx):
 
 @partner.command('attach')
 @click.argument('name')
-@click.option('--api', default='', help='API endpoint of the partner')
+@click.option('--api', required=True, default='', help='API endpoint of the partner')
 @click.option('--user', default='', help='user identifier')
 @click.option('--secret', default='', help='secret for OAUTH use cases')
 @click.pass_obj
