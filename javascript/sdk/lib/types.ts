@@ -205,6 +205,16 @@ export const ActionCodes = {
 export type ActionCodeName = keyof typeof ActionCodes;
 export type ActionCode = (typeof ActionCodes)[ActionCodeName];
 
+export const ControlCodes = {
+  INVALID: 0,
+  CROWDSTRIKE: 1,
+  DEFENDER: 2,
+  SPLUNK: 3,
+} as const;
+
+export type ControlCodeName = keyof typeof ControlCodes;
+export type ControlCode = (typeof ControlCodes)[ControlCodeName];
+
 export type Platform =
   | "darwin-arm64"
   | "darwin-x86_64"
