@@ -2,6 +2,7 @@ import click
 
 from rich import print_json
 
+from prelude_sdk.models.codes import Control
 from prelude_cli.views.shared import handle_api_error, Spinner
 from prelude_sdk.controllers.partner_controller import PartnerController
 
@@ -14,52 +15,56 @@ def partner(ctx):
 
 
 @partner.command('attach')
-@click.argument('name')
+@click.argument('partner',
+              type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False))
 @click.option('--api', required=True, help='API endpoint of the partner')
 @click.option('--user', default='', help='user identifier')
 @click.option('--secret', default='', help='secret for OAUTH use cases')
 @click.pass_obj
 @handle_api_error
-def attach_partner(controller, name, api, user, secret):
+def attach_partner(controller, partner, api, user, secret):
     """ Attach an EDR to Detect """
     with Spinner(description='Attaching partner'):
-        data = controller.attach(name=name, api=api, user=user, secret=secret)
+        data = controller.attach(partner_code=Control[partner.upper()].value, api=api, user=user, secret=secret)
     print_json(data=data)
 
 
 @partner.command('detach')
 @click.confirmation_option(prompt='Are you sure?')
-@click.argument('name')
+@click.argument('partner',
+              type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False))
 @click.pass_obj
 @handle_api_error
-def detach_partner(controller, name):
+def detach_partner(controller, partner):
     """ Detach an existing partner from your account """
     with Spinner(description='Detaching partner'):
-        controller.detach(name=name)
+        controller.detach(partner_code=Control[partner.upper()].value)
 
 
 @partner.command('endpoints')
-@click.argument('name')
+@click.argument('partner',
+              type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False))
 @click.option('--platform', required=True, help='platform name (e.g. "windows")', type=click.Choice(['windows', 'linux', 'darwin'], case_sensitive=False))
 @click.option('--hostname', default='', help='hostname pattern (e.g. "mycompany-c24oi444")')
 @click.option('--offset', default=0, help='API pagination offset', type=int)
 @click.pass_obj
 @handle_api_error
-def partner_endpoints(controller, name, platform, hostname, offset):
+def partner_endpoints(controller, partner, platform, hostname, offset):
     """ Get a list of endpoints from a partner """
     with Spinner(description='Fetching endpoints from partner'):
-        data = controller.endpoints(partner_name=name, platform=platform, hostname=hostname, offset=offset)
+        data = controller.endpoints(partner_code=Control[partner.upper()].value, platform=platform, hostname=hostname, offset=offset)
     print_json(data=data)
 
 
 @partner.command('deploy')
 @click.confirmation_option(prompt='Are you sure?')
-@click.argument('name')
+@click.argument('partner',
+              type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False))
 @click.option('--host_ids', required=True, help='a list of host IDs to deploy to', multiple=True, default=[])
 @click.pass_obj
 @handle_api_error
-def partner_deploy(controller, name, host_ids):
+def partner_deploy(controller, partner, host_ids):
     """ Deploy probes to hosts associated to a partner """
     with Spinner(description='Deploying probes to hosts'):
-        data = controller.deploy(partner_name=name, host_ids=host_ids)
+        data = controller.deploy(partner_code=Control[partner.upper()].value, host_ids=host_ids)
     print_json(data=data)
