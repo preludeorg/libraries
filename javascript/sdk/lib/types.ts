@@ -374,14 +374,14 @@ export interface DownloadParams {
 }
 
 export interface AttachPartnerParams {
-  name: string;
+  partnerCode: ControlCode;
   api: string;
   user: string;
   secret?: string;
 }
 
 export interface EndpointsParams {
-  partnerName: string;
+  partnerCode: ControlCode;
   platform: string;
   hostname?: string;
   offset?: number;
@@ -389,7 +389,7 @@ export interface EndpointsParams {
 }
 
 export interface DeployParams {
-  partnerName: string;
+  partnerCode: ControlCode;
   hostIds: string[];
 }
 
