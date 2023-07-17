@@ -1,6 +1,7 @@
 import Client from "../client";
 import {
   AttachPartnerParams,
+  ControlCode,
   DeployParams,
   EndpointsParams,
   PartnerEndpoints,
@@ -15,23 +16,29 @@ export default class PartnerController {
   }
 
   async attachPartner(
-    { name, api, user, secret = "" }: AttachPartnerParams,
+    { partnerCode, api, user, secret = "" }: AttachPartnerParams,
     options: RequestOptions = {}
   ) {
-    const response = await this.#client.requestWithAuth(`/partner/${name}`, {
-      method: "POST",
-      body: JSON.stringify({ api, user, secret }),
-      ...options,
-    });
+    const response = await this.#client.requestWithAuth(
+      `/partner/${partnerCode}`,
+      {
+        method: "POST",
+        body: JSON.stringify({ api, user, secret }),
+        ...options,
+      }
+    );
 
     return response.text();
   }
 
-  async detachPartner(name: string, options: RequestOptions = {}) {
-    const response = await this.#client.requestWithAuth(`/partner/${name}`, {
-      method: "DELETE",
-      ...options,
-    });
+  async detachPartner(partnerCode: ControlCode, options: RequestOptions = {}) {
+    const response = await this.#client.requestWithAuth(
+      `/partner/${partnerCode}`,
+      {
+        method: "DELETE",
+        ...options,
+      }
+    );
 
     return response.text();
   }
@@ -39,7 +46,7 @@ export default class PartnerController {
   /** Get a list of endpoints from all partners */
   async endpoints(
     {
-      partnerName,
+      partnerCode,
       platform,
       hostname = "",
       offset = 0,
@@ -55,7 +62,7 @@ export default class PartnerController {
     });
 
     const response = await this.#client.requestWithAuth(
-      `/partner/endpoints/${partnerName}?${searchParams.toString()}`,
+      `/partner/endpoints/${partnerCode}?${searchParams.toString()}`,
       {
         method: "GET",
         ...options,
@@ -67,10 +74,10 @@ export default class PartnerController {
 
   /** Deploy probes on all specified partner endpoints */
   async deploy(
-    { partnerName, hostIds }: DeployParams,
+    { partnerCode, hostIds }: DeployParams,
     options: RequestOptions = {}
   ): Promise<void> {
-    await this.#client.requestWithAuth(`/partner/deploy/${partnerName}`, {
+    await this.#client.requestWithAuth(`/partner/deploy/${partnerCode}`, {
       method: "POST",
       body: JSON.stringify({ host_ids: hostIds }),
       ...options,
