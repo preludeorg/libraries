@@ -48,18 +48,18 @@ def detach_partner(controller, partner_code):
 def partner_endpoints(controller, partner_code, platform, hostname, offset):
     """ Get a list of endpoints from a partner """
     with Spinner(description='Fetching endpoints from partner'):
-        data = controller.endpoints(partner_name=partner_code, platform=platform, hostname=hostname, offset=offset)
+        data = controller.endpoints(partner_code=partner_code, platform=platform, hostname=hostname, offset=offset)
     print_json(data=data)
 
 
 @partner.command('deploy')
 @click.confirmation_option(prompt='Are you sure?')
-@click.argument('name')
+@click.argument('partner-code')
 @click.option('--host_ids', required=True, help='a list of host IDs to deploy to', multiple=True, default=[])
 @click.pass_obj
 @handle_api_error
-def partner_deploy(controller, name, host_ids):
+def partner_deploy(controller, partner_code, host_ids):
     """ Deploy probes to hosts associated to a partner """
     with Spinner(description='Deploying probes to hosts'):
-        data = controller.deploy(partner_name=name, host_ids=host_ids)
+        data = controller.deploy(partner_code=partner_code, host_ids=host_ids)
     print_json(data=data)
