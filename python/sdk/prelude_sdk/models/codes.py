@@ -136,3 +136,14 @@ class DOS(Enum):
             return dos[:-len(arch)].lower() + cls[arch.lower()].value
         except (KeyError, IndexError, AttributeError):
             return cls.none.value
+
+
+class Control(Enum):
+    INVALID = 0
+    CROWDSTRIKE = 1
+    DEFENDER = 2
+    SPLUNK = 3
+
+    @classmethod
+    def _missing_(cls, value):
+        return Control.INVALID
