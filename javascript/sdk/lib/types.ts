@@ -29,10 +29,14 @@ export interface User {
   name: string;
 }
 
+export interface Control {
+  name: string;
+  api: string;
+}
 export interface Account {
   account_id: string;
   whoami: string;
-  controls: string[];
+  controls: Control[];
   users: User[];
   mode: Mode;
   queue: Queue[];
@@ -201,6 +205,16 @@ export const ActionCodes = {
 export type ActionCodeName = keyof typeof ActionCodes;
 export type ActionCode = (typeof ActionCodes)[ActionCodeName];
 
+export const ControlCodes = {
+  INVALID: 0,
+  CROWDSTRIKE: 1,
+  DEFENDER: 2,
+  SPLUNK: 3,
+} as const;
+
+export type ControlCodeName = keyof typeof ControlCodes;
+export type ControlCode = (typeof ControlCodes)[ControlCodeName];
+
 export type Platform =
   | "darwin-arm64"
   | "darwin-x86_64"
@@ -360,14 +374,14 @@ export interface DownloadParams {
 }
 
 export interface AttachPartnerParams {
-  name: string;
+  partnerCode: ControlCode;
   api: string;
   user: string;
   secret?: string;
 }
 
 export interface EndpointsParams {
-  partnerName: string;
+  partnerCode: ControlCode;
   platform: string;
   hostname?: string;
   offset?: number;
@@ -375,7 +389,7 @@ export interface EndpointsParams {
 }
 
 export interface DeployParams {
-  partnerName: string;
+  partnerCode: ControlCode;
   hostIds: string[];
 }
 

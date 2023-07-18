@@ -24,7 +24,7 @@ def register_account(controller):
     email = click.prompt('Enter your email')
     name = click.prompt('(Optional) Enter your name', default='', show_default=False)
     company = click.prompt('(Optional) Enter your associated company', default='', show_default=False)
-    with Spinner():
+    with Spinner(description='Creating new account'):
         data = controller.new_account(user_email=email, user_name=name, company=company)
     print_json(data=data)
     print("\nCheck your email to verify your account.\n")
@@ -43,7 +43,7 @@ def register_account(controller):
 @handle_api_error
 def update_account(controller, mode, company):
     """ Update an account """
-    with Spinner():
+    with Spinner(description='Updating account information'):
         data = controller.update_account(
             mode=Mode[mode.upper()].value if mode else None,
             company=company
@@ -56,7 +56,7 @@ def update_account(controller, mode, company):
 @handle_api_error
 def describe_account(controller):
     """ Get account details """
-    with Spinner():
+    with Spinner(description='Fetching account details'):
         data = controller.get_account()
     print_json(data=data)
 
@@ -72,7 +72,7 @@ def describe_account(controller):
 def create_user(controller, days, permission, name, email):
     """ Create a new user in your account """
     expires = datetime.utcnow() + timedelta(days=days)
-    with Spinner():
+    with Spinner(description='Creating new user'):
         data = controller.create_user(
             email=email,
             permission=Permission[permission.upper()].value,
@@ -91,7 +91,7 @@ def create_user(controller, days, permission, name, email):
 @handle_api_error
 def delete_user(controller, handle):
     """ Remove a user from your account """
-    with Spinner():
+    with Spinner(description='Deleting user'):
         controller.delete_user(handle=handle)
 
 
@@ -102,7 +102,7 @@ def delete_user(controller, handle):
 @handle_api_error
 def logs(controller, days, limit):
     """ Get audit logs """
-    with Spinner():
+    with Spinner(description='Fetching logs'):
         data = controller.audit_logs(days=days, limit=limit)
     print_json(data=data)
 
@@ -113,5 +113,5 @@ def logs(controller, days, limit):
 @handle_api_error
 def purge(controller):
     """ Delete your account """
-    with Spinner():
+    with Spinner(description='Purging account from existence'):
         controller.purge_account()
