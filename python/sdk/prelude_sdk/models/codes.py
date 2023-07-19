@@ -45,24 +45,22 @@ class Permission(Enum):
 
 class ExitCode(Enum):
     MISSING = -1
-    REMOVED = 0
-    ERROR_OCCURED = 1
+    UNKNOWN_ERROR = 1
     MALFORMED_TEST = 2
-    FORCE_KILLED = 9
-    GRACEFULLY_KILLED = 15
-    PROTECTED = 100
-    UNPROTECTED = 101
+    BEHAVIOR_PREVENTED_1 = 9
+    BEHAVIOR_PREVENTED_2 = 15
+    CHECK_COMPLETED = 100
+    NOT_PREVENTED = 101
     TIMED_OUT = 102
     FAILED_CLEANUP = 103
     NOT_RELEVANT = 104
-    BEHAVIOR_QUARANTINED = 105
+    SIGNATURE_PREVENTED_1 = 105
     BLOCKED_AT_PERIMETER = 106
-    EXPLOIT_PREVENTED = 107
+    BEHAVIOR_PREVENTED_3 = 107
     TEST_UNAVAILABLE = 108
-    IS_RELEVANT = 109
-    FALSE_POSITIVE = 110
-    EXECUTION_DISALLOWED = 126
-    FILE_QUARANTINED = 127
+    INCORRECTLY_BLOCKED = 110
+    BEHAVIOR_PREVENTED_4 = 126
+    SIGNATURE_PREVENTED_2 = 127
     OUT_OF_MEMORY = 137
     UNEXPECTED_ERROR = 256
 
@@ -90,29 +88,28 @@ class State(Enum):
         return {
             State.NONE: [ExitCode.MISSING],
             State.PROTECTED: [
-                ExitCode.REMOVED,
-                ExitCode.PROTECTED,
-                ExitCode.BEHAVIOR_QUARANTINED,
-                ExitCode.FILE_QUARANTINED,
-                ExitCode.FORCE_KILLED,
-                ExitCode.GRACEFULLY_KILLED,
+                ExitCode.BEHAVIOR_PREVENTED_1,
+                ExitCode.BEHAVIOR_PREVENTED_2,
+                ExitCode.CHECK_COMPLETED,
                 ExitCode.NOT_RELEVANT,
-                ExitCode.TEST_UNAVAILABLE,
+                ExitCode.SIGNATURE_PREVENTED_1,
                 ExitCode.BLOCKED_AT_PERIMETER,
-                ExitCode.EXECUTION_DISALLOWED,
-                ExitCode.EXPLOIT_PREVENTED,
-                ExitCode.OUT_OF_MEMORY
+                ExitCode.BEHAVIOR_PREVENTED_3,
+                ExitCode.TEST_UNAVAILABLE,
+                ExitCode.BEHAVIOR_PREVENTED_4,
+                ExitCode.SIGNATURE_PREVENTED_2
             ],
             State.UNPROTECTED: [
-                ExitCode.UNPROTECTED,
-                ExitCode.IS_RELEVANT,
+                ExitCode.NOT_PREVENTED,
             ],
             State.ERROR: [
-                ExitCode.ERROR_OCCURED,
+                ExitCode.UNKNOWN_ERROR,
                 ExitCode.MALFORMED_TEST,
                 ExitCode.TIMED_OUT,
-                ExitCode.UNEXPECTED_ERROR,
-                ExitCode.FALSE_POSITIVE
+                ExitCode.FAILED_CLEANUP,
+                ExitCode.INCORRECTLY_BLOCKED,
+                ExitCode.OUT_OF_MEMORY,
+                ExitCode.UNEXPECTED_ERROR
             ],
             State.NOT_RELEVANT: [
                 ExitCode.NOT_RELEVANT,
