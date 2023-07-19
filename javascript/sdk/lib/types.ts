@@ -30,7 +30,7 @@ export interface User {
 }
 
 export interface Control {
-  name: string;
+  id: ControlCode;
   api: string;
 }
 export interface Account {
