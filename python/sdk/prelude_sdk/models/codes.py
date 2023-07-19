@@ -66,7 +66,15 @@ class ExitCode(Enum):
 
     @classmethod
     def _missing_(cls, value):
+        if value and not isinstance(value, int):
+            return cls(int(value))
         return ExitCode.MISSING
+    
+    @classmethod
+    def transform(self, test):
+        if test.unit == 'health' and self != ExitCode.CHECK_COMPLETED:
+            return ExitCode.INCORRECTLY_BLOCKED
+        return self
 
     @property
     def state(self):
