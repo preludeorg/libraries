@@ -41,9 +41,9 @@ class IAMController:
             headers=self.account.headers,
             timeout=10
         )
-        if not res.status_code == 200:
-            raise Exception(res.text)
-        return res.text
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
 
     @verify_credentials
     def update_account(self, mode: int = None, company: str = None):
@@ -105,7 +105,7 @@ class IAMController:
             timeout=10
         )
         if res.status_code == 200:
-            return True
+            return res.json()
         raise Exception(res.text)
 
     @verify_credentials

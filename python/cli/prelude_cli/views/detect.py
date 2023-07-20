@@ -47,13 +47,13 @@ def register_endpoint(controller, host, serial_num, edr_id, tags):
 def update_endpoint(controller, endpoint_id, host, edr_id, tags):
     """ Register a new endpoint """
     with Spinner(description='Updating endpoint'):
-        ep = controller.update_endpoint(
+        data = controller.update_endpoint(
             endpoint_id=endpoint_id,
             host=host,
             edr_id=edr_id,
             tags=tags
         )
-    print_json(data=ep)
+    print_json(data=data)
 
 
 @detect.command('tests')
@@ -107,7 +107,8 @@ def download(controller, test):
 def enable_test(controller, test, run_code, tags):
     """ Add test to your queue """
     with Spinner(description='Enabling test'):
-        controller.enable_test(ident=test, run_code=RunCode[run_code.upper()].value, tags=tags)
+        data = controller.enable_test(ident=test, run_code=RunCode[run_code.upper()].value, tags=tags)
+    print_json(data=data)
 
 
 @detect.command('disable-test')
@@ -119,7 +120,8 @@ def enable_test(controller, test, run_code, tags):
 def disable_test(controller, test, tags):
     """ Remove test from your queue """
     with Spinner(description='Disabling test'):
-        controller.disable_test(ident=test, tags=tags)
+        data = controller.disable_test(ident=test, tags=tags)
+    print_json(data=data)
 
 
 @detect.command('social-stats')
@@ -142,7 +144,8 @@ def social_statistics(controller, test, days):
 def delete_endpoint(controller, endpoint_id):
     """Delete a probe/endpoint"""
     with Spinner(description='Deleting endpoint'):
-        controller.delete_endpoint(ident=endpoint_id)
+        data = controller.delete_endpoint(ident=endpoint_id)
+    print_json(data=data)
 
 
 @detect.command('queue')
@@ -152,8 +155,8 @@ def queue(controller):
     """ List all tests in your active queue """
     with Spinner(description='Fetching active tests from queue'):
         iam = IAMController(account=controller.account)
-        queue = iam.get_account().get('queue')
-    print_json(data=queue)
+        data = iam.get_account().get('queue')
+    print_json(data=data)
 
 
 @detect.command('endpoints')

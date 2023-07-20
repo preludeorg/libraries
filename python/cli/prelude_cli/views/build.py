@@ -73,14 +73,14 @@ def create_test(controller, name, unit, test, techniques, advisory):
 def update_test(controller, test, name, unit, techniques, advisory):
     """ Create or update a security test """
     with Spinner(description='Updating test'):
-        test = controller.update_test(
+        data = controller.update_test(
             test_id=test,
             name=name,
             unit=unit,
             techniques=techniques,
             advisory=advisory
         )
-    print_json(data=test)
+    print_json(data=data)
 
 
 @build.command('delete-test')
@@ -91,8 +91,8 @@ def update_test(controller, test, name, unit, techniques, advisory):
 def delete_test(controller, test):
     """ Delete a test """
     with Spinner(description='Removing test'):
-        controller.delete_test(test_id=test)
-    click.secho(f'Deleted {test}', fg='green')
+        data = controller.delete_test(test_id=test)
+    print_json(data=data)
 
 
 @build.command('upload')
@@ -111,13 +111,13 @@ def upload_attachment(controller, path, test):
     def upload(p: Path):
         with open(p, 'rb') as data:
             with Spinner(description='Uploading to test'):
-                controller.upload(
+                data = controller.upload(
                     test_id=identifier, 
                     filename=p.name, 
                     data=data.read(), 
                     binary=True
                 )
-            click.secho(f'Uploaded {p.name}', fg='green')
+            print_json(data=data)
 
     identifier = test or test_id()
     

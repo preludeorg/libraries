@@ -92,7 +92,8 @@ def create_user(controller, days, permission, name, email):
 def delete_user(controller, handle):
     """ Remove a user from your account """
     with Spinner(description='Deleting user'):
-        controller.delete_user(handle=handle)
+        data = controller.delete_user(handle=handle)
+    print_json(data=data)
 
 
 @iam.command('logs')
@@ -114,4 +115,5 @@ def logs(controller, days, limit):
 def purge(controller):
     """ Delete your account """
     with Spinner(description='Purging account from existence'):
-        controller.purge_account()
+        data = controller.purge_account()
+    print_json(data=data)

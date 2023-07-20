@@ -38,7 +38,8 @@ def attach_partner(controller, partner, api, user, secret):
 def detach_partner(controller, partner):
     """ Detach an existing partner from your account """
     with Spinner(description='Detaching partner'):
-        controller.detach(partner_code=Control[partner.upper()].value)
+        data = controller.detach(partner_code=Control[partner.upper()].value)
+    print_json(data=data)
 
 
 @partner.command('endpoints')
