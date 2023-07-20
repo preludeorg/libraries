@@ -42,8 +42,9 @@ class DetectController:
             json=body,
             timeout=10
         )
-        if res.status_code != 200:
-            raise Exception(res.text)
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
 
     @verify_credentials
     def delete_endpoint(self, ident: str):
@@ -55,8 +56,9 @@ class DetectController:
             json=params,
             timeout=10
         )
-        if res.status_code != 200:
-            raise Exception(res.text)
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
 
     @verify_credentials
     def list_endpoints(self, days: int = 90):
@@ -145,8 +147,9 @@ class DetectController:
             json=dict(code=run_code, tags=tags),
             timeout=10
         )
-        if res.status_code != 200:
-            raise Exception(res.text)
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
 
     @verify_credentials
     def disable_test(self, ident: str, tags: str):
@@ -157,8 +160,9 @@ class DetectController:
             params=dict(tags=tags),
             timeout=10
         )
-        if res.status_code != 200:
-            raise Exception(res.text)
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
 
     @verify_credentials
     def social_stats(self, ident: str, days: int = 30):
