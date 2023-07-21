@@ -5,8 +5,9 @@ import {
   Advisory,
   AdvisoryInfo,
   DayResult,
-  DisableTest,
+  ScheduleEntry,
   EnableTest,
+  EnabledTest,
   Insight,
   MetricsActivity,
   Probe,
@@ -18,6 +19,7 @@ import {
   TestActivity,
   TestData,
   UpdateEndpointParams,
+  UpdatedEndpoint,
 } from "../types";
 
 export default class DetectController {
@@ -45,24 +47,31 @@ export default class DetectController {
   async updateEndpoint(
     { endpoint_id, host, edr_id, tags }: UpdateEndpointParams,
     options: RequestOptions = {}
-  ): Promise<void> {
-    await this.#client.requestWithAuth(`/detect/endpoint/${endpoint_id}`, {
-      method: "POST",
-      body: JSON.stringify({ host, edr_id, tags }),
-      ...options,
-    });
+  ): Promise<UpdatedEndpoint> {
+    const response = await this.#client.requestWithAuth(
+      `/detect/endpoint/${endpoint_id}`,
+      {
+        method: "POST",
+        body: JSON.stringify({ host, edr_id, tags }),
+        ...options,
+      }
+    );
+
+    return await response.json();
   }
 
   /** Delete an endpoint from your account */
   async deleteEndpoint(
     endpoint_id: string,
     options: RequestOptions = {}
-  ): Promise<void> {
-    await this.#client.requestWithAuth(`/detect/endpoint`, {
+  ): Promise<{ id: string }> {
+    const response = await this.#client.requestWithAuth(`/detect/endpoint`, {
       method: "DELETE",
       body: JSON.stringify({ id: endpoint_id }),
       ...options,
     });
+
+    return await response.json();
   }
 
   /** List all endpoints on your account */
@@ -213,24 +222,33 @@ export default class DetectController {
   async enableTest(
     { test, runCode, tags = "" }: EnableTest,
     options: RequestOptions = {}
-  ) {
-    await this.#client.requestWithAuth(`/detect/queue/${test}`, {
-      method: "POST",
-      body: JSON.stringify({ code: runCode, tags }),
-      ...options,
-    });
+  ): Promise<EnabledTest> {
+    const response = await this.#client.requestWithAuth(
+      `/detect/queue/${test}`,
+      {
+        method: "POST",
+        body: JSON.stringify({ code: runCode, tags }),
+        ...options,
+      }
+    );
+    return await response.json();
   }
 
   /** Disable a test so endpoints will stop running it */
-  async disableTest({ test, tags }: DisableTest, options: RequestOptions = {}) {
+  async disableTest(
+    { test, tags }: ScheduleEntry,
+    options: RequestOptions = {}
+  ): Promise<ScheduleEntry> {
     const params = new URLSearchParams({ tags });
-    await this.#client.requestWithAuth(
+    const response = await this.#client.requestWithAuth(
       `/detect/queue/${test}?${params.toString()}`,
       {
         method: "DELETE",
         ...options,
       }
     );
+
+    return await response.json();
   }
 
   /** Pull social statistics for a specific test */

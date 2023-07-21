@@ -70,7 +70,10 @@ class TestDetectController:
 
     def test_enable_test(self, unwrap):
         """Test enable_test method"""
-        unwrap(self.detect.enable_test)(self.detect, ident=pytest.test_id, run_code=RunCode.DEBUG.value, tags=self.tags)
+        res = unwrap(self.detect.enable_test)(self.detect, ident=pytest.test_id, run_code=RunCode.DEBUG.value, tags=self.tags)
+        assert res['test'] == pytest.test_id
+        assert res['run_code'] == RunCode.DEBUG.value
+        assert res['tags'] == self.tags
         queue = unwrap(self.iam.get_account)(self.iam)['queue']
         assert len([test for test in queue if test['test'] == pytest.test_id]) == 1
 
@@ -94,12 +97,20 @@ class TestDetectController:
         """Test update_endpoint method"""
         unwrap(self.detect.update_endpoint)(self.detect, endpoint_id=pytest.endpoint_id, tags=self.updated_tags)
         res = unwrap(self.detect.list_endpoints)(self.detect)
+        assert 'endpoint_id' in res[0]
+        assert 'account_id' in res[0]
+        assert 'host' in res[0]
+        assert 'serial_num' in res[0]
+        assert 'edr_id' in res[0]
         assert res[0]['tags'][0] == self.updated_tags
+        assert 'secret' in res[0]
 
     @pytest.mark.order(after='test_describe_activity')
     def test_disable_test(self, unwrap):
         """Test disable_test method"""
-        unwrap(self.detect.disable_test)(self.detect, ident=pytest.test_id, tags=self.tags)
+        res = unwrap(self.detect.disable_test)(self.detect, ident=pytest.test_id, tags=self.tags)
+        assert res['test'] == pytest.test_id
+        assert res['tags'] == self.tags
         queue = unwrap(self.iam.get_account)(self.iam)['queue']
         assert len([test for test in queue if test['test'] == pytest.test_id]) == 0
 
@@ -112,7 +123,7 @@ class TestDetectController:
     @pytest.mark.order(after='test_social_stats')
     def test_delete_endpoint(self, unwrap):
         """Test delete_endpoint method"""
-        unwrap(self.detect.delete_endpoint)(self.detect, ident=pytest.endpoint_id)
-        res = unwrap(self.detect.list_endpoints)(self.detect)
-        assert len(res) == 0
-
+        res = unwrap(self.detect.delete_endpoint)(self.detect, ident=pytest.endpoint_id)
+        assert res['id'] == pytest.endpoint_id
+        endpoints = unwrap(self.detect.list_endpoints)(self.detect)
+        assert len(endpoints) == 0

@@ -73,9 +73,10 @@ class TestIAMController:
     def test_delete_user(self, unwrap):
         """Test delete_user method"""
         iam = IAMController(pytest.account)
-        unwrap(iam.delete_user)(iam, handle='registration')
-        res = unwrap(iam.get_account)(iam)
-        assert len([user for user in res['users'] if user['handle'] == 'registration']) == 0
+        res = unwrap(iam.delete_user)(iam, handle='registration')
+        assert res['handle'] == 'registration'
+        accounts = unwrap(iam.get_account)(iam)
+        assert len([user for user in accounts['users'] if user['handle'] == 'registration']) == 0
 
     @pytest.mark.order(after='test_detect_controller.py::TestDetectController::test_delete_endpoint')
     def test_update_account(self, unwrap):
@@ -90,4 +91,4 @@ class TestIAMController:
         """Test purge_account method"""
         iam = IAMController(pytest.account)
         res = unwrap(iam.purge_account)(iam)
-        assert res is not None
+        assert 'account' in res

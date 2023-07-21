@@ -31,7 +31,10 @@ export default class PartnerController {
     return response.text();
   }
 
-  async detachPartner(partnerCode: ControlCode, options: RequestOptions = {}) {
+  async detachPartner(
+    partnerCode: ControlCode,
+    options: RequestOptions = {}
+  ): Promise<{ id: ControlCode }> {
     const response = await this.#client.requestWithAuth(
       `/partner/${partnerCode}`,
       {
@@ -40,7 +43,7 @@ export default class PartnerController {
       }
     );
 
-    return response.text();
+    return await response.json();
   }
 
   /** Get a list of endpoints from all partners */
@@ -76,11 +79,16 @@ export default class PartnerController {
   async deploy(
     { partnerCode, hostIds }: DeployParams,
     options: RequestOptions = {}
-  ): Promise<void> {
-    await this.#client.requestWithAuth(`/partner/deploy/${partnerCode}`, {
-      method: "POST",
-      body: JSON.stringify({ host_ids: hostIds }),
-      ...options,
-    });
+  ): Promise<{ host_ids: string[] }> {
+    const response = await this.#client.requestWithAuth(
+      `/partner/deploy/${partnerCode}`,
+      {
+        method: "POST",
+        body: JSON.stringify({ host_ids: hostIds }),
+        ...options,
+      }
+    );
+
+    return await response.json();
   }
 }

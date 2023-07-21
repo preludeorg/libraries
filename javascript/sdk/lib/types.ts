@@ -119,7 +119,13 @@ export interface EnableTest {
   tags?: string;
 }
 
-export interface DisableTest {
+export interface EnabledTest {
+  test: string;
+  runCode: RunCode;
+  tags: string;
+}
+
+export interface ScheduleEntry {
   test: string;
   tags: string;
 }
@@ -364,6 +370,16 @@ export interface UpdateEndpointParams {
   host?: string;
   edr_id?: string;
   tags?: string;
+}
+
+export interface UpdatedEndpoint {
+  endpoint_id: string;
+  account_id: string;
+  host: string;
+  serial_num: string;
+  edr_id: string;
+  tags: string;
+  secret: string;
 }
 
 export interface DownloadParams {

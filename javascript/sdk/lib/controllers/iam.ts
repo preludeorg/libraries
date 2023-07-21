@@ -38,13 +38,15 @@ export default class IAMController {
   }
 
   /** Delete an account and all things in it */
-  async purgeAccount(options: RequestOptions = {}) {
+  async purgeAccount(
+    options: RequestOptions = {}
+  ): Promise<{ account: string }> {
     const response = await this.#client.requestWithAuth("/iam/account", {
       method: "DELETE",
       ...options,
     });
 
-    return response.text();
+    return response.json();
   }
 
   /** Update properties on an account */
@@ -87,14 +89,17 @@ export default class IAMController {
   }
 
   /** Delete a user from an account */
-  async deleteUser(handle: string, options: RequestOptions = {}) {
-    await this.#client.requestWithAuth("/iam/user", {
+  async deleteUser(
+    handle: string,
+    options: RequestOptions = {}
+  ): Promise<{ handle: string }> {
+    const response = await this.#client.requestWithAuth("/iam/user", {
       method: "DELETE",
       body: JSON.stringify({ handle }),
       ...options,
     });
 
-    return true;
+    return await response.json();
   }
 
   /** Get audit logs from the last X days */

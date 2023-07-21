@@ -48,5 +48,5 @@ class TestBuildController:
     @pytest.mark.order(after='test_detect_controller.py::TestDetectController::test_disable_test')
     def test_delete_test(self, unwrap):
         """Test delete_test method"""
-        unwrap(self.build.delete_test)(self.build, test_id=pytest.test_id)
-        assert True
+        res = unwrap(self.build.delete_test)(self.build, test_id=pytest.test_id)
+        assert res['id'] == self.test_id

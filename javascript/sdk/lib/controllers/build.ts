@@ -51,11 +51,16 @@ export default class BuildController {
   async deleteTest(
     testId: string,
     options: RequestOptions = {}
-  ): Promise<void> {
-    await this.#client.requestWithAuth(`/build/tests/${testId}`, {
-      method: "DELETE",
-      ...options,
-    });
+  ): Promise<{ id: string }> {
+    const response = await this.#client.requestWithAuth(
+      `/build/tests/${testId}`,
+      {
+        method: "DELETE",
+        ...options,
+      }
+    );
+
+    return await response.json();
   }
 
   /** Upload a test or attachment */
@@ -64,11 +69,16 @@ export default class BuildController {
     filename: string,
     data: BodyInit,
     options: RequestOptions = {}
-  ): Promise<void> {
-    await this.#client.requestWithAuth(`/build/tests/${testId}/${filename}`, {
-      method: "POST",
-      body: data,
-      ...options,
-    });
+  ): Promise<{ id: string; filename: string }> {
+    const response = await this.#client.requestWithAuth(
+      `/build/tests/${testId}/${filename}`,
+      {
+        method: "POST",
+        body: data,
+        ...options,
+      }
+    );
+
+    return await response.json();
   }
 }

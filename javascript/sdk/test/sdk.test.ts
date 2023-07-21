@@ -84,9 +84,9 @@ describe("SDK Test", () => {
       expect(account.users).toHaveLength(2);
     });
 
-    it("deleteUser should return a boolean true", async () => {
+    it("deleteUser should return the handle of the deleted user", async () => {
       const result = await service.iam.deleteUser("registration");
-      expect(result).to.be.true;
+      expect(result).toEqual("registration");
       const account = await service.iam.getAccount();
       expect(account).toHaveProperty("users");
       expect(account.users).to.have.lengthOf(1);
@@ -124,14 +124,14 @@ describe("SDK Test", () => {
       expect(response.name).eq(testName);
     });
 
-    it("upload should have an attachment in the getTest call", async () => {
+    it("upload should return the testId and filename", async () => {
       const file = readFileSync(`${__dirname}/templates/template.go`, "utf8");
       let data = file.toString();
       data = data.replace("$ID", testId);
       data = data.replace("$NAME", testName);
       data = data.replace("$UNIT", testUnit);
       data = data.replace("$CREATED", new Date().toISOString());
-      await service.build.upload(testId, templateName, data);
+      const response = await service.build.upload(testId, templateName, data);
       const test = await service.detect.getTest(testId);
       expect(test.attachments).toEqual(expect.arrayContaining([templateName]));
     });
@@ -141,8 +141,9 @@ describe("SDK Test", () => {
       expect(response.name).eq(updatedTestName);
     });
 
-    it("deleteTest should not throw an error", async () => {
-      await service.build.deleteTest(testId);
+    it("deleteTest should return the id of the deleted test", async () => {
+      const response = await service.build.deleteTest(testId);
+      expect(response.id).toEqual(testId);
     });
   });
 
@@ -218,17 +219,25 @@ describe("SDK Test", () => {
       { timeout: 10_000 }
     );
 
-    it("enableTest should add a new test to the queue", async function () {
-      await service.detect.enableTest({
+    it("enableTest should add a new test to the queue and return the test, tags and runcode", async function () {
+      const response = await service.detect.enableTest({
         test: activeTest,
         runCode: RunCodes.DEBUG,
         tags: tags,
       });
 
-      const result = (await service.iam.getAccount()).queue;
+      expect(response).toEqual(
+        expect.objectContaining({
+          test: activeTest,
+          runCode: RunCodes.DEBUG,
+          tags: tags,
+        })
+      );
 
-      expect(result).toHaveLength(2);
-      expect(result).toEqual(
+      const queue = (await service.iam.getAccount()).queue;
+
+      expect(queue).toHaveLength(2);
+      expect(queue).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
             test: activeTest,
@@ -301,13 +310,20 @@ describe("SDK Test", () => {
       );
     });
 
-    it("updateEndpoint should return an endpoint with updated tags", async () => {
+    it("updateEndpoint should return the updated endpoint", async () => {
       await service.detect.updateEndpoint({
         endpoint_id: endpointId,
         tags: updatedTags,
       });
       const result = await service.detect.listEndpoints();
+      expect(result[0]).toHaveProperty("endpoint_id");
+      expect(result[0]).toHaveProperty("account_id");
+      expect(result[0]).toHaveProperty("host");
+      expect(result[0]).toHaveProperty("serial_num");
+      expect(result[0]).toHaveProperty("edr_id");
+      expect(result[0]).toHaveProperty("tags");
       expect(result[0].tags[0]).eq(updatedTags);
+      expect(result[0]).toHaveProperty("secret");
     });
 
     it("socialStats should return an object with a non-empty array of values", async function () {
@@ -315,19 +331,28 @@ describe("SDK Test", () => {
       expect(Object.values(result)).to.have.length.greaterThanOrEqual(1);
     });
 
-    it("disableTest should remove the test from the queue", async function () {
-      await service.detect.disableTest({
+    it("disableTest should remove the test from the queue and return the id of the test", async function () {
+      const response = await service.detect.disableTest({
         test: activeTest,
         tags: tags,
       });
+      expect(response).toEqual(
+        expect.objectContaining({
+          test: activeTest,
+          tags: tags,
+        })
+      );
+
       const result = (await service.iam.getAccount()).queue;
       expect(result).toHaveLength(1);
     });
 
-    it("deleteEndpoint should remove the endpoint from the list", async function () {
-      await service.detect.deleteEndpoint(endpointId);
-      const result = await service.detect.listEndpoints();
-      expect(result).to.have.lengthOf(0);
+    it("deleteEndpoint should remove the endpoint from the list and return the id of the endpoint", async function () {
+      const response = await service.detect.deleteEndpoint(endpointId);
+      expect(response.id).toEqual(endpointId);
+
+      const endpoints = await service.detect.listEndpoints();
+      expect(endpoints).to.have.lengthOf(0);
     });
   });
 });
