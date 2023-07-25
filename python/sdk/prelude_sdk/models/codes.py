@@ -45,30 +45,36 @@ class Permission(Enum):
 
 class ExitCode(Enum):
     MISSING = -1
-    REMOVED = 0
-    ERROR = 1
-    MALFORMED_VST = 2
-    PROCESS_KILLED_1 = 9
-    PROCESS_KILLED_2 = 15
-    PROTECTED = 100
-    UNPROTECTED = 101
-    TIMEOUT = 102
-    CLEANUP_ERROR = 103
+    UNKNOWN_ERROR = 1
+    MALFORMED_TEST = 2
+    BEHAVIOR_PREVENTED_1 = 9
+    BEHAVIOR_PREVENTED_2 = 15
+    CHECK_COMPLETED = 100
+    NOT_PREVENTED = 101
+    TIMED_OUT = 102
+    FAILED_CLEANUP = 103
     NOT_RELEVANT = 104
-    QUARANTINED_1 = 105
-    OUTBOUND_SECURE = 106
-    EXPLOIT_PREVENTED = 107
-    NO_TEST = 108
-    IS_RELEVANT = 109
-    FALSE_POSITIVE = 110
-    ENDPOINT_BLOCKED = 126
-    QUARANTINED_2 = 127
-    PROCESS_KILLED_3 = 137
-    UNEXPECTED = 256
+    SIGNATURE_PREVENTED_1 = 105
+    BLOCKED_AT_PERIMETER = 106
+    BEHAVIOR_PREVENTED_3 = 107
+    TEST_UNAVAILABLE = 108
+    INCORRECTLY_BLOCKED = 110
+    BEHAVIOR_PREVENTED_4 = 126
+    SIGNATURE_PREVENTED_2 = 127
+    OUT_OF_MEMORY = 137
+    UNEXPECTED_ERROR = 256
 
     @classmethod
     def _missing_(cls, value):
+        if value and not isinstance(value, int):
+            return cls(int(value))
         return ExitCode.MISSING
+    
+    @classmethod
+    def transform(self, test):
+        if test.unit == 'health' and self != ExitCode.CHECK_COMPLETED:
+            return ExitCode.INCORRECTLY_BLOCKED
+        return self
 
     @property
     def state(self):
@@ -90,33 +96,32 @@ class State(Enum):
         return {
             State.NONE: [ExitCode.MISSING],
             State.PROTECTED: [
-                ExitCode.REMOVED,
-                ExitCode.PROTECTED,
-                ExitCode.QUARANTINED_1,
-                ExitCode.QUARANTINED_2,
-                ExitCode.PROCESS_KILLED_1,
-                ExitCode.PROCESS_KILLED_2,
+                ExitCode.BEHAVIOR_PREVENTED_1,
+                ExitCode.BEHAVIOR_PREVENTED_2,
+                ExitCode.CHECK_COMPLETED,
                 ExitCode.NOT_RELEVANT,
-                ExitCode.NO_TEST,
-                ExitCode.OUTBOUND_SECURE,
-                ExitCode.ENDPOINT_BLOCKED,
-                ExitCode.EXPLOIT_PREVENTED,
-                ExitCode.PROCESS_KILLED_3
+                ExitCode.SIGNATURE_PREVENTED_1,
+                ExitCode.BLOCKED_AT_PERIMETER,
+                ExitCode.BEHAVIOR_PREVENTED_3,
+                ExitCode.TEST_UNAVAILABLE,
+                ExitCode.BEHAVIOR_PREVENTED_4,
+                ExitCode.SIGNATURE_PREVENTED_2
             ],
             State.UNPROTECTED: [
-                ExitCode.UNPROTECTED,
-                ExitCode.IS_RELEVANT,
+                ExitCode.NOT_PREVENTED,
             ],
             State.ERROR: [
-                ExitCode.ERROR,
-                ExitCode.MALFORMED_VST,
-                ExitCode.TIMEOUT,
-                ExitCode.UNEXPECTED,
-                ExitCode.FALSE_POSITIVE
+                ExitCode.UNKNOWN_ERROR,
+                ExitCode.MALFORMED_TEST,
+                ExitCode.TIMED_OUT,
+                ExitCode.FAILED_CLEANUP,
+                ExitCode.INCORRECTLY_BLOCKED,
+                ExitCode.OUT_OF_MEMORY,
+                ExitCode.UNEXPECTED_ERROR
             ],
             State.NOT_RELEVANT: [
                 ExitCode.NOT_RELEVANT,
-                ExitCode.NO_TEST
+                ExitCode.TEST_UNAVAILABLE
             ]
         }
 

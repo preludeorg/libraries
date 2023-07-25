@@ -60,8 +60,9 @@ class BuildController:
             headers=self.account.headers,
             timeout=10
         )
-        if not res.status_code == 200:
-            raise Exception(res.text)
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
 
     @verify_credentials
     def upload(self, test_id, filename, data, binary=False):
@@ -76,5 +77,6 @@ class BuildController:
             headers=h,
             timeout=10
         )
-        if not res.status_code == 200:
-            raise Exception(res.text)
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
