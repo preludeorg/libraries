@@ -1,5 +1,4 @@
 // @ts-check
-import { Credentials, RequestInterceptor } from "./types";
 
 /**
  * Asserts that the provided URL is valid.
@@ -71,8 +70,8 @@ export default class Client {
    *
    * @constructor
    * @param {string} host - The host URL.
-   * @param {Credentials} [credentials] - The authentication credentials.
-   * @param {RequestInterceptor} [requestInterceptor] - The request interceptor function.
+   * @param {import("./types").Credentials} [credentials] - The authentication credentials.
+   * @param {import("./types").RequestInterceptor} [requestInterceptor] - The request interceptor function.
    */
   constructor(host, credentials, requestInterceptor) {
     /**
@@ -87,7 +86,7 @@ export default class Client {
     /**
      * The authentication credentials.
      *
-     * @type {Credentials}
+     * @type {import("./types").Credentials}
      * @private
      */
     this.#credentials = credentials;
@@ -95,7 +94,7 @@ export default class Client {
     /**
      * The request interceptor function.
      *
-     * @type {RequestInterceptor}
+     * @type {import("./types").RequestInterceptor}
      * @private
      */
     this.#requestInterceptor = requestInterceptor;
@@ -104,7 +103,7 @@ export default class Client {
   /**
    * Sets the credentials for the API client.
    *
-   * @param {Credentials} credentials - The authentication credentials to set.
+   * @param {import("./types").Credentials} credentials - The authentication credentials to set.
    */
   setCredentials(credentials) {
     this.#credentials = credentials;
@@ -114,7 +113,7 @@ export default class Client {
    * Ensures that the credentials are properly set and returns them.
    *
    * @private
-   * @returns {Credentials} The validated credentials.
+   * @returns {import("./types").Credentials} The validated credentials.
    * @throws {Error} If the account ID or token is not set.
    */
   #ensureCredentials() {
