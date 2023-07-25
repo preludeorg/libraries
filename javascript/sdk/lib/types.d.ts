@@ -79,13 +79,13 @@ export interface ComputeResult {
   }[];
 }
 
-export interface EnableTest {
+export interface EnableTestParams {
   test: string;
   runCode: RunCode;
   tags?: string;
 }
 
-export interface DisableTest {
+export interface DisableTestParams {
   test: string;
   tags: string;
 }
@@ -179,6 +179,15 @@ export interface Advisory {
 }
 
 export type Stats = Record<Platform, Record<`${ExitCode}`, number>>;
+
+export type ActivityView =
+  | "days"
+  | "logs"
+  | "insights"
+  | "probes"
+  | "advisories"
+  | "tests"
+  | "metrics";
 
 export interface ActivityQuery {
   start: string;
