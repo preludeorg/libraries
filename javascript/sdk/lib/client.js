@@ -1,3 +1,4 @@
+// @ts-check
 import { Credentials, RequestInterceptor } from "./types";
 
 /**
@@ -61,6 +62,10 @@ export class APIError extends Error {
  * @default
  */
 export default class Client {
+  #host;
+  #credentials;
+  #requestInterceptor;
+
   /**
    * Create a new instance of the Client class.
    *

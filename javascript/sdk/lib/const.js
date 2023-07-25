@@ -1,0 +1,93 @@
+export const RunCodes = {
+  INVALID: -1,
+  DEBUG: 0,
+  DAILY: 1,
+  WEEKLY: 2,
+  MONTHLY: 3,
+  MONDAY: 10,
+  TUESDAY: 11,
+  WEDNESDAY: 12,
+  THURSDAY: 13,
+  FRIDAY: 14,
+  SATURDAY: 15,
+  SUNDAY: 16,
+  FIRST_OF_MONTH: 20,
+};
+
+export const Permissions = {
+  INVALID: -1,
+  ADMIN: 0,
+  EXECUTIVE: 1,
+  BUILD: 2,
+  SERVICE: 3,
+};
+
+export const Modes = {
+  MANUAL: 0,
+  FROZEN: 1,
+  AUTOPILOT: 2,
+};
+
+export const ExitCodes = {
+  MISSING: -1,
+  UNKNOWN_ERROR: 1,
+  MALFORMED_TEST: 2,
+  BEHAVIOR_PREVENTED_1: 9,
+  BEHAVIOR_PREVENTED_2: 15,
+  CHECK_COMPLETED: 100,
+  NOT_PREVENTED: 101,
+  TIMED_OUT: 102,
+  FAILED_CLEANUP: 103,
+  NOT_RELEVANT: 104,
+  SIGNATURE_PREVENTED_1: 105,
+  BLOCKED_AT_PERIMETER: 106,
+  BEHAVIOR_PREVENTED_3: 107,
+  TEST_UNAVAILABLE: 108,
+  INCORRECTLY_BLOCKED: 110,
+  BEHAVIOR_PREVENTED_4: 126,
+  SIGNATURE_PREVENTED_2: 127,
+  OUT_OF_MEMORY: 137,
+  UNEXPECTED_ERROR: 256,
+};
+
+export const ExitCodeGroup = {
+  NONE: [ExitCodes.MISSING],
+  PROTECTED: [
+    ExitCodes.BEHAVIOR_PREVENTED_1,
+    ExitCodes.BEHAVIOR_PREVENTED_2,
+    ExitCodes.CHECK_COMPLETED,
+    ExitCodes.NOT_RELEVANT,
+    ExitCodes.SIGNATURE_PREVENTED_1,
+    ExitCodes.BLOCKED_AT_PERIMETER,
+    ExitCodes.BEHAVIOR_PREVENTED_3,
+    ExitCodes.TEST_UNAVAILABLE,
+    ExitCodes.BEHAVIOR_PREVENTED_4,
+    ExitCodes.SIGNATURE_PREVENTED_2,
+  ],
+  UNPROTECTED: [ExitCodes.NOT_PREVENTED],
+  ERROR: [
+    ExitCodes.UNKNOWN_ERROR,
+    ExitCodes.MALFORMED_TEST,
+    ExitCodes.TIMED_OUT,
+    ExitCodes.FAILED_CLEANUP,
+    ExitCodes.INCORRECTLY_BLOCKED,
+    ExitCodes.OUT_OF_MEMORY,
+    ExitCodes.UNEXPECTED_ERROR,
+  ],
+  NOT_RELEVANT: [ExitCodes.NOT_RELEVANT, ExitCodes.TEST_UNAVAILABLE],
+};
+
+export const ExitCodeNames = Object.keys(ExitCodes);
+
+export const ActionCodes = {
+  NONE: 0,
+  IGNORE: 1,
+  IMPORTANT: 2,
+};
+
+export const ControlCodes = {
+  INVALID: 0,
+  CROWDSTRIKE: 1,
+  DEFENDER: 2,
+  SPLUNK: 3,
+};

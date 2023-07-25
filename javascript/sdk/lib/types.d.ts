@@ -69,42 +69,6 @@ export interface Queue {
   started: string;
 }
 
-export const RunCodes = {
-  INVALID: -1,
-  DEBUG: 0,
-  DAILY: 1,
-  WEEKLY: 2,
-  MONTHLY: 3,
-  MONDAY: 10,
-  TUESDAY: 11,
-  WEDNESDAY: 12,
-  THURSDAY: 13,
-  FRIDAY: 14,
-  SATURDAY: 15,
-  SUNDAY: 16,
-  FIRST_OF_MONTH: 20,
-} as const;
-
-export type RunCode = (typeof RunCodes)[keyof typeof RunCodes];
-
-export const Permissions = {
-  INVALID: -1,
-  ADMIN: 0,
-  EXECUTIVE: 1,
-  BUILD: 2,
-  SERVICE: 3,
-} as const;
-
-export type Permission = (typeof Permissions)[keyof typeof Permissions];
-
-export const Modes = {
-  MANUAL: 0,
-  FROZEN: 1,
-  AUTOPILOT: 2,
-} as const;
-
-export type Mode = (typeof Modes)[keyof typeof Modes];
-
 export interface ComputeResult {
   name: string;
   steps: {
@@ -144,73 +108,17 @@ export interface SearchResults {
   tests: string[];
 }
 
-export const ExitCodes = {
-  MISSING: -1,
-  UNKNOWN_ERROR: 1,
-  MALFORMED_TEST: 2,
-  BEHAVIOR_PREVENTED_1: 9,
-  BEHAVIOR_PREVENTED_2: 15,
-  CHECK_COMPLETED: 100,
-  NOT_PREVENTED: 101,
-  TIMED_OUT: 102,
-  FAILED_CLEANUP: 103,
-  NOT_RELEVANT: 104,
-  SIGNATURE_PREVENTED_1: 105,
-  BLOCKED_AT_PERIMETER: 106,
-  BEHAVIOR_PREVENTED_3: 107,
-  TEST_UNAVAILABLE: 108,
-  INCORRECTLY_BLOCKED: 110,
-  BEHAVIOR_PREVENTED_4: 126,
-  SIGNATURE_PREVENTED_2: 127,
-  OUT_OF_MEMORY: 137,
-  UNEXPECTED_ERROR: 256,
-} as const;
+export type RunCode = (typeof RunCodes)[keyof typeof RunCodes];
+
+export type Permission = (typeof Permissions)[keyof typeof Permissions];
+
+export type Mode = (typeof Modes)[keyof typeof Modes];
 
 export type ExitCodeName = keyof typeof ExitCodes;
 export type ExitCode = (typeof ExitCodes)[ExitCodeName];
-export const ExitCodeNames = Object.keys(ExitCodes) as ExitCodeName[];
-export const ExitCodeGroup = {
-  NONE: [ExitCodes.MISSING],
-  PROTECTED: [
-    ExitCodes.BEHAVIOR_PREVENTED_1,
-    ExitCodes.BEHAVIOR_PREVENTED_2,
-    ExitCodes.CHECK_COMPLETED,
-    ExitCodes.NOT_RELEVANT,
-    ExitCodes.SIGNATURE_PREVENTED_1,
-    ExitCodes.BLOCKED_AT_PERIMETER,
-    ExitCodes.BEHAVIOR_PREVENTED_3,
-    ExitCodes.TEST_UNAVAILABLE,
-    ExitCodes.BEHAVIOR_PREVENTED_4,
-    ExitCodes.SIGNATURE_PREVENTED_2,
-  ],
-  UNPROTECTED: [ExitCodes.NOT_PREVENTED],
-  ERROR: [
-    ExitCodes.UNKNOWN_ERROR,
-    ExitCodes.MALFORMED_TEST,
-    ExitCodes.TIMED_OUT,
-    ExitCodes.FAILED_CLEANUP,
-    ExitCodes.INCORRECTLY_BLOCKED,
-    ExitCodes.OUT_OF_MEMORY,
-    ExitCodes.UNEXPECTED_ERROR,
-  ],
-  NOT_RELEVANT: [ExitCodes.NOT_RELEVANT, ExitCodes.TEST_UNAVAILABLE],
-} as const;
-
-export const ActionCodes = {
-  NONE: 0,
-  IGNORE: 1,
-  IMPORTANT: 2,
-} as const;
 
 export type ActionCodeName = keyof typeof ActionCodes;
 export type ActionCode = (typeof ActionCodes)[ActionCodeName];
-
-export const ControlCodes = {
-  INVALID: 0,
-  CROWDSTRIKE: 1,
-  DEFENDER: 2,
-  SPLUNK: 3,
-} as const;
 
 export type ControlCodeName = keyof typeof ControlCodes;
 export type ControlCode = (typeof ControlCodes)[ControlCodeName];

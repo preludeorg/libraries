@@ -1,3 +1,4 @@
+// @ts-check
 import Client from "./client.js";
 import { RequestOptions, Test } from "../types";
 

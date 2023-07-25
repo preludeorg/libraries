@@ -1,29 +1,21 @@
-import { ServiceConfig } from "./types";
+// @ts-check
 import Client from "./client.js";
-import BuildController from "./controllers/build.js";
+import BuildController from "./controllers/build";
+import DetectController from "./controllers/detect";
 
 /**
+ * Serves as a wrapper for API requests
+ *
  * @class
- * @property {Client} client
- * @property {Credentials} [credentials]
- * @property {BuildController} build
- * @property {IAMController} iam
- * @property {DetectController} detect
- * @property {ProbeController} probe
- * @property {PartnerController} partner
  */
 export class Service {
+  /**
+   * @type {Client}
+   */
   #client;
-  credentials;
-  build;
-  iam;
-  detect;
-  probe;
-  partner;
 
   /**
-   * @constructor
-   * @param {ServiceConfig} config
+   * @param {import("./types.js").ServiceConfig} config
    */
   constructor(config) {
     this.#client = new Client(
@@ -40,8 +32,7 @@ export class Service {
   }
 
   /**
-   *
-   * @param {Credentials} credentials
+   * @param {import("./types.js").Credentials} credentials
    */
   setCredentials(credentials) {
     this.credentials = credentials;
