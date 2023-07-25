@@ -1,5 +1,5 @@
 import Client from "./client.js";
-import { RequestOptions, Test } from "../types.js";
+import { RequestOptions, Test } from "../types";
 
 /**
  * @class

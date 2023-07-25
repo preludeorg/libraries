@@ -1,9 +1,11 @@
+type RequestInterceptor = (request: Request) => Request;
+
 export interface ServiceConfig {
   host: string;
   /** credentials is optional since some requests can be made without them */
   credentials?: Credentials;
   /** requestInterceptor allows you to modify the request before it is sent */
-  requestInterceptor?: (request: Request) => Request;
+  requestInterceptor?: RequestInterceptor;
 }
 
 export interface Credentials {

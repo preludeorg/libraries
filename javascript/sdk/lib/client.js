@@ -1,3 +1,5 @@
+import { Credentials, RequestInterceptor } from "./types";
+
 /**
  * Asserts that the provided URL is valid.
  *
@@ -37,7 +39,7 @@ function combineHeaders(...headers) {
  * @class
  * @extends Error
  */
-class APIError extends Error {
+export class APIError extends Error {
   /**
    * Constructs a new instance of the APIError class.
    *

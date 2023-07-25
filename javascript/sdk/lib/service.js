@@ -1,4 +1,4 @@
-import ServiceConfig from "./service.js";
+import { ServiceConfig } from "./types";
 import Client from "./client.js";
 import BuildController from "./controllers/build.js";
 
