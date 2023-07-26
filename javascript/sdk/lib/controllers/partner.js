@@ -45,7 +45,7 @@ export default class PartnerController {
    * Detaches a partner from an account
    *
    * @param {import("../types").ControlCode} partnerCode - The partner code, with options: INVALID (0), CROWDSTRIKE (1), DEFENDER (2), SPLUNK (3).
-   * @param {import("../types").RequestOptions} [options={}] - Optional request options.
+   * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
    * @returns {Promise<string>} A Promise that resolves to the response text.
    */
   async detachPartner(partnerCode, options = {}) {
@@ -69,7 +69,7 @@ export default class PartnerController {
    * @param {string} [params.hostname=""] - The hostname (optional, default is empty string).
    * @param {number} [params.offset=0] - The offset (optional, default is 0).
    * @param {number} [params.count=100] - The count returned (optional, default is 100).
-   * @param {import("../types").RequestOptions} [options={}] - Optional request options.
+   * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
    * @returns {Promise<import("../types").PartnerEndpoints>} A promise that resolves to the list of endpoints from partners.
    */
   async endpoints(params, options = {}) {
@@ -105,7 +105,7 @@ export default class PartnerController {
    * @param {import("../types").DeployParams} params - The parameters for deploying probes.
    * @param {import("../types").ControlCode} params.partnerCode - The partner code, with options: INVALID (0), CROWDSTRIKE (1), DEFENDER (2), SPLUNK (3).
    * @param {string[]} params.hostIds - An array of host IDs to deploy probes on.
-   * @param {import("../types").RequestOptions} [options={}] - Optional request options.
+   * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
    * @returns {Promise<void>} A promise that resolves when the deployment is complete.
    */
   async deploy(params, options = {}) {

@@ -18,16 +18,20 @@ export default class ProbeController {
   /**
    * Download a probe executable
    *
-   * @param {import("../types").DownloadParams} download - The download params object
-   * @param {import("../types").RequestOptions} [options={}] - Optional request options.
+   * @param {import("../types").DownloadParams} params - The parameters for downloading the probe executable.
+   * @param {string} params.name - The name of the probe.
+   * @param {import("../types").Platform} params.dos - The platform for the probe.
+   * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
    * @returns
    */
-  async download(download, options = {}) {
-    const response = await this.#client.request(`/download/${download.name}`, {
+  async download(params, options = {}) {
+    const { name, dos } = params;
+
+    const response = await this.#client.request(`/download/${name}`, {
       method: "GET",
       ...options,
       headers: {
-        dos: download.dos,
+        dos,
         "Content-Type": "",
         ...(options.headers ?? {}),
       },
