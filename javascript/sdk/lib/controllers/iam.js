@@ -1,3 +1,4 @@
+//@ts-check
 import Client from "../client";
 
 /**
@@ -18,10 +19,7 @@ export default class IAMController {
   /**
    * Create a new account
    *
-   * @param {import("../types").CreateAccountParams} params - The parameters for creating a new account.
-   * @param {string} params.email - The email for the new account.
-   * @param {string} params.name - The name of the user associated with the new account.
-   * @param {string} params.company - The company name for the new account.
+   * @param {import("../types").CreateAccountParams} params - The parameters for creating a new account (email, name, company).
    * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
    * @returns {Promise<import("../types").Credentials>} A promise that resolves to the Credentials for the new account.
    */
@@ -78,7 +76,7 @@ export default class IAMController {
    * Get account properties
    *
    * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
-   * @returns {import("../types").Account} - A Promise that resolves with the Account
+   * @returns {Promise<import("../types").Account>} - A Promise that resolves with the Account
    */
   async getAccount(options = {}) {
     const response = await this.#client.requestWithAuth("/iam/account", {
@@ -92,11 +90,7 @@ export default class IAMController {
   /**
    * Create a new user inside an account
    *
-   * @param {import("../types").CreateUserParams} params - The parameters for creating a new user.
-   * @param {import("../types").Permission} params.permission - The permission level for the new user.
-   * @param {string} params.email - The email address of the new user.
-   * @param {string} [params.name] - The name of the new user (optional).
-   * @param {string} [params.expires] - The expiration date for the new user (optional).
+   * @param {import("../types").CreateUserParams} params - The parameters for creating a new user (permission, email, name, expires).
    * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
    * @returns {Promise<import("../types").CreatedUser>} A promise that resolves to the details of the created user.
    */

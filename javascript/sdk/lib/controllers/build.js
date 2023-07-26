@@ -20,15 +20,13 @@ export default class BuildController {
   /**
    * Create or update a test
    *
-   * @param {string} name - The name of the test.
-   * @param {string} unit - The unit of the test.
-   * @param {string} [techniques] - Optional techniques for the test (TXXXX.XX format).
-   * @param {string} [advisory] - Optional advisory for the test.
-   * @param {string} [testId] - Optional UUID of the test.
-   * @param {import("../types").RequestOptions} [options={}] - Optional request options.
+   * @param {import("../types").CreateTestParams} params - The parameters for creating a test (name, unit, techniques, advisory, testId).
+   * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
    * @returns {Promise<import("../types").Test>} A promise that resolves to the created test.
    */
-  async createTest(name, unit, techniques, advisory, testId, options = {}) {
+  async createTest(params, options = {}) {
+    const { name, unit, techniques, advisory, testId } = params;
+
     const response = await this.#client.requestWithAuth(`/build/tests`, {
       method: "POST",
       body: JSON.stringify({ name, unit, techniques, advisory, id: testId }),
@@ -41,15 +39,13 @@ export default class BuildController {
   /**
    * Update a test
    *
-   * @param {string} testId - The UUID of the test to update.
-   * @param {string} [name] - Optional updated name of the test.
-   * @param {string} [unit] - Optional updated unit of the test.
-   * @param {string} [techniques] - Optional updated techniques used in the test.
-   * @param {string} [advisory] - Optional updated advisory for the test.
-   * @param {import("../types").RequestOptions} [options={}] - The request options.
+   * @param {import("../types").UpdateTestParams} params - The parameters for updating a test (name, unit, techniques, advisory, testId).
+   * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
    * @returns {Promise<import("../types").Test>} A promise that resolves to the updated test.
    */
-  async updateTest(testId, name, unit, techniques, advisory, options = {}) {
+  async updateTest(params, options = {}) {
+    const { testId, name, unit, techniques, advisory } = params;
+
     const response = await this.#client.requestWithAuth(
       `/build/tests/${testId}`,
       {
@@ -66,7 +62,7 @@ export default class BuildController {
    * Delete an existing test
    *
    * @param {string} testId - The UUID of the test to delete.
-   * @param {import("../types").RequestOptions} [options={}] - Optional request options.
+   * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
    * @returns {Promise<void>}
    */
   async deleteTest(testId, options = {}) {
@@ -82,7 +78,7 @@ export default class BuildController {
    * @param {string} testId - The UUID of the test to upload the attachment to.
    * @param {string} filename - The filename of the attachment.
    * @param {BodyInit} data - The data of the attachment.
-   * @param {import("../types").RequestOptions} [options={}] - Optional request options.
+   * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
    * @returns {Promise<void>}
    */
   async upload(testId, filename, data, options = {}) {

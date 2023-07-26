@@ -1,3 +1,4 @@
+//@ts-check
 import Client from "../client";
 
 /**
@@ -18,9 +19,7 @@ export default class ProbeController {
   /**
    * Download a probe executable
    *
-   * @param {import("../types").DownloadParams} params - The parameters for downloading the probe executable.
-   * @param {string} params.name - The name of the probe.
-   * @param {import("../types").Platform} params.dos - The platform for the probe.
+   * @param {import("../types").DownloadParams} params - The parameters for downloading the probe executable (name, dos).
    * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
    * @returns {Promise<string>} A promise that resolves to the response text from the download request.
    */

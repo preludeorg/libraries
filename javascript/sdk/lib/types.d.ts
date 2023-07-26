@@ -62,6 +62,22 @@ export interface CreatedUser {
   token: string;
 }
 
+export interface CreateTestParams {
+  name: string;
+  unit: string;
+  techniques?: string;
+  advisory?: string;
+  testId?: string;
+}
+
+export interface UpdateTestParams {
+  testId: string;
+  name?: string;
+  unit?: string;
+  techniques?: string;
+  advisory?: string;
+}
+
 export interface Queue {
   test: string;
   run_code: RunCode;

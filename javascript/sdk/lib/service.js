@@ -1,7 +1,10 @@
 // @ts-check
 import Client from "./client.js";
-import BuildController from "./controllers/build";
-import DetectController from "./controllers/detect";
+import BuildController from "./controllers/build.js";
+import DetectController from "./controllers/detect.js";
+import IAMController from "./controllers/iam.js";
+import PartnerController from "./controllers/partner.js";
+import ProbeController from "./controllers/probe.js";
 
 /**
  * Serves as a wrapper for API requests
@@ -27,8 +30,8 @@ export class Service {
     this.build = new BuildController(this.#client);
     this.iam = new IAMController(this.#client);
     this.detect = new DetectController(this.#client);
-    this.probe = new ProbeController(this.#client);
     this.partner = new PartnerController(this.#client);
+    this.probe = new ProbeController(this.#client);
   }
 
   /**

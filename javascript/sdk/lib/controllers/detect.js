@@ -18,18 +18,20 @@ export default class DetectController {
   }
 
   /**
-   * Register (or re-register) an endpoint to your account
+   * Register (or re-register) an endpoint to your account.
    *
-   * @param {import("../types").RegisterEndpointParams} registerEndpoint - The register endpoint object.
-   * @param {import("../types").RequestOptions} [options={}] - Optional request options.
+   * @param {import("../types").RegisterEndpointParams} params - The parameters for registering an endpoint (host, serial_num, edr_id, tags).
+   * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
    * @returns {Promise<string>} - A Promise that resolves into the ID of the registered endpoint
    */
-  async registerEndpoint(registerEndpoint, options = {}) {
+  async registerEndpoint(params, options = {}) {
+    const { host, serial_num, edr_id = "", tags } = params;
+
     const response = await this.#client.requestWithAuth("/detect/endpoint", {
       method: "POST",
       body: JSON.stringify({
-        id: `${registerEndpoint.host}:${registerEndpoint.serial_num}:${registerEndpoint.edr_id}`,
-        tags: registerEndpoint.tags,
+        id: `${host}:${serial_num}:${edr_id}`,
+        tags,
       }),
       ...options,
     });
@@ -40,30 +42,29 @@ export default class DetectController {
   /**
    * Update an endpoint in your account
    *
-   * @param {import("../types").UpdateEndpointParams} updateEndpoint
-   * @param {import("../types").RequestOptions} [options={}] - Optional request options.
+   * @param {import("../types").UpdateEndpointParams} params - The parameters for updating an endpoint (endpoint_id, host, edr_id, tags).
+   * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
    * @returns {Promise<void>}
    */
-  async updateEndpoint(updateEndpoint, options = {}) {
-    await this.#client.requestWithAuth(
-      `/detect/endpoint/${updateEndpoint.endpoint_id}`,
-      {
-        method: "POST",
-        body: JSON.stringify({
-          host: updateEndpoint.host,
-          edr_id: updateEndpoint.edr_id,
-          tags: updateEndpoint.tags,
-        }),
-        ...options,
-      }
-    );
+  async updateEndpoint(params, options = {}) {
+    const { endpoint_id, host, edr_id, tags } = params;
+
+    await this.#client.requestWithAuth(`/detect/endpoint/${endpoint_id}`, {
+      method: "POST",
+      body: JSON.stringify({
+        host,
+        edr_id,
+        tags,
+      }),
+      ...options,
+    });
   }
 
   /**
    * Delete an endpoint from your account
    *
    * @param {string} endpoint_id - The id of the endpoint to delete.
-   * @param {import("../types").RequestOptions} [options={}] - Optional request options.
+   * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
    * @returns {Promise<void>}
    */
   async deleteEndpoint(endpoint_id, options = {}) {
@@ -78,7 +79,7 @@ export default class DetectController {
    * List all endpoints on your account
    *
    * @param {number} [days=90]
-   * @param {import("../types").RequestOptions} [options={}] - Optional request options.
+   * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
    * @returns {Promise<import("../types").Probe[]>}
    */
   async listEndpoints(days = 90, options = {}) {
@@ -97,8 +98,8 @@ export default class DetectController {
   /**
    * List advisories
    *
-   * @param {number} [year]
-   * @param {import("../types").RequestOptions} [options={}] - Optional request options.
+   * @param {number} [year] - The year to filter advisories (optional).
+   * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
    * @returns {Promise<import("../types").Advisory[]>}
    */
   async listAdvisories(year, options = {}) {
@@ -121,8 +122,8 @@ export default class DetectController {
    *
    * @param {import("../types").ActivityQuery & {
    *   view: import("../types").ActivityView;
-   * }} query - The query object.
-   * @param {import("../types").RequestOptions} [options={}] - Optional request options.
+   * }} query - The filter query.
+   * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
    * @returns {Promise<[]>} - A Promise that resolves to the activity.
    */
   async describeActivity(query, options = {}) {
@@ -150,7 +151,7 @@ export default class DetectController {
   /**
    * List all tests available to an account.
    *
-   * @param {import("../types").RequestOptions} [options={}] - Optional request options.
+   * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
    * @returns {Promise<import("../types").Test[]>} - A promise that resolves to an array of Test objects.
    */
   async listTests(options = {}) {
@@ -166,7 +167,7 @@ export default class DetectController {
    * Get properties of an existing test.
    *
    * @param {string} testId - The ID of the test to retrieve properties for.
-   * @param {import("../types").RequestOptions} [options={}] - Optional request options.
+   * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
    * @returns {Promise<import("../types").TestData>} - A Promise that resolves to the test data.
    */
   async getTest(testId, options = {}) {
@@ -185,7 +186,7 @@ export default class DetectController {
    *
    * @param {string} testId - The ID of the test.
    * @param {string} filename - The name of the file or attachment to download.
-   * @param {import("../types").RequestOptions} [options={}] - Optional request options.
+   * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
    * @returns {Promise<string>}
    */
   async download(testId, filename, options = {}) {
@@ -205,14 +206,16 @@ export default class DetectController {
   /**
    * Enable a test so endpoints will start running it.
    *
-   * @param {import("../types").EnableTestParams} enableTest - The enable test object.
-   * @param {import("../types").RequestOptions} [options={}] - Optional request options.
+   * @param {import("../types").EnableTestParams} params - The parameters for enabling a test (test, runCode, tags).
+   * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
    * @returns {Promise<void>} - A Promise that resolves when the test is enabled.
    */
-  async enableTest(enableTest, options = {}) {
-    await this.#client.requestWithAuth(`/detect/queue/${enableTest.test}`, {
+  async enableTest(params, options = {}) {
+    const { test, runCode, tags } = params;
+
+    await this.#client.requestWithAuth(`/detect/queue/${test}`, {
       method: "POST",
-      body: JSON.stringify({ code: enableTest.runCode, tags: enableTest.tags }),
+      body: JSON.stringify({ code: runCode, tags }),
       ...options,
     });
   }
@@ -220,14 +223,16 @@ export default class DetectController {
   /**
    * Disable a test so endpoints will stop running it.
    *
-   * @param {import("../types").DisableTestParams} disableTest - The disable test object.
-   * @param {import("../types").RequestOptions} [options={}] - Optional request options.
+   * @param {import("../types").DisableTestParams} params - The parameters for disabling a test (tags, test).
+   * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
    * @returns {Promise<void>} - A Promise that resolves when the test is disabled.
    */
-  async disableTest(disableTest, options = {}) {
-    const params = new URLSearchParams({ tags: disableTest.tags });
+  async disableTest(params, options = {}) {
+    const { tags, test } = params;
+    const searchParams = new URLSearchParams({ tags });
+
     await this.#client.requestWithAuth(
-      `/detect/queue/${disableTest.test}?${params.toString()}`,
+      `/detect/queue/${test}?${searchParams.toString()}`,
       {
         method: "DELETE",
         ...options,
@@ -240,7 +245,7 @@ export default class DetectController {
    *
    * @param {string} test - The ID or name of the test to retrieve social statistics for.
    * @param {number} [days=30] - (Optional) The number of days for which to retrieve social statistics. Default is 30 days.
-   * @param {import("../types").RequestOptions} [options={}] - Optional request options.
+   * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
    * @returns {Promise<import("../types").Stats>} - A Promise that resolves to the social statistics for the test.
    */
   async socialStats(test, days = 30, options = {}) {

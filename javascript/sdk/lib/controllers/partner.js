@@ -1,3 +1,4 @@
+//@ts-check
 import Client from "../client";
 
 /**
@@ -18,11 +19,7 @@ export default class PartnerController {
   /**
    * Attaches a partner to an account.
    *
-   * @param {import("../types").AttachPartnerParams} params - The parameters for attaching a partner.
-   * @param {import("../types").ControlCode} params.partnerCode - The partner code, with options: INVALID (0), CROWDSTRIKE (1), DEFENDER (2), SPLUNK (3).
-   * @param {string} params.api - The API endpoint for the partner.
-   * @param {string} params.user - The user associated with the partner.
-   * @param {string} [params.secret=""] - The secret key (optional, default is an empty string).
+   * @param {import("../types").AttachPartnerParams} params - The parameters for attaching a partner (partnerCode, api, user, secret).
    * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
    * @returns {Promise<string>} A promise that resolves to the response text from the request.
    */
@@ -63,12 +60,7 @@ export default class PartnerController {
   /**
    * Get a list of endpoints from all partners.
    *
-   * @param {import("../types").EndpointsParams} params - The parameters for fetching endpoints.
-   * @param {import("../types").ControlCode} params.partnerCode - The partner code, with options: INVALID (0), CROWDSTRIKE (1), DEFENDER (2), SPLUNK (3).
-   * @param {string} params.platform - The platform.
-   * @param {string} [params.hostname=""] - The hostname (optional, default is empty string).
-   * @param {number} [params.offset=0] - The offset (optional, default is 0).
-   * @param {number} [params.count=100] - The count returned (optional, default is 100).
+   * @param {import("../types").EndpointsParams} params - The parameters for fetching endpoints (partnerCode, platform, hostname, offset, count).
    * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
    * @returns {Promise<import("../types").PartnerEndpoints>} A promise that resolves to the list of endpoints from partners.
    */
@@ -102,9 +94,7 @@ export default class PartnerController {
   /**
    * Deploy probes on all specified partner endpoints.
    *
-   * @param {import("../types").DeployParams} params - The parameters for deploying probes.
-   * @param {import("../types").ControlCode} params.partnerCode - The partner code, with options: INVALID (0), CROWDSTRIKE (1), DEFENDER (2), SPLUNK (3).
-   * @param {string[]} params.hostIds - An array of host IDs to deploy probes on.
+   * @param {import("../types").DeployParams} params - The parameters for deploying probes (partnerCode, hostIds).
    * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
    * @returns {Promise<void>} A promise that resolves when the deployment is complete.
    */

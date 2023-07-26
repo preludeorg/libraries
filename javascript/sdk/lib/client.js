@@ -112,7 +112,6 @@ export default class Client {
   /**
    * Ensures that the credentials are properly set and returns them.
    *
-   * @private
    * @returns {import("./types").Credentials} The validated credentials.
    * @throws {Error} If the account ID or token is not set.
    */
@@ -131,8 +130,6 @@ export default class Client {
   /**
    * Fetches the specified request.
    *
-   * @private
-   * @async
    * @param {Request} request - The request object to fetch.
    * @param {RequestInit} [options={}] - Optional request options.
    * @returns {Promise<Response>} A promise that resolves to the response.
@@ -176,7 +173,6 @@ export default class Client {
   /**
    * Sends an authenticated HTTP request to the specified path.
    *
-   * @async
    * @param {string} path - The path to send the request to.
    * @param {RequestInit} [options={}] - Optional request options.
    * @returns {Promise<Response>} A promise that resolves to the response.
