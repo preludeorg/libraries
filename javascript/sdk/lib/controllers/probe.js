@@ -22,7 +22,7 @@ export default class ProbeController {
    * @param {string} params.name - The name of the probe.
    * @param {import("../types").Platform} params.dos - The platform for the probe.
    * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
-   * @returns
+   * @returns {Promise<string>} A promise that resolves to the response text from the download request.
    */
   async download(params, options = {}) {
     const { name, dos } = params;
