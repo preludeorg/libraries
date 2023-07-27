@@ -435,8 +435,4 @@ export interface AuditLog {
   timestamp: string;
 }
 
-export interface AuditLogValues {
-  name: string;
-  unit: string;
-  id: string;
-}
+export type AuditLogValues = Record<string, unknown>;
