@@ -41,7 +41,7 @@ export default class DetectController {
       ...options,
     });
 
-    return response.text();
+    return response.json();
   }
 
   /** Update an endpoint in your account */
@@ -108,7 +108,7 @@ export default class DetectController {
         ...options,
       }
     );
-    return await response.json();
+    return (await response.json()) as Advisory[];
   }
 
   /** Get logs for an Account */
