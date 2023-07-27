@@ -1,5 +1,10 @@
 import Client from "../client";
-import type { RequestOptions, Test } from "../types";
+import type {
+  AttachedTest,
+  RequestOptions,
+  StatusResponse,
+  UploadedAttachment,
+} from "../types";
 
 export default class BuildController {
   #client: Client;
@@ -16,14 +21,14 @@ export default class BuildController {
     advisory?: string,
     testId?: string,
     options: RequestOptions = {}
-  ): Promise<Test> {
+  ): Promise<AttachedTest> {
     const response = await this.#client.requestWithAuth(`/build/tests`, {
       method: "POST",
       body: JSON.stringify({ name, unit, techniques, advisory, id: testId }),
       ...options,
     });
 
-    return await response.json();
+    return (await response.json()) as AttachedTest;
   }
 
   /** Update a test */
@@ -34,7 +39,7 @@ export default class BuildController {
     techniques?: string,
     advisory?: string,
     options: RequestOptions = {}
-  ): Promise<Test> {
+  ): Promise<AttachedTest> {
     const response = await this.#client.requestWithAuth(
       `/build/tests/${testId}`,
       {
@@ -44,18 +49,23 @@ export default class BuildController {
       }
     );
 
-    return await response.json();
+    return (await response.json()) as AttachedTest;
   }
 
   /** Delete an existing test */
   async deleteTest(
     testId: string,
     options: RequestOptions = {}
-  ): Promise<void> {
-    await this.#client.requestWithAuth(`/build/tests/${testId}`, {
-      method: "DELETE",
-      ...options,
-    });
+  ): Promise<StatusResponse> {
+    const response = await this.#client.requestWithAuth(
+      `/build/tests/${testId}`,
+      {
+        method: "DELETE",
+        ...options,
+      }
+    );
+
+    return (await response.json()) as StatusResponse;
   }
 
   /** Upload a test or attachment */
@@ -64,11 +74,16 @@ export default class BuildController {
     filename: string,
     data: BodyInit,
     options: RequestOptions = {}
-  ): Promise<void> {
-    await this.#client.requestWithAuth(`/build/tests/${testId}/${filename}`, {
-      method: "POST",
-      body: data,
-      ...options,
-    });
+  ): Promise<UploadedAttachment> {
+    const response = await this.#client.requestWithAuth(
+      `/build/tests/${testId}/${filename}`,
+      {
+        method: "POST",
+        body: data,
+        ...options,
+      }
+    );
+
+    return (await response.json()) as UploadedAttachment;
   }
 }

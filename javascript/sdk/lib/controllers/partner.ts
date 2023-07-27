@@ -1,11 +1,14 @@
 import Client from "../client";
 import {
   AttachPartnerParams,
+  AttachedPartner,
   ControlCode,
   DeployParams,
+  DeployedEndpoints,
   EndpointsParams,
   PartnerEndpoints,
   RequestOptions,
+  StatusResponse,
 } from "../types";
 
 export default class PartnerController {
@@ -18,7 +21,7 @@ export default class PartnerController {
   async attachPartner(
     { partnerCode, api, user, secret = "" }: AttachPartnerParams,
     options: RequestOptions = {}
-  ) {
+  ): Promise<AttachedPartner> {
     const response = await this.#client.requestWithAuth(
       `/partner/${partnerCode}`,
       {
@@ -28,10 +31,13 @@ export default class PartnerController {
       }
     );
 
-    return response.text();
+    return (await response.json()) as AttachedPartner;
   }
 
-  async detachPartner(partnerCode: ControlCode, options: RequestOptions = {}) {
+  async detachPartner(
+    partnerCode: ControlCode,
+    options: RequestOptions = {}
+  ): Promise<StatusResponse> {
     const response = await this.#client.requestWithAuth(
       `/partner/${partnerCode}`,
       {
@@ -40,7 +46,7 @@ export default class PartnerController {
       }
     );
 
-    return response.text();
+    return (await response.json()) as StatusResponse;
   }
 
   /** Get a list of endpoints from all partners */
@@ -76,11 +82,16 @@ export default class PartnerController {
   async deploy(
     { partnerCode, hostIds }: DeployParams,
     options: RequestOptions = {}
-  ): Promise<void> {
-    await this.#client.requestWithAuth(`/partner/deploy/${partnerCode}`, {
-      method: "POST",
-      body: JSON.stringify({ host_ids: hostIds }),
-      ...options,
-    });
+  ): Promise<DeployedEndpoints> {
+    const response = await this.#client.requestWithAuth(
+      `/partner/deploy/${partnerCode}`,
+      {
+        method: "POST",
+        body: JSON.stringify({ host_ids: hostIds }),
+        ...options,
+      }
+    );
+
+    return (await response.json()) as DeployedEndpoints;
   }
 }
