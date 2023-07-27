@@ -427,7 +427,7 @@ export type PartnerEndpoints = Record<
 >;
 
 export interface AuditLog {
-  name: string;
+  event: string;
   account_id: string;
   user_id: string;
   values: AuditLogValues;
