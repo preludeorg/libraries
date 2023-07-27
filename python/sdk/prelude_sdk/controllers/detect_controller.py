@@ -135,7 +135,7 @@ class DetectController:
             timeout=10
         )
         if res.status_code == 200:
-            return res.text
+            return res.content
         raise Exception(res.text)
 
     @verify_credentials
