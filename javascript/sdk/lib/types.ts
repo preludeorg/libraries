@@ -413,7 +413,7 @@ export interface DeployParams {
 }
 
 export interface DeployedEndpoints {
-  id: string;
+  id: ControlCode;
   host_ids: string[];
 }
 
@@ -431,7 +431,7 @@ export interface AuditLog {
   account_id: string;
   user_id: string;
   values: AuditLogValues;
-  status: ExitCode;
+  status: string;
   timestamp: string;
 }
 
