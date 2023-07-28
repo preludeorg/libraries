@@ -22,7 +22,7 @@ class DetectController:
             timeout=10
         )
         if res.status_code == 200:
-            return res.json()
+            return res.text
         raise Exception(res.text)
 
     @verify_credentials

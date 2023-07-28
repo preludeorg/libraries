@@ -41,7 +41,7 @@ export default class DetectController {
       ...options,
     });
 
-    return response.json();
+    return response.text();
   }
 
   /** Update an endpoint in your account */
