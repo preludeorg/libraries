@@ -5,8 +5,6 @@ class RunCode(Enum):
     INVALID = -1
     DEBUG = 0
     DAILY = 1
-    WEEKLY = 2
-    MONTHLY = 3
     MONDAY = 10
     TUESDAY = 11
     WEDNESDAY = 12
