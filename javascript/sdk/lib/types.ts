@@ -13,6 +13,10 @@ export interface Credentials {
 
 export type RequestOptions = Omit<RequestInit, "method" | "body">;
 
+export interface StatusResponse {
+  status: true;
+}
+
 export interface Test {
   account_id: string;
   id: string;
@@ -20,6 +24,15 @@ export interface Test {
   unit: string;
   techniques: string[];
   advisory: string;
+}
+
+export type AttachedTest = Test & {
+  attachments: string[];
+};
+
+export interface UploadedAttachment {
+  id: string;
+  filename: string;
 }
 
 export interface User {
@@ -36,10 +49,10 @@ export interface Control {
 export interface Account {
   account_id: string;
   whoami: string;
-  controls: Control[];
   users: User[];
-  mode: Mode;
   queue: Queue[];
+  controls: Control[];
+  mode: Mode;
   company: string;
 }
 
@@ -119,6 +132,10 @@ export interface EnableTest {
   tags?: string;
 }
 
+export interface EnabledTest {
+  id: string;
+}
+
 export interface DisableTest {
   test: string;
   tags: string;
@@ -126,11 +143,11 @@ export interface DisableTest {
 
 export interface Probe {
   endpoint_id: string;
-  edr_id: string | null;
   host: string;
-  last_beacon: string;
   serial_num: string;
+  edr_id: string | null;
   tags: string[];
+  last_beacon: string;
   created: string;
 }
 
@@ -232,11 +249,6 @@ export interface Activity {
   dos: Platform;
   tags: string[] | null;
   edr_id: string | null;
-}
-
-export interface TestData {
-  attachments: string[];
-  mappings: string[];
 }
 
 export interface TestUsage {
@@ -366,6 +378,10 @@ export interface UpdateEndpointParams {
   tags?: string;
 }
 
+export interface UpdatedEndpoint {
+  id: string;
+}
+
 export interface DownloadParams {
   name: string;
   dos: Platform;
@@ -376,6 +392,11 @@ export interface AttachPartnerParams {
   api: string;
   user: string;
   secret?: string;
+}
+
+export interface AttachedPartner {
+  api: string;
+  connected: boolean;
 }
 
 export interface EndpointsParams {
@@ -391,6 +412,11 @@ export interface DeployParams {
   hostIds: string[];
 }
 
+export interface DeployedEndpoints {
+  id: ControlCode;
+  host_ids: string[];
+}
+
 export type PartnerEndpoints = Record<
   string,
   {
@@ -399,3 +425,14 @@ export type PartnerEndpoints = Record<
     state: string;
   }
 >;
+
+export interface AuditLog {
+  event: string;
+  account_id: string;
+  user_id: string;
+  values: AuditLogValues;
+  status: string;
+  timestamp: string;
+}
+
+export type AuditLogValues = Record<string, unknown>;

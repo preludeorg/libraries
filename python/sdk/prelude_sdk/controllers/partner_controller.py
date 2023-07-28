@@ -31,7 +31,7 @@ class PartnerController:
             timeout=10
         )
         if res.status_code == 200:
-            return res.text
+            return res.json()
         raise Exception(res.text)
         
     @verify_credentials

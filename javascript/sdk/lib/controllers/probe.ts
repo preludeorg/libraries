@@ -8,8 +8,15 @@ export default class ProbeController {
     this.#client = client;
   }
 
-  /** Download a probe executable */
-  async download({ name, dos }: DownloadParams, options: RequestOptions = {}) {
+  /**
+   * Download a probe executable
+   *
+   * @returns {string} - A URL location to download the probe.
+   */
+  async download(
+    { name, dos }: DownloadParams,
+    options: RequestOptions = {}
+  ): Promise<string> {
     const response = await this.#client.request(`/download/${name}`, {
       method: "GET",
       ...options,

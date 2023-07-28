@@ -84,9 +84,10 @@ describe("SDK Test", () => {
       expect(account.users).toHaveLength(2);
     });
 
-    it("deleteUser should return a boolean true", async () => {
+    it("deleteUser should return a status true", async () => {
       const result = await service.iam.deleteUser("registration");
-      expect(result).to.be.true;
+      expect(result).toHaveProperty("status");
+      expect(result.status).toEqual(true);
       const account = await service.iam.getAccount();
       expect(account).toHaveProperty("users");
       expect(account.users).to.have.lengthOf(1);
@@ -124,14 +125,20 @@ describe("SDK Test", () => {
       expect(response.name).eq(testName);
     });
 
-    it("upload should have an attachment in the getTest call", async () => {
+    it("upload should return an id and filename", async () => {
+      let fileId: string;
       const file = readFileSync(`${__dirname}/templates/template.go`, "utf8");
       let data = file.toString();
       data = data.replace("$ID", testId);
       data = data.replace("$NAME", testName);
       data = data.replace("$UNIT", testUnit);
       data = data.replace("$CREATED", new Date().toISOString());
-      await service.build.upload(testId, templateName, data);
+      const response = await service.build.upload(testId, templateName, data);
+      expect(response).toHaveProperty("id");
+      expect(response.id.length).toEqual(36);
+      fileId = response.id;
+      expect(response.filename).toEqual(`${fileId}.go`);
+
       const test = await service.detect.getTest(testId);
       expect(test.attachments).toEqual(expect.arrayContaining([templateName]));
     });
@@ -141,8 +148,10 @@ describe("SDK Test", () => {
       expect(response.name).eq(updatedTestName);
     });
 
-    it("deleteTest should not throw an error", async () => {
-      await service.build.deleteTest(testId);
+    it("deleteTest should return a status true", async () => {
+      const result = await service.build.deleteTest(testId);
+      expect(result).toHaveProperty("status");
+      expect(result.status).toEqual(true);
     });
   });
 
@@ -301,13 +310,17 @@ describe("SDK Test", () => {
       );
     });
 
-    it("updateEndpoint should return an endpoint with updated tags", async () => {
-      await service.detect.updateEndpoint({
+    it("updateEndpoint should return the endpoint id and check if the endpoint is updated", async () => {
+      const result = await service.detect.updateEndpoint({
         endpoint_id: endpointId,
         tags: updatedTags,
       });
-      const result = await service.detect.listEndpoints();
-      expect(result[0].tags[0]).eq(updatedTags);
+      expect(result.id.length).toEqual(36);
+      const endpoints = await service.detect.listEndpoints();
+      const endpoint = endpoints.find(
+        (endpoint) => endpoint.endpoint_id === result.id
+      );
+      expect(endpoint?.tags[0]).eq(updatedTags);
     });
 
     it("socialStats should return an object with a non-empty array of values", async function () {
@@ -325,9 +338,10 @@ describe("SDK Test", () => {
     });
 
     it("deleteEndpoint should remove the endpoint from the list", async function () {
-      await service.detect.deleteEndpoint(endpointId);
-      const result = await service.detect.listEndpoints();
-      expect(result).to.have.lengthOf(0);
+      const result = await service.detect.deleteEndpoint(endpointId);
+      expect(result.status).toEqual(true);
+      const endpoints = await service.detect.listEndpoints();
+      expect(endpoints).to.have.lengthOf(0);
     });
   });
 });
