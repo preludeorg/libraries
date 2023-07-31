@@ -175,12 +175,6 @@ export interface SearchResults {
   tests: string[];
 }
 
-export type RunCode = (typeof RunCodes)[keyof typeof RunCodes];
-
-export type Permission = (typeof Permissions)[keyof typeof Permissions];
-
-export type Mode = (typeof Modes)[keyof typeof Modes];
-
 export type ExitCodeName = keyof typeof ExitCodes;
 export type ExitCode = (typeof ExitCodes)[ExitCodeName];
 
