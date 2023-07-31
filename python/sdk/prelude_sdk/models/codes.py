@@ -1,12 +1,10 @@
-from enum import Enum 
+from enum import Enum
 
 
 class RunCode(Enum):
     INVALID = -1
     DEBUG = 0
     DAILY = 1
-    WEEKLY = 2
-    MONTHLY = 3
     MONDAY = 10
     TUESDAY = 11
     WEDNESDAY = 12
@@ -29,7 +27,7 @@ class Mode(Enum):
     @classmethod
     def _missing_(cls, value):
         return Mode.MANUAL
- 
+
 
 class Permission(Enum):
     INVALID = -1
@@ -69,12 +67,6 @@ class ExitCode(Enum):
         if value and not isinstance(value, int):
             return cls(int(value))
         return ExitCode.MISSING
-    
-    @classmethod
-    def transform(self, test):
-        if test.unit == 'health' and self != ExitCode.CHECK_COMPLETED:
-            return ExitCode.INCORRECTLY_BLOCKED
-        return self
 
     @property
     def state(self):
@@ -82,6 +74,11 @@ class ExitCode(Enum):
             if self in v:
                 return k
         return State.NONE
+
+    def transform(self, test):
+        if test.unit == 'health' and self != ExitCode.CHECK_COMPLETED:
+            return ExitCode.INCORRECTLY_BLOCKED
+        return self
 
 
 class State(Enum):

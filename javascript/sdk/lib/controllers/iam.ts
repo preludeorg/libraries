@@ -1,12 +1,14 @@
 import Client from "../client";
 import type {
   Account,
+  AuditLog,
   CreateAccountParams,
   CreateUserParams,
   CreatedUser,
   Credentials,
   Mode,
   RequestOptions,
+  StatusResponse,
 } from "../types";
 
 export default class IAMController {
@@ -38,13 +40,13 @@ export default class IAMController {
   }
 
   /** Delete an account and all things in it */
-  async purgeAccount(options: RequestOptions = {}) {
+  async purgeAccount(options: RequestOptions = {}): Promise<StatusResponse> {
     const response = await this.#client.requestWithAuth("/iam/account", {
       method: "DELETE",
       ...options,
     });
 
-    return response.text();
+    return (await response.json()) as StatusResponse;
   }
 
   /** Update properties on an account */
@@ -52,7 +54,7 @@ export default class IAMController {
     mode?: Mode,
     company?: string,
     options: RequestOptions = {}
-  ) {
+  ): Promise<Account> {
     const response = await this.#client.requestWithAuth("/iam/account", {
       method: "PUT",
       body: JSON.stringify({ mode, company }),
@@ -76,7 +78,7 @@ export default class IAMController {
   async createUser(
     { permission, email, name, expires }: CreateUserParams,
     options: RequestOptions = {}
-  ) {
+  ): Promise<CreatedUser> {
     const response = await this.#client.requestWithAuth("/iam/user", {
       method: "POST",
       body: JSON.stringify({ permission, handle: email, name, expires }),
@@ -87,14 +89,17 @@ export default class IAMController {
   }
 
   /** Delete a user from an account */
-  async deleteUser(handle: string, options: RequestOptions = {}) {
-    await this.#client.requestWithAuth("/iam/user", {
+  async deleteUser(
+    handle: string,
+    options: RequestOptions = {}
+  ): Promise<StatusResponse> {
+    const response = await this.#client.requestWithAuth("/iam/user", {
       method: "DELETE",
       body: JSON.stringify({ handle }),
       ...options,
     });
 
-    return true;
+    return (await response.json()) as StatusResponse;
   }
 
   /** Get audit logs from the last X days */
@@ -102,7 +107,7 @@ export default class IAMController {
     days: number = 7,
     limit: number = 1000,
     options: RequestOptions = {}
-  ) {
+  ): Promise<AuditLog[]> {
     const searchParams = new URLSearchParams({
       days: days.toString(),
       limit: limit.toString(),
@@ -115,6 +120,6 @@ export default class IAMController {
       }
     );
 
-    return await response.json();
+    return (await response.json()) as AuditLog[];
   }
 }

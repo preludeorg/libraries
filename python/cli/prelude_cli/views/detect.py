@@ -45,7 +45,7 @@ def register_endpoint(controller, host, serial_num, edr_id, tags):
 @click.pass_obj
 @handle_api_error
 def update_endpoint(controller, endpoint_id, host, edr_id, tags):
-    """ Register a new endpoint """
+    """ Update an existing endpoint """
     with Spinner(description='Updating endpoint'):
         data = controller.update_endpoint(
             endpoint_id=endpoint_id,
