@@ -43,7 +43,7 @@ export default class IAMController {
    * Delete an account and all things in it
    *
    * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
-   * @returns {Promise<string>} A promise that resolves to the response text from the request.
+   * @returns {Promise<import("../types").StatusResponse>} - A Promise that resolves into a {status: True}.
    */
   async purgeAccount(options = {}) {
     const response = await this.#client.requestWithAuth("/iam/account", {
@@ -51,7 +51,7 @@ export default class IAMController {
       ...options,
     });
 
-    return response.text();
+    return await response.json();
   }
 
   /**
@@ -116,16 +116,16 @@ export default class IAMController {
    *
    * @param {string} handle - The handle of the user to delete.
    * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
-   * @returns {Promise<boolean>} - A Promise that resolves to true if the user is successfully deleted.
+   * @returns {Promise<import("../types").StatusResponse>} - A Promise that resolves into a {status: True}.
    */
   async deleteUser(handle, options = {}) {
-    await this.#client.requestWithAuth("/iam/user", {
+    const response = await this.#client.requestWithAuth("/iam/user", {
       method: "DELETE",
       body: JSON.stringify({ handle }),
       ...options,
     });
 
-    return true;
+    return await response.json();
   }
 
   /**
@@ -134,7 +134,7 @@ export default class IAMController {
    * @param {number} [days=7] - The number of days for which to retrieve audit logs. Default is 7 days.
    * @param {number} [limit=1000] - The maximum number of audit logs to retrieve. Default is 1000 logs.
    * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
-   * @returns {Promise<Object>} - A Promise that resolves to the retrieved audit logs as an object.
+   * @returns {Promise<import("../types").AuditLog[]>} - A Promise that resolves to a list of audit logs.
    */
   async auditLogs(days = 7, limit = 1000, options = {}) {
     const searchParams = new URLSearchParams({

@@ -21,7 +21,7 @@ export default class PartnerController {
    *
    * @param {import("../types").AttachPartnerParams} params - The parameters for attaching a partner (partnerCode, api, user, secret).
    * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
-   * @returns {Promise<string>} A promise that resolves to the response text from the request.
+   * @returns {Promise<import("../types").AttachedPartner>} A promise that resolves to the attached partner.
    */
   async attachPartner(params, options = {}) {
     const { partnerCode, api, user, secret = "" } = params;
@@ -35,7 +35,7 @@ export default class PartnerController {
       }
     );
 
-    return response.text();
+    return await response.json();
   }
 
   /**
@@ -43,7 +43,7 @@ export default class PartnerController {
    *
    * @param {import("../types").ControlCode} partnerCode - The partner code, with options: INVALID (0), CROWDSTRIKE (1), DEFENDER (2), SPLUNK (3).
    * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
-   * @returns {Promise<string>} A Promise that resolves to the response text.
+   * @returns {Promise<import("../types").StatusResponse>} - A Promise that resolves into a {status: True}.
    */
   async detachPartner(partnerCode, options = {}) {
     const response = await this.#client.requestWithAuth(
@@ -54,7 +54,7 @@ export default class PartnerController {
       }
     );
 
-    return response.text();
+    return await response.json();
   }
 
   /**
@@ -88,7 +88,7 @@ export default class PartnerController {
       }
     );
 
-    return response.json();
+    return await response.json();
   }
 
   /**
@@ -96,15 +96,20 @@ export default class PartnerController {
    *
    * @param {import("../types").DeployParams} params - The parameters for deploying probes (partnerCode, hostIds).
    * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
-   * @returns {Promise<void>} A promise that resolves when the deployment is complete.
+   * @returns {Promise<import("../types").DeployedEndpoints>} A promise that resolves to a list of deployed endpoints.
    */
   async deploy(params, options = {}) {
     const { partnerCode, hostIds } = params;
 
-    await this.#client.requestWithAuth(`/partner/deploy/${partnerCode}`, {
-      method: "POST",
-      body: JSON.stringify({ host_ids: hostIds }),
-      ...options,
-    });
+    const response = await this.#client.requestWithAuth(
+      `/partner/deploy/${partnerCode}`,
+      {
+        method: "POST",
+        body: JSON.stringify({ host_ids: hostIds }),
+        ...options,
+      }
+    );
+
+    return await response.json();
   }
 }

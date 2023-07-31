@@ -21,7 +21,7 @@ export default class ProbeController {
    *
    * @param {import("../types").DownloadParams} params - The parameters for downloading the probe executable (name, dos).
    * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
-   * @returns {Promise<string>} A promise that resolves to the response text from the download request.
+   * @returns {Promise<string>} - A promise that resolves to a URL location to download the probe.
    */
   async download(params, options = {}) {
     const { name, dos } = params;

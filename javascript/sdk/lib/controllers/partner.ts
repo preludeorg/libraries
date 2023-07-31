@@ -75,7 +75,7 @@ export default class PartnerController {
       }
     );
 
-    return response.json();
+    return await response.json();
   }
 
   /** Deploy probes on all specified partner endpoints */
