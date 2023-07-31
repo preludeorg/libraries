@@ -2,8 +2,6 @@ export const RunCodes = {
   INVALID: -1,
   DEBUG: 0,
   DAILY: 1,
-  WEEKLY: 2,
-  MONTHLY: 3,
   MONDAY: 10,
   TUESDAY: 11,
   WEDNESDAY: 12,
@@ -14,18 +12,18 @@ export const RunCodes = {
   FIRST_OF_MONTH: 20,
 };
 
+export const Modes = {
+  MANUAL: 0,
+  FROZEN: 1,
+  AUTOPILOT: 2,
+};
+
 export const Permissions = {
   INVALID: -1,
   ADMIN: 0,
   EXECUTIVE: 1,
   BUILD: 2,
   SERVICE: 3,
-};
-
-export const Modes = {
-  MANUAL: 0,
-  FROZEN: 1,
-  AUTOPILOT: 2,
 };
 
 export const ExitCodes = {

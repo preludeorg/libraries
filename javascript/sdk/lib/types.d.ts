@@ -98,37 +98,9 @@ export interface Queue {
   started: string;
 }
 
-export const RunCodes = {
-  INVALID: -1,
-  DEBUG: 0,
-  DAILY: 1,
-  MONDAY: 10,
-  TUESDAY: 11,
-  WEDNESDAY: 12,
-  THURSDAY: 13,
-  FRIDAY: 14,
-  SATURDAY: 15,
-  SUNDAY: 16,
-  FIRST_OF_MONTH: 20,
-} as const;
-
 export type RunCode = (typeof RunCodes)[keyof typeof RunCodes];
 
-export const Permissions = {
-  INVALID: -1,
-  ADMIN: 0,
-  EXECUTIVE: 1,
-  BUILD: 2,
-  SERVICE: 3,
-} as const;
-
 export type Permission = (typeof Permissions)[keyof typeof Permissions];
-
-export const Modes = {
-  MANUAL: 0,
-  FROZEN: 1,
-  AUTOPILOT: 2,
-} as const;
 
 export type Mode = (typeof Modes)[keyof typeof Modes];
 
