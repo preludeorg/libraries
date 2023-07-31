@@ -4,10 +4,13 @@ import { readFileSync, unlinkSync, writeFileSync } from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { RunCodes, Service } from "../lib/main";
-import { spawn } from "child_process";
+import { RunCode, Service } from "../lib/index";
+import { exec } from "node:child_process";
+import util from "node:util";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+const execute = util.promisify(exec);
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -115,13 +118,11 @@ describe("SDK Test", () => {
     });
 
     it("createTest should return created test", async () => {
-      const response = await service.build.createTest(
-        testName,
-        testUnit,
-        undefined,
-        undefined,
-        testId
-      );
+      const response = await service.build.createTest({
+        name: testName,
+        unit: testUnit,
+        testId,
+      });
       expect(response.name).eq(testName);
     });
 
@@ -144,7 +145,10 @@ describe("SDK Test", () => {
     });
 
     it("updateTest should return updated test", async () => {
-      const response = await service.build.updateTest(testId, updatedTestName);
+      const response = await service.build.updateTest({
+        testId,
+        name: updatedTestName,
+      });
       expect(response.name).eq(updatedTestName);
     });
 
@@ -196,13 +200,11 @@ describe("SDK Test", () => {
     });
 
     it("getTest should return a test object", async () => {
-      await service.build.createTest(
-        testName,
-        testUnit,
-        undefined,
-        undefined,
-        testId
-      );
+      await service.build.createTest({
+        name: testName,
+        unit: testUnit,
+        testId,
+      });
       const test = await service.detect.getTest(testId);
       expect(test).toHaveProperty("attachments");
       expect(test).toHaveProperty("unit");
@@ -230,7 +232,7 @@ describe("SDK Test", () => {
     it("enableTest should add a new test to the queue", async function () {
       await service.detect.enableTest({
         test: activeTest,
-        runCode: RunCodes.DEBUG,
+        runCode: RunCode.DEBUG,
         tags: tags,
       });
 
@@ -241,7 +243,7 @@ describe("SDK Test", () => {
         expect.arrayContaining([
           expect.objectContaining({
             test: activeTest,
-            run_code: RunCodes.DEBUG,
+            run_code: RunCode.DEBUG,
           }),
         ])
       );
@@ -274,23 +276,26 @@ describe("SDK Test", () => {
         const service = new Service({
           host,
         });
-        const result = await service.probe.download({
+        const script = await service.probe.download({
           name: probeName,
           dos: "linux-arm64",
         });
-        expect(result).to.be.a("string");
-        writeFileSync(`${probeName}.sh`, result, { mode: 0o755 });
+        expect(script).to.be.a("string");
+        writeFileSync(
+          `${probeName}.sh`,
+          script.replace("sleep $PRELUDE_SLEEP", "exit 0"),
+          { mode: 0o755 }
+        );
       });
 
       it(
         "spawns the probe",
         async () => {
-          spawn(`./${probeName}.sh`, {
+          await execute(`${probeName}.sh`, {
             env: {
               PRELUDE_TOKEN: endpointToken,
             },
           });
-          await sleep(10_000);
         },
         { timeout: 20_000 }
       );
@@ -298,7 +303,6 @@ describe("SDK Test", () => {
       it(
         "describeActivity should return logs for 2 tests",
         async function () {
-          await sleep(3000);
           const result = await service.detect.describeActivity({
             start,
             finish,
@@ -306,7 +310,7 @@ describe("SDK Test", () => {
           });
           expect(result).toHaveLength(2);
         },
-        { retry: 5 }
+        { retry: 3 }
       );
     });
 

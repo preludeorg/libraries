@@ -36,7 +36,12 @@ export default class IAMController {
       ...options,
     });
 
-    return await response.json();
+    const json = await response.json();
+
+    return {
+      account: json.account_id,
+      token: json.token,
+    };
   }
 
   /**
