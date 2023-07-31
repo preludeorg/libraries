@@ -98,12 +98,6 @@ export interface Queue {
   started: string;
 }
 
-export type RunCode = (typeof RunCodes)[keyof typeof RunCodes];
-
-export type Permission = (typeof Permissions)[keyof typeof Permissions];
-
-export type Mode = (typeof Modes)[keyof typeof Modes];
-
 export interface ComputeResult {
   name: string;
   steps: {
@@ -146,15 +140,6 @@ export interface SearchResults {
   };
   tests: string[];
 }
-
-export type ExitCodeName = keyof typeof ExitCodes;
-export type ExitCode = (typeof ExitCodes)[ExitCodeName];
-
-export type ActionCodeName = keyof typeof ActionCodes;
-export type ActionCode = (typeof ActionCodes)[ActionCodeName];
-
-export type ControlCodeName = keyof typeof ControlCodes;
-export type ControlCode = (typeof ControlCodes)[ControlCodeName];
 
 export type Platform =
   | "darwin-arm64"

@@ -1,4 +1,5 @@
-export const RunCodes = {
+//@ts-check
+export const RunCode = /** @type {const}*/ ({
   INVALID: -1,
   DEBUG: 0,
   DAILY: 1,
@@ -10,23 +11,23 @@ export const RunCodes = {
   SATURDAY: 15,
   SUNDAY: 16,
   FIRST_OF_MONTH: 20,
-};
+});
 
-export const Modes = {
+export const Mode = /** @type {const}*/ ({
   MANUAL: 0,
   FROZEN: 1,
   AUTOPILOT: 2,
-};
+});
 
-export const Permissions = {
+export const Permission = /** @type {const}*/ ({
   INVALID: -1,
   ADMIN: 0,
   EXECUTIVE: 1,
   BUILD: 2,
   SERVICE: 3,
-};
+});
 
-export const ExitCodes = {
+export const ExitCode = /** @type {const}*/ ({
   MISSING: -1,
   UNKNOWN_ERROR: 1,
   MALFORMED_TEST: 2,
@@ -46,46 +47,38 @@ export const ExitCodes = {
   SIGNATURE_PREVENTED_2: 127,
   OUT_OF_MEMORY: 137,
   UNEXPECTED_ERROR: 256,
-};
+});
 
-export const ExitCodeGroup = {
-  NONE: [ExitCodes.MISSING],
+export const ExitCodeGroup = /** @type {const}*/ ({
+  NONE: [ExitCode.MISSING],
   PROTECTED: [
-    ExitCodes.BEHAVIOR_PREVENTED_1,
-    ExitCodes.BEHAVIOR_PREVENTED_2,
-    ExitCodes.CHECK_COMPLETED,
-    ExitCodes.NOT_RELEVANT,
-    ExitCodes.SIGNATURE_PREVENTED_1,
-    ExitCodes.BLOCKED_AT_PERIMETER,
-    ExitCodes.BEHAVIOR_PREVENTED_3,
-    ExitCodes.TEST_UNAVAILABLE,
-    ExitCodes.BEHAVIOR_PREVENTED_4,
-    ExitCodes.SIGNATURE_PREVENTED_2,
+    ExitCode.BEHAVIOR_PREVENTED_1,
+    ExitCode.BEHAVIOR_PREVENTED_2,
+    ExitCode.CHECK_COMPLETED,
+    ExitCode.NOT_RELEVANT,
+    ExitCode.SIGNATURE_PREVENTED_1,
+    ExitCode.BLOCKED_AT_PERIMETER,
+    ExitCode.BEHAVIOR_PREVENTED_3,
+    ExitCode.TEST_UNAVAILABLE,
+    ExitCode.BEHAVIOR_PREVENTED_4,
+    ExitCode.SIGNATURE_PREVENTED_2,
   ],
-  UNPROTECTED: [ExitCodes.NOT_PREVENTED],
+  UNPROTECTED: [ExitCode.NOT_PREVENTED],
   ERROR: [
-    ExitCodes.UNKNOWN_ERROR,
-    ExitCodes.MALFORMED_TEST,
-    ExitCodes.TIMED_OUT,
-    ExitCodes.FAILED_CLEANUP,
-    ExitCodes.INCORRECTLY_BLOCKED,
-    ExitCodes.OUT_OF_MEMORY,
-    ExitCodes.UNEXPECTED_ERROR,
+    ExitCode.UNKNOWN_ERROR,
+    ExitCode.MALFORMED_TEST,
+    ExitCode.TIMED_OUT,
+    ExitCode.FAILED_CLEANUP,
+    ExitCode.INCORRECTLY_BLOCKED,
+    ExitCode.OUT_OF_MEMORY,
+    ExitCode.UNEXPECTED_ERROR,
   ],
-  NOT_RELEVANT: [ExitCodes.NOT_RELEVANT, ExitCodes.TEST_UNAVAILABLE],
-};
+  NOT_RELEVANT: [ExitCode.NOT_RELEVANT, ExitCode.TEST_UNAVAILABLE],
+});
 
-export const ExitCodeNames = Object.keys(ExitCodes);
-
-export const ActionCodes = {
-  NONE: 0,
-  IGNORE: 1,
-  IMPORTANT: 2,
-};
-
-export const ControlCodes = {
+export const Control = /** @type {const}*/ ({
   INVALID: 0,
   CROWDSTRIKE: 1,
   DEFENDER: 2,
   SPLUNK: 3,
-};
+});
