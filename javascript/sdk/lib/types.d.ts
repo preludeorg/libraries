@@ -152,7 +152,7 @@ export interface EnabledTest {
   id: string;
 }
 
-export interface DisableTest {
+export interface DisableTestParams {
   test: string;
   tags: string;
 }
