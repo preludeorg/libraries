@@ -149,3 +149,7 @@ class Control(Enum):
     @classmethod
     def _missing_(cls, value):
         return Control.INVALID
+
+    @property
+    def is_siem(self):
+        return self == Control.SPLUNK
