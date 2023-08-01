@@ -1,3 +1,5 @@
+import logging
+
 from enum import Enum
 
 
@@ -141,14 +143,15 @@ class DOS(Enum):
 
 
 class Control(Enum):
-    INVALID = 0
+    OPERATING_SYSTEM = 0
     CROWDSTRIKE = 1
     DEFENDER = 2
     SPLUNK = 3
 
     @classmethod
     def _missing_(cls, value):
-        return Control.INVALID
+        logging.error('Unknown control requested: %s', value)
+        return Control.OPERATING_SYSTEM
 
     @property
     def is_siem(self):
