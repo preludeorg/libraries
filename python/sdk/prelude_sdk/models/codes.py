@@ -143,7 +143,7 @@ class DOS(Enum):
 
 
 class Control(Enum):
-    OPERATING_SYSTEM = 0
+    INVALID = 0
     CROWDSTRIKE = 1
     DEFENDER = 2
     SPLUNK = 3
@@ -151,7 +151,7 @@ class Control(Enum):
     @classmethod
     def _missing_(cls, value):
         logging.error('Unknown control requested: %s', value)
-        return Control.OPERATING_SYSTEM
+        return Control.INVALID
 
     @property
     def is_siem(self):
