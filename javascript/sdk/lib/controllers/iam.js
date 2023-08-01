@@ -62,7 +62,7 @@ export default class IAMController {
   /**
    * Update properties on an account.
    *
-   * @param {import("../const").Mode} [mode] - The Mode for the account (optional).
+   * @param {import("../codes").Mode} [mode] - The Mode for the account (optional).
    * @param {string} [company] - The company name for the account (optional).
    * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
    * @returns {Promise<import("../types").Account>} A promise that resolves to the updated account.

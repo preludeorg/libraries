@@ -41,7 +41,7 @@ export default class PartnerController {
   /**
    * Detaches a partner from an account
    *
-   * @param {import("../types").ControlCode} partnerCode - The partner code, with options: INVALID (0), CROWDSTRIKE (1), DEFENDER (2), SPLUNK (3).
+   * @param {import("../codes").Control} partnerCode - The partner code, with options: INVALID (0), CROWDSTRIKE (1), DEFENDER (2), SPLUNK (3).
    * @param {import("../types").RequestOptions} [options={}] - Additional request options (optional).
    * @returns {Promise<import("../types").StatusResponse>} - A Promise that resolves into a {status: True}.
    */
