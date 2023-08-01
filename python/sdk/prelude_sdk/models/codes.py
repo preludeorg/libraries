@@ -103,6 +103,8 @@ class State(Enum):
                 ExitCode.EXPLOIT_PREVENTED,
                 ExitCode.TEST_DISALLOWED,
                 ExitCode.STATIC_QUARANTINE,
+                ExitCode.TEST_NOT_RELEVANT,
+                ExitCode.ENDPOINT_NOT_RELEVANT
             ],
             State.UNPROTECTED: [
                 ExitCode.NOT_PREVENTED,
