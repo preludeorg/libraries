@@ -78,8 +78,8 @@ class ExitCode(Enum):
         return State.NONE
 
     def transform(self, test):
-        if test.unit == 'health' and self != ExitCode.CHECK_COMPLETED:
-            return ExitCode.INCORRECTLY_BLOCKED
+        if test.unit == 'health' and self != ExitCode.PROTECTED:
+            return ExitCode.FALSE_POSITIVE
         return self
 
 
@@ -107,8 +107,8 @@ class State(Enum):
                 ExitCode.ENDPOINT_NOT_RELEVANT
             ],
             State.UNPROTECTED: [
-                ExitCode.NOT_PREVENTED,
-                ExitCode.INCORRECTLY_BLOCKED,
+                ExitCode.UNPROTECTED,
+                ExitCode.FALSE_POSITIVE,
             ],
             State.ERROR: [
                 ExitCode.UNKNOWN_ERROR,
