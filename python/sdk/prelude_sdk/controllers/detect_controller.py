@@ -9,9 +9,9 @@ class DetectController:
         self.account = account
 
     @verify_credentials
-    def register_endpoint(self, host, serial_num, edr_id='', tags=None):
+    def register_endpoint(self, host, serial_num, edr_id='', partner_code=0, tags=None):
         """ Register (or re-register) an endpoint to your account """
-        body = dict(id=f'{host}:{serial_num}:{edr_id}')
+        body = dict(id=f'{host}:{serial_num}:{edr_id}:{partner_code}')
         if tags:
             body['tags'] = tags
 
@@ -26,13 +26,15 @@ class DetectController:
         raise Exception(res.text)
 
     @verify_credentials
-    def update_endpoint(self, endpoint_id, host=None, edr_id=None, tags=None):
+    def update_endpoint(self, endpoint_id, host=None, edr_id='', partner_code=0, tags=None):
         """ Update an endpoint in your account """
         body = dict()
         if host:
             body['host'] = host
-        if edr_id is not None:
+        if edr_id != '':
             body['edr_id'] = edr_id
+        if partner_code != 0:
+            body['control'] = partner_code
         if tags is not None:
             body['tags'] = tags
 

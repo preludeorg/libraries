@@ -5,7 +5,7 @@ from rich import print_json
 from pathlib import Path, PurePath
 from datetime import datetime, timedelta
 
-from prelude_sdk.models.codes import RunCode
+from prelude_sdk.models.codes import Control, RunCode
 from prelude_cli.views.shared import handle_api_error, Spinner
 from prelude_sdk.controllers.iam_controller import IAMController
 from prelude_sdk.controllers.detect_controller import DetectController
@@ -22,16 +22,19 @@ def detect(ctx):
 @click.option('-h', '--host', help='hostname of this machine', type=str, required=True)
 @click.option('-s', '--serial_num', help='serial number of this machine', type=str, required=True)
 @click.option('-e', '--edr_id', help='EDR id', type=str, default='')
+@click.option('-p', '--partner', help='EDR partner',
+              type=click.Choice([c.name for c in Control], case_sensitive=False), default=Control.INVALID.name, show_default=False)
 @click.option('-t', '--tags', help='a comma-separated list of tags for this endpoint', type=str, default=None)
 @click.pass_obj
 @handle_api_error
-def register_endpoint(controller, host, serial_num, edr_id, tags):
+def register_endpoint(controller, host, serial_num, edr_id, partner, tags):
     """ Register a new endpoint """
     with Spinner(description='Registering endpoint'):
         token = controller.register_endpoint(
-            host=host, 
-            serial_num=serial_num, 
-            edr_id=edr_id, 
+            host=host,
+            serial_num=serial_num,
+            edr_id=edr_id,
+            partner_code=Control[partner.upper()].value,
             tags=tags
         )
     click.secho(token)
@@ -41,16 +44,19 @@ def register_endpoint(controller, host, serial_num, edr_id, tags):
 @click.argument('endpoint_id')
 @click.option('-h', '--host', help='hostname of this machine', type=str, default=None)
 @click.option('-e', '--edr_id', help='EDR id', type=str, default=None)
+@click.option('-p', '--partner', help='EDR partner',
+              type=click.Choice([c.name for c in Control] + ['None'], case_sensitive=False), default=Control.INVALID.name, show_default=False)
 @click.option('-t', '--tags', help='a comma-separated list of tags for this endpoint', type=str, default=None)
 @click.pass_obj
 @handle_api_error
-def update_endpoint(controller, endpoint_id, host, edr_id, tags):
+def update_endpoint(controller, endpoint_id, host, edr_id, partner, tags):
     """ Update an existing endpoint """
     with Spinner(description='Updating endpoint'):
         data = controller.update_endpoint(
             endpoint_id=endpoint_id,
             host=host,
             edr_id=edr_id,
+            partner_code=None if partner.upper() == 'NONE' else Control[partner.upper()].value,
             tags=tags
         )
     print_json(data=data)
