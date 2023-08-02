@@ -66,7 +66,7 @@ export default class DetectController {
         body: JSON.stringify({
           host,
           edr_id,
-          control: control !== undefined && control,
+          control,
           tags,
         }),
         ...options,
