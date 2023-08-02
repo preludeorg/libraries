@@ -158,7 +158,6 @@ describe("SDK Test", () => {
   describe("Detect Controller", () => {
     const hostName = "test_host";
     const serial = "test_serial";
-    const edrId = "test_edr_id";
     const tags = "test_tag";
     const updatedTags = "updated_test_tag";
     const healthCheck = "39de298a-911d-4a3b-aed4-1e8281010a9a";
@@ -251,8 +250,6 @@ describe("SDK Test", () => {
       const result = await service.detect.registerEndpoint({
         host: hostName,
         serial_num: serial,
-        edr_id: edrId,
-        tags,
       });
       expect(result).toHaveLength(32);
       endpointToken = result;

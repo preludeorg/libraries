@@ -5,6 +5,7 @@ import {
   Advisory,
   AdvisoryInfo,
   AttachedTest,
+  ControlCodes,
   DayResult,
   DisableTest,
   EnableTest,
@@ -32,12 +33,21 @@ export default class DetectController {
 
   /** Register (or re-register) an endpoint to your account */
   async registerEndpoint(
-    { host, serial_num, edr_id = "", tags }: RegisterEndpointParams,
+    {
+      host,
+      serial_num,
+      edr_id = "",
+      control = ControlCodes.INVALID,
+      tags,
+    }: RegisterEndpointParams,
     options: RequestOptions = {}
   ): Promise<string> {
     const response = await this.#client.requestWithAuth("/detect/endpoint", {
       method: "POST",
-      body: JSON.stringify({ id: `${host}:${serial_num}:${edr_id}`, tags }),
+      body: JSON.stringify({
+        id: `${host}:${serial_num}:${edr_id}:${control}`,
+        tags,
+      }),
       ...options,
     });
 
@@ -46,14 +56,19 @@ export default class DetectController {
 
   /** Update an endpoint in your account */
   async updateEndpoint(
-    { endpoint_id, host, edr_id, tags }: UpdateEndpointParams,
+    { endpoint_id, host, edr_id, control, tags }: UpdateEndpointParams,
     options: RequestOptions = {}
   ): Promise<UpdatedEndpoint> {
     const response = await this.#client.requestWithAuth(
       `/detect/endpoint/${endpoint_id}`,
       {
         method: "POST",
-        body: JSON.stringify({ host, edr_id, tags }),
+        body: JSON.stringify({
+          host,
+          edr_id,
+          control: control !== undefined && control,
+          tags,
+        }),
         ...options,
       }
     );
