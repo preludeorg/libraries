@@ -250,6 +250,7 @@ describe("SDK Test", () => {
       const result = await service.detect.registerEndpoint({
         host: hostName,
         serial_num: serial,
+        tags: tags,
       });
       expect(result).toHaveLength(32);
       endpointToken = result;
