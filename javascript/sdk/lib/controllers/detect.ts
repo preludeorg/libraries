@@ -56,7 +56,13 @@ export default class DetectController {
 
   /** Update an endpoint in your account */
   async updateEndpoint(
-    { endpoint_id, host, edr_id, control, tags }: UpdateEndpointParams,
+    {
+      endpoint_id,
+      host,
+      edr_id,
+      control = ControlCodes.INVALID,
+      tags,
+    }: UpdateEndpointParams,
     options: RequestOptions = {}
   ): Promise<UpdatedEndpoint> {
     const response = await this.#client.requestWithAuth(
