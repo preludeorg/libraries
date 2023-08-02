@@ -144,6 +144,7 @@ export interface Probe {
   host: string;
   serial_num: string;
   edr_id: string | null;
+  control: ControlCode | null;
   tags: string[];
   last_beacon: string;
   created: string;
@@ -251,7 +252,6 @@ export interface Activity {
   test: string;
   dos: Platform;
   tags: string[] | null;
-  edr_id: string | null;
 }
 
 export interface TestUsage {
@@ -341,7 +341,6 @@ export interface ProbeActivity {
   endpoint_id: string;
   state: "PROTECTED" | "UNPROTECTED" | "ERROR";
   tags: string[];
-  edr_id: string | null;
 }
 
 export interface MetricsActivity {
@@ -371,6 +370,7 @@ export interface RegisterEndpointParams {
   host: string;
   serial_num: string;
   edr_id?: string;
+  control?: ControlCode;
   tags?: string;
 }
 
@@ -378,6 +378,7 @@ export interface UpdateEndpointParams {
   endpoint_id: string;
   host?: string;
   edr_id?: string;
+  control?: ControlCode;
   tags?: string;
 }
 
