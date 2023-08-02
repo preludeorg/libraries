@@ -1,5 +1,3 @@
-import json
-import base64
 import requests
 
 from datetime import datetime
@@ -120,17 +118,14 @@ class IAMController:
             timeout=10,
             allow_redirects=False
         )
-        if res.status_code != 302:
+        if res.status_code != 200:
             raise Exception(res.text)
 
-        encoded_token = res.headers['Location'].rsplit('#', 1)
-        if len(encoded_token) < 2:
-            return dict(verified=True)
-
-        res_json = json.loads(base64.urlsafe_b64decode(encoded_token[1]))
-        cfg = self.account.read_keychain_config()
-        cfg[self.account.profile]['token'] = res_json['token']
-        self.account.write_keychain_config(cfg)
+        res_json = res.json()
+        if 'token' in res_json:
+            cfg = self.account.read_keychain_config()
+            cfg[self.account.profile]['token'] = res_json['token']
+            self.account.write_keychain_config(cfg)
         return res_json
 
     @verify_credentials
