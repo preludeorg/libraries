@@ -1,5 +1,6 @@
+import json
+import base64
 import requests
-import datetime
 
 from prelude_sdk.models.account import verify_credentials
 
@@ -23,15 +24,9 @@ class IAMController:
             headers=self.account.headers,
             timeout=10
         )
-        if res.status_code != 200:
-            raise Exception(res.text)
-
-        cfg = self.account.read_keychain_config()
-        res_json = res.json()
-        cfg[self.account.profile]['account'] = res_json['account_id']
-        cfg[self.account.profile]['token'] = res_json['token']
-        self.account.write_keychain_config(cfg)
-        return res_json
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
 
     @verify_credentials
     def purge_account(self):
@@ -94,6 +89,44 @@ class IAMController:
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
+
+    @verify_credentials
+    def reset_user(self, email: str):
+        """ Reset a user inside an account """
+        res = requests.post(
+            url=f'{self.account.hq}/iam/user/reset',
+            json=dict(handle=email),
+            headers=self.account.headers,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def verify_user(self, token: str):
+        """ Verify a user inside an account """
+        res = requests.get(
+            url=f'{self.account.hq}/iam/user',
+            headers=self.account.headers,
+            params=dict(token=token),
+            timeout=10,
+            allow_redirects=False
+        )
+        if res.status_code != 302:
+            raise Exception(res.text)
+
+        encoded_token = res.headers['Location'].rsplit('#', 1)
+        if len(encoded_token) < 2:
+            return dict(verified=True)
+
+        res_json = json.loads(base64.urlsafe_b64decode(encoded_token[1]))
+
+        cfg = self.account.read_keychain_config()
+        cfg[self.account.profile]['account'] = res_json['account']
+        cfg[self.account.profile]['token'] = res_json['token']
+        self.account.write_keychain_config(cfg)
+        return res_json
 
     @verify_credentials
     def delete_user(self, handle):
