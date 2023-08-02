@@ -2,6 +2,7 @@ import json
 import base64
 import requests
 
+from datetime import datetime
 from prelude_sdk.models.account import verify_credentials
 
 
@@ -24,9 +25,15 @@ class IAMController:
             headers=self.account.headers,
             timeout=10
         )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        if res.status_code != 200:
+            raise Exception(res.text)
+
+        res_json = res.json()
+        cfg = self.account.read_keychain_config()
+        cfg[self.account.profile]['account'] = res_json['account']
+        cfg[self.account.profile]['token'] = ''
+        self.account.write_keychain_config(cfg)
+        return res_json
 
     @verify_credentials
     def purge_account(self):
@@ -121,9 +128,7 @@ class IAMController:
             return dict(verified=True)
 
         res_json = json.loads(base64.urlsafe_b64decode(encoded_token[1]))
-
         cfg = self.account.read_keychain_config()
-        cfg[self.account.profile]['account'] = res_json['account']
         cfg[self.account.profile]['token'] = res_json['token']
         self.account.write_keychain_config(cfg)
         return res_json

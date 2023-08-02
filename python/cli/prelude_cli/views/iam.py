@@ -18,6 +18,7 @@ def iam(ctx):
 @iam.command('create-account')
 @click.pass_obj
 @handle_api_error
+@click.confirmation_option(prompt='Overwrite local account credentials for selected profile?')
 def register_account(controller):
     """ Register a new account """
     email = click.prompt('Enter your email')
@@ -87,7 +88,7 @@ def create_user(controller, days, permission, name, email):
 @click.argument('email')
 @click.pass_obj
 @handle_api_error
-def create_user(controller, email):
+def reset_user(controller, email):
     """ Reset a user in your account """
     with Spinner(description='Resetting user'):
         data = controller.reset_user(email=email)
