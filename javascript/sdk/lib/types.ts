@@ -252,6 +252,7 @@ export interface Activity {
   test: string;
   dos: Platform;
   tags: string[] | null;
+  control: ControlCode | null;
 }
 
 export interface TestUsage {
@@ -341,6 +342,7 @@ export interface ProbeActivity {
   endpoint_id: string;
   state: "PROTECTED" | "UNPROTECTED" | "ERROR";
   tags: string[];
+  control: ControlCode | null;
 }
 
 export interface MetricsActivity {
