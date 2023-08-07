@@ -150,7 +150,6 @@ class Control(Enum):
 
     @classmethod
     def _missing_(cls, value):
-        logging.error('Unknown control requested: %s', value)
         return Control.INVALID
 
     @property
