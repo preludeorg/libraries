@@ -26,13 +26,13 @@ class DetectController:
         raise Exception(res.text)
 
     @verify_credentials
-    def update_endpoint(self, endpoint_id, host=None, edr_id='', partner_code=0, tags=None):
+    def update_endpoint(self, endpoint_id, host=None, edr_id=None, partner_code=0, tags=None):
         """ Update an endpoint in your account """
         body = dict()
         if host:
             body['host'] = host
-        if edr_id != '':
-            body['edr_id'] = edr_id
+        if edr_id is not None:
+            body['edr_id'] = edr_id or None
         if partner_code != 0:
             body['control'] = partner_code
         if tags is not None:
