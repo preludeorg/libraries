@@ -115,8 +115,7 @@ class IAMController:
             url=f'{self.account.hq}/iam/user',
             headers=self.account.headers,
             params=dict(token=token),
-            timeout=10,
-            allow_redirects=False
+            timeout=10
         )
         if res.status_code != 200:
             raise Exception(res.text)
