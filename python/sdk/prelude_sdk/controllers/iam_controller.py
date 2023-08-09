@@ -1,6 +1,6 @@
 import requests
-import datetime
 
+from datetime import datetime
 from prelude_sdk.models.account import verify_credentials
 
 
@@ -26,10 +26,10 @@ class IAMController:
         if res.status_code != 200:
             raise Exception(res.text)
 
-        cfg = self.account.read_keychain_config()
         res_json = res.json()
-        cfg[self.account.profile]['account'] = res_json['account_id']
-        cfg[self.account.profile]['token'] = res_json['token']
+        cfg = self.account.read_keychain_config()
+        cfg[self.account.profile]['account'] = res_json['account']
+        cfg[self.account.profile]['token'] = ''
         self.account.write_keychain_config(cfg)
         return res_json
 
@@ -94,6 +94,38 @@ class IAMController:
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
+
+    @verify_credentials
+    def reset_user(self, email: str):
+        """ Reset a user inside an account """
+        res = requests.post(
+            url=f'{self.account.hq}/iam/user/reset',
+            json=dict(handle=email),
+            headers=self.account.headers,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def verify_user(self, token: str):
+        """ Verify a user inside an account """
+        res = requests.get(
+            url=f'{self.account.hq}/iam/user',
+            headers=self.account.headers,
+            params=dict(token=token),
+            timeout=10
+        )
+        if res.status_code != 200:
+            raise Exception(res.text)
+
+        res_json = res.json()
+        if 'token' in res_json:
+            cfg = self.account.read_keychain_config()
+            cfg[self.account.profile]['token'] = res_json['token']
+            self.account.write_keychain_config(cfg)
+        return res_json
 
     @verify_credentials
     def delete_user(self, handle):
