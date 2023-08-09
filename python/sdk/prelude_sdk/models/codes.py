@@ -155,3 +155,7 @@ class Control(Enum):
     @property
     def is_siem(self):
         return self == Control.SPLUNK
+
+    @property
+    def is_edr(self):
+        return self in [Control.CROWDSTRIKE, Control.DEFENDER]
