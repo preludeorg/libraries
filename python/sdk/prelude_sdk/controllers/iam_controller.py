@@ -28,7 +28,7 @@ class IAMController:
 
         res_json = res.json()
         cfg = self.account.read_keychain_config()
-        cfg[self.account.profile]['account'] = res_json['account']
+        cfg[self.account.profile]['account'] = res_json['account_id']
         cfg[self.account.profile]['token'] = ''
         self.account.write_keychain_config(cfg)
         return res_json
