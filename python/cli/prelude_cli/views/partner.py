@@ -42,9 +42,22 @@ def detach_partner(controller, partner):
     print_json(data=data)
 
 
+@partner.command('block')
+@click.argument('partner',
+              type=click.Choice([c.name for c in Control if c.is_edr], case_sensitive=False))
+@click.option('-t', '--test_id', required=True, help='a test to block')
+@click.pass_obj
+@handle_api_error
+def partner_deploy(controller, partner, test_id):
+    """ Report to a partner to block a test """
+    with Spinner(description='Reporting test to partner'):
+        data = controller.block(partner_code=Control[partner.upper()].value, test_id=test_id)
+    print_json(data=data)
+
+
 @partner.command('endpoints')
 @click.argument('partner',
-              type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False))
+              type=click.Choice([c.name for c in Control if c.is_edr], case_sensitive=False))
 @click.option('--platform', required=True, help='platform name (e.g. "windows")', type=click.Choice(['windows', 'linux', 'darwin'], case_sensitive=False))
 @click.option('--hostname', default='', help='hostname pattern (e.g. "mycompany-c24oi444")')
 @click.option('--offset', default=0, help='API pagination offset', type=int)
@@ -60,7 +73,7 @@ def partner_endpoints(controller, partner, platform, hostname, offset):
 @partner.command('deploy')
 @click.confirmation_option(prompt='Are you sure?')
 @click.argument('partner',
-              type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False))
+              type=click.Choice([c.name for c in Control if c.is_edr], case_sensitive=False))
 @click.option('--host_ids', required=True, help='a list of host IDs to deploy to', multiple=True, default=[])
 @click.pass_obj
 @handle_api_error
