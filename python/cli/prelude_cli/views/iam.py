@@ -84,30 +84,6 @@ def create_user(controller, days, permission, name, email):
         print("\nNew user must check their email to verify their account.\n")
 
 
-@iam.command('reset-user')
-@click.argument('email')
-@click.pass_obj
-@handle_api_error
-def reset_user(controller, email):
-    """ Reset a user in your account """
-    with Spinner(description='Resetting user'):
-        data = controller.reset_user(email=email)
-    print_json(data=data)
-    print("\nUser must check their email to verify their account.\n")
-
-
-@iam.command('verify-user')
-@click.argument('token')
-@click.pass_obj
-@handle_api_error
-@click.confirmation_option(prompt='Overwrite local account credentials for selected profile?')
-def verify_user(controller, token):
-    """ Verify a user in your account """
-    with Spinner(description='Verifying user'):
-        data = controller.verify_user(token=token)
-    print_json(data=data)
-
-
 @iam.command('delete-user')
 @click.confirmation_option(prompt='Are you sure?')
 @click.argument('handle')
