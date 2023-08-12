@@ -33,10 +33,24 @@ class PartnerController:
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
+
+    @verify_credentials
+    def block(self, partner_code: int, test_id: str):
+        """ Report to a partner to block a test """
+        params = dict(test_id=test_id)
+        res = requests.post(
+            f'{self.account.hq}/partner/block/{partner_code}',
+            headers=self.account.headers,
+            json=params,
+            timeout=30
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
         
     @verify_credentials
     def endpoints(self, partner_code: int, platform: str, hostname: str = '', offset: int = 0, count: int = 100):
-        """ Get a list of endpoints from all partners """
+        """ Get a list of endpoints from a partner """
         params = dict(platform=platform, hostname=hostname, offset=offset, count=count)
         res = requests.get(
             f'{self.account.hq}/partner/endpoints/{partner_code}',
