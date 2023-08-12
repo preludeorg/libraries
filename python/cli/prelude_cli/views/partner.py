@@ -48,7 +48,7 @@ def detach_partner(controller, partner):
 @click.option('-t', '--test_id', required=True, help='a test to block')
 @click.pass_obj
 @handle_api_error
-def partner_deploy(controller, partner, test_id):
+def partner_block(controller, partner, test_id):
     """ Report to a partner to block a test """
     with Spinner(description='Reporting test to partner'):
         data = controller.block(partner_code=Control[partner.upper()].value, test_id=test_id)
