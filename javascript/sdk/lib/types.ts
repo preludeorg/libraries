@@ -442,3 +442,8 @@ export interface AuditLog {
 }
 
 export type AuditLogValues = Record<string, unknown>;
+
+export interface BlockResponse {
+  file: string;
+  already_reported: boolean;
+}

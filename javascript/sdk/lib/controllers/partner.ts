@@ -2,6 +2,7 @@ import Client from "../client";
 import {
   AttachPartnerParams,
   AttachedPartner,
+  BlockResponse,
   ControlCode,
   DeployParams,
   DeployedEndpoints,
@@ -32,6 +33,23 @@ export default class PartnerController {
     );
 
     return (await response.json()) as AttachedPartner;
+  }
+
+  async block(
+    partnerCode: ControlCode,
+    test_id: string,
+    options: RequestOptions = {}
+  ): Promise<BlockResponse[]> {
+    const response = await this.#client.requestWithAuth(
+      `/partner/block/${partnerCode}`,
+      {
+        method: "POST",
+        body: JSON.stringify({ test_id }),
+        ...options,
+      }
+    );
+
+    return (await response.json()) as BlockResponse[];
   }
 
   async detachPartner(
