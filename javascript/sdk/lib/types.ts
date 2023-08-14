@@ -445,5 +445,6 @@ export type AuditLogValues = Record<string, unknown>;
 
 export interface BlockResponse {
   file: string;
-  already_reported: boolean;
+  already_reported?: boolean;
+  ioc_id?: string;
 }
