@@ -176,7 +176,7 @@ export const ExitCodes = {
   FALSE_POSITIVE: 110,
   TEST_DISALLOWED: 126,
   STATIC_QUARANTINE: 127,
-  OUT_OF_MEMORY: 137,
+  BLOCKED: 137,
   UNEXPECTED_ERROR: 256,
 } as const;
 
@@ -191,6 +191,7 @@ export const ExitCodeGroup = {
     ExitCodes.PROTECTED,
     ExitCodes.DYNAMIC_QUARANTINE,
     ExitCodes.BLOCKED_AT_PERIMETER,
+    ExitCodes.BLOCKED,
     ExitCodes.EXPLOIT_PREVENTED,
     ExitCodes.TEST_DISALLOWED,
     ExitCodes.STATIC_QUARANTINE,
@@ -206,7 +207,6 @@ export const ExitCodeGroup = {
     ExitCodes.MALFORMED_TEST,
     ExitCodes.TIMED_OUT,
     ExitCodes.FAILED_CLEANUP,
-    ExitCodes.OUT_OF_MEMORY,
     ExitCodes.UNEXPECTED_ERROR,
   ],
   NOT_RELEVANT: [

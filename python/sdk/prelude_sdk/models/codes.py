@@ -59,7 +59,7 @@ class ExitCode(Enum):
     FALSE_POSITIVE = 110
     TEST_DISALLOWED = 126
     STATIC_QUARANTINE = 127
-    OUT_OF_MEMORY = 137
+    BLOCKED = 137
     UNEXPECTED_ERROR = 256
 
     @classmethod
@@ -98,6 +98,7 @@ class State(Enum):
                 ExitCode.PROTECTED,
                 ExitCode.DYNAMIC_QUARANTINE,
                 ExitCode.BLOCKED_AT_PERIMETER,
+                ExitCode.BLOCKED,
                 ExitCode.EXPLOIT_PREVENTED,
                 ExitCode.TEST_DISALLOWED,
                 ExitCode.STATIC_QUARANTINE,
@@ -113,7 +114,6 @@ class State(Enum):
                 ExitCode.MALFORMED_TEST,
                 ExitCode.TIMED_OUT,
                 ExitCode.FAILED_CLEANUP,
-                ExitCode.OUT_OF_MEMORY,
                 ExitCode.UNEXPECTED_ERROR
             ],
             State.NOT_RELEVANT: [
