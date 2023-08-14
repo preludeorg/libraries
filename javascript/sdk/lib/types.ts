@@ -351,7 +351,6 @@ export interface MetricsActivity {
   tests: number;
   company: string;
   unique_tests: number;
-  custom_tests: number;
 }
 
 export interface CreateRecommendation {
