@@ -198,10 +198,7 @@ export const ExitCodeGroup = {
     ExitCodes.TEST_NOT_RELEVANT,
     ExitCodes.ENDPOINT_NOT_RELEVANT,
   ],
-  UNPROTECTED: [
-    ExitCodes.UNPROTECTED,
-    ExitCodes.FALSE_POSITIVE,
-  ],
+  UNPROTECTED: [ExitCodes.UNPROTECTED, ExitCodes.FALSE_POSITIVE],
   ERROR: [
     ExitCodes.UNKNOWN_ERROR,
     ExitCodes.MALFORMED_TEST,
@@ -209,10 +206,7 @@ export const ExitCodeGroup = {
     ExitCodes.FAILED_CLEANUP,
     ExitCodes.UNEXPECTED_ERROR,
   ],
-  NOT_RELEVANT: [
-    ExitCodes.TEST_NOT_RELEVANT,
-    ExitCodes.ENDPOINT_NOT_RELEVANT,
-  ],
+  NOT_RELEVANT: [ExitCodes.TEST_NOT_RELEVANT, ExitCodes.ENDPOINT_NOT_RELEVANT],
 } as const;
 
 export const ActionCodes = {
@@ -229,6 +223,7 @@ export const ControlCodes = {
   CROWDSTRIKE: 1,
   DEFENDER: 2,
   SPLUNK: 3,
+  SENTINELONE: 4,
 } as const;
 
 export type ControlCodeName = keyof typeof ControlCodes;
