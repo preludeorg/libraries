@@ -145,6 +145,7 @@ class Control(Enum):
     CROWDSTRIKE = 1
     DEFENDER = 2
     SPLUNK = 3
+    SENTINELONE = 4
 
     @classmethod
     def _missing_(cls, value):
@@ -156,4 +157,4 @@ class Control(Enum):
 
     @property
     def is_edr(self):
-        return self in [Control.CROWDSTRIKE, Control.DEFENDER]
+        return self in [Control.CROWDSTRIKE, Control.DEFENDER, Control.SENTINELONE]
