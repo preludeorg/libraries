@@ -370,7 +370,6 @@ export interface RegisterEndpointParams {
 
 export interface UpdateEndpointParams {
   endpoint_id: string;
-  host?: string;
   tags?: string;
 }
 

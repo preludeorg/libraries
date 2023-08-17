@@ -37,18 +37,13 @@ def register_endpoint(controller, host, serial_num, tags):
 
 @detect.command('update-endpoint')
 @click.argument('endpoint_id')
-@click.option('-h', '--host', help='hostname of this machine', type=str, default=None)
 @click.option('-t', '--tags', help='a comma-separated list of tags for this endpoint', type=str, default=None)
 @click.pass_obj
 @handle_api_error
 def update_endpoint(controller, endpoint_id, host, tags):
     """ Update an existing endpoint """
     with Spinner(description='Updating endpoint'):
-        data = controller.update_endpoint(
-            endpoint_id=endpoint_id,
-            host=host,
-            tags=tags
-        )
+        data = controller.update_endpoint(endpoint_id=endpoint_id, tags=tags)
     print_json(data=data)
 
 
