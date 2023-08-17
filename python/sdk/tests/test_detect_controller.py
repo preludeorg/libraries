@@ -16,7 +16,6 @@ class TestDetectController:
         """Setup the test class"""
         self.host = 'test_host'
         self.serial = 'test_serial'
-        self.edr_id = 'test_edr_id'
         self.tags = 'test_tag'
         self.updated_tags = 'updated_test_tag'
         self.health_check = '39de298a-911d-4a3b-aed4-1e8281010a9a'
@@ -54,7 +53,7 @@ class TestDetectController:
 
     def test_register_endpoint(self, unwrap):
         """Test register_endpoint method"""
-        res = unwrap(self.detect.register_endpoint)(self.detect, host=self.host, serial_num=self.serial, edr_id=self.edr_id, tags=self.tags)
+        res = unwrap(self.detect.register_endpoint)(self.detect, host=self.host, serial_num=self.serial, tags=self.tags)
         assert len(res) == 32
         pytest.endpoint_token = res
 
@@ -64,7 +63,6 @@ class TestDetectController:
         assert len(res) > 0
         assert self.host == res[0]['host']
         assert self.serial == res[0]['serial_num']
-        assert self.edr_id == res[0]['edr_id']
         assert self.tags in res[0]['tags']
         pytest.endpoint_id = res[0]['endpoint_id']
 
