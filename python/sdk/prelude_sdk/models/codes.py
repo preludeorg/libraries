@@ -31,7 +31,7 @@ class Mode(Enum):
 
 class Category(Enum):
     FREE = 0
-    INTNERAL = 1
+    INTERNAL = 1
     PREMIUM = 2
 
     @classmethod
