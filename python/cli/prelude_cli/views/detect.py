@@ -5,7 +5,7 @@ from rich import print_json
 from pathlib import Path, PurePath
 from datetime import datetime, timedelta
 
-from prelude_sdk.models.codes import Control, RunCode
+from prelude_sdk.models.codes import RunCode
 from prelude_cli.views.shared import handle_api_error, Spinner
 from prelude_sdk.controllers.iam_controller import IAMController
 from prelude_sdk.controllers.detect_controller import DetectController
