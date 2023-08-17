@@ -29,6 +29,16 @@ class Mode(Enum):
         return Mode.MANUAL
 
 
+class Category(Enum):
+    FREE = 0
+    INTNERAL = 1
+    PREMIUM = 2
+
+    @classmethod
+    def _missing_(cls, value):
+        return Category.FREE
+
+
 class Permission(Enum):
     INVALID = -1
     ADMIN = 0
