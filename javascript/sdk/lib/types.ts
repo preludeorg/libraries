@@ -365,16 +365,12 @@ export interface DecideRecommendation {
 export interface RegisterEndpointParams {
   host: string;
   serial_num: string;
-  edr_id?: string;
-  control?: ControlCode;
   tags?: string;
 }
 
 export interface UpdateEndpointParams {
   endpoint_id: string;
   host?: string;
-  edr_id?: string;
-  control?: ControlCode;
   tags?: string;
 }
 
