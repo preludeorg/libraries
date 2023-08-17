@@ -151,10 +151,3 @@ class Control(Enum):
     def _missing_(cls, value):
         return Control.INVALID
 
-    @property
-    def is_siem(self):
-        return self == Control.SPLUNK
-
-    @property
-    def is_edr(self):
-        return self in [Control.CROWDSTRIKE, Control.DEFENDER, Control.SENTINELONE]
