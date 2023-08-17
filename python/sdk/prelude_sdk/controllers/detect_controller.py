@@ -26,11 +26,9 @@ class DetectController:
         raise Exception(res.text)
 
     @verify_credentials
-    def update_endpoint(self, endpoint_id, host=None, tags=None):
+    def update_endpoint(self, endpoint_id, tags=None):
         """ Update an endpoint in your account """
         body = dict()
-        if host:
-            body['host'] = host
         if tags is not None:
             body['tags'] = tags
 

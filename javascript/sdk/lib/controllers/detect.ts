@@ -49,7 +49,7 @@ export default class DetectController {
 
   /** Update an endpoint in your account */
   async updateEndpoint(
-    { endpoint_id, host, tags }: UpdateEndpointParams,
+    { endpoint_id, tags }: UpdateEndpointParams,
     options: RequestOptions = {}
   ): Promise<UpdatedEndpoint> {
     const response = await this.#client.requestWithAuth(
@@ -57,7 +57,6 @@ export default class DetectController {
       {
         method: "POST",
         body: JSON.stringify({
-          host,
           tags,
         }),
         ...options,
