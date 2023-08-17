@@ -229,6 +229,15 @@ export const ControlCodes = {
 export type ControlCodeName = keyof typeof ControlCodes;
 export type ControlCode = (typeof ControlCodes)[ControlCodeName];
 
+export const CategoryCodes = {
+  FREE: 0,
+  INTERNAL: 1,
+  PREMIUM: 2,
+} as const;
+
+export type CategoryCodeName = keyof typeof CategoryCodes;
+export type CategoryCode = (typeof CategoryCodes)[CategoryCodeName];
+
 export type Platform =
   | "darwin-arm64"
   | "darwin-x86_64"
