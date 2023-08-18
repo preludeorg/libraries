@@ -40,7 +40,7 @@ def register_endpoint(controller, host, serial_num, tags):
 @click.option('-t', '--tags', help='a comma-separated list of tags for this endpoint', type=str, default=None)
 @click.pass_obj
 @handle_api_error
-def update_endpoint(controller, endpoint_id, host, tags):
+def update_endpoint(controller, endpoint_id, tags):
     """ Update an existing endpoint """
     with Spinner(description='Updating endpoint'):
         data = controller.update_endpoint(endpoint_id=endpoint_id, tags=tags)
