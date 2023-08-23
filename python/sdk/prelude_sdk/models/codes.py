@@ -150,4 +150,3 @@ class Control(Enum):
     @classmethod
     def _missing_(cls, value):
         return Control.INVALID
-

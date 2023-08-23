@@ -22,7 +22,6 @@ function FromEnv { param ([string]$envVar, [string]$default)
 }
 
 $Dir = FromEnv "PRELUDE_DIR" ".vst"
-$Sleep = FromEnv "PRELUDE_SLEEP" 14440
 $CA = "prelude-account-us1-us-west-1.s3.amazonaws.com"
 
 $Api = "https://api.preludesecurity.com"
@@ -57,6 +56,6 @@ while ($true) {
         Write-Output $_.Exception
         $Dat = ""
         Remove-Item $Dir -Force -Recurse -ErrorAction SilentlyContinue
-        Start-Sleep -Seconds $Sleep
+        Start-Sleep -Seconds 14440
     }
 }
