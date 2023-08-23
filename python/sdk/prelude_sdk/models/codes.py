@@ -3,7 +3,6 @@ from enum import Enum
 
 class RunCode(Enum):
     INVALID = -1
-    DEBUG = 0
     DAILY = 1
     MONDAY = 10
     TUESDAY = 11
