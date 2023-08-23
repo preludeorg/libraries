@@ -3,7 +3,6 @@ from enum import Enum
 
 class RunCode(Enum):
     INVALID = -1
-    DEBUG = 0
     DAILY = 1
     MONDAY = 10
     TUESDAY = 11
@@ -150,4 +149,3 @@ class Control(Enum):
     @classmethod
     def _missing_(cls, value):
         return Control.INVALID
-

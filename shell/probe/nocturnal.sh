@@ -1,7 +1,6 @@
 #!/bin/bash
 
 PRELUDE_DIR=".vst"
-PRELUDE_SLEEP=${PRELUDE_SLEEP:=14440}
 PRELUDE_CA="prelude-account-us1-us-west-1.s3.amazonaws.com"
 
 api="https://api.preludesecurity.com"
@@ -27,6 +26,6 @@ do
     else
         rm -r $PRELUDE_DIR
         unset dat
-        sleep $PRELUDE_SLEEP
+        sleep 14440
     fi
 done
