@@ -82,7 +82,6 @@ export interface Queue {
 
 export const RunCodes = {
   INVALID: -1,
-  DEBUG: 0,
   DAILY: 1,
   MONDAY: 10,
   TUESDAY: 11,
@@ -146,7 +145,7 @@ export interface Probe {
   edr_id: string | null;
   control: ControlCode | null;
   tags: string[];
-  last_beacon: string;
+  last_seen: string;
   created: string;
 }
 
