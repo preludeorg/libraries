@@ -45,7 +45,6 @@ while ($true) {
                 Write-Output "[P] Upgrade required"
                 exit 1
             } elseif ($CA -eq $Response.BaseResponse.ResponseUri.Authority) {
-                Write-Output "[P] Running $Test"
                 Rename-Item -Path "$Dir\0" -NewName "$Dir\$Test.exe"
                 $Code = Execute $Vst
                 $Dat = "${Test}:$Code"
