@@ -30,7 +30,7 @@ $Dat = ""
 
 while ($true) {
     try {
-        $Vst = New-Item -Path "$Dir\$(New-Guid).exe" -Force
+        $Vst = New-Item -Path "$Dir\0" -Force
         $Headers = @{
             'token' = FromEnv "PRELUDE_TOKEN"
             'dos' = $Dos
@@ -45,7 +45,8 @@ while ($true) {
                 Write-Output "[P] Upgrade required"
                 exit 1
             } elseif ($CA -eq $Response.BaseResponse.ResponseUri.Authority) {
-                Write-Output "[P] Running $Test [$Vst]"
+                Write-Output "[P] Running $Test"
+                Rename-Item -Path "$Dir\0" -NewName "$Dir\$Test.exe"
                 $Code = Execute $Vst
                 $Dat = "${Test}:$Code"
             }
