@@ -18,7 +18,7 @@ class TestDetectController:
         self.serial = 'test_serial'
         self.tags = 'test_tag'
         self.updated_tags = 'updated_test_tag'
-        self.health_check = '39de298a-911d-4a3b-aed4-1e8281010a9a'
+        self.common_ransomware = 'db201110-d875-4133-9709-2732a47f252f'
         self.recommendation = 'Test'
         self.detect = DetectController(pytest.account)
         self.iam = IAMController(pytest.account)
@@ -68,7 +68,7 @@ class TestDetectController:
 
     def test_enable_test(self, unwrap):
         """Test enable_test method"""
-        unwrap(self.detect.enable_test)(self.detect, ident=pytest.test_id, run_code=RunCode.DEBUG.value, tags=self.tags)
+        unwrap(self.detect.enable_test)(self.detect, ident=pytest.test_id, run_code=RunCode.DAILY.value, tags=self.tags)
         queue = unwrap(self.iam.get_account)(self.iam)['queue']
         assert len([test for test in queue if test['test'] == pytest.test_id]) == 1
 
@@ -83,7 +83,7 @@ class TestDetectController:
                 finish=datetime.utcnow() + timedelta(days=1)
             )
             describe_activity = unwrap(self.detect.describe_activity)(self.detect, filters=filters | {'endpoint_id': pytest.endpoint_id})
-            assert len(describe_activity) == 2
+            assert len(describe_activity) == 1
         finally:
             os.remove(pytest.probe)
     
@@ -104,7 +104,7 @@ class TestDetectController:
     @pytest.mark.order(after='test_describe_activity')
     def test_social_stats(self, unwrap):
         """Test social_stats method"""
-        res = unwrap(self.detect.social_stats)(self.detect, ident=self.health_check)
+        res = unwrap(self.detect.social_stats)(self.detect, ident=self.common_ransomware)
         assert len(res.values()) >= 1
 
     @pytest.mark.order(after='test_social_stats')
