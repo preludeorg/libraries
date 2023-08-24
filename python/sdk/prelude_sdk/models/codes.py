@@ -74,11 +74,6 @@ class ExitCode(Enum):
                 return k
         return State.NONE
 
-    def transform(self, test):
-        if test.unit == 'health' and self != ExitCode.PROTECTED:
-            return ExitCode.FALSE_POSITIVE
-        return self
-
 
 class State(Enum):
     NONE = 0
