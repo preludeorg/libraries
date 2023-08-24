@@ -160,7 +160,7 @@ describe("SDK Test", () => {
     const serial = "test_serial";
     const tags = "test_tag";
     const updatedTags = "updated_test_tag";
-    const healthCheck = "39de298a-911d-4a3b-aed4-1e8281010a9a";
+    const commonRansomware = "db201110-d875-4133-9709-2732a47f252f";
     let endpointToken = "";
     let endpointId = "";
     let activeTest = "";
@@ -229,18 +229,18 @@ describe("SDK Test", () => {
     it("enableTest should add a new test to the queue", async function () {
       await service.detect.enableTest({
         test: activeTest,
-        runCode: RunCodes.DEBUG,
+        runCode: RunCodes.DAILY,
         tags: tags,
       });
 
       const result = (await service.iam.getAccount()).queue;
 
-      expect(result).toHaveLength(2);
+      expect(result).toHaveLength(1);
       expect(result).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
             test: activeTest,
-            run_code: RunCodes.DEBUG,
+            run_code: RunCodes.DAILY,
           }),
         ])
       );
@@ -294,7 +294,7 @@ describe("SDK Test", () => {
       );
 
       it(
-        "describeActivity should return logs for 2 tests",
+        "describeActivity should return logs for 1 test",
         async function () {
           await sleep(3000);
           const result = await service.detect.describeActivity({
@@ -302,7 +302,7 @@ describe("SDK Test", () => {
             finish,
             view: "logs",
           });
-          expect(result).toHaveLength(2);
+          expect(result).toHaveLength(1);
         },
         { retry: 5 }
       );
@@ -322,7 +322,7 @@ describe("SDK Test", () => {
     });
 
     it("socialStats should return an object with a non-empty array of values", async function () {
-      const result = await service.detect.socialStats(healthCheck);
+      const result = await service.detect.socialStats(commonRansomware);
       expect(Object.values(result)).to.have.length.greaterThanOrEqual(1);
     });
 
@@ -332,7 +332,7 @@ describe("SDK Test", () => {
         tags: tags,
       });
       const result = (await service.iam.getAccount()).queue;
-      expect(result).toHaveLength(1);
+      expect(result).toHaveLength(0);
     });
 
     it("deleteEndpoint should remove the endpoint from the list", async function () {
