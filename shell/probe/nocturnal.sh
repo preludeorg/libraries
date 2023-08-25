@@ -7,7 +7,7 @@ dos=$(uname -s)-$(uname -m)
 
 while :
 do
-    redirect=$(curl -sfL -w '%{url_effective}' -H "token: ${PRELUDE_TOKEN}" -H "dos: ${dos}" -H "dat: ${dat}" -H "version: 1.2" $api -o /dev/null)
+    redirect=$(curl -sfL -w '%{url_effective}' -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "dat:${dat}" -H "version:1.2" $api -o /dev/null)
     test=$(echo $redirect | grep -o '[0-9a-f]\{8\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{12\}' | head -n 1)
 
     if [ $test ];then
