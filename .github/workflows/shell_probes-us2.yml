@@ -1,11 +1,6 @@
 name: us2 - shell probes (demo / nocturnal / raindrop / vision scripts) deploy
 
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - 'shell/probe/**'
   workflow_dispatch:    
 
 jobs:
