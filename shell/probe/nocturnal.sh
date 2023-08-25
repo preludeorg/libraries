@@ -20,7 +20,7 @@ do
             dat="${test}:$([[ -f .vst/$test ]] && echo $code || echo 127)"
         fi
     elif [[ "$redirect" == *"upgrade"* ]];then
-        echo "[P] Upgrade required" && exit 1
+        sleep 30 && exit 1
     else
         rm -rf .vst
         unset dat
