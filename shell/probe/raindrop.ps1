@@ -21,7 +21,6 @@ function FromEnv { param ([string]$envVar, [string]$default)
     if ($envVal) { return $envVal } else { return $default }
 }
 
-$Dir = ".vst"
 $CA = "prelude-account-us1-us-west-1.s3.amazonaws.com"
 
 $Api = "https://api.preludesecurity.com"
@@ -30,22 +29,22 @@ $Dat = ""
 
 while ($true) {
     try {
-        $Vst = New-Item -Path "$Dir\0" -Force
+        $VstDir = New-Item -ItemType Directory -Path ".vst" -Force
         $Headers = @{
-            'token' = FromEnv "PRELUDE_TOKEN"
+            'token' = "c9bcc556d45abbc4b01113be65bbf43a"
             'dos' = $Dos
             'dat' = $Dat
             'version' = "1.2"
         }
-        $Response = Invoke-WebRequest -URI $Api -UseBasicParsing -Headers $Headers -MaximumRedirection 1 -OutFile $Vst -PassThru
-        $Test = $Response.BaseResponse.ResponseUri.AbsolutePath.Split("/")[-1].Split("_")[0]
+        $RedirectResponse = Invoke-WebRequest -URI $Api -UseBasicParsing -Headers $Headers -MaximumRedirection 0 -ErrorAction Ignore
+        $Test = $Redirect.Headers.Location.Split("/")[-1].Split("_")[0]
     
         if ($Test) {
             if ($Test -icontains "upgrade") {
                 Start-Sleep 30 && exit
-            } elseif ($CA -eq $Response.BaseResponse.ResponseUri.Authority) {
-                Rename-Item -Path "$Dir\0" -NewName "$Dir\$Test.exe"
-                $Code = Execute $Vst
+            } elseif ($CA -eq $Redirect.Headers.Location.Split("/")[2]) {
+                Invoke-WebRequest -URI $Redirect.Headers.Location -UseBasicParsing -OutFile "$VstDir\$Test.exe"
+                $Code = Execute "$VstDir\$Test.exe"
                 $Dat = "${Test}:$Code"
             }
         } else {
@@ -54,7 +53,7 @@ while ($true) {
     } catch {
         Write-Output $_.Exception
         $Dat = ""
-        Remove-Item $Dir -Force -Recurse -ErrorAction SilentlyContinue
+        Remove-Item $VstDir -Force -Recurse -ErrorAction SilentlyContinue
         Start-Sleep -Seconds 14440
     }
 }
