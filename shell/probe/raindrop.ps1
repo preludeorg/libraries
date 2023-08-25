@@ -21,7 +21,7 @@ function FromEnv { param ([string]$envVar, [string]$default)
     if ($envVal) { return $envVal } else { return $default }
 }
 
-$Dir = FromEnv "PRELUDE_DIR" ".vst"
+$Dir = ".vst"
 $CA = "prelude-account-us1-us-west-1.s3.amazonaws.com"
 
 $Api = "https://api.preludesecurity.com"
