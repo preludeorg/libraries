@@ -21,7 +21,6 @@ function FromEnv { param ([string]$envVar, [string]$default)
     if ($envVal) { return $envVal } else { return $default }
 }
 
-$Dir = FromEnv "PRELUDE_DIR" ".vst"
 $CA = "prelude-account-us1-us-west-1.s3.amazonaws.com"
 
 $Api = "https://api.preludesecurity.com"
@@ -30,23 +29,22 @@ $Dat = ""
 
 while ($true) {
     try {
-        $Vst = New-Item -Path "$Dir\$(New-Guid).exe" -Force
+        $VstDir = New-Item -ItemType Directory -Path ".vst" -Force
         $Headers = @{
             'token' = FromEnv "PRELUDE_TOKEN"
             'dos' = $Dos
             'dat' = $Dat
-            'version' = "1.1"
+            'version' = "1.2"
         }
-        $Response = Invoke-WebRequest -URI $Api -UseBasicParsing -Headers $Headers -MaximumRedirection 1 -OutFile $Vst -PassThru
-        $Test = $Response.BaseResponse.ResponseUri.AbsolutePath.Split("/")[-1].Split("_")[0]
+        $Redirect = Invoke-WebRequest -URI $Api -UseBasicParsing -Headers $Headers -MaximumRedirection 0 -ErrorAction Ignore
+        $Test = $Redirect.Headers.Location.Split("/")[-1].Split("_")[0]
     
         if ($Test) {
             if ($Test -icontains "upgrade") {
-                Write-Output "[P] Upgrade required"
-                exit 1
-            } elseif ($CA -eq $Response.BaseResponse.ResponseUri.Authority) {
-                Write-Output "[P] Running $Test [$Vst]"
-                $Code = Execute $Vst
+                Start-Sleep 30 && exit
+            } elseif ($CA -eq $Redirect.Headers.Location.Split("/")[2]) {
+                Invoke-WebRequest -URI $Redirect.Headers.Location -UseBasicParsing -OutFile "$VstDir\$Test.exe"
+                $Code = Execute "$VstDir\$Test.exe"
                 $Dat = "${Test}:$Code"
             }
         } else {
@@ -55,7 +53,7 @@ while ($true) {
     } catch {
         Write-Output $_.Exception
         $Dat = ""
-        Remove-Item $Dir -Force -Recurse -ErrorAction SilentlyContinue
+        Remove-Item $VstDir -Force -Recurse -ErrorAction SilentlyContinue
         Start-Sleep -Seconds 14440
     }
 }
