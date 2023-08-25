@@ -21,6 +21,7 @@ function FromEnv { param ([string]$envVar, [string]$default)
     if ($envVal) { return $envVal } else { return $default }
 }
 
+$Dir = FromEnv "PRELUDE_DIR" ".vst"
 $CA = "prelude-account-us1-us-west-1.s3.amazonaws.com"
 
 $Api = "https://api.preludesecurity.com"
@@ -29,7 +30,7 @@ $Dat = ""
 
 while ($true) {
     try {
-        $VstDir = New-Item -ItemType Directory -Path ".vst" -Force
+        $VstDir = New-Item -ItemType Directory -Path $Dir -Force
         $Headers = @{
             'token' = FromEnv "PRELUDE_TOKEN"
             'dos' = $Dos
