@@ -36,7 +36,7 @@ while ($true) {
             'dat' = $Dat
             'version' = "1.2"
         }
-        $RedirectResponse = Invoke-WebRequest -URI $Api -UseBasicParsing -Headers $Headers -MaximumRedirection 0 -ErrorAction Ignore
+        $Redirect = Invoke-WebRequest -URI $Api -UseBasicParsing -Headers $Headers -MaximumRedirection 0 -ErrorAction Ignore
         $Test = $Redirect.Headers.Location.Split("/")[-1].Split("_")[0]
     
         if ($Test) {
