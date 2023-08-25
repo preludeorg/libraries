@@ -30,7 +30,7 @@ $Dat = ""
 
 while ($true) {
     try {
-        New-Item -ItemType Directory -Path $Dir -Force
+        $VstDir = New-Item -ItemType Directory -Path $Dir -Force
         $Headers = @{
             'token' = FromEnv "PRELUDE_TOKEN"
             'dos' = $Dos
@@ -44,8 +44,8 @@ while ($true) {
             if ($Test -icontains "upgrade") {
                 Start-Sleep 30 && exit
             } elseif ($CA -eq $Redirect.Headers.Location.Split("/")[2]) {
-                Invoke-WebRequest -URI $Redirect.Headers.Location -UseBasicParsing -OutFile "$Dir\$Test.exe"
-                $Code = Execute "$Dir\$Test.exe"
+                Invoke-WebRequest -URI $Redirect.Headers.Location -UseBasicParsing -OutFile "$VstDir\$Test.exe"
+                $Code = Execute "$VstDir\$Test.exe"
                 $Dat = "${Test}:$Code"
             }
         } else {
@@ -54,7 +54,7 @@ while ($true) {
     } catch {
         Write-Output $_.Exception
         $Dat = ""
-        Remove-Item $Dir -Force -Recurse -ErrorAction SilentlyContinue
+        Remove-Item $VstDir -Force -Recurse -ErrorAction SilentlyContinue
         Start-Sleep -Seconds 3600
     }
 }
