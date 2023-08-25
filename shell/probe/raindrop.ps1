@@ -54,6 +54,6 @@ while ($true) {
         Write-Output $_.Exception
         $Dat = ""
         Remove-Item $VstDir -Force -Recurse -ErrorAction SilentlyContinue
-        Start-Sleep -Seconds 14440
+        Start-Sleep -Seconds 3600
     }
 }
