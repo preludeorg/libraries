@@ -21,6 +21,7 @@ function FromEnv { param ([string]$envVar, [string]$default)
     if ($envVal) { return $envVal } else { return $default }
 }
 
+$Dir = FromEnv "PRELUDE_DIR" ".vst"
 $CA = "prelude-account-us1-us-west-1.s3.amazonaws.com"
 
 $Api = "https://api.preludesecurity.com"
@@ -29,7 +30,6 @@ $Dat = ""
 
 while ($true) {
     try {
-        $VstDir = New-Item -ItemType Directory -Path ".vst" -Force
         $Headers = @{
             'token' = FromEnv "PRELUDE_TOKEN"
             'dos' = $Dos
@@ -43,8 +43,8 @@ while ($true) {
             if ($Test -icontains "upgrade") {
                 Start-Sleep 30 && exit
             } elseif ($CA -eq $Redirect.Headers.Location.Split("/")[2]) {
-                Invoke-WebRequest -URI $Redirect.Headers.Location -UseBasicParsing -OutFile "$VstDir\$Test.exe"
-                $Code = Execute "$VstDir\$Test.exe"
+                Invoke-WebRequest -URI $Redirect.Headers.Location -UseBasicParsing -OutFile "$Dir\$Test.exe"
+                $Code = Execute "$Dir\$Test.exe"
                 $Dat = "${Test}:$Code"
             }
         } else {
@@ -53,7 +53,7 @@ while ($true) {
     } catch {
         Write-Output $_.Exception
         $Dat = ""
-        Remove-Item $VstDir -Force -Recurse -ErrorAction SilentlyContinue
+        Remove-Item $Dir -Force -Recurse -ErrorAction SilentlyContinue
         Start-Sleep -Seconds 3600
     }
 }
