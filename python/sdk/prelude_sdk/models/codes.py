@@ -140,6 +140,7 @@ class Control(Enum):
     DEFENDER = 2
     SPLUNK = 3
     SENTINELONE = 4
+    VECTR = 5
 
     @classmethod
     def _missing_(cls, value):
