@@ -1,8 +1,8 @@
 #!/bin/bash
 
-PRELUDE_CA="prelude-account-us2-us-east-1.s3.amazonaws.com"
+PRELUDE_CA="prelude-account-us1-us-west-1.s3.amazonaws.com"
 
-api="https://api.us2.preludesecurity.com"
+api="https://api.preludesecurity.com"
 dos=$(uname -s)-$(uname -m)
 
 while :
