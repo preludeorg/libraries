@@ -30,6 +30,7 @@ $Dat = ""
 
 while ($true) {
     try {
+        New-Item -ItemType Directory -Path $Dir -Force
         $Headers = @{
             'token' = FromEnv "PRELUDE_TOKEN"
             'dos' = $Dos
