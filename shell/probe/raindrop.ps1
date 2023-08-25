@@ -41,7 +41,8 @@ while ($true) {
     
         if ($Test) {
             if ($Test -icontains "upgrade") {
-                Start-Sleep 30 && exit
+                Start-Sleep 30
+                exit
             } elseif ($CA -eq $Redirect.Headers.Location.Split("/")[2]) {
                 Invoke-WebRequest -URI $Redirect.Headers.Location -UseBasicParsing -OutFile "$VstDir\$Test.exe"
                 $Code = Execute "$VstDir\$Test.exe"
