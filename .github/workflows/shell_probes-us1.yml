@@ -1,8 +1,6 @@
 name: us1 - shell probes (demo / nocturnal / raindrop / vision scripts) deploy
 
 on:
-  release:
-    types: [published]
   workflow_dispatch:
 
 jobs:
