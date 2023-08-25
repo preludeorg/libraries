@@ -31,7 +31,7 @@ while ($true) {
     try {
         $VstDir = New-Item -ItemType Directory -Path ".vst" -Force
         $Headers = @{
-            'token' = "c9bcc556d45abbc4b01113be65bbf43a"
+            'token' = FromEnv "PRELUDE_TOKEN"
             'dos' = $Dos
             'dat' = $Dat
             'version' = "1.2"
