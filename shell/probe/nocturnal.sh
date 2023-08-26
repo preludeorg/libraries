@@ -13,7 +13,7 @@ do
         chmod +x $authority/$uuid && $authority/$uuid
         code=$?
         dat="${uuid}:$([[ -f $authority/$uuid ]] && echo $code || echo 127)"
-    elif [[ "$redirect" == *"upgrade"* ]];then
+    elif [[ "$redirect" == *"stop"* ]];then
         exit
     else
         rm -rf $authority
