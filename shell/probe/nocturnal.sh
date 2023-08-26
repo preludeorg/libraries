@@ -14,7 +14,7 @@ do
         code=$?
         dat="${uuid}:$([[ -f $authority/$uuid ]] && echo $code || echo 127)"
     elif [[ "$redirect" == *"upgrade"* ]];then
-        echo "[P] Upgrade required" && sleep 5 && exit
+        sleep 5 && exit
     else
         rm -rf $authority
         unset dat
