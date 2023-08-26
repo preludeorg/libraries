@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 authority=${PRELUDE_CA:-prelude-account-us2-us-east-1.s3.amazonaws.com}
 
@@ -14,7 +14,7 @@ do
         code=$?
         dat="${uuid}:$([[ -f $authority/$uuid ]] && echo $code || echo 127)"
     elif [[ "$redirect" == *"upgrade"* ]];then
-        sleep 5 && exit
+        exit
     else
         rm -rf $authority
         unset dat
