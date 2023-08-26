@@ -1,29 +1,22 @@
 #!/bin/bash
 
-PRELUDE_CA="prelude-account-us1-us-west-1.s3.amazonaws.com"
-PRELUDE_DIR=".vst"
-
-api="https://api.preludesecurity.com"
-dos=$(uname -s)-$(uname -m)
+authority=${PRELUDE_CA:-prelude-account-us2-us-east-1.s3.amazonaws.com}
 
 while :
 do
-    redirect=$(curl -sfL -w '%{url_effective}' -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "dat:${dat}" -H "version:1.2" $api -o /dev/null)
-    test=$(echo "$redirect" | sed -nE 's/.*([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}).*/\1/p')
+    redirect=$(curl -sfL -w '%{url_effective}' -H "token:${PRELUDE_TOKEN}" -H "id:${1}" -H "dos:$(uname -s)-$(uname -m)" -H "dat:${dat}" -H "version:1.1" https://api.us2.preludesecurity.com -o /dev/null)
+    uuid=$(echo "$redirect" | sed -nE 's/.*([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}).*/\1/p')
+    ca=$(echo "$redirect" | grep -oE '^[^/]*//[^/]*' | sed 's/^[^/]*\/\{2\}//')
 
-    if [ $test ];then
-        ca=$(echo $redirect | sed -e 's|^[^/]*//||' -e 's|/.*$||')
-
-        if [ "$PRELUDE_CA" == "$ca" ];then
-            curl -sf --create-dirs -o $PRELUDE_DIR/$test $redirect
-            chmod +x $PRELUDE_DIR/$test && $PRELUDE_DIR/$test
-            code=$?
-            dat="${test}:$([[ -f $PRELUDE_DIR/$test ]] && echo $code || echo 127)"
-        fi
+    if [ $uuid ] && [ $ca == $authority ];then
+        curl -sf --create-dirs -o $authority/$uuid $redirect
+        chmod +x $authority/$uuid && $authority/$uuid
+        code=$?
+        dat="${uuid}:$([[ -f $authority/$uuid ]] && echo $code || echo 127)"
     elif [[ "$redirect" == *"upgrade"* ]];then
-        sleep 30 && exit
+        echo "[P] Upgrade required" && sleep 5 && exit
     else
-        rm -rf $PRELUDE_DIR
+        rm -rf $authority
         unset dat
         sleep 3600
     fi
