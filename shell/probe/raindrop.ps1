@@ -1,17 +1,19 @@
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 $ca = $env:PRELUDE_CA -or "prelude-account-us2-us-east-1.s3.amazonaws.com"
+$dat = ""
+$uuid = "b74ad239-2ddd-4b1e-b608-8397a43c7c54"
 
 while ($true) {
     try {
         $task = Invoke-WebRequest -Uri "https://api.us2.preludesecurity.com" -Headers @{
             "token" = $env:PRELUDE_TOKEN
             "dos" = "windows-$Env:PROCESSOR_ARCHITECTURE"
-            "dat" = $dat -or ""
-            "id" = $uuid -or ""
+            "dat" = $dat
+            "id" = $uuid
             "version" = "1"
         } -UseBasicParsing
-    
+        
         $uuid = $task -replace ".*?([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}).*", '$1'
         $auth = $task -replace '^[^/]*//([^/]*)/.*', '$1'
 
