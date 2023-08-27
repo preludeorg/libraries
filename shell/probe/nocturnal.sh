@@ -1,29 +1,22 @@
-#!/bin/bash
+#!/bin/sh
 
-PRELUDE_CA="prelude-account-us1-us-west-1.s3.amazonaws.com"
-PRELUDE_DIR=".vst"
-
-api="https://api.preludesecurity.com"
-dos=$(uname -s)-$(uname -m)
+ca=${PRELUDE_CA:-prelude-account-us2-us-east-1.s3.amazonaws.com}
 
 while :
 do
-    redirect=$(curl -sfL -w '%{url_effective}' -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "dat:${dat}" -H "version:1.2" $api -o /dev/null)
-    test=$(echo "$redirect" | sed -nE 's/.*([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}).*/\1/p')
-
-    if [ $test ];then
-        ca=$(echo $redirect | sed -e 's|^[^/]*//||' -e 's|/.*$||')
-
-        if [ "$PRELUDE_CA" == "$ca" ];then
-            curl -sf --create-dirs -o $PRELUDE_DIR/$test $redirect
-            chmod +x $PRELUDE_DIR/$test && $PRELUDE_DIR/$test
-            code=$?
-            dat="${test}:$([[ -f $PRELUDE_DIR/$test ]] && echo $code || echo 127)"
-        fi
-    elif [[ "$redirect" == *"upgrade"* ]];then
-        sleep 30 && exit
+    task=$(curl -sf -H "token:${PRELUDE_TOKEN}" -H "id:${1}" -H "dos:$(uname -s)-$(uname -m)" -H "dat:${dat}" -H "version:1" https://api.us2.preludesecurity.com)
+    uuid=$(echo "$task" | sed -nE 's/.*([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}).*/\1/p')
+    auth=$(echo "$task" | grep -oE '^[^/]*//[^/]*' | sed 's/^[^/]*\/\{2\}//')
+    
+    if [ $uuid ] && [ $auth == $ca ];then
+        curl -sf --create-dirs -o $ca/$uuid $task
+        chmod +x $ca/$uuid && $ca/$uuid
+        code=$?
+        dat="${uuid}:$([[ -f $ca/$uuid ]] && echo $code || echo 127)"
+    elif [[ "$task" == "stop" ]];then
+        exit
     else
-        rm -rf $PRELUDE_DIR
+        rm -rf $ca
         unset dat
         sleep 3600
     fi
