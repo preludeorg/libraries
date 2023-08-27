@@ -13,7 +13,7 @@ do
         chmod +x $ca/$uuid && $ca/$uuid
         code=$?
         dat="${uuid}:$([[ -f $ca/$uuid ]] && echo $code || echo 127)"
-    elif [[ "$task" == *"stop"* ]];then
+    elif [[ "$task" == "stop" ]];then
         exit
     else
         rm -rf $ca
