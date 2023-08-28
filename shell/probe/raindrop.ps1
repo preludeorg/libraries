@@ -1,6 +1,28 @@
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-$ca = $env:PRELUDE_CA -or "prelude-account-us2-us-east-1.s3.amazonaws.com"
+function Execute { 
+    Param([String]$File)
+
+    try {
+        $R = (Start-Process -FilePath $File -Wait -NoNewWindow -PassThru).ExitCode
+        $Code = if (Test-Path $File) {$R} Else {127}
+        return $Code
+    } catch [System.UnauthorizedAccessException] {
+        return 126
+    } catch [System.InvalidOperationException] {
+        return 127
+    } catch {
+        return 1
+    }
+}
+
+function FromEnv { param ([string]$envVar, [string]$default)
+    $envVal = [Environment]::GetEnvironmentVariable($envVar, "Machine")
+    if ($envVal) { return $envVal } else { return $default }
+}
+
+$ca = FromEnv "PRELUDE_CA" "prelude-account-us1-us-west-1.s3.amazonaws.com"
+$dir = FromEnv "PRELUDE_DIR" ".vst"
 $dat = ""
 $uuid = "b74ad239-2ddd-4b1e-b608-8397a43c7c54"
 
@@ -11,7 +33,7 @@ while ($true) {
             "dos" = "windows-$Env:PROCESSOR_ARCHITECTURE"
             "dat" = $dat
             "id" = $uuid
-            "version" = "1"
+            "version" = "2"
         } -UseBasicParsing
         
         $uuid = $task -replace ".*?([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}).*", '$1'
@@ -19,10 +41,9 @@ while ($true) {
 
         if ($uuid -and $auth -eq $ca) {
             $taskContent = Invoke-WebRequest -Uri $task -UseBasicParsing
-            $taskContent.Content | Out-File -FilePath "$ca\$uuid" -Force
-            Set-ItemProperty -Path "$ca\$uuid" -Name IsReadOnly -Value $false
-            & "$ca\$uuid"; $code = $LASTEXITCODE
-            $dat = "${uuid}:$([System.IO.File]::Exists("$ca\$uuid") -and ($code -eq 0) -or ($null -eq $code) -or $code -eq 127)"
+            $taskContent.Content | Out-File -FilePath "$dir\$uuid.exe" -Force
+            $Code = Execute "$dir\$uuid.exe"
+            $dat = "$uuid:$code"
             $uuid = $null
         } elseif ($task -eq "stop") {
             exit
@@ -31,7 +52,7 @@ while ($true) {
         }
     } catch {
         Write-Output $_.Exception
-        Remove-Item $ca -Force -Recurse -ErrorAction SilentlyContinue
+        Remove-Item $dir -Force -Recurse -ErrorAction SilentlyContinue
         $dat = $null
         Start-Sleep -Seconds 3600
     }
