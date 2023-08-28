@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 )
@@ -22,7 +23,7 @@ func Start(test fn, clean ...fn) {
 		cleanup = clean[0]
 	}
 
-	println("[+] Starting test")
+	Print("Starting test")
 
 	go func() {
 		test()
@@ -36,8 +37,14 @@ func Start(test fn, clean ...fn) {
 
 func Stop(code int) {
 	cleanup()
-	println(fmt.Sprintf("[+] Completed with code: %d", code))
+	Print(fmt.Sprintf("Completed with code: %d", code))
 	os.Exit(code)
+}
+
+func Print(print string) {
+	filename := filepath.Base(os.Args[0])
+	name := strings.TrimSuffix(filename, filepath.Ext(filename))
+	Print(fmt.Sprintf("[%s] %s\n", name, print))
 }
 
 func Find(ext string) []string {
@@ -46,7 +53,7 @@ func Find(ext string) []string {
 	filepath.WalkDir(dirname, func(s string, d fs.DirEntry, e error) error {
 		if e == nil {
 			if filepath.Ext(d.Name()) == ext {
-				println("[+] Found:", s)
+				Print(fmt.Sprintf("Found: %s", s))
 				a = append(a, s)
 			}
 		}
@@ -66,7 +73,7 @@ func Read(path string) []byte {
 func Write(filename string, contents []byte) {
 	err := os.WriteFile(pwd(filename), contents, 0644)
 	if err != nil {
-		println("[-] Failed to write " + filename)
+		Print("Failed to write " + filename)
 	}
 }
 
@@ -129,14 +136,14 @@ func IsSecure() bool {
 	} else if runtime.GOOS == "android" {
 		return true
 	}
-	println("[-] Endpoint is not secure by design")
+	Print("Endpoint is not secure by design")
 	return false
 }
 
 func pwd(filename string) string {
 	bin, err := os.Executable()
 	if err != nil {
-		println("[-] Failed to get path")
+		Print("Failed to get path")
 		Stop(256)
 	}
 	filePath := filepath.Join(filepath.Dir(bin), filename)
@@ -188,7 +195,7 @@ func (s *PortScan) ScanHosts(ports ...int) []string {
 						if s.ScanPort("tcp", host, port) {
 							HostArray = append(HostArray, host)
 							mutex.Lock()
-							fmt.Printf("[+] Host: %s is up on port %d\n", host, port)
+							Print(fmt.Sprintf("Host: %s is up on port %d\n", host, port))
 							mutex.Unlock()
 						}
 					}(host, port)
