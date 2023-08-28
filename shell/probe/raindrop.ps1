@@ -22,17 +22,15 @@ function FromEnv { param ([string]$envVar, [string]$default)
 }
 
 $ca = FromEnv "PRELUDE_CA" "prelude-account-us1-us-west-1.s3.amazonaws.com"
-$dir = FromEnv "PRELUDE_DIR" ".vst"
+$dir = FromEnv "PRELUDE_DIR" $ca
 $dat = ""
-$uuid = "b74ad239-2ddd-4b1e-b608-8397a43c7c54"
 
 while ($true) {
     try {
-        $task = Invoke-WebRequest -Uri "https://api.us2.preludesecurity.com" -Headers @{
+        $task = Invoke-WebRequest -Uri "https://api.preludesecurity.com" -Headers @{
             "token" = $env:PRELUDE_TOKEN
             "dos" = "windows-$Env:PROCESSOR_ARCHITECTURE"
             "dat" = $dat
-            "id" = $uuid
             "version" = "2"
         } -UseBasicParsing
         
@@ -40,10 +38,9 @@ while ($true) {
         $auth = $task -replace '^[^/]*//([^/]*)/.*', '$1'
 
         if ($uuid -and $auth -eq $ca) {
-            $taskContent = Invoke-WebRequest -Uri $task -OutFile "$dir\$uuid.exe" -UseBasicParsing
+            Invoke-WebRequest -Uri $task -OutFile "$dir\$uuid.exe" -UseBasicParsing
             $code = Execute "$dir\$uuid.exe"
-            $dat = "$uuid:$code"
-            $uuid = $null
+            $dat = "${uuid}:${code}"
         } elseif ($task -eq "stop") {
             exit
         } else {
