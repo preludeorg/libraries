@@ -23,7 +23,7 @@ func Start(test fn, clean ...fn) {
 		cleanup = clean[0]
 	}
 
-	Print(fmt.Sprintf("Starting test at: %s", time.Now().UTC().Format("2006-01-02T15:04:05Z")))
+	Print(fmt.Sprintf("Starting test at: %s", time.Now().Format("2006-01-02T15:04:05")))
 
 	go func() {
 		test()
@@ -38,7 +38,7 @@ func Start(test fn, clean ...fn) {
 func Stop(code int) {
 	cleanup()
 	Print(fmt.Sprintf("Completed with code: %d", code))
-	Print(fmt.Sprintf("Ending test at: %s", time.Now().UTC().Format("2006-01-02T15:04:05Z")))
+	Print(fmt.Sprintf("Ending test at: %s", time.Now().Format("2006-01-02T15:04:05")))
 	os.Exit(code)
 }
 
