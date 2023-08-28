@@ -45,7 +45,7 @@ func Stop(code int) {
 func Print(print string) {
 	filename := filepath.Base(os.Args[0])
 	name := strings.TrimSuffix(filename, filepath.Ext(filename))
-	fmt.Printf("[%s] %s\n", name, print)
+	fmt.Printf("[%s] %v\n", name, print)
 }
 
 func Find(ext string) []string {
