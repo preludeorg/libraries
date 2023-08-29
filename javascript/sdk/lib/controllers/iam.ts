@@ -100,14 +100,14 @@ export default class IAMController {
     account_id: string,
     email: string,
     options: RequestOptions = {}
-  ): Promise<CreatedUser> {
+  ): Promise<StatusResponse> {
     const response = await this.#client.requestWithAuth("/iam/user/reset", {
       method: "POST",
       body: JSON.stringify({ account_id, handle: email }),
       ...options,
     });
 
-    return await response.json();
+    return (await response.json()) as StatusResponse;
   }
 
   /** Delete a user from an account */
