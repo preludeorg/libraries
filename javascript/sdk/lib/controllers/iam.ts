@@ -76,21 +76,14 @@ export default class IAMController {
 
   /** Create a new user inside an account */
   async createUser(
-    { permission, email, name, expires, token }: CreateUserParams,
+    { permission, email, name, expires }: CreateUserParams,
     options: RequestOptions = {}
   ): Promise<CreatedUser> {
-    const searchParams = new URLSearchParams();
-    if (token) {
-      searchParams.set("token", token.toString());
-    }
-    const response = await this.#client.requestWithAuth(
-      `/iam/user?${searchParams.toString()}`,
-      {
-        method: "POST",
-        body: JSON.stringify({ permission, handle: email, name, expires }),
-        ...options,
-      }
-    );
+    const response = await this.#client.requestWithAuth("/iam/user", {
+      method: "POST",
+      body: JSON.stringify({ permission, handle: email, name, expires }),
+      ...options,
+    });
 
     return (await response.json()) as CreatedUser;
   }

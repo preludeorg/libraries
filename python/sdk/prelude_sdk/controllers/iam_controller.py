@@ -95,7 +95,6 @@ class IAMController:
             return res.json()
         raise Exception(res.text)
 
-
     @verify_credentials
     def delete_user(self, handle):
         """ Delete a user from an account """
