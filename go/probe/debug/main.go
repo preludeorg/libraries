@@ -1,17 +1,19 @@
 package main
 
 import (
-	"io"
-	"os"
-	"fmt"
-	"flag"
 	"bufio"
-	"regexp"
-	"net/url"
-	"os/exec"
-	"runtime"
+	"bytes"
+	"flag"
+	"fmt"
+	"io"
 	"net/http"
+	"net/url"
+	"os"
+	"os/exec"
 	"path/filepath"
+	"encoding/json"
+	"regexp"
+	"runtime"
 )
 
 var (
@@ -78,23 +80,52 @@ func loop(testID string, dat string) {
 	}
 }
 
-func main() {
-	PRELUDE_API = flag.String("API", "https://api.preludesecurity.com", "Detect API")
-	PRELUDE_CA = flag.String("CA", "prelude-account-us1-us-west-1.s3.amazonaws.com", "Detect certificate authority")
-	flag.Parse()
-	
-	fmt.Println("[P] Detect API:", *PRELUDE_API)
-	fmt.Println("[P] Detect CA:", *PRELUDE_CA)
+func registerEndpoint(accountID string, token string) {
+	hostname, _ := os.Hostname()
+	jsonData, err := json.Marshal(map[string]string{
+		"id": fmt.Sprintf("id:%s:%s", hostname, "0"),
+	})
 
-	os.Mkdir(*PRELUDE_CA, 0755)
-	scanner := bufio.NewScanner(os.Stdin)
-
-	if os.Getenv("PRELUDE_TOKEN") == "" {
-		fmt.Print("[P] Enter a PRELUDE_TOKEN: ")
-		scanner.Scan()
-		os.Setenv("PRELUDE_TOKEN", scanner.Text())
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/detect/endpoint", *PRELUDE_API), bytes.NewBuffer(jsonData))
+	if err != nil {
+		fmt.Println("Failed to establish request:", err)
+		return
 	}
+	req.Header.Set("account", accountID)
+	req.Header.Set("token", token)
+	
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("Error registering endpoint:", err)
+		return
+	}
+	defer resp.Body.Close()
+	
+	body, err := io.ReadAll(resp.Body)
+	if resp.StatusCode == http.StatusOK {
+		os.Setenv("PRELUDE_TOKEN", string(body))
+		return
+	}
+	fmt.Println(string(body))
+	os.Exit(1)
+}
 
+func main() {
+	PRELUDE_API = flag.String("API", "https://api.us2.preludesecurity.com", "Detect API")
+	PRELUDE_CA = flag.String("CA", "prelude-account-us2-us-east-1.s3.amazonaws.com", "Detect certificate authority")
+	flag.Parse()
+	os.Mkdir(*PRELUDE_CA, 0755)
+
+	var account, token string
+	fmt.Print("[P] Enter account ID: ")
+	fmt.Scanln(&account)
+	fmt.Print("[P] Enter account token: ")
+	fmt.Scanln(&token)
+	registerEndpoint(account, token)
+
+	fmt.Print("\n\n----- AUTHORIZED AND READY TO RUN TESTS -----\n\n")
+	scanner := bufio.NewScanner(os.Stdin)
 	for {
 		fmt.Print("[P] Enter a test ID: ")
 		scanner.Scan()
