@@ -1,3 +1,4 @@
+import logging
 import requests
 import datetime
 
@@ -29,6 +30,7 @@ class IAMController:
         cfg = self.account.read_keychain_config()
         res_json = res.json()
         cfg[self.account.profile]['account'] = res_json['account_id']
+        cfg[self.account.profile]['handle'] = user_email
         cfg[self.account.profile]['token'] = res_json['token']
         self.account.write_keychain_config(cfg)
         return res_json

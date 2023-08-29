@@ -14,6 +14,7 @@ def verify_credentials(func):
             args[0].account.hq = cfg.get(args[0].account.profile, 'hq')
             args[0].account.headers = dict(
                 account=cfg.get(args[0].account.profile, 'account'),
+                handle=cfg.get(args[0].account.profile, 'handle'),
                 token=cfg.get(args[0].account.profile, 'token'),
                 _product='py-sdk'
             )
@@ -36,8 +37,8 @@ class Account:
         self.headers = dict()
         self.keychain_location = keychain_location
 
-    def configure(self, account_id, token, hq='https://api.preludesecurity.com', profile='default'):
-        cfg = self._merge_configs(self.read_keychain_config(hq, profile), self.generate_config(account_id, token, hq, profile))
+    def configure(self, account_id, handle, token, hq='https://api.preludesecurity.com', profile='default'):
+        cfg = self._merge_configs(self.read_keychain_config(hq, profile), self.generate_config(account_id, handle, token, hq, profile))
         self.write_keychain_config(cfg=cfg)
 
     def read_keychain_config(self, hq='https://api.preludesecurity.com', profile='default'):
@@ -55,11 +56,12 @@ class Account:
             cfg.write(f)
 
     @staticmethod
-    def generate_config(account_id, token, hq, profile):
+    def generate_config(account_id, handle, token, hq, profile):
         cfg = configparser.ConfigParser()
         cfg[profile] = {
             'hq': hq,
             'account': account_id,
+            'handle': handle,
             'token': token
         }
         return cfg
