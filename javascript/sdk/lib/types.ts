@@ -59,7 +59,10 @@ export interface Account {
 export interface VerifiedUser {
   account_id: string;
   token: string;
-  user: User;
+  handle: string;
+  permission: Permission;
+  expires: string;
+  name: string;
 }
 
 export interface CreateAccountParams {
