@@ -223,6 +223,7 @@ export const ControlCodes = {
   DEFENDER: 2,
   SPLUNK: 3,
   SENTINELONE: 4,
+  VECTR: 5,
 } as const;
 
 export type ControlCodeName = keyof typeof ControlCodes;
