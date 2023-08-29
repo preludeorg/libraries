@@ -108,6 +108,37 @@ class IAMController:
             return res.json()
         raise Exception(res.text)
 
+    def reset_password(self, handle: str, account_id: str = None):
+        """ Reset a user's password """
+        data = dict(
+            account_id=account_id or self.account.headers['account_id'],
+            handle=handle
+        )
+        res = requests.post(
+            f'{self.account.hq}/iam/user/reset',
+            json=data,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    def verify_account(self, token: str):
+        """ Verify an account """
+        params = dict(token=token)
+        res = requests.get(
+            f'{self.account.hq}/iam/user',
+            params=params,
+            timeout=10
+        )
+        if res.status_code == 200:
+            cfg = self.account.read_keychain_config()
+            res_json = res.json()
+            cfg[self.account.profile]['token'] = res_json['token']
+            self.account.write_keychain_config(cfg)
+            return res_json
+        raise Exception(res.text)
+
     @verify_credentials
     def audit_logs(self, days: int = 7, limit: int = 1000):
         """ Get audit logs from the last X days """
