@@ -147,6 +147,7 @@ export interface Probe {
   tags: string[];
   last_seen: string;
   created: string;
+  dos: Platform;
 }
 
 export interface SearchResults {
