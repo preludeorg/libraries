@@ -9,6 +9,7 @@ import type {
   Mode,
   RequestOptions,
   StatusResponse,
+  VerifiedUser,
 } from "../types";
 
 export default class IAMController {
@@ -107,7 +108,7 @@ export default class IAMController {
   async verifyUser(
     token: string,
     options: RequestOptions = {}
-  ): Promise<StatusResponse> {
+  ): Promise<VerifiedUser> {
     const searchParams = new URLSearchParams({ token: token.toString() });
     const response = await this.#client.request(
       `/iam/user?$${searchParams.toString()}`,
@@ -117,7 +118,7 @@ export default class IAMController {
       }
     );
 
-    return (await response.json()) as StatusResponse;
+    return (await response.json()) as VerifiedUser;
   }
 
   /** Delete a user from an account */
