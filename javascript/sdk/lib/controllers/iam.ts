@@ -94,7 +94,7 @@ export default class IAMController {
     email: string,
     options: RequestOptions = {}
   ): Promise<StatusResponse> {
-    const response = await this.#client.requestWithAuth("/iam/user/reset", {
+    const response = await this.#client.request("/iam/user/reset", {
       method: "POST",
       body: JSON.stringify({ account_id, handle: email }),
       ...options,
@@ -109,7 +109,7 @@ export default class IAMController {
     options: RequestOptions = {}
   ): Promise<StatusResponse> {
     const searchParams = new URLSearchParams({ token: token.toString() });
-    const response = await this.#client.requestWithAuth(
+    const response = await this.#client.request(
       `/iam/user?$${searchParams.toString()}`,
       {
         method: "GET",
