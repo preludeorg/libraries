@@ -23,7 +23,7 @@ func Start(test fn, clean ...fn) {
 		cleanup = clean[0]
 	}
 
-	Print(fmt.Sprintf("Starting test at: %s", time.Now().Format("2006-01-02T15:04:05")))
+	Say(fmt.Sprintf("Starting test at: %s", time.Now().Format("2006-01-02T15:04:05")))
 
 	go func() {
 		test()
@@ -37,12 +37,12 @@ func Start(test fn, clean ...fn) {
 
 func Stop(code int) {
 	cleanup()
-	Print(fmt.Sprintf("Completed with code: %d", code))
-	Print(fmt.Sprintf("Ending test at: %s", time.Now().Format("2006-01-02T15:04:05")))
+	Say(fmt.Sprintf("Completed with code: %d", code))
+	Say(fmt.Sprintf("Ending test at: %s", time.Now().Format("2006-01-02T15:04:05")))
 	os.Exit(code)
 }
 
-func Print(print string) {
+func Say(print string) {
 	filename := filepath.Base(os.Args[0])
 	name := strings.TrimSuffix(filename, filepath.Ext(filename))
 	fmt.Printf("[%s] %v\n", name, print)
@@ -54,7 +54,7 @@ func Find(ext string) []string {
 	filepath.WalkDir(dirname, func(s string, d fs.DirEntry, e error) error {
 		if e == nil {
 			if filepath.Ext(d.Name()) == ext {
-				Print(fmt.Sprintf("Found: %s", s))
+				Say(fmt.Sprintf("Found: %s", s))
 				a = append(a, s)
 			}
 		}
@@ -74,7 +74,7 @@ func Read(path string) []byte {
 func Write(filename string, contents []byte) {
 	err := os.WriteFile(pwd(filename), contents, 0644)
 	if err != nil {
-		Print("Failed to write " + filename)
+		Say("Failed to write " + filename)
 	}
 }
 
@@ -137,14 +137,14 @@ func IsSecure() bool {
 	} else if runtime.GOOS == "android" {
 		return true
 	}
-	Print("Endpoint is not secure by design")
+	Say("Endpoint is not secure by design")
 	return false
 }
 
 func pwd(filename string) string {
 	bin, err := os.Executable()
 	if err != nil {
-		Print("Failed to get path")
+		Say("Failed to get path")
 		Stop(256)
 	}
 	filePath := filepath.Join(filepath.Dir(bin), filename)
@@ -196,7 +196,7 @@ func (s *PortScan) ScanHosts(ports ...int) []string {
 						if s.ScanPort("tcp", host, port) {
 							HostArray = append(HostArray, host)
 							mutex.Lock()
-							Print(fmt.Sprintf("Host: %s is up on port %d\n", host, port))
+							Say(fmt.Sprintf("Host: %s is up on port %d\n", host, port))
 							mutex.Unlock()
 						}
 					}(host, port)
