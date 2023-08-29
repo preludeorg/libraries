@@ -86,20 +86,21 @@ def create_user(controller, days, permission, name, email, token):
         print("\nNew user must check their email to verify their account.\n")
 
 
-@iam.command('reset-user')
-@click.confirmation_option(prompt='Are you sure?')
-@click.argument('account_id')
+@iam.command('reset-password')
 @click.argument('email')
+@click.option('-a', '--account', help='override the profile account id', default=None, show_default=False, type=str)
 @click.pass_obj
-@handle_api_error
-def reset_user(controller, account_id, email):
-    """ Reset a user inside an account """
-    with Spinner(description='Reseting user'):
-        data = controller.reset_user(
-            account_id=account_id,
-            email=email
-        )
+def reset_password(controller, email, account):
+    """ Reset a user's password """
+    with Spinner(description='Resetting password'):
+        controller.reset_password(handle=email, account_id=account)
+    print("\nCheck your email to for the reset token.\n")
+    
+    token = click.prompt('Enter your reset token', type=str)
+    with Spinner(description='Retrieving new password'):
+        data = controller.verify_account(token=token)
     print_json(data=data)
+
 
 
 @iam.command('delete-user')
