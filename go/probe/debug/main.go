@@ -4,6 +4,7 @@ import (
 	"io"
 	"os"
 	"fmt"
+	"flag"
 	"bufio"
 	"regexp"
 	"net/url"
@@ -13,24 +14,24 @@ import (
 	"path/filepath"
 )
 
-const (
-	PRELUDE_API   = "https://api.us2.preludesecurity.com"
-	PRELUDE_CA    = "prelude-account-us2-us-east-1.s3.amazonaws.com"
+var (
+	PRELUDE_API *string
+	PRELUDE_CA  *string
 )
 
 var re = regexp.MustCompile(`[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}`)
 
-func loop(test_id string, dat string) {
+func loop(testID string, dat string) {
 	dos := fmt.Sprintf("%s-%s", runtime.GOOS, runtime.GOARCH)
 
-	req, err := http.NewRequest("GET", PRELUDE_API, nil)
+	req, err := http.NewRequest("GET", *PRELUDE_API, nil)
 	if err != nil {
-		fmt.Println("Error creating request:", err)
+		fmt.Println("Verify your API is correct", err)
 		return
 	}
 
 	req.Header.Set("token", os.Getenv("PRELUDE_TOKEN"))
-	req.Header.Set("id", test_id)
+	req.Header.Set("id", testID)
 	req.Header.Set("dos", dos)
 	req.Header.Set("dat", dat)
 	req.Header.Set("version", "2")
@@ -38,27 +39,27 @@ func loop(test_id string, dat string) {
 	client := http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println("Error sending request:", err)
+		fmt.Println("Failed retreiving test:", err)
 		return
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println("Error reading response:", err)
+		fmt.Println("Failed extracting test:", err)
 		return
 	}
 
 	location := resp.Request.URL.String()
 	test := re.FindString(location)
 
-	if test != "" {
+	if test != "" && test == testID {
 		parsedURL, _ := url.Parse(location)
 
-		if PRELUDE_CA == parsedURL.Host {
-			os.WriteFile(test, body, 0755)
+		if *PRELUDE_CA == parsedURL.Host {
 			bin, _ := os.Executable()
-			executable := filepath.Join(filepath.Dir(bin), test)
+			executable := filepath.Join(filepath.Dir(bin), *PRELUDE_CA, test)
+			os.WriteFile(executable, body, 0755)
 
 			cmd := exec.Command(executable)
 			cmd.Stdout = os.Stdout
@@ -72,25 +73,32 @@ func loop(test_id string, dat string) {
 			}
 
 		} else {
-			fmt.Println("Error: Invalid CA ", parsedURL.Host)
+			fmt.Println("Invalid CA ", parsedURL.Host)
 		}
 	}
 }
 
 func main() {
+	PRELUDE_API = flag.String("API", "https://api.us2.preludesecurity.com", "Detect API")
+	PRELUDE_CA = flag.String("CA", "prelude-account-us2-us-east-1.s3.amazonaws.com", "Detect certificate authority")
+	flag.Parse()
+	
+	fmt.Println("[P] Detect API:", *PRELUDE_API)
+	fmt.Println("[P] Detect CA:", *PRELUDE_CA)
+
+	os.Mkdir(*PRELUDE_CA, 0755)
 	scanner := bufio.NewScanner(os.Stdin)
 
 	if os.Getenv("PRELUDE_TOKEN") == "" {
-		fmt.Print("[P] Please provide a PRELUDE_TOKEN: ")
+		fmt.Print("[P] Enter a PRELUDE_TOKEN: ")
 		scanner.Scan()
 		os.Setenv("PRELUDE_TOKEN", scanner.Text())
 	}
 
 	for {
-		fmt.Print("[P] Enter test ID: ")
+		fmt.Print("[P] Enter a test ID: ")
 		scanner.Scan()
 		testID := scanner.Text()
-
 		if testID != "" {
 			loop(testID, "")
 		}
