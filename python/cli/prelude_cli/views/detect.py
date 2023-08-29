@@ -115,18 +115,6 @@ def disable_test(controller, test, tags):
     print_json(data=data)
 
 
-@detect.command('social-stats')
-@click.argument('test')
-@click.option('-d', '--days', help='days to look back', default=30, type=int, show_default=True)
-@click.pass_obj
-@handle_api_error
-def social_statistics(controller, test, days):
-    """ Pull social statistics for a specific test """
-    with Spinner(description='Fetching social statistics'):
-        data = controller.social_stats(ident=test, days=days)
-    print_json(data=data)
-
-
 @detect.command('delete-endpoint')
 @click.argument('endpoint_id')
 @click.confirmation_option(prompt='Are you sure?')
@@ -200,7 +188,7 @@ def clone(controller):
 @click.option('-v', '--view',
               help='retrieve a specific result view',
               default='logs', show_default=True,
-              type=click.Choice(['logs', 'days', 'insights', 'probes', 'advisories', 'tests', 'metrics']))
+              type=click.Choice(['logs', 'days', 'insights', 'probes', 'advisories', 'tests', 'metrics', 'social']))
 @click.option('-d', '--days', help='days to look back', default=30, type=int)
 @click.option('--tests', help='comma-separated list of test IDs', type=str)
 @click.option('--tags', help='comma-separated list of tags', type=str)
