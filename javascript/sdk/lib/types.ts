@@ -67,6 +67,7 @@ export interface CreateUserParams {
   email: string;
   name?: string;
   expires?: string;
+  token?: string;
 }
 
 export interface CreatedUser {

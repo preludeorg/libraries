@@ -76,16 +76,38 @@ export default class IAMController {
 
   /** Create a new user inside an account */
   async createUser(
-    { permission, email, name, expires }: CreateUserParams,
+    { permission, email, name, expires, token }: CreateUserParams,
     options: RequestOptions = {}
   ): Promise<CreatedUser> {
-    const response = await this.#client.requestWithAuth("/iam/user", {
+    const searchParams = new URLSearchParams();
+    if (token) {
+      searchParams.set("token", token.toString());
+    }
+    const response = await this.#client.requestWithAuth(
+      `/iam/user?${searchParams.toString()}`,
+      {
+        method: "POST",
+        body: JSON.stringify({ permission, handle: email, name, expires }),
+        ...options,
+      }
+    );
+
+    return (await response.json()) as CreatedUser;
+  }
+
+  /** Reset a user inside an account */
+  async resetUser(
+    account_id: string,
+    email: string,
+    options: RequestOptions = {}
+  ): Promise<CreatedUser> {
+    const response = await this.#client.requestWithAuth("/iam/user/reset", {
       method: "POST",
-      body: JSON.stringify({ permission, handle: email, name, expires }),
+      body: JSON.stringify({ account_id, handle: email }),
       ...options,
     });
 
-    return (await response.json()) as CreatedUser;
+    return await response.json();
   }
 
   /** Delete a user from an account */

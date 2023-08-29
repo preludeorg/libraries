@@ -77,8 +77,9 @@ class IAMController:
         raise Exception(res.text)
 
     @verify_credentials
-    def create_user(self, permission: int, email: str, expires: datetime = None, name: str = None):
+    def create_user(self, permission: int, email: str, expires: datetime = None, name: str = None, token: str = None):
         """ Create a new user inside an account """
+        params = dict(token=token) if token else {}
         body = dict(permission=permission, handle=email)
         if name:
             body['name'] = name
@@ -87,6 +88,22 @@ class IAMController:
 
         res = requests.post(
             url=f'{self.account.hq}/iam/user',
+            json=body,
+            headers=self.account.headers,
+            params=params,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+    
+    @verify_credentials
+    def reset_user(self, account_id: str, email: str):
+        """ Reset a user inside an account """
+        body = dict(account_id=account_id, handle=email)
+
+        res = requests.post(
+            url=f'{self.account.hq}/iam/user/reset',
             json=body,
             headers=self.account.headers,
             timeout=10

@@ -66,10 +66,11 @@ def describe_account(controller):
 @click.option('-p', '--permission', help='user permission level', default=Permission.SERVICE.name,
               type=click.Choice([p.name for p in Permission if p != Permission.INVALID], case_sensitive=False), show_default=True)
 @click.option('-n', '--name', help='name of user', default=None, show_default=False, type=str)
+@click.option('-t', '--token', help='token if you are reseting a user', default=None, show_default=False, type=str)
 @click.argument('email')
 @click.pass_obj
 @handle_api_error
-def create_user(controller, days, permission, name, email):
+def create_user(controller, days, permission, name, email, token):
     """ Create a new user in your account """
     expires = datetime.utcnow() + timedelta(days=days)
     with Spinner(description='Creating new user'):
@@ -77,11 +78,28 @@ def create_user(controller, days, permission, name, email):
             email=email,
             permission=Permission[permission.upper()].value,
             name=name,
-            expires=expires
+            expires=expires,
+            token=token
         )
     print_json(data=data)
     if permission != Permission.SERVICE.name:
         print("\nNew user must check their email to verify their account.\n")
+
+
+@iam.command('reset-user')
+@click.confirmation_option(prompt='Are you sure?')
+@click.argument('account_id')
+@click.argument('email')
+@click.pass_obj
+@handle_api_error
+def reset_user(controller, account_id, email):
+    """ Reset a user inside an account """
+    with Spinner(description='Reseting user'):
+        data = controller.reset_user(
+            account_id=account_id,
+            email=email
+        )
+    print_json(data=data)
 
 
 @iam.command('delete-user')
