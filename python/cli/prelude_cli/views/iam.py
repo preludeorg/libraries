@@ -91,7 +91,7 @@ def create_user(controller, days, permission, name, email):
 def reset_password(controller, email, account):
     """ Reset a user's password """
     with Spinner(description='Resetting password'):
-        controller.reset_password(handle=email, account_id=account)
+        controller.reset_password(email=email, account_id=account)
     print("\nCheck your email to for the reset token.\n")
     
     token = click.prompt('Enter your reset token', type=str)

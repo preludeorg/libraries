@@ -108,11 +108,11 @@ class IAMController:
             return res.json()
         raise Exception(res.text)
 
-    def reset_password(self, handle: str, account_id: str = None):
+    def reset_password(self, email: str, account_id: str = None):
         """ Reset a user's password """
         data = dict(
             account_id=account_id or self.account.headers['account_id'],
-            handle=handle
+            handle=email
         )
         res = requests.post(
             f'{self.account.hq}/iam/user/reset',
@@ -123,8 +123,8 @@ class IAMController:
             return res.json()
         raise Exception(res.text)
 
-    def verify_account(self, token: str):
-        """ Verify an account """
+    def verify_user(self, token: str):
+        """ Verify a user """
         params = dict(token=token)
         res = requests.get(
             f'{self.account.hq}/iam/user',

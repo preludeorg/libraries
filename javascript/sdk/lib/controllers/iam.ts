@@ -9,6 +9,7 @@ import type {
   Mode,
   RequestOptions,
   StatusResponse,
+  VerifiedUser,
 } from "../types";
 
 export default class IAMController {
@@ -86,6 +87,38 @@ export default class IAMController {
     });
 
     return (await response.json()) as CreatedUser;
+  }
+
+  /** Reset a user's password */
+  async resetPassword(
+    account_id: string,
+    email: string,
+    options: RequestOptions = {}
+  ): Promise<StatusResponse> {
+    const response = await this.#client.request("/iam/user/reset", {
+      method: "POST",
+      body: JSON.stringify({ account_id, handle: email }),
+      ...options,
+    });
+
+    return (await response.json()) as StatusResponse;
+  }
+
+  /** Verify a user */
+  async verifyUser(
+    token: string,
+    options: RequestOptions = {}
+  ): Promise<VerifiedUser> {
+    const searchParams = new URLSearchParams({ token: token.toString() });
+    const response = await this.#client.request(
+      `/iam/user?$${searchParams.toString()}`,
+      {
+        method: "GET",
+        ...options,
+      }
+    );
+
+    return (await response.json()) as VerifiedUser;
   }
 
   /** Delete a user from an account */

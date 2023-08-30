@@ -56,6 +56,15 @@ export interface Account {
   company: string;
 }
 
+export interface VerifiedUser {
+  account_id: string;
+  token: string;
+  handle: string;
+  permission: Permission;
+  expires: string;
+  name: string;
+}
+
 export interface CreateAccountParams {
   email: string;
   name?: string;
