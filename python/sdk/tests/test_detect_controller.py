@@ -101,7 +101,7 @@ class TestDetectController:
         queue = unwrap(self.iam.get_account)(self.iam)['queue']
         assert len([test for test in queue if test['test'] == pytest.test_id]) == 0
 
-    @pytest.mark.order(after='test_social_stats')
+    @pytest.mark.order(after='test_describe_activity')
     def test_delete_endpoint(self, unwrap):
         """Test delete_endpoint method"""
         unwrap(self.detect.delete_endpoint)(self.detect, ident=pytest.endpoint_id)
