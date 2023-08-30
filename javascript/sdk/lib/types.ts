@@ -280,7 +280,7 @@ export interface Advisory {
   published: string;
 }
 
-export type Stats = Record<Platform, Record<`${ExitCode}`, number>>;
+export type SocialActivity = Record<Platform, Record<`${ExitCode}`, number>>;
 
 export interface ActivityQuery {
   start: string;
@@ -291,6 +291,7 @@ export interface ActivityQuery {
   dos?: string;
   statuses?: string;
   tags?: string;
+  control?: ControlCode;
 }
 
 export interface DayResult {

@@ -15,7 +15,7 @@ import {
   ProbeActivity,
   RegisterEndpointParams,
   RequestOptions,
-  Stats,
+  SocialActivity,
   StatusResponse,
   Test,
   TestActivity,
@@ -147,6 +147,10 @@ export default class DetectController {
     options?: RequestOptions
   ): Promise<MetricsActivity[]>;
   async describeActivity(
+    query: ActivityQuery & { view: "social" },
+    options?: RequestOptions
+  ): Promise<SocialActivity[]>;
+  async describeActivity(
     query: ActivityQuery & {
       view:
         | "days"
@@ -155,7 +159,8 @@ export default class DetectController {
         | "probes"
         | "advisories"
         | "tests"
-        | "metrics";
+        | "metrics"
+        | "social";
     },
     options: RequestOptions = {}
   ) {
@@ -168,6 +173,7 @@ export default class DetectController {
     if (query.endpoints) searchParams.set("endpoints", query.endpoints);
     if (query.result_id) searchParams.set("result_id", query.result_id);
     if (query.dos) searchParams.set("dos", query.dos);
+    if (query.control) searchParams.set("control", query.control.toString());
 
     const response = await this.#client.requestWithAuth(
       `/detect/activity?${searchParams.toString()}`,
@@ -260,23 +266,5 @@ export default class DetectController {
     );
 
     return (await response.json()) as StatusResponse;
-  }
-
-  /** Pull social statistics for a specific test */
-  async socialStats(
-    test: string,
-    days: number = 30,
-    options: RequestOptions = {}
-  ): Promise<Stats> {
-    const searchParams = new URLSearchParams({ days: days.toString() });
-    const response = await this.#client.requestWithAuth(
-      `/detect/${test}/social?${searchParams.toString()}`,
-      {
-        method: "GET",
-        ...options,
-      }
-    );
-
-    return await response.json();
   }
 }
