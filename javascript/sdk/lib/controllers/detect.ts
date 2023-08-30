@@ -149,7 +149,7 @@ export default class DetectController {
   async describeActivity(
     query: ActivityQuery & { view: "social" },
     options?: RequestOptions
-  ): Promise<SocialActivity[]>;
+  ): Promise<SocialActivity>;
   async describeActivity(
     query: ActivityQuery & {
       view:
