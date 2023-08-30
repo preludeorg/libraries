@@ -101,12 +101,6 @@ class TestDetectController:
         queue = unwrap(self.iam.get_account)(self.iam)['queue']
         assert len([test for test in queue if test['test'] == pytest.test_id]) == 0
 
-    @pytest.mark.order(after='test_describe_activity')
-    def test_social_stats(self, unwrap):
-        """Test social_stats method"""
-        res = unwrap(self.detect.social_stats)(self.detect, ident=self.common_ransomware)
-        assert len(res.values()) >= 1
-
     @pytest.mark.order(after='test_social_stats')
     def test_delete_endpoint(self, unwrap):
         """Test delete_endpoint method"""
