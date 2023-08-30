@@ -321,11 +321,6 @@ describe("SDK Test", () => {
       expect(endpoint?.tags[0]).eq(updatedTags);
     });
 
-    it("socialStats should return an object with a non-empty array of values", async function () {
-      const result = await service.detect.socialStats(commonRansomware);
-      expect(Object.values(result)).to.have.length.greaterThanOrEqual(1);
-    });
-
     it("disableTest should remove the test from the queue", async function () {
       await service.detect.disableTest({
         test: activeTest,

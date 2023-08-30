@@ -5,7 +5,7 @@ from rich import print_json
 from pathlib import Path, PurePath
 from datetime import datetime, timedelta
 
-from prelude_sdk.models.codes import RunCode
+from prelude_sdk.models.codes import RunCode, Control
 from prelude_cli.views.shared import handle_api_error, Spinner
 from prelude_sdk.controllers.iam_controller import IAMController
 from prelude_sdk.controllers.detect_controller import DetectController
@@ -115,18 +115,6 @@ def disable_test(controller, test, tags):
     print_json(data=data)
 
 
-@detect.command('social-stats')
-@click.argument('test')
-@click.option('-d', '--days', help='days to look back', default=30, type=int, show_default=True)
-@click.pass_obj
-@handle_api_error
-def social_statistics(controller, test, days):
-    """ Pull social statistics for a specific test """
-    with Spinner(description='Fetching social statistics'):
-        data = controller.social_stats(ident=test, days=days)
-    print_json(data=data)
-
-
 @detect.command('delete-endpoint')
 @click.argument('endpoint_id')
 @click.confirmation_option(prompt='Are you sure?')
@@ -197,19 +185,20 @@ def clone(controller):
 
 
 @detect.command('activity')
-@click.option('-v', '--view',
+@click.option('--view',
               help='retrieve a specific result view',
               default='logs', show_default=True,
-              type=click.Choice(['logs', 'days', 'insights', 'probes', 'advisories', 'tests', 'metrics']))
-@click.option('-d', '--days', help='days to look back', default=30, type=int)
+              type=click.Choice(['logs', 'days', 'insights', 'probes', 'advisories', 'tests', 'metrics', 'social']))
+@click.option('--days', help='days to look back', default=30, type=int)
 @click.option('--tests', help='comma-separated list of test IDs', type=str)
 @click.option('--tags', help='comma-separated list of tags', type=str)
 @click.option('--endpoints', help='comma-separated list of endpoint IDs', type=str)
 @click.option('--status', help='comma-separated list of status numbers', type=str)
 @click.option('--dos', help='comma-separated list of DOS', type=str)
+@click.option('--control', type=click.Choice([c.name for c in Control], case_sensitive=False))
 @click.pass_obj
 @handle_api_error
-def describe_activity(controller, days, view, tests, tags, endpoints, status, dos):
+def describe_activity(controller, days, view, tests, tags, endpoints, status, dos, control):
     """ View my Detect results """
     filters = dict(
         start=datetime.utcnow() - timedelta(days=days),
@@ -225,6 +214,8 @@ def describe_activity(controller, days, view, tests, tags, endpoints, status, do
         filters['statuses'] = status
     if dos:
         filters['dos'] = dos
+    if control:
+        filters['control'] = Control[control.upper()].value
 
     with Spinner(description='Fetching activity'):
         data = controller.describe_activity(view=view, filters=filters)
