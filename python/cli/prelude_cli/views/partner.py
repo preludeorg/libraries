@@ -81,3 +81,14 @@ def partner_deploy(controller, partner, host_ids):
     with Spinner(description='Deploying probes to hosts'):
         data = controller.deploy(partner_code=Control[partner.upper()].value, host_ids=host_ids)
     print_json(data=data)
+
+
+@partner.command('webhook-auth')
+@click.argument('partner', type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False))
+@click.pass_obj
+@handle_api_error
+def feed_auth(controller, partner):
+    """ Get feed authentication information for a partner """
+    with Spinner(description='Generating webhook authentication information'):
+        data = controller.feed_auth(partner_code=Control[partner.upper()].value)
+    print_json(data=data)

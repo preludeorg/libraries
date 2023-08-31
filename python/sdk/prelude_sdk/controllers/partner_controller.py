@@ -63,6 +63,18 @@ class PartnerController:
         raise Exception(res.text)
 
     @verify_credentials
+    def feed_auth(self, partner_code: int):
+        """ Get feed authentication information for a partner """
+        res = requests.get(
+            f'{self.account.hq}/partner/suppress/{partner_code}',
+            headers=self.account.headers,
+            timeout=30
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
     def deploy(self, partner_code: int, host_ids: list):
         """ Deploy probes on all specified partner endpoints """
         params = dict(host_ids=host_ids)
