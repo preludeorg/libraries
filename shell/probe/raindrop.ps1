@@ -21,7 +21,7 @@ function FromEnv { param ([string]$envVar, [string]$default)
     if ($envVal) { return $envVal } else { return $default }
 }
 
-$ca = FromEnv "PRELUDE_CA" "prelude-account-us1-us-west-1.s3.amazonaws.com"
+$ca = FromEnv "PRELUDE_CA" "prelude-account-us1-us-east-1.s3.amazonaws.com"
 $dir = FromEnv "PRELUDE_DIR" $ca
 $dat = ""
 
