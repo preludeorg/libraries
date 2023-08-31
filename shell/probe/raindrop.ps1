@@ -49,7 +49,7 @@ while ($true) {
     } catch {
         Write-Output $_.Exception
         Remove-Item $dir -Force -Recurse -ErrorAction SilentlyContinue
-        $dat = $null
+        $dat = ""
         Start-Sleep -Seconds 3600
     }
 }
