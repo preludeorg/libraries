@@ -113,7 +113,7 @@ func registerEndpoint(accountID string, token string) {
 
 func main() {
 	PRELUDE_API = flag.String("API", "https://api.preludesecurity.com", "Detect API")
-	PRELUDE_CA = flag.String("CA", "prelude-account-us1-us-west-1.s3.amazonaws.com", "Detect certificate authority")
+	PRELUDE_CA = flag.String("CA", "prelude-account-us1-us-east-1.s3.amazonaws.com", "Detect certificate authority")
 	flag.Parse()
 	os.Mkdir(*PRELUDE_CA, 0755)
 
