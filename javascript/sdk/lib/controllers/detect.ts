@@ -3,7 +3,6 @@ import {
   Activity,
   ActivityQuery,
   Advisory,
-  AdvisoryInfo,
   AttachedTest,
   DayResult,
   DisableTest,
@@ -135,10 +134,6 @@ export default class DetectController {
     options?: RequestOptions
   ): Promise<ProbeActivity[]>;
   async describeActivity(
-    query: ActivityQuery & { view: "advisories" },
-    options?: RequestOptions
-  ): Promise<AdvisoryInfo[]>;
-  async describeActivity(
     query: ActivityQuery & { view: "tests" },
     options?: RequestOptions
   ): Promise<TestActivity[]>;
@@ -157,7 +152,6 @@ export default class DetectController {
         | "logs"
         | "insights"
         | "probes"
-        | "advisories"
         | "tests"
         | "metrics"
         | "social";

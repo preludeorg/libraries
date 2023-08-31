@@ -123,16 +123,6 @@ export const Modes = {
 
 export type Mode = (typeof Modes)[keyof typeof Modes];
 
-export interface ComputeResult {
-  name: string;
-  steps: {
-    output: string | unknown[];
-    status: number;
-    step: string;
-    duration: string;
-  }[];
-}
-
 export interface EnableTest {
   test: string;
   runCode: RunCode;
@@ -158,14 +148,6 @@ export interface Probe {
   last_seen: string;
   created: string;
   dos: Platform;
-}
-
-export interface SearchResults {
-  info: {
-    published: string;
-    description: string;
-  };
-  tests: string[];
 }
 
 export const ExitCodes = {
@@ -272,17 +254,6 @@ export interface TestActivity {
   usage: TestUsage;
 }
 
-export interface AdvisoryUsage {
-  count: number;
-  not_relevant: number;
-  failed: number;
-}
-
-export interface AdvisoryInfo {
-  id: string;
-  usage: AdvisoryUsage;
-}
-
 export interface Advisory {
   id: string;
   name: string;
@@ -317,33 +288,6 @@ export interface Insight {
   volume: { error: number; protected: number; unprotected: number };
 }
 
-export interface Recommendation {
-  id: string;
-  title: string;
-  description: string;
-  handle: string;
-  created: string;
-  events: RecommendationEvent[];
-}
-export interface RecommendationEvent {
-  /**
-   * 0 = NONE
-   * 1 = APPROVE
-   * 2 = DENY
-   */
-  decision: number;
-  handle: string;
-  created: string;
-}
-export type RuleVolume = Record<
-  string,
-  {
-    PROTECTED?: number;
-    UNPROTECTED?: number;
-    ERROR?: number;
-  }
->;
-
 export interface ProbeActivity {
   dos: Platform;
   endpoint_id: string;
@@ -358,20 +302,6 @@ export interface MetricsActivity {
   tests: number;
   company: string;
   unique_tests: number;
-}
-
-export interface CreateRecommendation {
-  title: string;
-  description: string;
-}
-
-export interface DecideRecommendation {
-  id: string;
-  /**
-   * 1 = APPROVE
-   * 2 = DENY
-   */
-  decision: 1 | 2;
 }
 
 export interface RegisterEndpointParams {
