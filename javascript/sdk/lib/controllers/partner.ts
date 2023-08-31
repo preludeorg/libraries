@@ -126,6 +126,6 @@ export default class PartnerController {
       }
     );
 
-    return response.json();
+    return await response.json();
   }
 }
