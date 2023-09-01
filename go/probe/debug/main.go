@@ -101,7 +101,7 @@ func registerEndpoint(accountID string, token string) {
 		hostname, _ = os.Hostname()
 	}
 	jsonData, err := json.Marshal(map[string]string{
-		"id": fmt.Sprintf("id:%s:%s", hostname, "0"),
+		"id": fmt.Sprintf("%s:%s", hostname, "0"),
 	})
 
 	req, err := http.NewRequest("POST", fmt.Sprintf("%s/detect/endpoint", *PRELUDE_API), bytes.NewBuffer(jsonData))
