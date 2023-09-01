@@ -1,6 +1,6 @@
 #!/bin/sh
 
-ca=${PRELUDE_CA:-prelude-account-us1-us-east-1.s3.amazonaws.com}
+ca=${PRELUDE_CA:-prelude-account-us1-us-east-2.s3.amazonaws.com}
 
 while :
 do
