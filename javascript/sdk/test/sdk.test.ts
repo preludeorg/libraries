@@ -92,6 +92,16 @@ describe("SDK Test", () => {
       expect(account).toHaveProperty("users");
       expect(account.users).to.have.lengthOf(1);
     });
+
+    it("passwordReset should return a status true", async () => {
+      const account = await service.iam.getAccount();
+      const result = await service.iam.resetPassword(
+        account.account_id,
+        testEmail
+      );
+      expect(result).toHaveProperty("status");
+      expect(result.status).toEqual(true);
+    });
   });
 
   describe("Build Controller", async () => {
