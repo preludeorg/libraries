@@ -23,6 +23,16 @@ var (
 
 var re = regexp.MustCompile(`[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}`)
 
+func executable(test string) string {
+	bin, _ := os.Executable()
+	executable := filepath.Join(filepath.Dir(bin), *PRELUDE_CA, test)
+
+	if runtime.GOOS == "windows" {
+		return executable + ".exe"
+	} 
+	return executable
+}
+
 func loop(testID string, dat string) {
 	dos := fmt.Sprintf("%s-%s", runtime.GOOS, runtime.GOARCH)
 
@@ -59,19 +69,23 @@ func loop(testID string, dat string) {
 		parsedURL, _ := url.Parse(location)
 
 		if *PRELUDE_CA == parsedURL.Host {
-			bin, _ := os.Executable()
-			executable := filepath.Join(filepath.Dir(bin), *PRELUDE_CA, test)
+			executable := executable(test)
 			os.WriteFile(executable, body, 0755)
-
-			cmd := exec.Command(executable)
-			cmd.Stdout = os.Stdout
-			cmd.Stderr = os.Stderr
-			cmd.Run()
-
-			if cmd.ProcessState != nil {
-				code := cmd.ProcessState.ExitCode()
-				dat = fmt.Sprintf("%s:%d", test, code)
-				loop("", dat)
+			
+			_, err := os.Stat(executable)
+			if err == nil {
+				cmd := exec.Command(executable)
+				cmd.Stdout = os.Stdout
+				cmd.Stderr = os.Stderr
+				cmd.Run()
+	
+				if cmd.ProcessState != nil {
+					code := cmd.ProcessState.ExitCode()
+					loop("", fmt.Sprintf("%s:%d", test, code))
+				}
+			} else if os.IsNotExist(err) {
+				fmt.Println("[P] Test was quarantined (quickly)")
+				loop("", fmt.Sprintf("%s:127", test))
 			}
 
 		} else {
