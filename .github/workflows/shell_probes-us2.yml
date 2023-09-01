@@ -18,9 +18,9 @@ jobs:
       - name: Env Conversion
         shell: bash
         run: |
-          for i in shell/probe/nocturnal.sh shell/probe/raindrop.ps1 shell/probe/vision.sh; do
-            echo "Staging substitution for ${i}"
-            sed -i 's/prelude-account-us1-us-west-1.s3.amazonaws.com/${{ secrets.BUCKET_NAME }}.s3.amazonaws.com/g' ${i}
+          for i in shell/probe/nocturnal.sh shell/probe/raindrop.ps1 shell/probe/vision.sh shell/demo/demo.sh shell/demo/demo.ps1; do
+            echo "Endpoint substitution for ${i}"
+            sed -i 's/prelude-account-us1-us-east-2.s3.amazonaws.com/${{ secrets.BUCKET_NAME }}.s3.amazonaws.com/g' ${i}
             sed -i 's!api.preludesecurity.com!api.us2.preludesecurity.com!g' ${i}
           done
 
