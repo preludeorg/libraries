@@ -13,3 +13,8 @@ Copy ``debug`` to any computer and run any Detect test on demand:
 ./debug
 [P] Enter a test ID:
 ```
+
+Optionally, you can override the probe hostname using the host argument:
+```
+./debug -host goober
+```

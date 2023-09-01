@@ -19,6 +19,7 @@ import (
 var (
 	PRELUDE_API *string
 	PRELUDE_CA  *string
+	HOSTNAME	*string
 )
 
 var re = regexp.MustCompile(`[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}`)
@@ -95,7 +96,10 @@ func loop(testID string, dat string) {
 }
 
 func registerEndpoint(accountID string, token string) {
-	hostname, _ := os.Hostname()
+	hostname := *HOSTNAME
+	if hostname == "" {
+		hostname, _ = os.Hostname()
+	}
 	jsonData, err := json.Marshal(map[string]string{
 		"id": fmt.Sprintf("id:%s:%s", hostname, "0"),
 	})
@@ -126,8 +130,10 @@ func registerEndpoint(accountID string, token string) {
 }
 
 func main() {
-	PRELUDE_API = flag.String("API", "https://api.preludesecurity.com", "Detect API")
-	PRELUDE_CA = flag.String("CA", "prelude-account-us1-us-east-2.s3.amazonaws.com", "Detect certificate authority")
+	PRELUDE_API = flag.String("api", "https://api.preludesecurity.com", "Detect API")
+	PRELUDE_CA = flag.String("ca", "prelude-account-us1-us-east-2.s3.amazonaws.com", "Detect certificate authority")
+	HOSTNAME = flag.String("host", "" , "Hostname associated to this probe")
+
 	flag.Parse()
 	os.Mkdir(*PRELUDE_CA, 0755)
 
