@@ -109,7 +109,10 @@ export default class IAMController {
     token: string,
     options: RequestOptions = {}
   ): Promise<VerifiedUser> {
-    const searchParams = new URLSearchParams({ token: token.toString() });
+    const searchParams = new URLSearchParams({
+      token: token.toString(),
+      request_credentials: "true",
+    });
     const response = await this.#client.request(
       `/iam/user?${searchParams.toString()}`,
       {

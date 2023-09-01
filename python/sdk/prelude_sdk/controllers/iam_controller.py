@@ -125,7 +125,7 @@ class IAMController:
 
     def verify_user(self, token: str):
         """ Verify a user """
-        params = dict(token=token)
+        params = dict(token=token, request_credentials='true')
         res = requests.get(
             f'{self.account.hq}/iam/user',
             params=params,
