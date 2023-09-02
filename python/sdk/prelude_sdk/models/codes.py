@@ -56,7 +56,6 @@ class ExitCode(Enum):
     BLOCKED_AT_PERIMETER = 106
     EXPLOIT_PREVENTED = 107
     ENDPOINT_NOT_RELEVANT = 108
-    FALSE_POSITIVE = 110
     TEST_DISALLOWED = 126
     STATIC_QUARANTINE = 127
     BLOCKED = 137
@@ -102,7 +101,6 @@ class State(Enum):
             ],
             State.UNPROTECTED: [
                 ExitCode.UNPROTECTED,
-                ExitCode.FALSE_POSITIVE,
             ],
             State.ERROR: [
                 ExitCode.UNKNOWN_ERROR,
