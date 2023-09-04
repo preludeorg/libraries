@@ -210,7 +210,8 @@ export type ActionCodeName = keyof typeof ActionCodes;
 export type ActionCode = (typeof ActionCodes)[ActionCodeName];
 
 export const ControlCodes = {
-  INVALID: 0,
+  INVALID: -1,
+  NONE: 0,
   CROWDSTRIKE: 1,
   DEFENDER: 2,
   SPLUNK: 3,

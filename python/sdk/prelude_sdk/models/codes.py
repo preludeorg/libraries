@@ -134,7 +134,8 @@ class DOS(Enum):
 
 
 class Control(Enum):
-    INVALID = 0
+    INVALID = -1
+    NONE = 0
     CROWDSTRIKE = 1
     DEFENDER = 2
     SPLUNK = 3
