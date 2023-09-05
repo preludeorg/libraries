@@ -59,7 +59,6 @@ class TestIAMController:
         """Test get_account method"""
         iam = IAMController(pytest.account)
         res = unwrap(iam.get_account)(iam)
-        print(res)
         assert res['whoami'] == email
         assert res['mode'] == Mode.AUTOPILOT.value
 
