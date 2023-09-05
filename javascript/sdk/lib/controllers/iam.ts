@@ -55,14 +55,14 @@ export default class IAMController {
     mode?: Mode,
     company?: string,
     options: RequestOptions = {}
-  ): Promise<Account> {
+  ): Promise<StatusResponse> {
     const response = await this.#client.requestWithAuth("/iam/account", {
       method: "PUT",
       body: JSON.stringify({ mode, company }),
       ...options,
     });
 
-    return (await response.json()) as Account;
+    return (await response.json()) as StatusResponse;
   }
 
   /** Get account properties */

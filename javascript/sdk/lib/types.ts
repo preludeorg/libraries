@@ -100,7 +100,7 @@ export const RunCodes = {
   FRIDAY: 14,
   SATURDAY: 15,
   SUNDAY: 16,
-  MONTH_1: 20
+  MONTH_1: 20,
 } as const;
 
 export type RunCode = (typeof RunCodes)[keyof typeof RunCodes];
@@ -249,11 +249,6 @@ export interface TestUsage {
   failed: number;
 }
 
-export interface TestActivity {
-  id: string;
-  usage: TestUsage;
-}
-
 export interface Advisory {
   id: string;
   name: string;
@@ -261,7 +256,10 @@ export interface Advisory {
   published: string;
 }
 
-export type SocialActivity = Record<Platform, Record<`${ExitCode}`, number>>;
+export interface SocialActivity {
+  account: { unprotected: number; volume: number };
+  social: { unprotected: number; volume: number };
+}
 
 export interface ActivityQuery {
   start: string;
@@ -275,10 +273,9 @@ export interface ActivityQuery {
   control?: ControlCode;
 }
 
-export interface DayResult {
-  count: number;
-  datetime: string;
-  failed: number;
+export interface DayActivity {
+  unprotected: number;
+  volume: string;
 }
 
 export interface Insight {

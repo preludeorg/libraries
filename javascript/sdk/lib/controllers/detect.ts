@@ -4,7 +4,7 @@ import {
   ActivityQuery,
   Advisory,
   AttachedTest,
-  DayResult,
+  DayActivity,
   DisableTest,
   EnableTest,
   EnabledTest,
@@ -17,7 +17,6 @@ import {
   SocialActivity,
   StatusResponse,
   Test,
-  TestActivity,
   UpdateEndpointParams,
   UpdatedEndpoint,
 } from "../types";
@@ -124,7 +123,7 @@ export default class DetectController {
   async describeActivity(
     query: ActivityQuery & { view: "days" },
     options?: RequestOptions
-  ): Promise<DayResult[]>;
+  ): Promise<DayActivity[]>;
   async describeActivity(
     query: ActivityQuery & { view: "insights" },
     options?: RequestOptions
@@ -133,10 +132,6 @@ export default class DetectController {
     query: ActivityQuery & { view: "probes" },
     options?: RequestOptions
   ): Promise<ProbeActivity[]>;
-  async describeActivity(
-    query: ActivityQuery & { view: "tests" },
-    options?: RequestOptions
-  ): Promise<TestActivity[]>;
   async describeActivity(
     query: ActivityQuery & { view: "metrics" },
     options?: RequestOptions
@@ -152,7 +147,6 @@ export default class DetectController {
         | "logs"
         | "insights"
         | "probes"
-        | "tests"
         | "metrics"
         | "social";
     },

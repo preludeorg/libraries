@@ -4,7 +4,7 @@ import { readFileSync, unlinkSync, writeFileSync } from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { RunCodes, Service } from "../lib/main";
+import { Modes, RunCodes, Service } from "../lib/main";
 import { spawn } from "child_process";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -58,9 +58,9 @@ describe("SDK Test", () => {
     });
 
     it("updateAccount should update the account", async () => {
-      const result = await service.iam.updateAccount(1, company);
-      expect(result.mode).eq(1);
-      expect(result.company).eq(company);
+      const result = await service.iam.updateAccount(Modes.MANUAL, company);
+      expect(result).toHaveProperty("status");
+      expect(result.status).toEqual(true);
     });
 
     it("getAccount should return the account", async () => {
@@ -170,7 +170,6 @@ describe("SDK Test", () => {
     const serial = "test_serial";
     const tags = "test_tag";
     const updatedTags = "updated_test_tag";
-    const commonRansomware = "db201110-d875-4133-9709-2732a47f252f";
     let endpointToken = "";
     let endpointId = "";
     let activeTest = "";
@@ -188,6 +187,7 @@ describe("SDK Test", () => {
     beforeAll(async () => {
       const credentials = await createAccount();
       service.setCredentials(credentials);
+      await service.iam.updateAccount(Modes.MANUAL, company)
     });
 
     afterAll(async () => {
