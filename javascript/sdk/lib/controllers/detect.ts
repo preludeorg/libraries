@@ -2,6 +2,7 @@ import Client from "../client";
 import {
   Activity,
   ActivityQuery,
+  AdvisoriesActivity,
   Advisory,
   AttachedTest,
   DayActivity,
@@ -14,9 +15,9 @@ import {
   ProbeActivity,
   RegisterEndpointParams,
   RequestOptions,
-  SocialActivity,
   StatusResponse,
   Test,
+  TestsActivity,
   UpdateEndpointParams,
   UpdatedEndpoint,
 } from "../types";
@@ -137,9 +138,13 @@ export default class DetectController {
     options?: RequestOptions
   ): Promise<MetricsActivity[]>;
   async describeActivity(
-    query: ActivityQuery & { view: "social" },
+    query: ActivityQuery & { view: "advisories" },
     options?: RequestOptions
-  ): Promise<SocialActivity>;
+  ): Promise<AdvisoriesActivity[]>;
+  async describeActivity(
+    query: ActivityQuery & { view: "tests" },
+    options?: RequestOptions
+  ): Promise<TestsActivity[]>;
   async describeActivity(
     query: ActivityQuery & {
       view:
@@ -148,7 +153,8 @@ export default class DetectController {
         | "insights"
         | "probes"
         | "metrics"
-        | "social";
+        | "advisories"
+        | "tests";
     },
     options: RequestOptions = {}
   ) {
