@@ -188,7 +188,7 @@ def clone(controller):
 @click.option('--view',
               help='retrieve a specific result view',
               default='logs', show_default=True,
-              type=click.Choice(['logs', 'days', 'insights', 'probes', 'tests', 'advisories', 'metrics', 'social', 'endpoints']))
+              type=click.Choice(['logs', 'days', 'insights', 'probes', 'tests', 'advisories', 'metrics', 'endpoints']))
 @click.option('--days', help='days to look back', default=30, type=int)
 @click.option('--tests', help='comma-separated list of test IDs', type=str)
 @click.option('--tags', help='comma-separated list of tags', type=str)
@@ -196,9 +196,10 @@ def clone(controller):
 @click.option('--status', help='comma-separated list of status numbers', type=str)
 @click.option('--dos', help='comma-separated list of DOS', type=str)
 @click.option('--control', type=click.Choice([c.name for c in Control], case_sensitive=False))
+@click.option('--social', help='whether to fetch account-specific or social stats. Applicable to tests and advisories views', is_flag=True)
 @click.pass_obj
 @handle_api_error
-def describe_activity(controller, days, view, tests, tags, endpoints, status, dos, control):
+def describe_activity(controller, days, view, tests, tags, endpoints, status, dos, control, social):
     """ View my Detect results """
     filters = dict(
         start=datetime.utcnow() - timedelta(days=days),
@@ -216,6 +217,8 @@ def describe_activity(controller, days, view, tests, tags, endpoints, status, do
         filters['dos'] = dos
     if control:
         filters['control'] = Control[control.upper()].value
+    if social:
+        filters['impersonate'] = 'social'
 
     with Spinner(description='Fetching activity'):
         data = controller.describe_activity(view=view, filters=filters)
