@@ -243,10 +243,10 @@ export interface Activity {
   control: ControlCode | null;
 }
 
-export interface TestUsage {
-  count: number;
-  not_relevant: number;
-  failed: number;
+export interface TestsActivity {
+  id: string;
+  unprotected: number;
+  volume: number;
 }
 
 export interface Advisory {
@@ -254,6 +254,12 @@ export interface Advisory {
   name: string;
   source: string;
   published: string;
+}
+
+export interface AdvisoriesActivity {
+  id: string;
+  unprotected: number;
+  volume: number;
 }
 
 export interface SocialActivity {
@@ -271,6 +277,7 @@ export interface ActivityQuery {
   statuses?: string;
   tags?: string;
   control?: ControlCode;
+  impersonate?: string;
 }
 
 export interface DayActivity {
