@@ -283,7 +283,7 @@ export interface ActivityQuery {
 export interface DayActivity {
   datetime: string;
   unprotected: number;
-  volume: string;
+  volume: number;
 }
 
 export interface Insight {
