@@ -96,7 +96,7 @@ def reset_password(controller, email, account):
     
     token = click.prompt('Enter your reset token', type=str)
     with Spinner(description='Retrieving new password'):
-        data = controller.verify_account(token=token)
+        data = controller.verify_user(token=token)
     print_json(data=data)
 
 
