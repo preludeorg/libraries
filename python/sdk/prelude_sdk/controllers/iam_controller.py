@@ -108,10 +108,11 @@ class IAMController:
             return res.json()
         raise Exception(res.text)
 
+    @verify_credentials
     def reset_password(self, email: str, account_id: str = None):
         """ Reset a user's password """
         data = dict(
-            account_id=account_id or self.account.headers['account_id'],
+            account_id=account_id or self.account.headers['account'],
             handle=email
         )
         res = requests.post(
@@ -123,6 +124,7 @@ class IAMController:
             return res.json()
         raise Exception(res.text)
 
+    @verify_credentials
     def verify_user(self, token: str):
         """ Verify a user """
         params = dict(token=token, request_credentials='true')
@@ -134,6 +136,7 @@ class IAMController:
         if res.status_code == 200:
             cfg = self.account.read_keychain_config()
             res_json = res.json()
+            cfg[self.account.profile]['account'] = res_json['account']
             cfg[self.account.profile]['token'] = res_json['token']
             self.account.write_keychain_config(cfg)
             return res_json
