@@ -240,7 +240,7 @@ export interface Activity {
   test: string;
   dos: Platform;
   tags: string[] | null;
-  control: ControlCode | null;
+  control: ControlCode;
 }
 
 export interface TestsActivity {
@@ -260,11 +260,6 @@ export interface AdvisoriesActivity {
   id: string;
   unprotected: number;
   volume: number;
-}
-
-export interface SocialActivity {
-  account: { unprotected: number; volume: number };
-  social: { unprotected: number; volume: number };
 }
 
 export interface ActivityQuery {
