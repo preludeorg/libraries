@@ -63,8 +63,8 @@ class PartnerController:
         raise Exception(res.text)
 
     @verify_credentials
-    def feed_auth(self, partner_code: int):
-        """ Get feed authentication information for a partner """
+    def webhook_generate(self, partner_code: int):
+        """ Generate webhook credentials for an EDR system to enable the forwarding of alerts to the Prelude API, facilitating automatic alert suppression """
         res = requests.get(
             f'{self.account.hq}/partner/suppress/{partner_code}',
             headers=self.account.headers,
