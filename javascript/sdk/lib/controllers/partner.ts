@@ -112,4 +112,20 @@ export default class PartnerController {
 
     return (await response.json()) as DeployedEndpoints;
   }
+
+  /** Generate webhook authenication information for specified partner */
+  async webhookGenerate(
+    partnerCode: ControlCode,
+    options: RequestOptions = {}
+  ): Promise<StatusResponse> {
+    const response = await this.#client.requestWithAuth(
+      `/partner/suppress/${partnerCode}`,
+      {
+        method: "GET",
+        ...options,
+      }
+    );
+
+    return await response.json();
+  }
 }

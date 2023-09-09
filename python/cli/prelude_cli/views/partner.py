@@ -81,3 +81,15 @@ def partner_deploy(controller, partner, host_ids):
     with Spinner(description='Deploying probes to hosts'):
         data = controller.deploy(partner_code=Control[partner.upper()].value, host_ids=host_ids)
     print_json(data=data)
+
+
+@partner.command('webhook-generate')
+@click.argument('partner', type=click.Choice(['DEFENDER', 'SENTINELONE', 'CROWDSTRIKE'], case_sensitive=False))
+@click.pass_obj
+@handle_api_error
+def webhook_generate(controller, partner):
+    """ Generate webhook credentials for an EDR system to enable the forwarding of alerts to the Prelude API, facilitating automatic alert suppression """
+    with Spinner(description='Generating webhook credentials'):
+        data = controller.webhook_generate(partner_code=Control[partner.upper()].value)
+    print_json(data=data)
+    print("\nVisit https://docs.preludesecurity.com/docs/alert-management for details on configuring you EDR to forward alerts.\n")
