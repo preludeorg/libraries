@@ -83,13 +83,13 @@ def partner_deploy(controller, partner, host_ids):
     print_json(data=data)
 
 
-@partner.command('webhook-generate')
+@partner.command('generate-webhook')
 @click.argument('partner', type=click.Choice(['DEFENDER', 'SENTINELONE', 'CROWDSTRIKE'], case_sensitive=False))
 @click.pass_obj
 @handle_api_error
-def webhook_generate(controller, partner):
+def generate_webhook(controller, partner):
     """ Generate webhook credentials for an EDR system to enable the forwarding of alerts to the Prelude API, facilitating automatic alert suppression """
     with Spinner(description='Generating webhook credentials'):
-        data = controller.webhook_generate(partner_code=Control[partner.upper()].value)
+        data = controller.generate_webhook(partner_code=Control[partner.upper()].value)
     print_json(data=data)
-    print("\nVisit https://docs.preludesecurity.com/docs/alert-management for details on configuring you EDR to forward alerts.\n")
+    print("\nVisit https://docs.preludesecurity.com/docs/alert-management for details on configuring your EDR to forward alerts.\n")
