@@ -144,11 +144,11 @@ export interface Probe {
   host: string;
   serial_num: string;
   edr_id: string | null;
-  control: ControlCode | null;
+  control: ControlCode;
   tags: string[];
   last_seen: string;
   created: string;
-  dos: Platform;
+  dos: Platform | null;
 }
 
 export const ExitCodes = {
