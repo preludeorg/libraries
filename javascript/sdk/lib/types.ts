@@ -236,11 +236,9 @@ export interface Activity {
   date: string;
   endpoint_id: string;
   id: string;
-  observed: 0 | 1;
   status: ExitCode;
   test: string;
   dos: Platform;
-  tags: string[] | null;
   control: ControlCode;
 }
 
@@ -284,7 +282,6 @@ export interface DayActivity {
 
 export interface Insight {
   dos: string | null;
-  tag: string | null;
   test: string | null;
   volume: { error: number; protected: number; unprotected: number };
 }
@@ -293,8 +290,7 @@ export interface ProbeActivity {
   dos: Platform;
   endpoint_id: string;
   state: "PROTECTED" | "UNPROTECTED" | "ERROR";
-  tags: string[];
-  control: ControlCode | null;
+  control: ControlCode;
 }
 
 export interface MetricsActivity {
