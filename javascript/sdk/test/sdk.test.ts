@@ -187,7 +187,7 @@ describe("SDK Test", () => {
     beforeAll(async () => {
       const credentials = await createAccount();
       service.setCredentials(credentials);
-      await service.iam.updateAccount(Modes.MANUAL, company)
+      await service.iam.updateAccount(Modes.MANUAL, company);
     });
 
     afterAll(async () => {

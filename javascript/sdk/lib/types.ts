@@ -144,11 +144,11 @@ export interface Probe {
   host: string;
   serial_num: string;
   edr_id: string | null;
-  control: ControlCode | null;
+  control: ControlCode;
   tags: string[];
   last_seen: string;
   created: string;
-  dos: Platform;
+  dos: Platform | null;
 }
 
 export const ExitCodes = {
@@ -236,11 +236,9 @@ export interface Activity {
   date: string;
   endpoint_id: string;
   id: string;
-  observed: 0 | 1;
   status: ExitCode;
   test: string;
   dos: Platform;
-  tags: string[] | null;
   control: ControlCode;
 }
 
@@ -267,11 +265,9 @@ export interface ActivityQuery {
   start: string;
   finish: string;
   tests?: string;
-  result_id?: string;
   endpoints?: string;
   dos?: string;
   statuses?: string;
-  tags?: string;
   control?: ControlCode;
   impersonate?: string;
 }
@@ -284,7 +280,6 @@ export interface DayActivity {
 
 export interface Insight {
   dos: string | null;
-  tag: string | null;
   test: string | null;
   volume: { error: number; protected: number; unprotected: number };
 }
@@ -293,8 +288,7 @@ export interface ProbeActivity {
   dos: Platform;
   endpoint_id: string;
   state: "PROTECTED" | "UNPROTECTED" | "ERROR";
-  tags: string[];
-  control: ControlCode | null;
+  control: ControlCode;
 }
 
 export interface MetricsActivity {
