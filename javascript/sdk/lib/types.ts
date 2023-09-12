@@ -265,11 +265,9 @@ export interface ActivityQuery {
   start: string;
   finish: string;
   tests?: string;
-  result_id?: string;
   endpoints?: string;
   dos?: string;
   statuses?: string;
-  tags?: string;
   control?: ControlCode;
   impersonate?: string;
 }
