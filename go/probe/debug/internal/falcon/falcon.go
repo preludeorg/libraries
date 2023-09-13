@@ -101,12 +101,3 @@ func (h *APIHarness) Post(path string, body string) (*http.Response, error) {
 	client := &http.Client{}
 	return client.Do(req)
 }
-
-func main() {
-	harness := NewAPIHarness("https://api.crowdstrike.com", "8b410b9b7106432bb1f9bb6ec22ddd10", "ci4d5HCWgmX8fl9FSyUzt7TbDkp0Aq26R1ZneK3v")
-	if err := harness.GetBearerToken(); err != nil {
-		fmt.Println(err)
-		fmt.Println("ERROR")
-		return
-	}
-}
