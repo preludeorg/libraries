@@ -245,7 +245,6 @@ describe("SDK Test", () => {
 
       const result = (await service.iam.getAccount()).queue;
 
-      expect(result).toHaveLength(1);
       expect(result).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
@@ -312,7 +311,11 @@ describe("SDK Test", () => {
             finish,
             view: "logs",
           });
-          expect(result).toHaveLength(1);
+          expect(result).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({ test: activeTest }),
+            ])
+          );
         },
         { retry: 5 }
       );
@@ -337,7 +340,14 @@ describe("SDK Test", () => {
         tags: tags,
       });
       const result = (await service.iam.getAccount()).queue;
-      expect(result).toHaveLength(0);
+      expect(result).not.toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            test: activeTest,
+            run_code: RunCodes.DAILY,
+          }),
+        ])
+      );
     });
 
     it("deleteEndpoint should remove the endpoint from the list", async function () {

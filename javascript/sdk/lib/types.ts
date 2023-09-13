@@ -304,15 +304,20 @@ export interface MetricsActivity {
   unique_tests: number;
 }
 
-export type DOSActivity = Record<
-  NonArchPlatform,
-  { unprotected: number; significant: number }
->;
+export interface Recommendation {
+  key: string;
+  value: string;
+  improvement: number;
+}
 
-export type ControlActivity = Record<
-  `${ControlCode}`,
-  { unprotected: number; significant: number }
->;
+export interface PowerActivity {
+  unprotected: number;
+  dos?: Platform;
+  control?: ControlCode;
+  policy?: string;
+  version?: string;
+  recommendation?: Recommendation;
+}
 
 export interface RegisterEndpointParams {
   host: string;
