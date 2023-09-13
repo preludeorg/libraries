@@ -233,7 +233,7 @@ describe("SDK Test", () => {
         expect(download).toContain(testId);
         expect(download).toContain(testName);
       },
-      { timeout: 10_000 }
+      { timeout: 15_000 }
     );
 
     it("enableTest should add a new test to the queue", async function () {

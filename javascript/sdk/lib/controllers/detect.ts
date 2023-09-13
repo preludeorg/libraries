@@ -5,6 +5,8 @@ import {
   AdvisoriesActivity,
   Advisory,
   AttachedTest,
+  ControlActivity,
+  DOSActivity,
   DayActivity,
   DisableTest,
   EnableTest,
@@ -146,6 +148,14 @@ export default class DetectController {
     options?: RequestOptions
   ): Promise<TestsActivity[]>;
   async describeActivity(
+    query: ActivityQuery & { view: "dos" },
+    options?: RequestOptions
+  ): Promise<DOSActivity[]>;
+  async describeActivity(
+    query: ActivityQuery & { view: "control" },
+    options?: RequestOptions
+  ): Promise<ControlActivity[]>;
+  async describeActivity(
     query: ActivityQuery & {
       view:
         | "days"
@@ -154,7 +164,9 @@ export default class DetectController {
         | "probes"
         | "metrics"
         | "advisories"
-        | "tests";
+        | "tests"
+        | "dos"
+        | "control";
     },
     options: RequestOptions = {}
   ) {
