@@ -83,7 +83,7 @@ function run_demo {
     local _test_name=${names[$1]}
     local _temp=$PRELUDE_DIR/$(uuidgen)
     echo -e "\n${STANDOUT}Test: ${_test_name}${NC}"
-    echo -e "\nMore details at: https://github.com/preludeorg/test/tree/master/tests/${_test_id}"
+    echo -e "\nMore details at: https://www.preludesecurity.com/advisories/aa23-075a"
     sleep 1
     echo -e "\nStarting test at: $(date +"%T")"
     check_relevance
