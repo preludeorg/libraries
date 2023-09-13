@@ -248,7 +248,7 @@ export interface Activity {
 
 export interface TestsActivity {
   id: string;
-  unprotected: number;
+  protected: number;
   volume: number;
 }
 
@@ -261,7 +261,7 @@ export interface Advisory {
 
 export interface AdvisoriesActivity {
   id: string;
-  unprotected: number;
+  protected: number;
   volume: number;
 }
 
@@ -311,7 +311,7 @@ export interface Recommendation {
 }
 
 export interface PowerActivity {
-  unprotected: number;
+  protected: number;
   dos?: Platform;
   control?: ControlCode;
   policy?: string;
