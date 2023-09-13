@@ -48,23 +48,37 @@ func setPreventionPolicy() {
 	// todo
 }
 
-// todo:	This struct will hold the test identifier and a collection of
+// done:	This struct will hold the test identifier and a collection of
 //
 //	structs that contain the timestamp for when the test was run
 //	and the result code (e.g., 101, 127).
 //
 // Group:	Kenrick, Stephan
-type Results struct {
+// PolicyResult struct will hold the test ID and a collection of evaluations
+type Result struct {
+	TestID      string       `json:"test_id"`
+	Evaluations []Evaluation `json:"evaluations"`
+}
+
+// Evaluation struct will hold the policy name and the result code
+type Evaluation struct {
+	Policy string `json:"policy"`
+	Code   int    `json:"code"`
 }
 
 // In:		Object/struct containing the results of the tests
 // Out: 	A formatted table printed to stdout
 // Group:	Kenrick, Stephan
-func printResultTable() {
-	//todo
+func printResultTable(pr Result) {
+	fmt.Println("Test ID: ", pr.TestID)
+	fmt.Println("Policy\t\tCode")
+	fmt.Println("------\t\t------")
+	for _, evaluation := range pr.Evaluations {
+		fmt.Printf("%s\t\t%d\n", evaluation.Policy, evaluation.Code)
+	}
 }
 
-func loop(testID string, dat string) {
+func loop(testID string, dat string, pr *Result) {
 	// todo: 	Rewrite this function to iterate over each policy
 	// 			and return a struct containing results and timestamps
 	// 			Consider that after the request to pull the test down,
@@ -117,12 +131,13 @@ func loop(testID string, dat string) {
 
 				if cmd.ProcessState != nil {
 					code := cmd.ProcessState.ExitCode()
+					pr.Evaluations = append(pr.Evaluations, Evaluation{Policy: "policy1", Code: code})
 					// todo: Add this exit code to the collection of results
-					loop("", fmt.Sprintf("%s:%d", test, code))
+					loop("", fmt.Sprintf("%s:%d", test, code), pr)
 				}
 			} else if os.IsNotExist(err) {
 				fmt.Println("[P] Test was quarantined (quickly)")
-				loop("", fmt.Sprintf("%s:127", test))
+				loop("", fmt.Sprintf("%s:127", test), pr)
 			}
 
 		} else {
@@ -187,8 +202,16 @@ func main() {
 		fmt.Print("[P] Enter a test ID: ")
 		scanner.Scan()
 		testID := scanner.Text()
-		if testID != "" {
-			loop(testID, "")
+
+		pr := Result{
+			TestID:      testID,
+			Evaluations: make([]Evaluation, 0),
 		}
+
+		if testID != "" {
+			loop(testID, "", &pr)
+		}
+
+		printResultTable(pr)
 	}
 }
