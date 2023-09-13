@@ -94,7 +94,7 @@ function RunDemo {
     $Temp = New-Item -Path "$PRELUDE_DIR\$(New-Guid).exe" -Force
 
     Write-Host "`r`nTest: $Name"
-    Write-Host "`r`nMore details at: https://github.com/preludeorg/test/tree/master/tests/$Id"
+    Write-Host "`r`nMore details at: https://www.preludesecurity.com/advisories/aa23-075a"
     Start-Sleep -Seconds 1
     Write-Host "`r`nStarting test at: $(Get-Date -UFormat %T)"
     CheckRelevance
