@@ -14,6 +14,8 @@ import (
 	"path/filepath"
 	"regexp"
 	"runtime"
+
+	"github.com/go/probe/debug/internal/falcon/falcon"
 )
 
 var (
@@ -37,15 +39,32 @@ func executable(test string) string {
 // In: 		TBD
 // Out: 	The identifier of the current Falcon prevention policy
 // Group: 	Alex, Mahina, James
-func getPreventionPolicy() {
-	// todo
+func getPreventionPolicy(groupId string) string {
+	apiHarness := falcon.NewAPIHarness("https://api.crowdstrike.com", "client_id", "client_secret")
+	queryParams := "?filter=groups:'" + groupId + "'"
+	results := apiHarness.Get("/policy/queries/sensor-update/v1" + queryParams)
+	fmt.Println(results)
+	return ""
 }
 
 // In:		An identifier for the policy to set
 // Out:		A result that indicates whether the policy was applied
 // Group:	Alex, Mahina, James
-func setPreventionPolicy() {
-	// todo
+func setPreventionPolicy(policyId string, groupId string) {
+	apiHarness := falcon.NewAPIHarness("https://api.crowdstrike.com", "client_id", "client_secret")
+	body := map[string]interface{}{
+		"action_parameters": []map[string]string{
+			{
+				"name":  "group_id",
+				"value": groupId,
+			},
+		},
+		"ids": []string{
+			policyId,
+		},
+	}
+	results := apiHarness.Post("/policy/entities/sensor-update-actions/v1", body)
+	fmt.Println(results)
 }
 
 // todo:	This struct will hold the test identifier and a collection of
