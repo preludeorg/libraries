@@ -50,7 +50,7 @@ def create_test(controller, name, unit, test, techniques, advisory):
         template = template.replace('$CREATED', str(datetime.utcnow()))
         
         with Spinner(description='Applying default template to new test'):
-            controller.upload(test_id=t['id'], filename=basename, data=template)
+            controller.upload(test_id=t['id'], filename=basename, data=template.encode('utf-8'))
             t['attachments'] = [basename]
 
         test_dir = PurePath(t['id'], basename)
@@ -114,8 +114,7 @@ def upload_attachment(controller, path, test):
                 data = controller.upload(
                     test_id=identifier, 
                     filename=p.name, 
-                    data=data.read(), 
-                    binary=True
+                    data=data.read()
                 )
             print_json(data=data)
 
