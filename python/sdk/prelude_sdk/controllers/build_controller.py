@@ -65,12 +65,12 @@ class BuildController:
         raise Exception(res.text)
 
     @verify_credentials
-    def upload(self, test_id, filename, data, binary=False):
+    def upload(self, test_id, filename, data, checksums, binary=False):
         """ Upload a test or attachment """
         if len(data) > 1000000:
             raise ValueError(f'File size must be under 1MB ({filename})')
 
-        h = self.account.headers | ({'Content-Type': 'application/octet-stream'} if binary else {})
+        h = self.account.headers | ({'Content-Type': 'application/octet-stream'} if binary else {}) | checksums
         res = requests.post(
             f'{self.account.hq}/build/tests/{test_id}/{filename}',
             data=data,

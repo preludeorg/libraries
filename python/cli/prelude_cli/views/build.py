@@ -1,6 +1,7 @@
 import re
 import uuid
 import click
+import hashlib
 import prelude_cli.templates as templates
 import importlib.resources as pkg_resources
 
@@ -110,11 +111,17 @@ def upload_attachment(controller, path, test):
 
     def upload(p: Path):
         with open(p, 'rb') as data:
+            blob = data.read()
+            checksums = dict(
+                sha1=hashlib.sha1(blob).hexdigest(),
+                sha256=hashlib.sha256(blob).hexdigest(),
+            )
             with Spinner(description='Uploading to test'):
                 data = controller.upload(
                     test_id=identifier, 
                     filename=p.name, 
-                    data=data.read(), 
+                    data=blob,
+                    checksums=checksums,
                     binary=True
                 )
             print_json(data=data)
