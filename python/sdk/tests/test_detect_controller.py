@@ -85,7 +85,7 @@ class TestDetectController:
                 finish=datetime.utcnow() + timedelta(days=1)
             )
             describe_activity = unwrap(self.detect.describe_activity)(self.detect, filters=filters | {'endpoint_id': pytest.endpoint_id})
-            assert len(describe_activity) == 1
+            assert len([test for test in describe_activity if test['test'] == pytest.test_id]) == 1
         finally:
             os.remove(pytest.probe)
     

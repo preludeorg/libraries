@@ -11,6 +11,7 @@ import {
   EnabledTest,
   Insight,
   MetricsActivity,
+  PowerActivity,
   Probe,
   ProbeActivity,
   RegisterEndpointParams,
@@ -146,6 +147,14 @@ export default class DetectController {
     options?: RequestOptions
   ): Promise<TestsActivity[]>;
   async describeActivity(
+    query: ActivityQuery & { view: "power" },
+    options?: RequestOptions
+  ): Promise<PowerActivity[]>;
+  async describeActivity(
+    query: ActivityQuery & { view: "default" },
+    options?: RequestOptions
+  ): Promise<number>;
+  async describeActivity(
     query: ActivityQuery & {
       view:
         | "days"
@@ -154,7 +163,9 @@ export default class DetectController {
         | "probes"
         | "metrics"
         | "advisories"
-        | "tests";
+        | "tests"
+        | "power"
+        | "default";
     },
     options: RequestOptions = {}
   ) {

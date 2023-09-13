@@ -111,7 +111,7 @@ export const Permissions = {
   EXECUTIVE: 1,
   BUILD: 2,
   SERVICE: 3,
-  AUTO: 4
+  AUTO: 4,
 } as const;
 
 export type Permission = (typeof Permissions)[keyof typeof Permissions];
@@ -149,6 +149,8 @@ export interface Probe {
   last_seen: string;
   created: string;
   dos: Platform | null;
+  version?: string;
+  policy?: string;
 }
 
 export const ExitCodes = {
@@ -223,6 +225,8 @@ export const ControlCodes = {
 export type ControlCodeName = keyof typeof ControlCodes;
 export type ControlCode = (typeof ControlCodes)[ControlCodeName];
 
+export type NonArchPlatform = "darwin" | "linux" | "windows";
+
 export type Platform =
   | "darwin-arm64"
   | "darwin-x86_64"
@@ -244,8 +248,7 @@ export interface Activity {
 
 export interface TestsActivity {
   id: string;
-  unprotected: number;
-  volume: number;
+  protected: number;
 }
 
 export interface Advisory {
@@ -257,8 +260,7 @@ export interface Advisory {
 
 export interface AdvisoriesActivity {
   id: string;
-  unprotected: number;
-  volume: number;
+  protected: number;
 }
 
 export interface ActivityQuery {
@@ -289,6 +291,7 @@ export interface ProbeActivity {
   endpoint_id: string;
   state: "PROTECTED" | "UNPROTECTED" | "ERROR";
   control: ControlCode;
+  status?: number;
 }
 
 export interface MetricsActivity {
@@ -297,6 +300,21 @@ export interface MetricsActivity {
   tests: number;
   company: string;
   unique_tests: number;
+}
+
+export interface Recommendation {
+  key: string;
+  value: string;
+  improvement: number;
+}
+
+export interface PowerActivity {
+  protected: number;
+  dos?: Platform;
+  control?: ControlCode;
+  policy?: string;
+  version?: string;
+  recommendation?: Recommendation;
 }
 
 export interface RegisterEndpointParams {
