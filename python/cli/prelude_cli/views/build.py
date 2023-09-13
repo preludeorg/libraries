@@ -1,12 +1,13 @@
 import re
 import uuid
 import click
-import hashlib
 import prelude_cli.templates as templates
 import importlib.resources as pkg_resources
 
 from rich import print_json
+from base64 import b64encode
 from datetime import datetime
+from hashlib import sha1, sha256
 from pathlib import Path, PurePath
 
 from prelude_cli.views.shared import handle_api_error, Spinner
@@ -113,8 +114,8 @@ def upload_attachment(controller, path, test):
         with open(p, 'rb') as data:
             blob = data.read()
             checksums = dict(
-                sha1=hashlib.sha1(blob).hexdigest(),
-                sha256=hashlib.sha256(blob).hexdigest(),
+                sha1=b64encode(sha1(blob).digest()).decode(),
+                sha256=b64encode(sha256(blob).digest()).decode(),
             )
             with Spinner(description='Uploading to test'):
                 data = controller.upload(
