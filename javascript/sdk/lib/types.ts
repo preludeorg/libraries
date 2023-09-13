@@ -249,7 +249,6 @@ export interface Activity {
 export interface TestsActivity {
   id: string;
   protected: number;
-  volume: number;
 }
 
 export interface Advisory {
@@ -262,7 +261,6 @@ export interface Advisory {
 export interface AdvisoriesActivity {
   id: string;
   protected: number;
-  volume: number;
 }
 
 export interface ActivityQuery {
