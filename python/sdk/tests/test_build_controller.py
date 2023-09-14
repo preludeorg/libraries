@@ -35,7 +35,7 @@ class TestBuildController:
         template = template.replace('$NAME', self.test_name)
         template = template.replace('$UNIT', self.test_unit)
         template = template.replace('$CREATED', str(datetime.utcnow()))
-        unwrap(self.build.upload)(self.build, test_id=self.test_id, filename=f'{self.test_id}.go', data=template)
+        unwrap(self.build.upload)(self.build, test_id=self.test_id, filename=f'{self.test_id}.go', data=template.encode("utf-8"))
         time.sleep(5)
         res = unwrap(self.detect.get_test)(self.detect, test_id=self.test_id)
         assert f'{self.test_id}.go' in res['attachments']

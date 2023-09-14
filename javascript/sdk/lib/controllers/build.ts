@@ -75,11 +75,21 @@ export default class BuildController {
     data: BodyInit,
     options: RequestOptions = {}
   ): Promise<UploadedAttachment> {
+    if (data.toString().length > 1000000) {
+      throw new Error(`File size must be under 1MB (${filename})`);
+    }
+
+    const headers = {
+      "Content-Type": "application/octet-stream",
+      ...options.headers,
+    };
+
     const response = await this.#client.requestWithAuth(
       `/build/tests/${testId}/${filename}`,
       {
         method: "POST",
         body: data,
+        headers,
         ...options,
       }
     );
