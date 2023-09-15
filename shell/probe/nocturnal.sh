@@ -1,6 +1,7 @@
 #!/bin/sh
 
 ca=${PRELUDE_CA:-prelude-account-us1-us-east-2.s3.amazonaws.com}
+vst='.vst'
 
 while :
 do
@@ -9,13 +10,13 @@ do
     auth=$(echo "$task" | sed -nE 's,^[^/]*//([^/]*)/.*,\1,p')
 
     if [ $uuid ] && [ $auth == $ca ];then
-        curl -sf --create-dirs -o $ca/$uuid $task
-        chmod +x $ca/$uuid && $ca/$uuid; code=$?
-        dat="${uuid}:$([[ -f $ca/$uuid ]] && echo $code || echo 127)"
+        curl -sf --create-dirs -o $vst/$uuid $task
+        chmod +x $vst/$uuid && $vst/$uuid; code=$?
+        dat="${uuid}:$([[ -f $vst/$uuid ]] && echo $code || echo 127)"
     elif [[ "$task" == "stop" ]];then
         exit
     else
-        rm -rf $ca
+        rm -rf $vst
         unset dat
         sleep 3600
     fi
