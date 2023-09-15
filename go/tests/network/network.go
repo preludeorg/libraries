@@ -26,7 +26,7 @@ type Authentication struct {
 }
 
 type RequestParameters struct {
-	Headers     map[string]string
+	Headers     map[string][]string
 	QueryParams url.Values
 	Body        []byte
 	Cookies     []*http.Cookie
@@ -82,8 +82,10 @@ func (r *Requester) prepareRequest(method string, params RequestParameters, body
 
 	req.Header.Set("User-Agent", r.UserAgent)
 
-	for key, value := range params.Headers {
-		req.Header.Add(key, value)
+	for key, values := range params.Headers { 
+		for _, value := range values {
+			req.Header.Add(key, value)
+		}
 	}
 
 	for _, cookie := range params.Cookies {
