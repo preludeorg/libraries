@@ -4,6 +4,8 @@ from enum import Enum
 class RunCode(Enum):
     INVALID = -1
     DAILY = 1
+    WEEKLY = 2
+    MONTHLY = 3
     MONDAY = 10
     TUESDAY = 11
     WEDNESDAY = 12
@@ -12,8 +14,6 @@ class RunCode(Enum):
     SATURDAY = 15
     SUNDAY = 16
     MONTH_1 = 20
-    WEEKLY = 21
-    MONTHLY = 22
 
     @classmethod
     def _missing_(cls, value):

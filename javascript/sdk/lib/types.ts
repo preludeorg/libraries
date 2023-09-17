@@ -92,6 +92,8 @@ export interface Queue {
 export const RunCodes = {
   INVALID: -1,
   DAILY: 1,
+  WEEKLY: 2,
+  MONTHLY: 3,
   MONDAY: 10,
   TUESDAY: 11,
   WEDNESDAY: 12,
@@ -99,9 +101,7 @@ export const RunCodes = {
   FRIDAY: 14,
   SATURDAY: 15,
   SUNDAY: 16,
-  MONTH_1: 20,
-  WEEKLY: 21,
-  MONTHLY: 22,
+  MONTH_1: 20
 } as const;
 
 export type RunCode = (typeof RunCodes)[keyof typeof RunCodes];
