@@ -92,7 +92,8 @@ export interface Queue {
 export const RunCodes = {
   INVALID: -1,
   DAILY: 1,
-  SMART: 2,
+  WEEKLY: 2,
+  MONTHLY: 3,
   MONDAY: 10,
   TUESDAY: 11,
   WEDNESDAY: 12,

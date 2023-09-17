@@ -4,7 +4,8 @@ from enum import Enum
 class RunCode(Enum):
     INVALID = -1
     DAILY = 1
-    SMART = 2
+    WEEKLY = 2
+    MONTHLY = 3
     MONDAY = 10
     TUESDAY = 11
     WEDNESDAY = 12
@@ -16,7 +17,7 @@ class RunCode(Enum):
 
     @classmethod
     def _missing_(cls, value):
-        return RunCode.INVALID
+        return RunCode.DAILY
 
 
 class Mode(Enum):
