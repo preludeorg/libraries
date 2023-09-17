@@ -13,6 +13,8 @@ class RunCode(Enum):
     SATURDAY = 15
     SUNDAY = 16
     MONTH_1 = 20
+    WEEKLY = 21
+    MONTHLY = 22
 
     @classmethod
     def _missing_(cls, value):
