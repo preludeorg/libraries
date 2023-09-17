@@ -101,7 +101,7 @@ export const RunCodes = {
   FRIDAY: 14,
   SATURDAY: 15,
   SUNDAY: 16,
-  MONTH_1: 20
+  MONTH_1: 20,
 } as const;
 
 export type RunCode = (typeof RunCodes)[keyof typeof RunCodes];
