@@ -271,8 +271,10 @@ export interface ActivityQuery {
   endpoints?: string;
   dos?: string;
   statuses?: string;
-  control?: ControlCode;
+  control?: string;
   impersonate?: string;
+  version?: string;
+  policy?: string;
 }
 
 export interface DayActivity {

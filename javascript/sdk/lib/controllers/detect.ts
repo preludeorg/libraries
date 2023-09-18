@@ -177,8 +177,10 @@ export default class DetectController {
     if (query.endpoints) searchParams.set("endpoints", query.endpoints);
     if (query.dos) searchParams.set("dos", query.dos);
     if (query.statuses) searchParams.set("statuses", query.statuses);
-    if (query.control) searchParams.set("control", query.control.toString());
+    if (query.control) searchParams.set("control", query.control);
     if (query.impersonate) searchParams.set("impersonate", query.impersonate);
+    if (query.policy) searchParams.set("policy", query.policy);
+    if (query.version) searchParams.set("version", query.version);
 
     const response = await this.#client.requestWithAuth(
       `/detect/activity?${searchParams.toString()}`,
