@@ -147,3 +147,27 @@ class Control(Enum):
     @classmethod
     def _missing_(cls, value):
         return Control.INVALID
+
+
+class AuditEvent(Enum):
+    INVALID = 0
+    ATTACH_PARTNER = 1
+    CREATE_TEST = 2
+    CREATE_USER = 3
+    DELETE_ENDPOINT = 4
+    DELETE_TEST = 5
+    DELETE_USER = 6
+    DETACH_PARTNER = 7
+    DISABLE_TEST = 8
+    DOWNLOAD_ATTACHMENT = 9
+    ENABLE_TEST = 10
+    PARTNER_BLOCK = 11
+    REGISTER_ENDPOINT = 12
+    UPDATE_ACCOUNT = 13
+    UPDATE_ENDPOINT = 14
+    UPDATE_TEST = 15
+    UPLOAD_ATTACHMENT = 16
+
+    @classmethod
+    def _missing_(cls, value):
+        return AuditEvent.INVALID
