@@ -151,7 +151,7 @@ export default class DetectController {
     options?: RequestOptions
   ): Promise<PowerActivity[]>;
   async describeActivity(
-    query: ActivityQuery & { view: "default" },
+    query: ActivityQuery & { view: "overview" },
     options?: RequestOptions
   ): Promise<number>;
   async describeActivity(
@@ -165,7 +165,7 @@ export default class DetectController {
         | "advisories"
         | "tests"
         | "power"
-        | "default";
+        | "overview";
     },
     options: RequestOptions = {}
   ) {
