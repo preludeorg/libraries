@@ -150,8 +150,8 @@ export interface Probe {
   last_seen: string;
   created: string;
   dos: Platform | null;
-  version?: string;
-  policy?: string;
+  os?: string | null;
+  policy?: string | null;
 }
 
 export const ExitCodes = {
