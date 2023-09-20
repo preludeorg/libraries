@@ -9,11 +9,11 @@ do
     uuid=$(echo "$task" | sed -nE 's/.*([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}).*/\1/p')
     auth=$(echo "$task" | sed -nE 's,^[^/]*//([^/]*)/.*,\1,p')
 
-    if [ $uuid ] && [ $auth == $ca ];then
+    if [ "$uuid" ] && [ "$auth" = "$ca" ];then
         curl -sf --create-dirs -o $vst/$uuid $task
         chmod +x $vst/$uuid && $vst/$uuid; code=$?
-        dat="${uuid}:$([[ -f $vst/$uuid ]] && echo $code || echo 127)"
-    elif [[ "$task" == "stop" ]];then
+        dat="${uuid}:$([ -f $vst/$uuid ] && echo $code || echo 127)"
+    elif [ "$task" = "stop" ];then
         exit
     else
         rm -rf $vst
