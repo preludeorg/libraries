@@ -150,8 +150,8 @@ export interface Probe {
   last_seen: string;
   created: string;
   dos: Platform | null;
-  version?: string;
-  policy?: string;
+  os?: string | null;
+  policy?: string | null;
 }
 
 export const ExitCodes = {
@@ -294,8 +294,9 @@ export interface ProbeActivity {
   endpoint_id: string;
   state: "PROTECTED" | "UNPROTECTED" | "ERROR";
   control: ControlCode;
-  status?: number;
 }
+
+export type EndpointActivity = Record<string, number>;
 
 export interface MetricsActivity {
   account_id: string;
