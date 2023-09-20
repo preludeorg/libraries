@@ -294,8 +294,9 @@ export interface ProbeActivity {
   endpoint_id: string;
   state: "PROTECTED" | "UNPROTECTED" | "ERROR";
   control: ControlCode;
-  status?: number;
 }
+
+export type EndpointActivity = Record<string, number>;
 
 export interface MetricsActivity {
   account_id: string;

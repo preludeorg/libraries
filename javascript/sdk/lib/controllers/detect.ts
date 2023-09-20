@@ -9,6 +9,7 @@ import {
   DisableTest,
   EnableTest,
   EnabledTest,
+  EndpointActivity,
   Insight,
   MetricsActivity,
   PowerActivity,
@@ -135,6 +136,10 @@ export default class DetectController {
     options?: RequestOptions
   ): Promise<ProbeActivity[]>;
   async describeActivity(
+    query: ActivityQuery & { view: "endpoints" },
+    options?: RequestOptions
+  ): Promise<EndpointActivity>;
+  async describeActivity(
     query: ActivityQuery & { view: "metrics" },
     options?: RequestOptions
   ): Promise<MetricsActivity[]>;
@@ -161,6 +166,7 @@ export default class DetectController {
         | "logs"
         | "insights"
         | "probes"
+        | "endpoints"
         | "metrics"
         | "advisories"
         | "tests"
