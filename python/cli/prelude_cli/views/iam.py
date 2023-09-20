@@ -125,6 +125,30 @@ def logs(controller, days, limit):
     print_json(data=data)
 
 
+@iam.command('subscribe')
+@click.argument('event',
+              type=click.Choice([e.name for e in AuditEvent if e != AuditEvent.INVALID], case_sensitive=False))
+@click.pass_obj
+@handle_api_error
+def subscribe(controller, event):
+    """ Subscribe to email notifications for an event """
+    with Spinner(description='Subscribing'):
+        data = controller.subscribe(event=AuditEvent[event.upper()].value)
+    print_json(data=data)
+
+
+@iam.command('unsubscribe')
+@click.argument('event',
+              type=click.Choice([e.name for e in AuditEvent if e != AuditEvent.INVALID], case_sensitive=False))
+@click.pass_obj
+@handle_api_error
+def unsubscribe(controller, event):
+    """ Unsubscribe to email notifications for an event """
+    with Spinner(description='Subscribing'):
+        data = controller.unsubscribe(event=AuditEvent[event.upper()].value)
+    print_json(data=data)
+
+
 @iam.command('purge')
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
