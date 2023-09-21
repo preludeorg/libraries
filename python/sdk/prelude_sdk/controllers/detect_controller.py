@@ -85,7 +85,7 @@ class DetectController:
         raise Exception(res.text)
 
     @verify_credentials
-    def describe_activity(self, filters: dict, view: str = 'overview'):
+    def describe_activity(self, filters: dict, view: str = 'protected'):
         """ Get report for an Account """
         params = dict(view=view, **filters)
         res = requests.get(
