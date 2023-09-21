@@ -3,7 +3,7 @@ import click
 from rich import print_json
 from datetime import datetime, timedelta
 
-from prelude_sdk.models.codes import Permission, Mode
+from prelude_sdk.models.codes import AuditEvent, Mode, Permission
 from prelude_cli.views.shared import handle_api_error, Spinner
 from prelude_sdk.controllers.iam_controller import IAMController
 
@@ -52,12 +52,15 @@ def update_account(controller, mode, company):
 
 
 @iam.command('account')
+@click.option('--noqueue', help='hide your detect queue', is_flag=True)
 @click.pass_obj
 @handle_api_error
-def describe_account(controller):
+def describe_account(controller, noqueue):
     """ Get account details """
     with Spinner(description='Fetching account details'):
         data = controller.get_account()
+    if noqueue:
+        del data['queue']
     print_json(data=data)
 
 
@@ -126,26 +129,26 @@ def logs(controller, days, limit):
 
 
 @iam.command('subscribe')
-@click.argument('event',
-              type=click.Choice([e.name for e in AuditEvent if e != AuditEvent.INVALID], case_sensitive=False))
+@click.argument('events', nargs=-1,
+                type=click.Choice([e.name for e in AuditEvent if e != AuditEvent.INVALID], case_sensitive=False))
 @click.pass_obj
 @handle_api_error
-def subscribe(controller, event):
-    """ Subscribe to email notifications for an event """
+def subscribe(controller, events):
+    """ Subscribe to email notifications for specific events """
     with Spinner(description='Subscribing'):
-        data = controller.subscribe(event=AuditEvent[event.upper()].value)
+        data = controller.subscribe(event_codes=[AuditEvent[e.upper()].value for e in events])
     print_json(data=data)
 
 
 @iam.command('unsubscribe')
-@click.argument('event',
-              type=click.Choice([e.name for e in AuditEvent if e != AuditEvent.INVALID], case_sensitive=False))
+@click.argument('events', nargs=-1,
+                type=click.Choice([e.name for e in AuditEvent if e != AuditEvent.INVALID], case_sensitive=False))
 @click.pass_obj
 @handle_api_error
-def unsubscribe(controller, event):
-    """ Unsubscribe to email notifications for an event """
-    with Spinner(description='Subscribing'):
-        data = controller.unsubscribe(event=AuditEvent[event.upper()].value)
+def unsubscribe(controller, events):
+    """ Unsubscribe to email notifications for specific events """
+    with Spinner(description='Unsubscribing'):
+        data = controller.unsubscribe(event_codes=[AuditEvent[e.upper()].value for e in events])
     print_json(data=data)
 
 
