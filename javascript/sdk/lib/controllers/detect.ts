@@ -12,7 +12,7 @@ import {
   EndpointActivity,
   Insight,
   MetricsActivity,
-  PowerActivity,
+  FindingsActivity,
   Probe,
   ProbeActivity,
   RegisterEndpointParams,
@@ -152,11 +152,11 @@ export default class DetectController {
     options?: RequestOptions
   ): Promise<TestsActivity[]>;
   async describeActivity(
-    query: ActivityQuery & { view: "power" },
+    query: ActivityQuery & { view: "findings" },
     options?: RequestOptions
-  ): Promise<PowerActivity[]>;
+  ): Promise<FindingsActivity[]>;
   async describeActivity(
-    query: ActivityQuery & { view: "overview" },
+    query: ActivityQuery & { view: "protected" },
     options?: RequestOptions
   ): Promise<number>;
   async describeActivity(
@@ -170,8 +170,8 @@ export default class DetectController {
         | "metrics"
         | "advisories"
         | "tests"
-        | "power"
-        | "overview";
+        | "findings"
+        | "protected";
     },
     options: RequestOptions = {}
   ) {
