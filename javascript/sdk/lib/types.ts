@@ -312,7 +312,7 @@ export interface Recommendation {
   improvement: number;
 }
 
-export interface PowerActivity {
+export interface FindingsActivity {
   protected: number;
   dos?: Platform;
   control?: ControlCode;
