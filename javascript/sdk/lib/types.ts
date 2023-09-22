@@ -245,6 +245,8 @@ export interface Activity {
   test: string;
   dos: Platform;
   control: ControlCode;
+  policy: string | null;
+  os: string | null;
 }
 
 export interface TestsActivity {
