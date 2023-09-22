@@ -35,6 +35,30 @@ func Start(test fn, clean ...fn) {
 	}
 }
 
+const (
+	// Errors
+	UnexpectedTestError      int = 1
+	TimeoutExceeded          int = 102
+	CleanupFailed            int = 103
+	OutOfMemory              int = 137
+	UnexpectedExecutionError int = 256
+
+	// Not Relevant
+	NotRelevant int = 104
+
+	// Protected
+	TestCompletedNormally       int = 100
+	FileQuarantinedOnExtraction int = 105
+	NetworkConnectionBlocked    int = 106
+	HostNotVulnerabile          int = 107
+	ExecutionPrevented          int = 126
+	FileQuarantinedOnExecution  int = 127
+
+	// Unprotected
+	Unprotected            int = 101
+	TestIncorrectlyBlocked int = 110
+)
+
 func Stop(code int) {
 	cleanup()
 	Say(fmt.Sprintf("Completed with code: %d", code))
