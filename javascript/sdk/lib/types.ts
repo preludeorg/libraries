@@ -306,19 +306,19 @@ export interface MetricsActivity {
   unique_tests: number;
 }
 
-export interface Recommendation {
+export interface Finding {
   key: string;
-  value: string;
+  value: string | number | null;
   improvement: number;
 }
 
 export interface FindingsActivity {
   protected: number;
-  dos?: Platform;
-  control?: ControlCode;
-  policy?: string;
-  version?: string;
-  recommendation?: Recommendation;
+  dos: Platform;
+  control: ControlCode;
+  policy: string | null;
+  os: string | null;
+  finding?: Finding;
 }
 
 export interface RegisterEndpointParams {
