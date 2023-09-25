@@ -15,7 +15,7 @@ func test() {
 }
 
 func clean() {
-	println("[+] Cleaning up")
+	Endpoint.Say("Cleaning up")
 }
 
 func main() {
