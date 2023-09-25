@@ -275,7 +275,7 @@ export interface ActivityQuery {
   statuses?: string;
   control?: string;
   impersonate?: string;
-  version?: string;
+  os?: string;
   policy?: string;
 }
 
@@ -310,7 +310,7 @@ export interface MetricsActivity {
 
 export interface Finding {
   key: string;
-  value: string | number | null;
+  value: string | ControlCode | null;
   improvement: number;
 }
 
