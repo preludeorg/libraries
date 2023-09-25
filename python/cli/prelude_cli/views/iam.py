@@ -136,7 +136,7 @@ def logs(controller, days, limit):
 def subscribe(controller, events):
     """ Subscribe to email notifications for specific events """
     with Spinner(description='Subscribing'):
-        data = controller.subscribe(event_codes=[AuditEvent[e.upper()].value for e in events])
+        data = controller.notifications(add=[AuditEvent[e.upper()].value for e in events])
     print_json(data=data)
 
 
@@ -148,7 +148,7 @@ def subscribe(controller, events):
 def unsubscribe(controller, events):
     """ Unsubscribe to email notifications for specific events """
     with Spinner(description='Unsubscribing'):
-        data = controller.unsubscribe(event_codes=[AuditEvent[e.upper()].value for e in events])
+        data = controller.notifications(remove=[AuditEvent[e.upper()].value for e in events])
     print_json(data=data)
 
 

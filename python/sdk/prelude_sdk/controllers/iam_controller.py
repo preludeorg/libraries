@@ -157,25 +157,11 @@ class IAMController:
         raise Exception(res.text)
 
     @verify_credentials
-    def subscribe(self, event_codes: list):
-        """ Subscribe to email notifications for specific events """
-        data = dict(events=event_codes)
+    def notifications(self, add: list = None, remove: list = None):
+        """ Modify your email notifications for specific events """
+        data = dict(add=add or [], remove=remove or [])
         res = requests.post(
-            f'{self.account.hq}/iam/subscribe',
-            headers=self.account.headers,
-            json=data,
-            timeout=10
-        )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
-
-    @verify_credentials
-    def unsubscribe(self, event_codes: list):
-        """ Unsubscribe to email notifications for specific events """
-        data = dict(events=event_codes)
-        res = requests.delete(
-            f'{self.account.hq}/iam/subscribe',
+            f'{self.account.hq}/iam/notifications',
             headers=self.account.headers,
             json=data,
             timeout=10
