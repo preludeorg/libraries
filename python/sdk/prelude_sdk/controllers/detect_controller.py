@@ -135,7 +135,7 @@ class DetectController:
         raise Exception(res.text)
 
     @verify_credentials
-    def enable_test(self, ident: str, run_code: int, tags: str):
+    def enable_test(self, ident: str, run_code: str, tags: str):
         """ Enable a test so endpoints will start running it """
         res = requests.post(
             url=f'{self.account.hq}/detect/queue/{ident}',

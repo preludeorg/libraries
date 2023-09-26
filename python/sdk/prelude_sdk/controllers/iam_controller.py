@@ -47,7 +47,7 @@ class IAMController:
         raise Exception(res.text)
 
     @verify_credentials
-    def update_account(self, mode: int = None, company: str = None):
+    def update_account(self, mode: str = None, company: str = None):
         """ Update properties on an account """
         body = dict()
         if mode is not None:
@@ -78,7 +78,7 @@ class IAMController:
         raise Exception(res.text)
 
     @verify_credentials
-    def create_user(self, permission: int, email: str, expires: datetime = None, name: str = None):
+    def create_user(self, permission: str, email: str, expires: datetime = None, name: str = None):
         """ Create a new user inside an account """
         body = dict(permission=permission, handle=email)
         if name:

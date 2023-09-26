@@ -45,7 +45,7 @@ def update_account(controller, mode, company):
     """ Update an account """
     with Spinner(description='Updating account information'):
         data = controller.update_account(
-            mode=mode,
+            mode=mode.upper(),
             company=company
         )
     print_json(data=data)
