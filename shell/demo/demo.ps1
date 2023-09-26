@@ -33,7 +33,7 @@ function DownloadTest {
         "token" = $preludeToken
         "dos" = $dos
         "id" = $TestId
-        "version" = "1.1"
+        "version" = "2.0"
     }
 
     try {
@@ -84,7 +84,7 @@ function PostResults {
         "token" = $preludeToken
         "dos" = $dos
         "dat" = $Id + ":" + $Result
-        "version" = "1.1"
+        "version" = "2.0"
     }
     Invoke-WebRequest -URI $PRELUDE_API -UseBasicParsing -Headers $Headers -MaximumRedirection 1 | Out-Null
 }
