@@ -33,7 +33,7 @@ function DownloadTest {
         "token" = $preludeToken
         "dos" = $dos
         "id" = $TestId
-        "version" = "1.1"
+        "version" = "1.2"
     }
 
     try {

@@ -32,7 +32,7 @@ function download_test {
     local _temp=$2
     echo -e "\n[ ] Downloading test"
 
-    location=$(curl -sL -w %{url_effective} -o $_temp -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "id:${_test_id}" -H "version:1.1" $PRELUDE_API)
+    location=$(curl -sL -w %{url_effective} -o $_temp -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "id:${_test_id}" -H "version:1.2" $PRELUDE_API)
     test=$(echo $location | grep -o '[0-9a-f]\{8\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{12\}' | head -n 1)
     sleep 1 && tput cuu 1 && tput el
     if [ -z "$test" ];then
