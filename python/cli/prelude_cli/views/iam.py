@@ -35,16 +35,11 @@ def register_account(controller):
               help='provide a mode',
               default=None, show_default=False,
               type=click.Choice([m.name for m in Mode], case_sensitive=False))
-@click.option('-c', '--company',
-              help='provide your associated company',
-              default=None, show_default=False,
-              type=str)
+@click.option('-c', '--company', help='provide your associated company', default=None, show_default=False, type=str)
 @click.pass_obj
 @handle_api_error
 def update_account(controller, mode, company):
     """ Update an account """
-    print(mode)
-    print(Mode[mode])
     with Spinner(description='Updating account information'):
         data = controller.update_account(
             mode=Mode[mode],

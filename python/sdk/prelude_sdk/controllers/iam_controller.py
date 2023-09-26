@@ -52,7 +52,6 @@ class IAMController:
         body = dict()
         if mode is not None:
             body['mode'] = mode.name
-            print(mode.name)
         if company is not None:
             body['company'] = company
 
