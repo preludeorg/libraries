@@ -1,7 +1,15 @@
-from enum import Enum
+from enum import Enum, EnumMeta
 
 
-class RunCode(Enum):
+class MissingItem(EnumMeta):
+    def __getitem__(cls, name):
+        try:
+            return super().__getitem__(name.upper())
+        except KeyError:
+            return cls(None)
+
+
+class RunCode(Enum, metaclass=MissingItem):
     INVALID = -1
     DAILY = 1
     WEEKLY = 2
@@ -21,7 +29,7 @@ class RunCode(Enum):
         return RunCode.DAILY
 
 
-class Mode(Enum):
+class Mode(Enum, metaclass=MissingItem):
     MANUAL = 0
     FROZEN = 1
     AUTOPILOT = 2
@@ -31,7 +39,7 @@ class Mode(Enum):
         return Mode.MANUAL
 
 
-class Permission(Enum):
+class Permission(Enum, metaclass=MissingItem):
     INVALID = -1
     ADMIN = 0
     EXECUTIVE = 1
@@ -136,7 +144,7 @@ class DOS(Enum):
             return cls.none.value
 
 
-class Control(Enum):
+class Control(Enum, metaclass=MissingItem):
     INVALID = -1
     NONE = 0
     CROWDSTRIKE = 1
@@ -150,7 +158,7 @@ class Control(Enum):
         return Control.INVALID
 
 
-class AuditEvent(Enum):
+class AuditEvent(Enum, metaclass=MissingItem):
     INVALID = 0
     ATTACH_PARTNER = 1
     CREATE_TEST = 2
