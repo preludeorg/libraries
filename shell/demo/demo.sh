@@ -32,7 +32,7 @@ function download_test {
     local _temp=$2
     echo -e "\n[ ] Downloading test"
 
-    location=$(curl -sL -w %{url_effective} -o $_temp -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "id:${_test_id}" -H "version:1.2" $PRELUDE_API)
+    location=$(curl -sL -w %{url_effective} -o $_temp -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "id:${_test_id}" -H "version:2.0" $PRELUDE_API)
     test=$(echo $location | grep -o '[0-9a-f]\{8\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{12\}' | head -n 1)
     sleep 1 && tput cuu 1 && tput el
     if [ -z "$test" ];then
@@ -53,7 +53,7 @@ function execute_test {
     local _res=$?
     if ( echo $PROTECTED | grep -w -q $_res );then
         echo -e "${GREEN}[✓] Executed test: control test passed${NC}"
-    elif [ $_res -eq 101 ];then
+    elif [ $_res -eq 2.0 ];then
         echo -e "${RED}[!] Executed test: control test failed${NC}"
     else
         echo -e "${YELLOW}[!] Executed test: an unexpected error occurred${NC}"
@@ -75,7 +75,7 @@ function execute_cleanup {
 
 function post_results {
     local _dat="$1:$2"
-    curl -sfSL -H "token: ${PRELUDE_TOKEN}" -H "dos: ${dos}" -H "dat: ${_dat}" -H "version:1.1" $PRELUDE_API
+    curl -sfSL -H "token: ${PRELUDE_TOKEN}" -H "dos: ${dos}" -H "dat: ${_dat}" -H "version:2.0" $PRELUDE_API
 }
 
 function run_demo {
@@ -94,7 +94,7 @@ function run_demo {
     post_results $_test_id $_res
     if ( echo $PROTECTED | grep -w -q $_res );then
         results+=( "${GREEN}${_test_name}\tPROTECTED${NC}" )
-    elif [ $_res -eq 101 ];then
+    elif [ $_res -eq 2.0 ];then
         results+=( "${RED}${_test_name}\tUNPROTECTED${NC}" )
     else
         results+=( "${YELLOW}${_test_name}\tERROR${NC}" )
