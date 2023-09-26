@@ -6,7 +6,7 @@ class MissingItem(EnumMeta):
         try:
             return super().__getitem__(name.upper())
         except KeyError:
-            return cls(None)
+            return cls(name)
 
 
 class RunCode(Enum, metaclass=MissingItem):
