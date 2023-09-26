@@ -105,7 +105,7 @@ function RunDemo {
 
     if ($TestResult -in $PROTECTED ) {
         $Results[$Name] = "PROTECTED"
-    } elseif ($TestResult -eq 2.0) {
+    } elseif ($TestResult -eq 101) {
         $Results[$Name] = "UNPROTECTED"
     } else {
         $Results[$Name] = "ERROR"

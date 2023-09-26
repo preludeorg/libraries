@@ -53,7 +53,7 @@ function execute_test {
     local _res=$?
     if ( echo $PROTECTED | grep -w -q $_res );then
         echo -e "${GREEN}[✓] Executed test: control test passed${NC}"
-    elif [ $_res -eq 2.0 ];then
+    elif [ $_res -eq 101 ];then
         echo -e "${RED}[!] Executed test: control test failed${NC}"
     else
         echo -e "${YELLOW}[!] Executed test: an unexpected error occurred${NC}"
