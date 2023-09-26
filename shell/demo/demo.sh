@@ -94,7 +94,7 @@ function run_demo {
     post_results $_test_id $_res
     if ( echo $PROTECTED | grep -w -q $_res );then
         results+=( "${GREEN}${_test_name}\tPROTECTED${NC}" )
-    elif [ $_res -eq 2.0 ];then
+    elif [ $_res -eq 101 ];then
         results+=( "${RED}${_test_name}\tUNPROTECTED${NC}" )
     else
         results+=( "${YELLOW}${_test_name}\tERROR${NC}" )
