@@ -45,7 +45,7 @@ def update_account(controller, mode, company):
     """ Update an account """
     with Spinner(description='Updating account information'):
         data = controller.update_account(
-            mode=Mode[mode.upper()].value if mode else None,
+            mode=mode,
             company=company
         )
     print_json(data=data)
@@ -75,7 +75,7 @@ def create_user(controller, days, permission, name, email):
     with Spinner(description='Creating new user'):
         data = controller.create_user(
             email=email,
-            permission=Permission[permission.upper()].value,
+            permission=permission.upper(),
             name=name,
             expires=expires
         )
