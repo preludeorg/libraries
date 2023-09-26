@@ -43,9 +43,11 @@ def register_account(controller):
 @handle_api_error
 def update_account(controller, mode, company):
     """ Update an account """
+    print(mode)
+    print(Mode[mode])
     with Spinner(description='Updating account information'):
         data = controller.update_account(
-            mode=mode.upper(),
+            mode=Mode[mode],
             company=company
         )
     print_json(data=data)
@@ -75,7 +77,7 @@ def create_user(controller, days, permission, name, email):
     with Spinner(description='Creating new user'):
         data = controller.create_user(
             email=email,
-            permission=permission.upper(),
+            permission=Permission[permission],
             name=name,
             expires=expires
         )

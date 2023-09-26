@@ -98,7 +98,7 @@ def download(controller, test):
 def enable_test(controller, test, run_code, tags):
     """ Add test to your queue """
     with Spinner(description='Enabling test'):
-        data = controller.enable_test(ident=test, run_code=run_code.upper(), tags=tags)
+        data = controller.enable_test(ident=test, run_code=RunCode[run_code], tags=tags)
     print_json(data=data)
 
 

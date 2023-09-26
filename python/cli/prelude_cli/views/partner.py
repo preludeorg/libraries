@@ -25,7 +25,7 @@ def partner(ctx):
 def attach_partner(controller, partner, api, user, secret):
     """ Attach an EDR to Detect """
     with Spinner(description='Attaching partner'):
-        data = controller.attach(partner=partner.upper(), api=api, user=user, secret=secret)
+        data = controller.attach(partner=Control[partner], api=api, user=user, secret=secret)
     print_json(data=data)
 
 
@@ -38,7 +38,7 @@ def attach_partner(controller, partner, api, user, secret):
 def detach_partner(controller, partner):
     """ Detach an existing partner from your account """
     with Spinner(description='Detaching partner'):
-        data = controller.detach(partner=partner.upper())
+        data = controller.detach(partner=Control[partner])
     print_json(data=data)
 
 
@@ -51,7 +51,7 @@ def detach_partner(controller, partner):
 def partner_block(controller, partner, test_id):
     """ Report to a partner to block a test """
     with Spinner(description='Reporting test to partner'):
-        data = controller.block(partner=partner.upper(), test_id=test_id)
+        data = controller.block(partner=Control[partner], test_id=test_id)
     print_json(data=data)
 
 
@@ -66,7 +66,7 @@ def partner_block(controller, partner, test_id):
 def partner_endpoints(controller, partner, platform, hostname, offset):
     """ Get a list of endpoints from a partner """
     with Spinner(description='Fetching endpoints from partner'):
-        data = controller.endpoints(partner=partner.upper(), platform=platform, hostname=hostname, offset=offset)
+        data = controller.endpoints(partner=Control[partner], platform=platform, hostname=hostname, offset=offset)
     print_json(data=data)
 
 
@@ -79,7 +79,7 @@ def partner_endpoints(controller, partner, platform, hostname, offset):
 def partner_deploy(controller, partner, host_ids):
     """ Deploy probes to hosts associated to a partner """
     with Spinner(description='Deploying probes to hosts'):
-        data = controller.deploy(partner=partner.upper(), host_ids=host_ids)
+        data = controller.deploy(partner=Control[partner], host_ids=host_ids)
     print_json(data=data)
 
 
@@ -90,6 +90,6 @@ def partner_deploy(controller, partner, host_ids):
 def generate_webhook(controller, partner):
     """ Generate webhook credentials for an EDR system to enable the forwarding of alerts to the Prelude API, facilitating automatic alert suppression """
     with Spinner(description='Generating webhook credentials'):
-        data = controller.generate_webhook(partner=partner.upper())
+        data = controller.generate_webhook(partner=Control[partner])
     print_json(data=data)
     print("\nVisit https://docs.preludesecurity.com/docs/alert-management for details on configuring your EDR to forward alerts.\n")
