@@ -5,7 +5,7 @@ Compile the debug probe for any platform you want to run it on:
 > GOOS can be darwin, linux or windows
 
 ```go
-GOOS=darwin go build -o debug main.go
+GOOS=darwin go build
 ```
 
 Copy ``debug`` to any computer and run any Detect test on demand:
