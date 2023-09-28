@@ -103,6 +103,10 @@ func registerEndpoint(accountID string, token string) {
 	jsonData, err := json.Marshal(map[string]string{
 		"id": fmt.Sprintf("%s:%s", hostname, "0"),
 	})
+	if err != nil {
+		fmt.Println("Error marshaling request data")
+		return
+	}
 
 	req, err := http.NewRequest("POST", fmt.Sprintf("%s/detect/endpoint", *PRELUDE_API), bytes.NewBuffer(jsonData))
 	if err != nil {
@@ -121,6 +125,11 @@ func registerEndpoint(accountID string, token string) {
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println("Error while reading response body")
+		return
+	}
+
 	if resp.StatusCode == http.StatusOK {
 		os.Setenv("PRELUDE_TOKEN", string(body))
 		return
