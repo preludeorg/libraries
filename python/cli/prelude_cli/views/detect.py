@@ -195,11 +195,13 @@ def clone(controller):
 @click.option('--endpoints', help='comma-separated list of endpoint IDs', type=str)
 @click.option('--status', help='comma-separated list of status numbers', type=str)
 @click.option('--dos', help='comma-separated list of DOS', type=str)
+@click.option('--os', help='comma-separated list of OS', type=str)
+@click.option('--policy', help='comma-separated list of policies', type=str)
 @click.option('--control', type=click.Choice([c.name for c in Control], case_sensitive=False))
 @click.option('--social', help='whether to fetch account-specific or social stats. Applicable to tests and advisories views', is_flag=True)
 @click.pass_obj
 @handle_api_error
-def describe_activity(controller, days, view, tests, tags, endpoints, status, dos, control, social):
+def describe_activity(controller, days, view, tests, tags, endpoints, status, dos, os, policy, control, social):
     """ View my Detect results """
     filters = dict(
         start=datetime.utcnow() - timedelta(days=days),
@@ -215,6 +217,10 @@ def describe_activity(controller, days, view, tests, tags, endpoints, status, do
         filters['statuses'] = status
     if dos:
         filters['dos'] = dos
+    if os:
+        filters['os'] = os
+    if policy:
+        filters['policy'] = policy
     if control:
         filters['control'] = Control[control.upper()].value
     if social:
