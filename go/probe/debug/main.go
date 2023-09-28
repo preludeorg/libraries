@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
@@ -11,7 +12,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"encoding/json"
 	"regexp"
 	"runtime"
 )
@@ -19,7 +19,7 @@ import (
 var (
 	PRELUDE_API *string
 	PRELUDE_CA  *string
-	HOSTNAME	*string
+	HOSTNAME    *string
 )
 
 var re = regexp.MustCompile(`[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}`)
@@ -30,7 +30,7 @@ func executable(test string) string {
 
 	if runtime.GOOS == "windows" {
 		return executable + ".exe"
-	} 
+	}
 	return executable
 }
 
@@ -72,14 +72,14 @@ func loop(testID string, dat string) {
 		if *PRELUDE_CA == parsedURL.Host {
 			executable := executable(test)
 			os.WriteFile(executable, body, 0755)
-			
+
 			_, err := os.Stat(executable)
 			if err == nil {
 				cmd := exec.Command(executable)
 				cmd.Stdout = os.Stdout
 				cmd.Stderr = os.Stderr
 				cmd.Run()
-	
+
 				if cmd.ProcessState != nil {
 					code := cmd.ProcessState.ExitCode()
 					loop("", fmt.Sprintf("%s:%d", test, code))
@@ -111,7 +111,7 @@ func registerEndpoint(accountID string, token string) {
 	}
 	req.Header.Set("account", accountID)
 	req.Header.Set("token", token)
-	
+
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
@@ -119,7 +119,7 @@ func registerEndpoint(accountID string, token string) {
 		return
 	}
 	defer resp.Body.Close()
-	
+
 	body, err := io.ReadAll(resp.Body)
 	if resp.StatusCode == http.StatusOK {
 		os.Setenv("PRELUDE_TOKEN", string(body))
@@ -132,7 +132,7 @@ func registerEndpoint(accountID string, token string) {
 func main() {
 	PRELUDE_API = flag.String("api", "https://api.preludesecurity.com", "Detect API")
 	PRELUDE_CA = flag.String("ca", "prelude-account-us1-us-east-2.s3.amazonaws.com", "Detect certificate authority")
-	HOSTNAME = flag.String("host", "" , "Hostname associated to this probe")
+	HOSTNAME = flag.String("host", "", "Hostname associated to this probe")
 
 	flag.Parse()
 	os.Mkdir(*PRELUDE_CA, 0755)
@@ -146,7 +146,7 @@ func main() {
 
 	fmt.Print("\n\n----- AUTHORIZED AND READY TO RUN TESTS -----\n\n")
 	scanner := bufio.NewScanner(os.Stdin)
-	
+
 	for {
 		fmt.Print("[P] Enter a test ID: ")
 		scanner.Scan()
