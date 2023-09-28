@@ -94,6 +94,7 @@ export const RunCodes = {
   DAILY: 1,
   WEEKLY: 2,
   MONTHLY: 3,
+  SMART: 4,
   MONDAY: 10,
   TUESDAY: 11,
   WEDNESDAY: 12,
