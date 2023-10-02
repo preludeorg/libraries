@@ -1,5 +1,6 @@
 import requests
 
+from prelude_sdk.models.codes import RunCode
 from prelude_sdk.models.account import verify_credentials
 
 
@@ -135,12 +136,12 @@ class DetectController:
         raise Exception(res.text)
 
     @verify_credentials
-    def enable_test(self, ident: str, run_code: int, tags: str):
+    def enable_test(self, ident: str, run_code: RunCode, tags: str):
         """ Enable a test so endpoints will start running it """
         res = requests.post(
             url=f'{self.account.hq}/detect/queue/{ident}',
             headers=self.account.headers,
-            json=dict(code=run_code, tags=tags),
+            json=dict(code=run_code.name, tags=tags),
             timeout=10
         )
         if res.status_code == 200:

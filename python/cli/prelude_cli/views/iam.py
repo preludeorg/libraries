@@ -35,17 +35,14 @@ def register_account(controller):
               help='provide a mode',
               default=None, show_default=False,
               type=click.Choice([m.name for m in Mode], case_sensitive=False))
-@click.option('-c', '--company',
-              help='provide your associated company',
-              default=None, show_default=False,
-              type=str)
+@click.option('-c', '--company', help='provide your associated company', default=None, show_default=False, type=str)
 @click.pass_obj
 @handle_api_error
 def update_account(controller, mode, company):
     """ Update an account """
     with Spinner(description='Updating account information'):
         data = controller.update_account(
-            mode=Mode[mode.upper()].value if mode else None,
+            mode=Mode[mode] if mode else None,
             company=company
         )
     print_json(data=data)
@@ -75,7 +72,7 @@ def create_user(controller, days, permission, name, email):
     with Spinner(description='Creating new user'):
         data = controller.create_user(
             email=email,
-            permission=Permission[permission.upper()].value,
+            permission=Permission[permission],
             name=name,
             expires=expires
         )

@@ -1,7 +1,7 @@
 import requests
 import datetime
 
-from prelude_sdk.models.codes import AuditEvent
+from prelude_sdk.models.codes import AuditEvent, Mode, Permission
 from prelude_sdk.models.account import verify_credentials
 
 
@@ -47,11 +47,11 @@ class IAMController:
         raise Exception(res.text)
 
     @verify_credentials
-    def update_account(self, mode: int = None, company: str = None):
+    def update_account(self, mode: Mode = None, company: str = None):
         """ Update properties on an account """
         body = dict()
         if mode is not None:
-            body['mode'] = mode
+            body['mode'] = mode.name
         if company is not None:
             body['company'] = company
 
@@ -78,9 +78,9 @@ class IAMController:
         raise Exception(res.text)
 
     @verify_credentials
-    def create_user(self, permission: int, email: str, expires: datetime = None, name: str = None):
+    def create_user(self, permission: Permission, email: str, expires: datetime = None, name: str = None):
         """ Create a new user inside an account """
-        body = dict(permission=permission, handle=email)
+        body = dict(permission=permission.name, handle=email)
         if name:
             body['name'] = name
         if expires:

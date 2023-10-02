@@ -92,13 +92,13 @@ def download(controller, test):
 @click.option('-r', '--run_code',
               help='provide a run_code',
               default=RunCode.DAILY.name, show_default=True,
-              type=click.Choice([r.name for r in RunCode], case_sensitive=False))
+              type=click.Choice([r.name for r in RunCode if r != RunCode.INVALID], case_sensitive=False))
 @click.pass_obj
 @handle_api_error
 def enable_test(controller, test, run_code, tags):
     """ Add test to your queue """
     with Spinner(description='Enabling test'):
-        data = controller.enable_test(ident=test, run_code=RunCode[run_code.upper()].value, tags=tags)
+        data = controller.enable_test(ident=test, run_code=RunCode[run_code], tags=tags)
     print_json(data=data)
 
 
