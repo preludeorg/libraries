@@ -52,15 +52,12 @@ def update_account(controller, mode, company):
 
 
 @iam.command('account')
-@click.option('--noqueue', help='hide your detect queue', is_flag=True)
 @click.pass_obj
 @handle_api_error
-def describe_account(controller, noqueue):
+def describe_account(controller):
     """ Get account details """
     with Spinner(description='Fetching account details'):
         data = controller.get_account()
-    if noqueue:
-        del data['queue']
     print_json(data=data)
 
 
