@@ -168,14 +168,14 @@ class AuditEvent(Enum, metaclass=MissingItem):
     DELETE_USER = 6
     DETACH_PARTNER = 7
     DISABLE_TEST = 8
-    DOWNLOAD_ATTACHMENT = 9
+    DOWNLOAD_TEST_ATTACHMENT = 9
     ENABLE_TEST = 10
-    PARTNER_BLOCK = 11
+    SUPPRESS_PARTNER_ALERTS = 11
     REGISTER_ENDPOINT = 12
     UPDATE_ACCOUNT = 13
     UPDATE_ENDPOINT = 14
     UPDATE_TEST = 15
-    UPLOAD_ATTACHMENT = 16
+    UPLOAD_TEST_ATTACHMENT = 16
 
     @classmethod
     def _missing_(cls, value):
