@@ -3,7 +3,7 @@ import click
 from rich import print_json
 from datetime import datetime, timedelta
 
-from prelude_sdk.models.codes import Permission, Mode
+from prelude_sdk.models.codes import AuditEvent, Mode, Permission
 from prelude_cli.views.shared import handle_api_error, Spinner
 from prelude_sdk.controllers.iam_controller import IAMController
 
@@ -122,6 +122,30 @@ def logs(controller, days, limit):
     """ Get audit logs """
     with Spinner(description='Fetching logs'):
         data = controller.audit_logs(days=days, limit=limit)
+    print_json(data=data)
+
+
+@iam.command('subscribe')
+@click.argument('event',
+                type=click.Choice([e.name for e in AuditEvent if e != AuditEvent.INVALID], case_sensitive=False))
+@click.pass_obj
+@handle_api_error
+def subscribe(controller, events):
+    """ Subscribe to email notifications for an event """
+    with Spinner(description='Subscribing'):
+        data = controller.subscribe(event=AuditEvent[event])
+    print_json(data=data)
+
+
+@iam.command('unsubscribe')
+@click.argument('event',
+                type=click.Choice([e.name for e in AuditEvent if e != AuditEvent.INVALID], case_sensitive=False))
+@click.pass_obj
+@handle_api_error
+def unsubscribe(controller, events):
+    """ Unsubscribe to email notifications for an event """
+    with Spinner(description='Unsubscribing'):
+        data = controller.unsubscribe(event=AuditEvent[event])
     print_json(data=data)
 
 
