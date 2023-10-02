@@ -1,6 +1,7 @@
 import requests
 import datetime
 
+from prelude_sdk.models.codes import AuditEvent
 from prelude_sdk.models.account import verify_credentials
 
 
@@ -157,13 +158,23 @@ class IAMController:
         raise Exception(res.text)
 
     @verify_credentials
-    def notifications(self, add: list = None, remove: list = None):
-        """ Modify your email notifications for specific events """
-        data = dict(add=add or [], remove=remove or [])
+    def subscribe(self, event: AuditEvent):
+        """ Subscribe to email notifications for an event """
         res = requests.post(
-            f'{self.account.hq}/iam/notifications',
+            f'{self.account.hq}/iam/subscribe/{event.name}',
             headers=self.account.headers,
-            json=data,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def unsubscribe(self, event: AuditEvent):
+        """ Unsubscribe to email notifications for an event """
+        res = requests.delete(
+            f'{self.account.hq}/iam/subscribe/{event.name}',
+            headers=self.account.headers,
             timeout=10
         )
         if res.status_code == 200:

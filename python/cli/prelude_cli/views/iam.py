@@ -129,26 +129,26 @@ def logs(controller, days, limit):
 
 
 @iam.command('subscribe')
-@click.argument('events', nargs=-1,
+@click.argument('event',
                 type=click.Choice([e.name for e in AuditEvent if e != AuditEvent.INVALID], case_sensitive=False))
 @click.pass_obj
 @handle_api_error
 def subscribe(controller, events):
-    """ Subscribe to email notifications for specific events """
+    """ Subscribe to email notifications for an event """
     with Spinner(description='Subscribing'):
-        data = controller.notifications(add=[AuditEvent[e.upper()].value for e in events])
+        data = controller.subscribe(event=AuditEvent[event])
     print_json(data=data)
 
 
 @iam.command('unsubscribe')
-@click.argument('events', nargs=-1,
+@click.argument('event',
                 type=click.Choice([e.name for e in AuditEvent if e != AuditEvent.INVALID], case_sensitive=False))
 @click.pass_obj
 @handle_api_error
 def unsubscribe(controller, events):
-    """ Unsubscribe to email notifications for specific events """
+    """ Unsubscribe to email notifications for an event """
     with Spinner(description='Unsubscribing'):
-        data = controller.notifications(remove=[AuditEvent[e.upper()].value for e in events])
+        data = controller.unsubscribe(event=AuditEvent[event])
     print_json(data=data)
 
 
