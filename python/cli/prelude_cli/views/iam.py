@@ -127,7 +127,7 @@ def logs(controller, days, limit):
                 type=click.Choice([e.name for e in AuditEvent if e != AuditEvent.INVALID], case_sensitive=False))
 @click.pass_obj
 @handle_api_error
-def subscribe(controller, events):
+def subscribe(controller, event):
     """ Subscribe to email notifications for an event """
     with Spinner(description='Subscribing'):
         data = controller.subscribe(event=AuditEvent[event])
@@ -139,7 +139,7 @@ def subscribe(controller, events):
                 type=click.Choice([e.name for e in AuditEvent if e != AuditEvent.INVALID], case_sensitive=False))
 @click.pass_obj
 @handle_api_error
-def unsubscribe(controller, events):
+def unsubscribe(controller, event):
     """ Unsubscribe to email notifications for an event """
     with Spinner(description='Unsubscribing'):
         data = controller.unsubscribe(event=AuditEvent[event])
