@@ -72,13 +72,12 @@ class DetectController:
         raise Exception(res.text)
 
     @verify_credentials
-    def list_advisories(self, year: int = None):
+    def list_advisories(self):
         """ List advisories """
-        params = dict(year=year) if year else {}
         res = requests.get(
             f'{self.account.hq}/detect/advisories',
             headers=self.account.headers,
-            params=params,
+            params={},
             timeout=10
         )
         if res.status_code == 200:

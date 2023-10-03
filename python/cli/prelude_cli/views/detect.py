@@ -151,12 +151,11 @@ def endpoints(controller, days):
 
 @detect.command('advisories')
 @click.pass_obj
-@click.option('-y', '--year', help='View advisories from a specific year', default=None, type=int)
 @handle_api_error
-def advisories(controller, year):
+def advisories(controller):
     """ List all Prelude advisories """
     with Spinner(description='Fetching advisories'):
-        data = controller.list_advisories(year=year)
+        data = controller.list_advisories()
     print_json(data=data)
 
 
