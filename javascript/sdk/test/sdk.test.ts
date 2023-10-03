@@ -1,11 +1,17 @@
+import { spawn } from "child_process";
 import { randomUUID } from "crypto";
 import { addDays, subDays } from "date-fns";
 import { readFileSync, unlinkSync, writeFileSync } from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { Modes, RunCodes, Service } from "../lib/main";
-import { spawn } from "child_process";
+import {
+  Modes,
+  Permissions,
+  RunCodes,
+  Service,
+  getEnumName,
+} from "../lib/main";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -58,7 +64,10 @@ describe("SDK Test", () => {
     });
 
     it("updateAccount should update the account", async () => {
-      const result = await service.iam.updateAccount(Modes.MANUAL, company);
+      const result = await service.iam.updateAccount(
+        getEnumName(Modes, Modes.MANUAL),
+        company
+      );
       expect(result).toHaveProperty("status");
       expect(result.status).toEqual(true);
     });
@@ -71,7 +80,7 @@ describe("SDK Test", () => {
 
     it("createUser should return an object with a value token that is a UUID4", async () => {
       const result = await service.iam.createUser({
-        permission: 3,
+        permission: getEnumName(Permissions, 3),
         email: "registration",
         name: "registration",
         expires: addDays(new Date(), 1).toISOString(),
@@ -187,7 +196,10 @@ describe("SDK Test", () => {
     beforeAll(async () => {
       const credentials = await createAccount();
       service.setCredentials(credentials);
-      await service.iam.updateAccount(Modes.MANUAL, company);
+      await service.iam.updateAccount(
+        getEnumName(Modes, Modes.MANUAL),
+        company
+      );
     });
 
     afterAll(async () => {
@@ -239,7 +251,7 @@ describe("SDK Test", () => {
     it("enableTest should add a new test to the queue", async function () {
       await service.detect.enableTest({
         test: activeTest,
-        runCode: RunCodes.DAILY,
+        runCode: getEnumName(RunCodes, RunCodes.DAILY),
         tags: tags,
       });
 
