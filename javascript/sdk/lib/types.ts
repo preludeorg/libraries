@@ -72,7 +72,7 @@ export interface CreateAccountParams {
 }
 
 export interface CreateUserParams {
-  permission: Permission;
+  permission: PermissionName;
   email: string;
   name?: string;
   expires?: string;
@@ -87,6 +87,22 @@ export interface Queue {
   run_code: RunCode;
   tag: string | null;
   started: string;
+}
+
+/**
+ * Get the name of an enum value
+ * @example,
+ * getEnumName(RunCodes, RunCodes.DAILY) // => "DAILY"
+ */
+export function getEnumName<T extends Record<string, unknown>>(
+  enumType: T,
+  value: T[keyof T]
+): keyof T {
+  const key = Object.keys(enumType).find((k) => enumType[k] === value);
+  if (key === undefined) {
+    throw new Error(`Unknown enum value ${value}`);
+  }
+  return key;
 }
 
 export const RunCodes = {
@@ -105,6 +121,7 @@ export const RunCodes = {
   MONTH_1: 20,
 } as const;
 
+export type RunCodeName = keyof typeof RunCodes;
 export type RunCode = (typeof RunCodes)[keyof typeof RunCodes];
 
 export const Permissions = {
@@ -116,6 +133,7 @@ export const Permissions = {
   AUTO: 4,
 } as const;
 
+export type PermissionName = keyof typeof Permissions;
 export type Permission = (typeof Permissions)[keyof typeof Permissions];
 
 export const Modes = {
@@ -124,11 +142,12 @@ export const Modes = {
   AUTOPILOT: 2,
 } as const;
 
+export type ModeName = keyof typeof Modes;
 export type Mode = (typeof Modes)[keyof typeof Modes];
 
 export interface EnableTest {
   test: string;
-  runCode: RunCode;
+  runCode: RunCodeName;
   tags?: string;
 }
 
@@ -357,7 +376,7 @@ export interface AttachedPartner {
 }
 
 export interface EndpointsParams {
-  partnerCode: ControlCode;
+  partner: ControlCodeName;
   platform: string;
   hostname?: string;
   offset?: number;

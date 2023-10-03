@@ -4,6 +4,7 @@ import {
   AttachedPartner,
   BlockResponse,
   ControlCode,
+  ControlCodeName,
   DeployParams,
   DeployedEndpoints,
   EndpointsParams,
@@ -53,16 +54,13 @@ export default class PartnerController {
   }
 
   async detachPartner(
-    partnerCode: ControlCode,
+    partner: ControlCodeName,
     options: RequestOptions = {}
   ): Promise<StatusResponse> {
-    const response = await this.#client.requestWithAuth(
-      `/partner/${partnerCode}`,
-      {
-        method: "DELETE",
-        ...options,
-      }
-    );
+    const response = await this.#client.requestWithAuth(`/partner/${partner}`, {
+      method: "DELETE",
+      ...options,
+    });
 
     return (await response.json()) as StatusResponse;
   }
@@ -70,7 +68,7 @@ export default class PartnerController {
   /** Get a list of endpoints from all partners */
   async endpoints(
     {
-      partnerCode,
+      partner,
       platform,
       hostname = "",
       offset = 0,
@@ -86,7 +84,7 @@ export default class PartnerController {
     });
 
     const response = await this.#client.requestWithAuth(
-      `/partner/endpoints/${partnerCode}?${searchParams.toString()}`,
+      `/partner/endpoints/${partner}?${searchParams.toString()}`,
       {
         method: "GET",
         ...options,
