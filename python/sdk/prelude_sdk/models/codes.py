@@ -5,8 +5,11 @@ class MissingItem(EnumMeta):
     def __getitem__(cls, name):
         try:
             return super().__getitem__(name.upper())
-        except KeyError:
-            return cls(name)
+        except (AttributeError, KeyError):
+            try:
+                return cls(int(name))
+            except ValueError:
+                return cls(name)
 
 
 class RunCode(Enum, metaclass=MissingItem):
