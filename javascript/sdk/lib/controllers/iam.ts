@@ -6,7 +6,7 @@ import type {
   CreateUserParams,
   CreatedUser,
   Credentials,
-  Mode,
+  ModeName,
   RequestOptions,
   StatusResponse,
   VerifiedUser,
@@ -52,7 +52,7 @@ export default class IAMController {
 
   /** Update properties on an account */
   async updateAccount(
-    mode?: Mode,
+    mode?: ModeName,
     company?: string,
     options: RequestOptions = {}
   ): Promise<StatusResponse> {
