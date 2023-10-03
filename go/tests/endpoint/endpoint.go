@@ -1,8 +1,11 @@
 package Endpoint
 
 import (
+	"crypto/aes"
+	"crypto/cipher"
 	"fmt"
 	"io/fs"
+	"math/rand"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -87,7 +90,7 @@ func Find(ext string) []string {
 func Read(path string) []byte {
 	bit, err := os.ReadFile(pwd(path))
 	if err != nil {
-		println(err)
+		Say(fmt.Sprintf("Error: %s", err))
 	}
 	return bit
 }
@@ -170,4 +173,83 @@ func pwd(filename string) string {
 	}
 	filePath := filepath.Join(filepath.Dir(bin), filename)
 	return filePath
+}
+
+func XorEncrypt(data []byte) ([]byte, byte, error) {
+	keyData, err := generateKey()
+	if err != nil {
+		return nil, 0, err
+	}
+	key := keyData[0] // Use the first byte of the generated key
+
+	encrypted := make([]byte, len(data))
+	for i, v := range data {
+		encrypted[i] = v ^ key
+	}
+	return encrypted, key, nil
+}
+
+func XorDecrypt(data []byte, key byte) []byte {
+	decrypted := make([]byte, len(data))
+	for i, v := range data {
+		decrypted[i] = v ^ key
+	}
+	return decrypted
+}
+
+func AES256GCMEncrypt(data []byte) ([]byte, []byte, error) {
+	key, err := generateKey()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	blockCipher, err := aes.NewCipher(key)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	gcm, err := cipher.NewGCM(blockCipher)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	nonce := make([]byte, gcm.NonceSize())
+	for i := range nonce {
+		nonce[i] = byte(rand.Intn(256))
+	}
+
+	ciphertext := gcm.Seal(nonce, nonce, data, nil)
+	return ciphertext, key, nil
+}
+
+func AES256GCMDecrypt(data, key []byte) ([]byte, error) {
+	blockCipher, err := aes.NewCipher(key)
+	if err != nil {
+		return nil, err
+	}
+
+	gcm, err := cipher.NewGCM(blockCipher)
+	if err != nil {
+		return nil, err
+	}
+
+	nonceSize := gcm.NonceSize()
+	if len(data) < nonceSize {
+		return nil, fmt.Errorf("ciphertext too short")
+	}
+
+	nonce, ciphertext := data[:nonceSize], data[nonceSize:]
+	plaintext, err := gcm.Open(nil, nonce, ciphertext, nil)
+	if err != nil {
+		return nil, err
+	}
+	return plaintext, nil
+}
+
+func generateKey() ([]byte, error) {
+	key := make([]byte, 32)
+	for i := range key {
+		key[i] = byte(rand.Intn(256))
+	}
+	return key, nil
 }
