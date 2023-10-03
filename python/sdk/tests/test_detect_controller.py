@@ -69,7 +69,7 @@ class TestDetectController:
     @pytest.mark.order(after='test_iam_controller.py::TestIAMController::test_get_account')
     def test_enable_test(self, unwrap):
         """Test enable_test method"""
-        unwrap(self.iam.update_account)(self.iam, mode=Mode.MANUAL.value)
+        unwrap(self.iam.update_account)(self.iam, mode=Mode.MANUAL)
         unwrap(self.detect.enable_test)(self.detect, ident=pytest.test_id, run_code=RunCode.DAILY, tags=self.tags)
         queue = unwrap(self.iam.get_account)(self.iam)['queue']
         assert len([test for test in queue if test['test'] == pytest.test_id]) == 1
