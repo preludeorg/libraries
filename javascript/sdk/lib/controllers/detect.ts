@@ -101,12 +101,8 @@ export default class DetectController {
   /** List advisories */
   async listAdvisories(
     options: RequestOptions = {},
-    year?: number
   ): Promise<Advisory[]> {
     const searchParams = new URLSearchParams();
-    if (year) {
-      searchParams.set("year", year.toString());
-    }
     const response = await this.#client.requestWithAuth(
       `/detect/advisories?${searchParams.toString()}`,
       {
