@@ -1,3 +1,5 @@
+import logging
+
 from enum import Enum, EnumMeta
 
 
@@ -79,6 +81,7 @@ class ExitCode(Enum):
     def _missing_(cls, value):
         if value and not isinstance(value, int):
             return cls(int(value))
+        logging.warning('Unknown ExitCode: %d', value)
         return ExitCode.MISSING
 
     @property
