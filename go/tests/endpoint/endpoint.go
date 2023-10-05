@@ -143,6 +143,20 @@ func Shell(args []string) (string, error) {
 	return string(stdout), nil
 }
 
+func ExecuteRandomCommand(commands [][]string) (string, error) {
+	var command []string
+	if len(commands) == 0 {
+		return "", fmt.Errorf("command slice is empty")
+	} else if len(commands) == 1 {
+		command = commands[0]
+	} else {
+		index := rand.Intn(len(commands))
+		command = commands[index]
+	}
+
+	return Shell(command)
+}
+
 func IsAvailable(programs ...string) bool {
 	for _, program := range programs {
 		_, err := exec.LookPath(program)
