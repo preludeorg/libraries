@@ -417,3 +417,9 @@ export interface BlockResponse {
   already_reported?: boolean;
   ioc_id?: string;
 }
+
+export interface GeneratedWebhook {
+  url: string;
+  description: string;
+  secret: string;
+}

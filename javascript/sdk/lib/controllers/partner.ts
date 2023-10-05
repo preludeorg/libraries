@@ -8,6 +8,7 @@ import {
   DeployParams,
   DeployedEndpoints,
   EndpointsParams,
+  GeneratedWebhook,
   PartnerEndpoints,
   RequestOptions,
   StatusResponse,
@@ -115,7 +116,7 @@ export default class PartnerController {
   async webhookGenerate(
     partnerCode: ControlCode,
     options: RequestOptions = {}
-  ): Promise<StatusResponse> {
+  ): Promise<GeneratedWebhook> {
     const response = await this.#client.requestWithAuth(
       `/partner/suppress/${partnerCode}`,
       {
