@@ -422,4 +422,5 @@ export interface GeneratedWebhook {
   url: string;
   description: string;
   secret: string;
+  headers: Record<string, string>;
 }
