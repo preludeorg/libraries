@@ -114,7 +114,7 @@ export default class PartnerController {
 
   /** Generate webhook authenication information for specified partner */
   async webhookGenerate(
-    partnerCode: ControlCode,
+    partnerCode: ControlCodeName,
     options: RequestOptions = {}
   ): Promise<GeneratedWebhook> {
     const response = await this.#client.requestWithAuth(
