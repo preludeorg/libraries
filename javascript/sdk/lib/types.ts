@@ -172,6 +172,7 @@ export interface Probe {
   dos: Platform | null;
   os?: string | null;
   policy?: string | null;
+  policy_name: string | null;
 }
 
 export const ExitCodes = {
