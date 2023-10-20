@@ -398,7 +398,9 @@ export type PartnerEndpoints = Record<
   string,
   {
     hostname: string;
-    version: string;
+    os: string;
+    policy?: string | null;
+    policy_name?: string | null;
   }
 >;
 
