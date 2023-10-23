@@ -296,8 +296,8 @@ func (s *PortScan) ScanHosts(ports ...int) []string {
 					go func(host string, port int) {
 						defer wg.Done()
 						if s.ScanPort("tcp", host, port) {
-							hostArray = append(hostArray, host)
 							mutex.Lock()
+							hostArray = append(hostArray, host)
 							fmt.Printf("[+] Host: %s is up on port %d\n", host, port)
 							mutex.Unlock()
 						}
