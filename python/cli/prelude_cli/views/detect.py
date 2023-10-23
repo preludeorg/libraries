@@ -80,10 +80,9 @@ def download(controller, test):
         attachments = controller.get_test(test_id=test).get('attachments')
 
         for attach in attachments:
-            if Path(attach).suffix:
-                code = controller.download(test_id=test, filename=attach)
-                with open(PurePath(test, attach), 'wb') as f:
-                    f.write(code)
+            code = controller.download(test_id=test, filename=attach)
+            with open(PurePath(test, attach), 'wb') as f:
+                f.write(code)
 
 
 @detect.command('enable-test')
