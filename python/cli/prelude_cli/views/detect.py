@@ -80,10 +80,9 @@ def download(controller, test):
         attachments = controller.get_test(test_id=test).get('attachments')
 
         for attach in attachments:
-            if Path(attach).suffix:
-                code = controller.download(test_id=test, filename=attach)
-                with open(PurePath(test, attach), 'wb') as f:
-                    f.write(code)
+            code = controller.download(test_id=test, filename=attach)
+            with open(PurePath(test, attach), 'wb') as f:
+                f.write(code)
 
 
 @detect.command('enable-test')
@@ -170,10 +169,9 @@ def clone(controller):
         Path(test['id']).mkdir(parents=True, exist_ok=True)
 
         for attach in controller.get_test(test_id=test['id']).get('attachments'):
-            if Path(attach).suffix:
-                code = controller.download(test_id=test['id'], filename=attach)
-                with open(PurePath(test['id'], attach), 'wb') as f:
-                    f.write(code)
+            code = controller.download(test_id=test['id'], filename=attach)
+            with open(PurePath(test['id'], attach), 'wb') as f:
+                f.write(code)
 
     async def start_cloning():
         await asyncio.gather(*[fetch(test) for test in controller.list_tests()])
