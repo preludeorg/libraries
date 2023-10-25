@@ -12,9 +12,9 @@ jobs:
     name: eu1 - shell probes (demo / nocturnal / raindrop / vision scripts) deploy
 
     steps:
-      - name: Check out code. 
+      - name: Check out code.
         uses: actions/checkout@v3
-      
+
       - name: Env Conversion
         shell: bash
         run: |
@@ -27,9 +27,8 @@ jobs:
       - id: shell_probes_composite
         uses: ./.github/actions/shell_probes
         with:
-          environment: eu1
           s3_bucket: ${{ secrets.BUCKET_NAME }}
           aws_region: ${{ secrets.BUCKET_REGION }}
           aws_access_key_id: ${{ secrets.EU1_S3_DEPLOYMENT_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.EU1_S3_DEPLOYMENT_SECRET_ACCESS_KEY  }}
-          slack_workflow_url: ${{ secrets.SLACK_GIT_DEPLOYMENT_WORKFLOW }}
+          slack_notification: ${{ secrets.EU1_SLACK_URL }}

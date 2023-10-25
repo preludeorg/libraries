@@ -1,9 +1,6 @@
 name: Deploy (demo / nocturnal / raindrop / vision scripts)
 description: Copy script to s3
 inputs:
-  environment:
-    description: "Describe the environment for slack webhooks"
-    required: true
   s3_bucket:
     description: 'Where to push probes'
     required: true
@@ -16,8 +13,8 @@ inputs:
   aws_secret_access_key:
     description: 'Secret key to use'
     required: true
-  slack_workflow_url:
-    description: 'Where to send the slack webhook'
+  slack_notification:
+    description: 'Where to send the slack payload'
 
 runs:
   using: "composite"
@@ -32,48 +29,55 @@ runs:
     - name: Copy files to the s3 with the AWS CLI
       shell: bash
       run: |
-        
-        NIX_ARCHS=(darwin-arm64 darwin-x86_64 linux-arm64 linux-x86_64)       
- 
-        for a in ${NIX_ARCHS[@]}; do
-          aws s3 cp shell/demo/demo.sh s3://${{ inputs.s3_bucket }}/prelude/probes/demo/demo_${a}
-        done 
 
-        for a in ${NIX_ARCHS[@]}; do  
-          aws s3 cp shell/probe/nocturnal.sh s3://${{ inputs.s3_bucket }}/prelude/probes/nocturnal/nocturnal_${a}
-        done 
+        NIX_FILES=(shell/demo/demo.sh,demo/demo shell/probe/nocturnal.sh,nocturnal/nocturnal shell/probe/vision.sh,vision/vision)
+        NIX_ARCHS=(darwin-arm64 darwin-x86_64 linux-arm64 linux-x86_64)
 
-        for a in linux-x86_64; do  
-          aws s3 cp shell/probe/vision.sh s3://${{ inputs.s3_bucket }}/prelude/probes/vision/vision_${a}
-        done 
+        for f in ${NIX_FILES[@]}; do
+          src=${f%,*}
+          dst=${f#*,}
 
-        WIN_ARCHS=(windows-x86_64)        
+          sha256=`openssl sha256 --binary ${src}  | base64`
+          sha1=`openssl sha1 --binary ${src}  | base64`
 
-        for a in ${WIN_ARCHS[@]}; do
-          aws s3 cp shell/demo/demo.ps1 s3://${{ inputs.s3_bucket }}/prelude/probes/demo/demo_${a}
+          for a in ${NIX_ARCHS[@]}; do
+            aws s3api put-object --bucket ${{ inputs.s3_bucket }} --key prelude/probes/${dst}_${a} --body $src --metadata "Checksumsha1=${sha1}" --checksum-sha256 ${sha256}
+          done
         done
 
-        for a in ${WIN_ARCHS[@]}; do
-          aws s3 cp shell/probe/raindrop.ps1 s3://${{ inputs.s3_bucket }}/prelude/probes/raindrop/raindrop_${a}
+        WIN_FILES=(shell/demo/demo.ps1,demo/demo shell/probe/raindrop.ps1,raindrop/raindrop)
+        WIN_ARCHS=(windows-x86_64)
+
+        for f in ${WIN_FILES[@]}; do
+          src=${f%,*}
+          dst=${f#*,}
+
+          sha256=`openssl sha256 --binary ${src}  | base64`
+          sha1=`openssl sha1 --binary ${src}  | base64`
+
+          for a in ${WIN_ARCHS[@]}; do
+            aws s3api put-object --bucket ${{ inputs.s3_bucket }} --key prelude/probes/${dst}_${a} --body $src --metadata "Checksumsha1=${sha1}" --checksum-sha256 ${sha256}
+          done
         done
 
 
-    - name: Send custom JSON data to Slack workflow
-      if: startswith(inputs.slack_workflow_url, 'http')  && always()
+    - name: Notify Slack
       id: slack
-      uses: slackapi/slack-github-action@v1.23.0
+      uses: slackapi/slack-github-action@v1.24.0
       with:
         payload: |
           {
-            "repo": "${{ github.repository }}",
-            "env": "${{ inputs.environment }}",
-            "user": "${{ github.triggering_actor }}",
-            "ref": "${{ github.ref }}",
-            "workflow": "${{ github.workflow }}",
-            "status": "${{ github.action_status }}",
-            "job_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
-            "event_name": "${{ github.event_name }}",
-            "event_action": "${{ github.event.action }}"
+            "text": "Probe Deploy (${{ github.triggering_actor }}): ${GITHUB_REF#refs/*/} ${{ job.status }}",
+            "blocks": [
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "Probe Deploy (${{ github.triggering_actor }}): ${GITHUB_REF#refs/*/} ${{ job.status }}"
+                }
+              }
+            ]
           }
       env:
-        SLACK_WEBHOOK_URL: ${{ inputs.slack_workflow_url }}
+        SLACK_WEBHOOK_URL: ${{ inputs.slack_notification }}
+        SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
