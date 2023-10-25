@@ -67,13 +67,13 @@ runs:
       with:
         payload: |
           {
-            "text": "Probe Deploy (${{ github.triggering_actor }}): ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}",
+            "text": "Probe Deploy (${{ github.triggering_actor }}): ${GITHUB_REF#refs/*/} ${{ job.status }}",
             "blocks": [
               {
                 "type": "section",
                 "text": {
                   "type": "mrkdwn",
-                  "text": "Probe Deploy (${{ github.triggering_actor }}): ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                  "text": "Probe Deploy (${{ github.triggering_actor }}): ${GITHUB_REF#refs/*/} ${{ job.status }}"
                 }
               }
             ]
