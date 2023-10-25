@@ -41,7 +41,7 @@ runs:
           sha1=`openssl sha1 --binary ${src}  | base64`
 
           for a in ${NIX_ARCHS[@]}; do
-            aws s3api put-object --bucket ${{ inputs.s3_bucket }} --key prelude/probes/${dst}_${a} --body $src --metadata "Checksumsha1=$sha1" --checksum-sha256 $sha256
+            aws s3api put-object --bucket ${{ inputs.s3_bucket }} --key prelude/probes/${dst}_${a} --body $src --metadata "Checksumsha1=${sha1}" --checksum-sha256 ${sha256}
           done
         done
 
@@ -56,7 +56,7 @@ runs:
           sha1=`openssl sha1 --binary ${src}  | base64`
 
           for a in ${WIN_ARCHS[@]}; do
-            aws s3api put-object --bucket ${{ inputs.s3_bucket }} --key prelude/probes/${dst}_${a} --body $src --metadata "Checksumsha1=$sha1" --checksum-sha256 $sha256
+            aws s3api put-object --bucket ${{ inputs.s3_bucket }} --key prelude/probes/${dst}_${a} --body $src --metadata "Checksumsha1=${sha1}" --checksum-sha256 ${sha256}
           done
         done
 
