@@ -17,34 +17,34 @@ requester := Network.NewHTTPRequest("https://example.com", opts)
 ### 3. Sending a GET request:
 ```go
 params := Network.RequestParameters{
-    Headers: map[string]string{
-        "Accept": "application/json",
+    Headers: map[string][]string{
+        "Accept": {"application/json"},
     },
 }
-statusCode, body, err := requester.GET(params)
+response, err := requester.GET(params)
 if err != nil {
     fmt.Println("Error:", err)
 } else {
-    fmt.Println("Status Code:", statusCode)
-    fmt.Println("Response Body:", string(body))
+    fmt.Println("Status Code:", response.StatusCode)
+    fmt.Println("Response Body:", string(response.Body))
 }
 ```
 
 ### 4. Sending a POST request with body data and gzip encoding:
 ```go
 params := Network.RequestParameters{
-    Headers: map[string]string{
-        "Content-Type": "application/json",
+    Headers: map[string][]string{
+        "Content-Type": {"application/json"},
     },
     Body:     []byte(`{"key": "value"}`),
     Encoding: "gzip",
 }
-statusCode, body, err := requester.POST(params)
+response, err := requester.POST(params)
 if err != nil {
     fmt.Println("Error:", err)
 } else {
-    fmt.Println("Status Code:", statusCode)
-    fmt.Println("Response Body:", string(body))
+    fmt.Println("Status Code:", response.StatusCode)
+    fmt.Println("Response Body:", string(response.Body))
 }
 ```
 

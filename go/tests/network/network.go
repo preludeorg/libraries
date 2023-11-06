@@ -39,6 +39,12 @@ type RequestOptions struct {
 	UserAgent string
 }
 
+type ResponseData struct {
+	StatusCode int
+	Headers    http.Header
+	Body       []byte
+}
+
 func NewHTTPRequest(requestURL string, opts *RequestOptions) *Requester {
 
 	timeout := time.Second * 1
@@ -82,7 +88,7 @@ func (r *Requester) prepareRequest(method string, params RequestParameters, body
 
 	req.Header.Set("User-Agent", r.UserAgent)
 
-	for key, values := range params.Headers { 
+	for key, values := range params.Headers {
 		for _, value := range values {
 			req.Header.Add(key, value)
 		}
@@ -104,36 +110,39 @@ func (r *Requester) prepareRequest(method string, params RequestParameters, body
 	return req, nil
 }
 
-func (r *Requester) GET(params RequestParameters) (statusCode int, responseBody []byte, err error) {
+func (r *Requester) GET(params RequestParameters) (response ResponseData, err error) {
 	req, err := r.prepareRequest(http.MethodGet, params, nil)
 	if err != nil {
-		return -1, nil, err
+		return response, err
 	}
 
 	resp, err := r.Client.Do(req)
 	if err != nil {
-		return -1, nil, err
+		return response, err
 	}
 	defer resp.Body.Close()
 
-	bodyBytes, err := io.ReadAll(resp.Body)
+	response.StatusCode = resp.StatusCode
+	response.Headers = resp.Header
+
+	response.Body, err = io.ReadAll(resp.Body)
 	if err != nil {
-		return -1, nil, err
+		return response, err
 	}
 
-	return resp.StatusCode, bodyBytes, nil
+	return response, nil
 }
 
-func (r *Requester) POST(params RequestParameters) (statusCode int, responseBody []byte, err error) {
+func (r *Requester) POST(params RequestParameters) (response ResponseData, err error) {
 	var bodyBuffer io.Reader
 	if params.Encoding == "gzip" && params.Body != nil {
 		var b bytes.Buffer
 		gz := gzip.NewWriter(&b)
 		if _, err := gz.Write(params.Body); err != nil {
-			return -1, nil, err
+			return response, err
 		}
 		if err := gz.Close(); err != nil {
-			return -1, nil, err
+			return response, err
 		}
 		bodyBuffer = &b
 	} else {
@@ -142,7 +151,7 @@ func (r *Requester) POST(params RequestParameters) (statusCode int, responseBody
 
 	req, err := r.prepareRequest(http.MethodPost, params, bodyBuffer)
 	if err != nil {
-		return -1, nil, err
+		return response, err
 	}
 
 	if params.Encoding == "gzip" {
@@ -151,56 +160,65 @@ func (r *Requester) POST(params RequestParameters) (statusCode int, responseBody
 
 	resp, err := r.Client.Do(req)
 	if err != nil {
-		return -1, nil, err
+		return response, err
 	}
 	defer resp.Body.Close()
 
-	bodyBytes, err := io.ReadAll(resp.Body)
+	response.StatusCode = resp.StatusCode
+	response.Headers = resp.Header
+
+	response.Body, err = io.ReadAll(resp.Body)
 	if err != nil {
-		return -1, nil, err
+		return response, err
 	}
 
-	return resp.StatusCode, bodyBytes, nil
+	return response, nil
 }
 
-func (r *Requester) HEAD(params RequestParameters) (statusCode int, responseBody []byte, err error) {
+func (r *Requester) HEAD(params RequestParameters) (response ResponseData, err error) {
 	req, err := r.prepareRequest(http.MethodHead, params, nil)
 	if err != nil {
-		return -1, nil, err
+		return response, err
 	}
 
 	resp, err := r.Client.Do(req)
 	if err != nil {
-		return -1, nil, err
+		return response, err
 	}
 	defer resp.Body.Close()
 
-	bodyBytes, err := io.ReadAll(resp.Body)
+	response.StatusCode = resp.StatusCode
+	response.Headers = resp.Header
+
+	response.Body, err = io.ReadAll(resp.Body)
 	if err != nil {
-		return -1, nil, err
+		return response, err
 	}
 
-	return resp.StatusCode, bodyBytes, nil
+	return response, nil
 }
 
-func (r *Requester) DELETE(params RequestParameters) (statusCode int, responseBody []byte, err error) {
+func (r *Requester) DELETE(params RequestParameters) (response ResponseData, err error) {
 	req, err := r.prepareRequest(http.MethodDelete, params, nil)
 	if err != nil {
-		return -1, nil, err
+		return response, err
 	}
 
 	resp, err := r.Client.Do(req)
 	if err != nil {
-		return -1, nil, err
+		return response, err
 	}
 	defer resp.Body.Close()
 
-	bodyBytes, err := io.ReadAll(resp.Body)
+	response.StatusCode = resp.StatusCode
+	response.Headers = resp.Header
+
+	response.Body, err = io.ReadAll(resp.Body)
 	if err != nil {
-		return -1, nil, err
+		return response, err
 	}
 
-	return resp.StatusCode, bodyBytes, nil
+	return response, nil
 }
 
 func TCP(host, port string, message []byte, timeouts ...time.Duration) error {
