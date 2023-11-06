@@ -113,12 +113,12 @@ func (r *Requester) prepareRequest(method string, params RequestParameters, body
 func (r *Requester) GET(params RequestParameters) (response ResponseData, err error) {
 	req, err := r.prepareRequest(http.MethodGet, params, nil)
 	if err != nil {
-		return
+		return response, err
 	}
 
 	resp, err := r.Client.Do(req)
 	if err != nil {
-		return
+		return response, err
 	}
 	defer resp.Body.Close()
 
@@ -127,10 +127,10 @@ func (r *Requester) GET(params RequestParameters) (response ResponseData, err er
 
 	response.Body, err = io.ReadAll(resp.Body)
 	if err != nil {
-		return
+		return response, err
 	}
 
-	return
+	return response, nil
 }
 
 func (r *Requester) POST(params RequestParameters) (response ResponseData, err error) {
