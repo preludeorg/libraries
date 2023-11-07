@@ -185,7 +185,7 @@ def clone(controller):
 @click.option('--view',
               help='retrieve a specific result view',
               default='logs', show_default=True,
-              type=click.Choice(['logs', 'days', 'insights', 'probes', 'tests', 'advisories', 'metrics', 'endpoints', 'protected', 'findings', 'protected_history']))
+              type=click.Choice(['logs', 'days', 'insights', 'probes', 'tests', 'advisories', 'metrics', 'endpoints', 'protected', 'findings', 'history']))
 @click.option('--days', help='days to look back', default=29, type=int)
 @click.option('--tests', help='comma-separated list of test IDs', type=str)
 @click.option('--tags', help='comma-separated list of tags', type=str)
