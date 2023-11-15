@@ -188,17 +188,15 @@ def clone(controller):
               type=click.Choice(['logs', 'days', 'insights', 'probes', 'tests', 'advisories', 'metrics', 'endpoints', 'protected', 'findings']))
 @click.option('--days', help='days to look back', default=29, type=int)
 @click.option('--tests', help='comma-separated list of test IDs', type=str)
-@click.option('--tags', help='comma-separated list of tags', type=str)
 @click.option('--endpoints', help='comma-separated list of endpoint IDs', type=str)
-@click.option('--status', help='comma-separated list of status numbers', type=str)
 @click.option('--dos', help='comma-separated list of DOS', type=str)
 @click.option('--os', help='comma-separated list of OS', type=str)
 @click.option('--policy', help='comma-separated list of policies', type=str)
 @click.option('--control', type=click.Choice([c.name for c in Control], case_sensitive=False))
-@click.option('--social', help='whether to fetch account-specific or social stats. Applicable to tests and advisories views', is_flag=True)
+@click.option('--social', help='whether to fetch account-specific or social stats. Applicable to the following views: tests, advisories, protected', is_flag=True)
 @click.pass_obj
 @handle_api_error
-def describe_activity(controller, days, view, tests, tags, endpoints, status, dos, os, policy, control, social):
+def describe_activity(controller, days, view, tests, endpoints, dos, os, policy, control, social):
     """ View my Detect results """
     filters = dict(
         start=datetime.utcnow() - timedelta(days=days),
@@ -206,12 +204,8 @@ def describe_activity(controller, days, view, tests, tags, endpoints, status, do
     )
     if tests:
         filters['tests'] = tests
-    if tags:
-        filters['tags'] = tags
     if endpoints:
         filters['endpoints'] = endpoints
-    if status:
-        filters['statuses'] = status
     if dos:
         filters['dos'] = dos
     if os:
