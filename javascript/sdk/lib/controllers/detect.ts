@@ -99,9 +99,7 @@ export default class DetectController {
   }
 
   /** List advisories */
-  async listAdvisories(
-    options: RequestOptions = {},
-  ): Promise<Advisory[]> {
+  async listAdvisories(options: RequestOptions = {}): Promise<Advisory[]> {
     const searchParams = new URLSearchParams();
     const response = await this.#client.requestWithAuth(
       `/detect/advisories?${searchParams.toString()}`,
@@ -178,7 +176,6 @@ export default class DetectController {
     if (query.tests) searchParams.set("tests", query.tests);
     if (query.endpoints) searchParams.set("endpoints", query.endpoints);
     if (query.dos) searchParams.set("dos", query.dos);
-    if (query.statuses) searchParams.set("statuses", query.statuses);
     if (query.control) searchParams.set("control", query.control);
     if (query.impersonate) searchParams.set("impersonate", query.impersonate);
     if (query.os) searchParams.set("os", query.os);

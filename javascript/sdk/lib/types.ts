@@ -294,7 +294,6 @@ export interface ActivityQuery {
   tests?: string;
   endpoints?: string;
   dos?: string;
-  statuses?: string;
   control?: string;
   impersonate?: string;
   os?: string;
