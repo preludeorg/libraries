@@ -351,3 +351,40 @@ func InternalIP() (string, error) {
 
 	return "", err
 }
+
+func DownloadFile(url string, params *RequestParameters, sizeLimit int64) ([]byte, error) {
+	requester := NewHTTPRequest(url, nil)
+
+	// Set default size limit if not provided
+	if sizeLimit == 0 {
+		sizeLimit = 5 * 1024 // Default to 5KB
+	}
+
+	// Use default parameters if none are provided
+	if params == nil {
+		params = &RequestParameters{
+			Headers: map[string][]string{"Accept": {"*/*"}},
+		}
+	}
+
+	req, err := requester.prepareRequest(http.MethodGet, *params, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := requester.Client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	// Limit the reader to the specified size
+	limitReader := io.LimitReader(resp.Body, sizeLimit)
+
+	content, err := io.ReadAll(limitReader)
+	if err != nil {
+		return nil, err
+	}
+
+	return content, nil
+}
