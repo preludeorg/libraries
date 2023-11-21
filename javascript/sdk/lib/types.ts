@@ -24,6 +24,7 @@ export interface Test {
   unit: string;
   techniques: string[];
   advisory: string;
+  created: string;
 }
 
 export type AttachedTest = Test & {
@@ -419,4 +420,9 @@ export interface BlockResponse {
   file: string;
   already_reported?: boolean;
   ioc_id?: string;
+}
+
+export interface ProtectedActivity {
+  date: string;
+  protected: number;
 }
