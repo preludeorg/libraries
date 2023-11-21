@@ -80,9 +80,12 @@ class ExitCode(Enum):
 
     @classmethod
     def _missing_(cls, value):
-        if value and not isinstance(value, int):
-            return cls(int(value))
-        logging.warning('Unknown ExitCode: %d', value)
+        try:
+            if value and not isinstance(value, int):
+                return cls(int(value))
+        except Exception:
+            pass
+        logging.warning('Unknown ExitCode: %s', value)
         return ExitCode.MISSING
 
     @property
