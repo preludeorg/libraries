@@ -48,6 +48,36 @@ def update_account(controller, mode, company):
     print_json(data=data)
 
 
+@iam.command('attach-oidc')
+@click.argument('issuer',
+                type=click.Choice(['google', 'azure', 'okta'], case_sensitive=False))
+@click.option('--client_id', required=True, help='Client ID')
+@click.option('--client_secret', required=True, help='Client secret')
+@click.option('--oidc_config_url', required=True, help='Configuration endpoint')
+@click.pass_obj
+@handle_api_error
+def attach_oidc(controller, issuer, client_id, client_secret, oidc_config_url):
+    """ Attach OIDC to an account """
+    with Spinner(description='Attaching OIDC'):
+        data = controller.attach_oidc(
+            issuer=issuer,
+            client_id=client_id,
+            client_secret=client_secret,
+            oidc_config_url=oidc_config_url
+        )
+    print_json(data=data)
+
+
+@iam.command('detach-oidc')
+@click.pass_obj
+@handle_api_error
+def detach_oidc(controller):
+    """ Detach OIDC to an account """
+    with Spinner(description='Detaching OIDC'):
+        data = controller.detach_oidc()
+    print_json(data=data)
+
+
 @iam.command('account')
 @click.pass_obj
 @handle_api_error
@@ -63,10 +93,11 @@ def describe_account(controller):
 @click.option('-p', '--permission', help='user permission level', default=Permission.SERVICE.name,
               type=click.Choice([p.name for p in Permission if p != Permission.INVALID], case_sensitive=False), show_default=True)
 @click.option('-n', '--name', help='name of user', default=None, show_default=False, type=str)
+@click.option('-o', '--oidc', help='whether user must login via SSO', is_flag=True)
 @click.argument('email')
 @click.pass_obj
 @handle_api_error
-def create_user(controller, days, permission, name, email):
+def create_user(controller, days, permission, name, oidc, email):
     """ Create a new user in your account """
     expires = datetime.utcnow() + timedelta(days=days)
     with Spinner(description='Creating new user'):
@@ -74,7 +105,8 @@ def create_user(controller, days, permission, name, email):
             email=email,
             permission=Permission[permission],
             name=name,
-            expires=expires
+            expires=expires,
+            oidc=oidc
         )
     print_json(data=data)
     if permission != Permission.SERVICE.name:
