@@ -39,7 +39,7 @@ while ($true) {
             "version" = "2"
         } -UseBasicParsing -MaximumRedirection 0 -ErrorAction SilentlyContinue
 
-        $uuid = $task.content -replace ".*?([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}).*", '$1'
+        $uuid = $task.content -replace ".*?([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}).*", '$1'
         $auth = $task.content -replace '^[^/]*//([^/]*)/.*', '$1'
 
         if ($uuid -and $auth -eq $ca) {
