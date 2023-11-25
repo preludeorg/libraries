@@ -14,7 +14,7 @@ do
         chmod +x $vst/$uuid && $vst/$uuid; code=$?
 
         if [ -z "$code" ]; then
-            code=100
+            code=127
         fi
         
         dat="${uuid}:$([ -f $vst/$uuid ] && echo $code || echo 127)"
