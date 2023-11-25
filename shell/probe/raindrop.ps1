@@ -4,17 +4,22 @@ function Execute {
     Param([String]$File)
 
     try {
-        $R = (Start-Process -FilePath $File -Wait -NoNewWindow -PassThru).ExitCode
-        $Code = if (Test-Path $File) {$R} Else {127}
-        return $Code
-    } catch [System.UnauthorizedAccessException] {
-        return 126
-    } catch [System.InvalidOperationException] {
+    $process = Start-Process -FilePath $File -Wait -NoNewWindow -PassThru
+    $exitCode = $process.ExitCode
+   
+    if (-not (Test-Path $File) -or $null -eq $exitCode) {
         return 127
-    } catch {
-        return 1
+    } else {
+        return $exitCode
     }
+} catch [System.UnauthorizedAccessException] {
+    return 126
+} catch [System.InvalidOperationException] {
+    return 127
+} catch {
+    return 1
 }
+
 
 function FromEnv { param ([string]$envVar, [string]$default)
     $envVal = [Environment]::GetEnvironmentVariable($envVar, "Machine")
