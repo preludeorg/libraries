@@ -4,22 +4,22 @@ function Execute {
     Param([String]$File)
 
     try {
-    $process = Start-Process -FilePath $File -Wait -NoNewWindow -PassThru
-    $exitCode = $process.ExitCode
-   
-    if (-not (Test-Path $File) -or $null -eq $exitCode) {
-        return 127
-    } else {
-        return $exitCode
-    }
-} catch [System.UnauthorizedAccessException] {
-    return 126
-} catch [System.InvalidOperationException] {
-    return 127
-} catch {
-    return 1
-}
+        $process = Start-Process -FilePath $File -Wait -NoNewWindow -PassThru
+        $exitCode = $process.ExitCode
 
+        if (-not (Test-Path $File) -or $null -eq $exitCode) {
+            return 127
+        } else {
+            return $exitCode
+        }
+    } catch [System.UnauthorizedAccessException] {
+        return 126
+    } catch [System.InvalidOperationException] {
+        return 127
+    } catch {
+        return 1
+    }
+}
 
 function FromEnv { param ([string]$envVar, [string]$default)
     $envVal = [Environment]::GetEnvironmentVariable($envVar, "Machine")
@@ -38,8 +38,8 @@ while ($true) {
             "dat" = $dat
             "version" = "2"
         } -UseBasicParsing -MaximumRedirection 0 -ErrorAction SilentlyContinue
-        
-        $uuid = $task.content -replace ".*?([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}).*", '$1'
+
+        $uuid = $task.content -replace ".*?([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}).*", '$1'
         $auth = $task.content -replace '^[^/]*//([^/]*)/.*', '$1'
 
         if ($uuid -and $auth -eq $ca) {
