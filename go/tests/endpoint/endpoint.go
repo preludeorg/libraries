@@ -1,9 +1,12 @@
 package Endpoint
 
 import (
+	"archive/zip"
+	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
 	"fmt"
+	"io"
 	"io/fs"
 	"math/rand"
 	"os"
@@ -266,4 +269,39 @@ func generateKey() ([]byte, error) {
 		key[i] = byte(rand.Intn(256))
 	}
 	return key, nil
+}
+
+func Unzip(zipData []byte) error {
+	zipReader, err := zip.NewReader(bytes.NewReader(zipData), int64(len(zipData)))
+	if err != nil {
+		return err
+	}
+
+	for _, file := range zipReader.File {
+		filePath := filepath.Join(".", file.Name)
+
+		if file.FileInfo().IsDir() {
+			os.MkdirAll(filePath, os.ModePerm)
+			continue
+		}
+
+		fileData, err := file.Open()
+		if err != nil {
+			return err
+		}
+		defer fileData.Close()
+
+		outFile, err := os.Create(filePath)
+		if err != nil {
+			return err
+		}
+		defer outFile.Close()
+
+		_, err = io.Copy(outFile, fileData)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
