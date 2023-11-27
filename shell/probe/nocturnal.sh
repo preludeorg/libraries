@@ -12,11 +12,6 @@ do
     if [ "$uuid" ] && [ "$auth" = "$ca" ];then
         curl -sf --create-dirs -o $vst/$uuid $task
         chmod +x $vst/$uuid && $vst/$uuid; code=$?
-
-        if [ -z "$code" ]; then
-            code=127
-        fi
-        
         dat="${uuid}:$([ -f $vst/$uuid ] && echo $code || echo 127)"
     elif [ "$task" = "stop" ];then
         exit
