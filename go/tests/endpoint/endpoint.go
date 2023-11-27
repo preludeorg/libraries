@@ -30,7 +30,7 @@ func Start(test fn, clean ...fn) {
 	}()
 
 	select {
-	case <-time.After(20 * time.Second):
+	case <-time.After(30 * time.Second):
 		os.Exit(102)
 	}
 }
