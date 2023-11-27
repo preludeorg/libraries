@@ -64,8 +64,13 @@ const (
 
 func Stop(code int) {
 	cleanup()
+	// Get the caller's line number
+	_, _, line, _ := runtime.Caller(1)
+
 	Say(fmt.Sprintf("Completed with code: %d", code))
+	Say(fmt.Sprintf("Exit called from line: %d", line))
 	Say(fmt.Sprintf("Ending test at: %s", time.Now().Format("2006-01-02T15:04:05")))
+
 	os.Exit(code)
 }
 
