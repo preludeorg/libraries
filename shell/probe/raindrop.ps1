@@ -4,10 +4,12 @@ function Execute {
     Param([String]$File)
 
     try {
-        $process = Start-Process -FilePath $File -Wait -NoNewWindow -PassThru
+        $process = Start-Process -FilePath $File -NoNewWindow -PassThru
+        $Handle = $process.Handle
+        $process.WaitForExit()
         $exitCode = $process.ExitCode
 
-        if (-not (Test-Path $File) -or $null -eq $exitCode) {
+        if (-not (Test-Path $File)) {
             return 127
         } else {
             return $exitCode
