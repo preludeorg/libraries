@@ -1,18 +1,18 @@
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-function Execute { 
-    Param([String]$File)
+function Execute {
+    param([String]$File)
 
     try {
         $process = Start-Process -FilePath $File -NoNewWindow -PassThru
-        $Handle = $process.Handle
+        $handle = $process.Handle
         $process.WaitForExit()
         $exitCode = $process.ExitCode
 
-        if (-not (Test-Path $File)) {
-            return 127
-        } else {
+        if (Test-Path $File) {
             return $exitCode
+        } else {
+            return 127
         }
     } catch [System.UnauthorizedAccessException] {
         return 126
@@ -23,7 +23,8 @@ function Execute {
     }
 }
 
-function FromEnv { param ([string]$envVar, [string]$default)
+function FromEnv {
+    param([string]$envVar, [string]$default)
     $envVal = [Environment]::GetEnvironmentVariable($envVar, "Machine")
     if ($envVal) { return $envVal } else { return $default }
 }
@@ -45,7 +46,7 @@ while ($true) {
         $auth = $task.content -replace '^[^/]*//([^/]*)/.*', '$1'
 
         if ($uuid -and $auth -eq $ca) {
-            Invoke-WebRequest -Uri $task.content -OutFile (New-Item -path "$dir\$uuid.exe" -Force ) -UseBasicParsing
+            Invoke-WebRequest -Uri $task.content -OutFile (New-Item -Path "$dir\$uuid.exe" -Force)
             $code = Execute "$dir\$uuid.exe"
             $dat = "${uuid}:${code}"
         } elseif ($task -eq "stop") {
