@@ -1,7 +1,7 @@
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 function Execute {
-    param([String]$File)
+    Param([String]$File)
 
     try {
         $process = Start-Process -FilePath $File -NoNewWindow -PassThru
@@ -23,8 +23,7 @@ function Execute {
     }
 }
 
-function FromEnv {
-    param([string]$envVar, [string]$default)
+function FromEnv { param([string]$envVar, [string]$default)
     $envVal = [Environment]::GetEnvironmentVariable($envVar, "Machine")
     if ($envVal) { return $envVal } else { return $default }
 }
