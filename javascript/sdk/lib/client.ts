@@ -1,4 +1,4 @@
-import { Credentials } from "./types";
+import { APIError, Credentials } from "./types";
 
 function assertValidURL(url: URL) {
   const validScheme = url.protocol === "http:" || url.protocol === "https:";
@@ -17,12 +17,6 @@ function combineHeaders(...headers: HeadersInit[]): HeadersInit {
   return headers.reduce((acc, h) => ({ ...acc, ...h }), {});
 }
 
-class APIError extends Error {
-  constructor(message: string, public status: number) {
-    super(message);
-    this.name = "APIError";
-  }
-}
 export default class Client {
   #host: URL;
   #credentials?: Credentials;
