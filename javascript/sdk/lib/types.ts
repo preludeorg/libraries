@@ -24,6 +24,7 @@ export interface Test {
   unit: string;
   techniques: string[];
   advisory: string;
+  created: string;
 }
 
 export type AttachedTest = Test & {
@@ -276,6 +277,13 @@ export interface TestsActivity {
   protected: number;
 }
 
+export class APIError extends Error {
+  constructor(message: string, public status: number) {
+    super(message);
+    this.name = "APIError";
+  }
+}
+
 export interface Advisory {
   id: string;
   name: string;
@@ -419,4 +427,9 @@ export interface BlockResponse {
   file: string;
   already_reported?: boolean;
   ioc_id?: string;
+}
+
+export interface ProtectedActivity {
+  date: string;
+  protected: number;
 }

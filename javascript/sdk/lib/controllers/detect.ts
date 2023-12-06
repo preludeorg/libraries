@@ -10,11 +10,12 @@ import {
   EnableTest,
   EnabledTest,
   EndpointActivity,
+  FindingsActivity,
   Insight,
   MetricsActivity,
-  FindingsActivity,
   Probe,
   ProbeActivity,
+  ProtectedActivity,
   RegisterEndpointParams,
   RequestOptions,
   StatusResponse,
@@ -152,7 +153,7 @@ export default class DetectController {
   async describeActivity(
     query: ActivityQuery & { view: "protected" },
     options?: RequestOptions
-  ): Promise<number>;
+  ): Promise<ProtectedActivity[]>;
   async describeActivity(
     query: ActivityQuery & {
       view:
