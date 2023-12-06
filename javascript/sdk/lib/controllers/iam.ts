@@ -75,6 +75,33 @@ export default class IAMController {
     return (await response.json()) as Account;
   }
 
+  /** Exchange  verification token for bearer token */
+  async exchangeToken(
+    token: string,
+    options: RequestOptions = {}
+  ): Promise<Credentials> {
+    const searchParams = new URLSearchParams({
+      token,
+    });
+    const response = await this.#client.request(
+      `/iam/account/login?${searchParams.toString()}`,
+      {
+        method: "GET",
+        ...options,
+      }
+    );
+
+    const json = (await response.json()) as {
+      account_id: string;
+      token: string;
+    };
+
+    return {
+      account: json.account_id,
+      token: json.token,
+    };
+  }
+
   /** Create a new user inside an account */
   async createUser(
     { permission, email, name, expires }: CreateUserParams,

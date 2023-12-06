@@ -41,6 +41,7 @@ export interface User {
   permission: Permission;
   expires: string;
   name: string;
+  oidc: boolean;
 }
 
 export interface Control {
@@ -55,6 +56,15 @@ export interface Account {
   controls: Control[];
   mode: Mode;
   company: string;
+  oidc?: OIDCSettings;
+}
+
+export interface OIDCSettings {
+  client_id: string;
+  created: string;
+  domain: string;
+  issuer: string;
+  oidc_config_url: string;
 }
 
 export interface VerifiedUser {
@@ -327,7 +337,10 @@ export interface ProbeActivity {
   control: ControlCode;
 }
 
-export type EndpointActivity = Record<string, number>;
+export type EndpointActivity = {
+  id: string;
+  protected: number;
+};
 
 export interface MetricsActivity {
   account_id: string;
