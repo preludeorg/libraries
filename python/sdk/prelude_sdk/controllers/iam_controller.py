@@ -66,6 +66,38 @@ class IAMController:
         raise Exception(res.text)
 
     @verify_credentials
+    def attach_oidc(self, issuer: str, client_id: str, client_secret: str, oidc_config_url: str):
+        """ Attach OIDC to an account """
+        body = dict(
+            issuer=issuer,
+            client_id=client_id,
+            client_secret=client_secret,
+            oidc_config_url=oidc_config_url
+        )
+
+        res = requests.post(
+            f'{self.account.hq}/iam/account/oidc',
+            headers=self.account.headers,
+            json=body,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def detach_oidc(self):
+        """ Detach OIDC to an account """
+        res = requests.delete(
+            f'{self.account.hq}/iam/account/oidc',
+            headers=self.account.headers,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
     def get_account(self):
         """ Get account properties """
         res = requests.get(
@@ -78,9 +110,9 @@ class IAMController:
         raise Exception(res.text)
 
     @verify_credentials
-    def create_user(self, permission: Permission, email: str, expires: datetime = None, name: str = None):
+    def create_user(self, permission: Permission, email: str, expires: datetime = None, name: str = None, oidc: bool = False):
         """ Create a new user inside an account """
-        body = dict(permission=permission.name, handle=email)
+        body = dict(permission=permission.name, handle=email, oidc=oidc)
         if name:
             body['name'] = name
         if expires:
