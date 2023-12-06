@@ -133,7 +133,7 @@ export default class DetectController {
   async describeActivity(
     query: ActivityQuery & { view: "endpoints" },
     options?: RequestOptions
-  ): Promise<EndpointActivity>;
+  ): Promise<EndpointActivity[]>;
   async describeActivity(
     query: ActivityQuery & { view: "metrics" },
     options?: RequestOptions
