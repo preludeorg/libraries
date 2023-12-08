@@ -1,10 +1,13 @@
 import click
+import asyncio 
 
 from rich import print_json
-from datetime import datetime, timedelta, time
+from pathlib import Path, PurePath
+from datetime import datetime, timedelta
 
-from prelude_cli.views.shared import handle_api_error
-from prelude_sdk.models.codes import Decision, RunCode
+from prelude_sdk.models.codes import RunCode, Control
+from prelude_cli.views.shared import handle_api_error, Spinner
+from prelude_sdk.controllers.iam_controller import IAMController
 from prelude_sdk.controllers.detect_controller import DetectController
 
 
@@ -18,15 +21,30 @@ def detect(ctx):
 @detect.command('create-endpoint')
 @click.option('-h', '--host', help='hostname of this machine', type=str, required=True)
 @click.option('-s', '--serial_num', help='serial number of this machine', type=str, required=True)
-@click.option('-e', '--edr_id', help='EDR id', type=str, default='')
-@click.option('-t', '--tags', help='a comma-separated list of tags for this endpoint', type=str, default='')
-@click.option('-i', '--endpoint_id', help='update a specific endpoint_id with the provided values', type=str, default='')
+@click.option('-t', '--tags', help='a comma-separated list of tags for this endpoint', type=str, default=None)
 @click.pass_obj
 @handle_api_error
-def register_endpoint(controller, host, serial_num, edr_id, tags, endpoint_id):
+def register_endpoint(controller, host, serial_num, tags):
     """ Register a new endpoint """
-    token = controller.register_endpoint(host=host, serial_num=serial_num, edr_id=edr_id, tags=tags, endpoint_id=endpoint_id)
+    with Spinner(description='Registering endpoint'):
+        token = controller.register_endpoint(
+            host=host,
+            serial_num=serial_num,
+            tags=tags
+        )
     click.secho(token)
+
+
+@detect.command('update-endpoint')
+@click.argument('endpoint_id')
+@click.option('-t', '--tags', help='a comma-separated list of tags for this endpoint', type=str, default=None)
+@click.pass_obj
+@handle_api_error
+def update_endpoint(controller, endpoint_id, tags):
+    """ Update an existing endpoint """
+    with Spinner(description='Updating endpoint'):
+        data = controller.update_endpoint(endpoint_id=endpoint_id, tags=tags)
+    print_json(data=data)
 
 
 @detect.command('tests')
@@ -34,7 +52,37 @@ def register_endpoint(controller, host, serial_num, edr_id, tags, endpoint_id):
 @handle_api_error
 def list_tests(controller):
     """ List all security tests """
-    print_json(data=controller.list_tests())
+    with Spinner(description='Fetching all security tests'):
+        data = controller.list_tests()
+    print_json(data=data)
+
+
+@detect.command('test')
+@click.argument('test_id')
+@click.pass_obj
+@handle_api_error
+def get_test(controller, test_id):
+    """ List properties for a test """
+    with Spinner(description='Fetching data for test'):
+        data = controller.get_test(test_id=test_id)
+    print_json(data=data)
+
+
+@detect.command('download')
+@click.argument('test')
+@click.pass_obj
+@handle_api_error
+def download(controller, test):
+    """ Download a test to your local environment """
+    click.secho(f'Downloading {test}')
+    Path(test).mkdir(parents=True, exist_ok=True)
+    with Spinner(description='Downloading test'):
+        attachments = controller.get_test(test_id=test).get('attachments')
+
+        for attach in attachments:
+            code = controller.download(test_id=test, filename=attach)
+            with open(PurePath(test, attach), 'wb') as f:
+                f.write(code)
 
 
 @detect.command('enable-test')
@@ -43,32 +91,27 @@ def list_tests(controller):
 @click.option('-r', '--run_code',
               help='provide a run_code',
               default=RunCode.DAILY.name, show_default=True,
-              type=click.Choice([r.name for r in RunCode], case_sensitive=False))
+              type=click.Choice([r.name for r in RunCode if r != RunCode.INVALID], case_sensitive=False))
 @click.pass_obj
 @handle_api_error
-def activate_test(controller, test, run_code, tags):
+def enable_test(controller, test, run_code, tags):
     """ Add test to your queue """
-    controller.enable_test(ident=test, run_code=RunCode[run_code.upper()].value, tags=tags)
+    with Spinner(description='Enabling test'):
+        data = controller.enable_test(ident=test, run_code=RunCode[run_code], tags=tags)
+    print_json(data=data)
 
 
 @detect.command('disable-test')
 @click.argument('test')
+@click.option('-t', '--tags', help='only disable for these tags (comma-separated list)', type=str, default='')
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
 @handle_api_error
-def deactivate_test(controller, test):
+def disable_test(controller, test, tags):
     """ Remove test from your queue """
-    controller.disable_test(ident=test)
-
-
-@detect.command('social-stats')
-@click.argument('test')
-@click.option('-d', '--days', help='days to look back', default=30, type=int, show_default=True)
-@click.pass_obj
-@handle_api_error
-def social_statistics(controller, test, days):
-    """ Pull social statistics for a specific test """
-    print_json(data=controller.social_stats(ident=test, days=days))
+    with Spinner(description='Disabling test'):
+        data = controller.disable_test(ident=test, tags=tags)
+    print_json(data=data)
 
 
 @detect.command('delete-endpoint')
@@ -78,7 +121,9 @@ def social_statistics(controller, test, days):
 @handle_api_error
 def delete_endpoint(controller, endpoint_id):
     """Delete a probe/endpoint"""
-    controller.delete_endpoint(ident=endpoint_id)
+    with Spinner(description='Deleting endpoint'):
+        data = controller.delete_endpoint(ident=endpoint_id)
+    print_json(data=data)
 
 
 @detect.command('queue')
@@ -86,17 +131,10 @@ def delete_endpoint(controller, endpoint_id):
 @handle_api_error
 def queue(controller):
     """ List all tests in your active queue """
-    print_json(data=controller.list_queue())
-
-
-@detect.command('search')
-@click.argument('cve')
-@click.pass_obj
-@handle_api_error
-def search(controller, cve):
-    """ Search the NVD for a specific CVE identifier """
-    print("This product uses the NVD API but is not endorsed or certified by the NVD.\n")
-    print_json(data=controller.search(identifier=cve))
+    with Spinner(description='Fetching active tests from queue'):
+        iam = IAMController(account=controller.account)
+        data = iam.get_account().get('queue')
+    print_json(data=data)
 
 
 @detect.command('endpoints')
@@ -105,63 +143,83 @@ def search(controller, cve):
 @handle_api_error
 def endpoints(controller, days):
     """ List all active endpoints associated to your account """
-    print_json(data=controller.list_endpoints(days=days))
+    with Spinner(description='Fetching endpoints'):
+        data = controller.list_endpoints(days=days)
+    print_json(data=data)
 
 
-@detect.command('recommendations')
+@detect.command('advisories')
 @click.pass_obj
 @handle_api_error
-def recommendation(controller):
-    """ Print all security recommendations """
-    print_json(data=controller.recommendations())
+def advisories(controller):
+    """ List all Prelude advisories """
+    with Spinner(description='Fetching advisories'):
+        data = controller.list_advisories()
+    print_json(data=data)
 
 
-@detect.command('add-recommendation')
-@click.argument('title')
-@click.argument('description')
+@detect.command('clone')
 @click.pass_obj
 @handle_api_error
-def add_recommendation(controller, title, description):
-    """ Create a new security recommendation """
-    controller.create_recommendation(title=title, description=description)
+def clone(controller):
+    """ Download all tests to your local environment """
+    
+    async def fetch(test):
+        click.secho(f'Cloning {test["id"]}')
+        Path(test['id']).mkdir(parents=True, exist_ok=True)
 
+        for attach in controller.get_test(test_id=test['id']).get('attachments'):
+            code = controller.download(test_id=test['id'], filename=attach)
+            with open(PurePath(test['id'], attach), 'wb') as f:
+                f.write(code)
 
-@detect.command('decide-recommendation')
-@click.argument('id')
-@click.option('-d', '--decision', help='approve or deny the recommendation', default=Decision.APPROVE.name,
-              type=click.Choice([d.name for d in Decision], case_sensitive=False), show_default=True)
-@click.pass_obj
-@handle_api_error
-def decide_recommendation(controller, id, decision):
-    """ Update a security recommendation decision """
-    controller.make_decision(id=id, decision=Decision[decision.upper()].value)
+    async def start_cloning():
+        await asyncio.gather(*[fetch(test) for test in controller.list_tests()])
+
+    with Spinner(description='Downloading all tests'):
+        asyncio.run(start_cloning())
+    click.secho('Project cloned successfully', fg='green')
 
 
 @detect.command('activity')
-@click.option('-v', '--view',
+@click.option('--view',
               help='retrieve a specific result view',
               default='logs', show_default=True,
-              type=click.Choice(['logs', 'days', 'insights', 'probes', 'rules']))
-@click.option('-d', '--days', help='days to look back', default=30, type=int)
+              type=click.Choice(['logs', 'days', 'insights', 'probes', 'tests', 'advisories', 'metrics', 'endpoints', 'protected', 'findings']))
+@click.option('--days', help='days to look back', default=29, type=int)
 @click.option('--tests', help='comma-separated list of test IDs', type=str)
-@click.option('--tags', help='comma-separated list of tags', type=str)
+@click.option('--advisories', help='comma-separated list of advisory IDs', type=str)
 @click.option('--endpoints', help='comma-separated list of endpoint IDs', type=str)
 @click.option('--dos', help='comma-separated list of DOS', type=str)
+@click.option('--os', help='comma-separated list of OS', type=str)
+@click.option('--policy', help='comma-separated list of policies', type=str)
+@click.option('--control', type=click.Choice([c.name for c in Control], case_sensitive=False))
+@click.option('--social', help='whether to fetch account-specific or social stats. Applicable to the following views: tests, advisories, protected', is_flag=True)
 @click.pass_obj
 @handle_api_error
-def describe_activity(controller, days, view, tests, tags, endpoints, dos):
+def describe_activity(controller, days, view, tests, advisories, endpoints, dos, os, policy, control, social):
     """ View my Detect results """
     filters = dict(
-        start=datetime.combine(datetime.utcnow() - timedelta(days=days), time.min),
-        finish=datetime.combine(datetime.utcnow(), time.max)
+        start=datetime.utcnow() - timedelta(days=days),
+        finish=datetime.utcnow() + timedelta(days=1)
     )
     if tests:
         filters['tests'] = tests
-    if tags:
-        filters['tags'] = tags
+    if advisories:
+        filters['advisories'] = advisories
     if endpoints:
         filters['endpoints'] = endpoints
     if dos:
         filters['dos'] = dos
+    if os:
+        filters['os'] = os
+    if policy:
+        filters['policy'] = policy
+    if control:
+        filters['control'] = Control[control.upper()].value
+    if social:
+        filters['impersonate'] = 'social'
 
-    print_json(data=controller.describe_activity(view=view, filters=filters))
+    with Spinner(description='Fetching activity'):
+        data = controller.describe_activity(view=view, filters=filters)
+    print_json(data=data)

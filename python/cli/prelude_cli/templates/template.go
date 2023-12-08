@@ -1,12 +1,13 @@
 /*
 ID: $ID
 NAME: $NAME
+UNIT: $UNIT
 CREATED: $CREATED
 */
 package main
 
 import (
-	"github.com/preludeorg/test/endpoint"
+	"github.com/preludeorg/libraries/go/tests/endpoint"
 )
 
 func test() {
@@ -14,7 +15,7 @@ func test() {
 }
 
 func clean() {
-	Endpoint.Stop(100)
+	Endpoint.Say("Cleaning up")
 }
 
 func main() {

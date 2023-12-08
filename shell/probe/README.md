@@ -8,6 +8,8 @@ Shell probes are intended to be dependency-free executable code that works on mo
 
 ### Raindrop 
 
+Windows shell probe
+
 ```terminal
 SETX PRELUDE_TOKEN <TOKEN> /M
 .\raindrop.ps1
@@ -15,7 +17,15 @@ SETX PRELUDE_TOKEN <TOKEN> /M
 
 ### Nocturnal
 
+Mac / Linux shell probe
+
 ```terminal
 export PRELUDE_TOKEN=<TOKEN>
 ./nocturnal.sh
 ```
+
+### Vision
+
+Docker shell probe
+
+See: [../../container/dockerfile](../../container/dockerfile)

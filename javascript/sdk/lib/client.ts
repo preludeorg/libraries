@@ -1,4 +1,4 @@
-import { Credentials } from "./types";
+import { APIError, Credentials } from "./types";
 
 function assertValidURL(url: URL) {
   const validScheme = url.protocol === "http:" || url.protocol === "https:";
@@ -58,7 +58,7 @@ export default class Client {
     }
 
     if (!response.ok) {
-      throw Error(await response.text());
+      throw new APIError(await response.text(), response.status);
     }
 
     return response;

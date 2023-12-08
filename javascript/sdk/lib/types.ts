@@ -13,22 +13,80 @@ export interface Credentials {
 
 export type RequestOptions = Omit<RequestInit, "method" | "body">;
 
+export interface StatusResponse {
+  status: true;
+}
+
 export interface Test {
   account_id: string;
   id: string;
   name: string;
+  unit: string;
+  techniques: string[];
+  advisory: string;
+  created: string;
+}
+
+export type AttachedTest = Test & {
+  attachments: string[];
+};
+
+export interface UploadedAttachment {
+  id: string;
+  filename: string;
 }
 
 export interface User {
   handle: string;
   permission: Permission;
+  expires: string;
+  name: string;
+  oidc: boolean;
 }
 
+export interface Control {
+  id: ControlCode;
+  api: string;
+}
 export interface Account {
+  account_id: string;
   whoami: string;
-  controls: string[];
   users: User[];
+  queue: Queue[];
+  controls: Control[];
   mode: Mode;
+  company: string;
+  oidc?: OIDCSettings;
+}
+
+export interface OIDCSettings {
+  client_id: string;
+  created: string;
+  domain: string;
+  issuer: string;
+  oidc_config_url: string;
+}
+
+export interface VerifiedUser {
+  account_id: string;
+  token: string;
+  handle: string;
+  permission: Permission;
+  expires: string;
+  name: string;
+}
+
+export interface CreateAccountParams {
+  email: string;
+  name?: string;
+  company?: string;
+}
+
+export interface CreateUserParams {
+  permission: PermissionName;
+  email: string;
+  name?: string;
+  expires?: string;
 }
 
 export interface CreatedUser {
@@ -38,113 +96,145 @@ export interface CreatedUser {
 export interface Queue {
   test: string;
   run_code: RunCode;
-  tag: string[] | null;
+  tag: string | null;
   started: string;
 }
 
+/**
+ * Get the name of an enum value
+ * @example,
+ * getEnumName(RunCodes, RunCodes.DAILY) // => "DAILY"
+ */
+export function getEnumName<T extends Record<string, unknown>>(
+  enumType: T,
+  value: T[keyof T]
+): keyof T {
+  const key = Object.keys(enumType).find((k) => enumType[k] === value);
+  if (key === undefined) {
+    throw new Error(`Unknown enum value ${value}`);
+  }
+  return key;
+}
+
 export const RunCodes = {
-  DEBUG: 0,
+  INVALID: -1,
   DAILY: 1,
   WEEKLY: 2,
   MONTHLY: 3,
-  ONCE: 4,
+  SMART: 4,
+  DEBUG: 5,
+  MONDAY: 10,
+  TUESDAY: 11,
+  WEDNESDAY: 12,
+  THURSDAY: 13,
+  FRIDAY: 14,
+  SATURDAY: 15,
+  SUNDAY: 16,
+  MONTH_1: 20,
 } as const;
 
-export type RunCode = typeof RunCodes[keyof typeof RunCodes];
+export type RunCodeName = keyof typeof RunCodes;
+export type RunCode = (typeof RunCodes)[keyof typeof RunCodes];
 
 export const Permissions = {
+  INVALID: -1,
   ADMIN: 0,
   EXECUTIVE: 1,
   BUILD: 2,
   SERVICE: 3,
-  NONE: 4,
+  AUTO: 4,
 } as const;
 
-export type Permission = typeof Permissions[keyof typeof Permissions];
+export type PermissionName = keyof typeof Permissions;
+export type Permission = (typeof Permissions)[keyof typeof Permissions];
 
 export const Modes = {
   MANUAL: 0,
   FROZEN: 1,
+  AUTOPILOT: 2,
 } as const;
 
-export type Mode = typeof Modes[keyof typeof Modes];
-
-export interface ComputeResult {
-  name: string;
-  steps: {
-    output: string | unknown[];
-    status: number;
-    step: string;
-    duration: string;
-  }[];
-}
+export type ModeName = keyof typeof Modes;
+export type Mode = (typeof Modes)[keyof typeof Modes];
 
 export interface EnableTest {
   test: string;
-  runCode: RunCode;
+  runCode: RunCodeName;
+  tags?: string;
+}
+
+export interface EnabledTest {
+  id: string;
+}
+
+export interface DisableTest {
+  test: string;
   tags: string;
 }
 
 export interface Probe {
   endpoint_id: string;
-  edr_id: string | null;
   host: string;
-  last_beacon: string;
   serial_num: string;
+  edr_id: string | null;
+  control: ControlCode;
   tags: string[];
+  last_seen: string;
   created: string;
-}
-
-export interface SearchResults {
-  info: {
-    published: string;
-    description: string;
-  };
-  tests: string[];
+  dos: Platform | null;
+  os?: string | null;
+  policy?: string | null;
+  policy_name?: string | null;
 }
 
 export const ExitCodes = {
   MISSING: -1,
-  ERROR: 1,
-  MALFORMED_VST: 2,
-  PROCESS_KILLED_1: 9,
-  PROCESS_KILLED_2: 15,
+  UNKNOWN_ERROR: 1,
+  MALFORMED_TEST: 2,
+  PROCESS_BLOCKED: 9,
+  PROCESS_BLOCKED_GRACEFULLY: 15,
   PROTECTED: 100,
   UNPROTECTED: 101,
-  TIMEOUT: 102,
-  CLEANUP_ERROR: 103,
-  NOT_RELEVANT: 104,
-  QUARANTINED_1: 105,
-  OUTBOUND_SECURE: 106,
+  TIMED_OUT: 102,
+  FAILED_CLEANUP: 103,
+  TEST_NOT_RELEVANT: 104,
+  DYNAMIC_QUARANTINE: 105,
+  BLOCKED_AT_PERIMETER: 106,
   EXPLOIT_PREVENTED: 107,
-  ENDPOINT_BLOCKED: 126,
-  QUARANTINED_2: 127,
-  UNEXPECTED: 256,
+  ENDPOINT_NOT_RELEVANT: 108,
+  TEST_DISALLOWED: 126,
+  STATIC_QUARANTINE: 127,
+  BLOCKED: 137,
+  UNEXPECTED_ERROR: 256,
 } as const;
 
 export type ExitCodeName = keyof typeof ExitCodes;
-export type ExitCode = typeof ExitCodes[ExitCodeName];
+export type ExitCode = (typeof ExitCodes)[ExitCodeName];
 export const ExitCodeNames = Object.keys(ExitCodes) as ExitCodeName[];
 export const ExitCodeGroup = {
   NONE: [ExitCodes.MISSING],
   PROTECTED: [
+    ExitCodes.PROCESS_BLOCKED,
+    ExitCodes.PROCESS_BLOCKED_GRACEFULLY,
     ExitCodes.PROTECTED,
-    ExitCodes.QUARANTINED_1,
-    ExitCodes.QUARANTINED_2,
-    ExitCodes.PROCESS_KILLED_1,
-    ExitCodes.PROCESS_KILLED_2,
-    ExitCodes.NOT_RELEVANT,
-    ExitCodes.OUTBOUND_SECURE,
-    ExitCodes.ENDPOINT_BLOCKED,
+    ExitCodes.DYNAMIC_QUARANTINE,
+    ExitCodes.BLOCKED_AT_PERIMETER,
+    ExitCodes.BLOCKED,
     ExitCodes.EXPLOIT_PREVENTED,
+    ExitCodes.TEST_DISALLOWED,
+    ExitCodes.STATIC_QUARANTINE,
+    ExitCodes.TEST_NOT_RELEVANT,
+    ExitCodes.ENDPOINT_NOT_RELEVANT,
   ],
   UNPROTECTED: [ExitCodes.UNPROTECTED],
   ERROR: [
-    ExitCodes.ERROR,
-    ExitCodes.MALFORMED_VST,
-    ExitCodes.TIMEOUT,
-    ExitCodes.UNEXPECTED,
+    ExitCodes.UNKNOWN_ERROR,
+    ExitCodes.MALFORMED_TEST,
+    ExitCodes.TIMED_OUT,
+    ExitCodes.FAILED_CLEANUP,
+    ExitCodes.UNEXPECTED_ERROR,
   ],
+  NOT_RELEVANT: [ExitCodes.TEST_NOT_RELEVANT, ExitCodes.ENDPOINT_NOT_RELEVANT],
 } as const;
 
 export const ActionCodes = {
@@ -154,7 +244,22 @@ export const ActionCodes = {
 } as const;
 
 export type ActionCodeName = keyof typeof ActionCodes;
-export type ActionCode = typeof ActionCodes[ActionCodeName];
+export type ActionCode = (typeof ActionCodes)[ActionCodeName];
+
+export const ControlCodes = {
+  INVALID: -1,
+  NONE: 0,
+  CROWDSTRIKE: 1,
+  DEFENDER: 2,
+  SPLUNK: 3,
+  SENTINELONE: 4,
+  VECTR: 5,
+} as const;
+
+export type ControlCodeName = keyof typeof ControlCodes;
+export type ControlCode = (typeof ControlCodes)[ControlCodeName];
+
+export type NonArchPlatform = "darwin" | "linux" | "windows";
 
 export type Platform =
   | "darwin-arm64"
@@ -169,117 +274,110 @@ export interface Activity {
   date: string;
   endpoint_id: string;
   id: string;
-  observed: 0 | 1;
   status: ExitCode;
   test: string;
   dos: Platform;
-  tags: string[] | null;
-  edr_id: string | null;
+  control: ControlCode;
+  policy: string | null;
+  os: string | null;
 }
 
-export interface TestData {
-  attachments: string[];
-  mappings: string[];
+export interface TestsActivity {
+  id: string;
+  protected: number;
 }
 
-export interface Rule {
-  label: string;
+export class APIError extends Error {
+  constructor(message: string, public status: number) {
+    super(message);
+    this.name = "APIError";
+  }
+}
+
+export interface Advisory {
+  id: string;
+  name: string;
+  source: string;
   published: string;
-  description: string;
-  long_description: string;
 }
 
-export interface RuleUsage {
-  tests: string[];
-  count: number;
-  failed: number;
+export interface AdvisoriesActivity {
+  id: string;
+  protected: number;
 }
-
-export interface RuleInfo {
-  rule: Rule | null;
-  usage?: RuleUsage;
-}
-
-export type Stats = Record<Platform, Record<`${ExitCode}`, number>>;
 
 export interface ActivityQuery {
-  start?: string;
-  finish?: string;
+  start: string;
+  finish: string;
   tests?: string;
-  result_id?: string;
   endpoints?: string;
   dos?: string;
-  statuses?: string;
-  tags?: string;
+  control?: string;
+  impersonate?: string;
+  os?: string;
+  policy?: string;
 }
 
-export interface DayResult {
-  count: number;
-  date: string;
-  failed: number;
+export interface DayActivity {
+  datetime: string;
+  unprotected: number;
+  volume: number;
 }
 
 export interface Insight {
   dos: string | null;
-  tag: string | null;
   test: string | null;
   volume: { error: number; protected: number; unprotected: number };
 }
-
-export interface Recommendation {
-  id: string;
-  title: string;
-  description: string;
-  handle: string;
-  created: string;
-  events: RecommendationEvent[];
-}
-export interface RecommendationEvent {
-  /**
-   * 0 = NONE
-   * 1 = APPROVE
-   * 2 = DENY
-   */
-  decision: number;
-  handle: string;
-  created: string;
-}
-export type RuleVolume = Record<
-  string,
-  {
-    PROTECTED?: number;
-    UNPROTECTED?: number;
-    ERROR?: number;
-  }
->;
 
 export interface ProbeActivity {
   dos: Platform;
   endpoint_id: string;
   state: "PROTECTED" | "UNPROTECTED" | "ERROR";
-  tags: string[];
-  edr_id: string | null;
+  control: ControlCode;
 }
 
-export interface CreateRecommendation {
-  title: string;
-  description: string;
-}
-
-export interface DecideRecommendation {
+export type EndpointActivity = {
   id: string;
-  /**
-   * 1 = APPROVE
-   * 2 = DENY
-   */
-  decision: 1 | 2;
+  protected: number;
+};
+
+export interface MetricsActivity {
+  account_id: string;
+  endpoints: number;
+  tests: number;
+  company: string;
+  unique_tests: number;
+}
+
+export interface Finding {
+  key: string;
+  value: string | ControlCode | null;
+  improvement: number;
+}
+
+export interface FindingsActivity {
+  protected: number;
+  dos: Platform;
+  control: ControlCode;
+  policy: string | null;
+  os: string | null;
+  finding?: Finding;
 }
 
 export interface RegisterEndpointParams {
   host: string;
   serial_num: string;
-  edr_id?: string;
   tags?: string;
+}
+
+export interface UpdateEndpointParams {
+  endpoint_id: string;
+  tags?: string;
+}
+
+export interface UpdatedEndpoint {
+  id: string;
 }
 
 export interface DownloadParams {
@@ -288,14 +386,19 @@ export interface DownloadParams {
 }
 
 export interface AttachPartnerParams {
-  name: string;
+  partnerCode: ControlCode;
   api: string;
   user: string;
   secret?: string;
 }
 
+export interface AttachedPartner {
+  api: string;
+  connected: boolean;
+}
+
 export interface EndpointsParams {
-  partnerName: string;
+  partner: ControlCodeName;
   platform: string;
   hostname?: string;
   offset?: number;
@@ -303,20 +406,43 @@ export interface EndpointsParams {
 }
 
 export interface DeployParams {
-  partnerName: string;
+  partnerCode: ControlCode;
   hostIds: string[];
+}
+
+export interface DeployedEndpoints {
+  id: ControlCode;
+  host_ids: string[];
 }
 
 export type PartnerEndpoints = Record<
   string,
   {
     hostname: string;
-    version: string;
+    os: string;
+    policy?: string | null;
+    policy_name?: string | null;
   }
 >;
 
-export interface DeployedEnpoint {
-  aid: string;
-  status: boolean;
-  errors: string[];
+export interface AuditLog {
+  event: string;
+  account_id: string;
+  user_id: string;
+  values: AuditLogValues;
+  status: string;
+  timestamp: string;
+}
+
+export type AuditLogValues = Record<string, unknown>;
+
+export interface BlockResponse {
+  file: string;
+  already_reported?: boolean;
+  ioc_id?: string;
+}
+
+export interface ProtectedActivity {
+  date: string;
+  protected: number;
 }

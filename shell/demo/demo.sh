@@ -9,22 +9,15 @@ NC=$(tput sgr0)
 PRELUDE_API=${PRELUDE_API:="https://api.preludesecurity.com"}
 PRELUDE_TOKEN=$1
 PRELUDE_DIR=${PRELUDE_DIR:=".vst"}
+PROTECTED="0 9 15 100 104 105 106 107 126 127 137"
 
 dos=$(uname -s)-$(uname -m)
 
 declare -a tests=(
-  '39de298a-911d-4a3b-aed4-1e8281010a9a'    # Health check
-  '3ebbda49-738c-4799-a8fb-206630cf609e'    # Will a long running VST be stopped properly?
-  '2e705bac-a889-4283-9a8e-a12358fa1d09'    # Will your computer quarantine Royal Ransomware?
-  'b74ad239-2ddd-4b1e-b608-8397a43c7c54'    # Will your computer quarantine a malicious Office document?
-  'ca9b22be-93d5-4902-95f4-4bc43a817b73'    # Will your computer quarantine Colour-Blind malware?
+  '5ec67dd1-f6a3-4a5e-9d33-62bb64a339f0'    # LockBit Ransomware
 )
 declare -a names=(
-  'Health check'
-  'Will a long running VST be stopped properly?'
-  'Will your computer quarantine Royal Ransomware?'
-  'Will your computer quarantine a malicious Office document?'
-  'Will your computer quarantine Colour-Blind malware?'
+  'LockBit Ransomware'
 )
 declare -a results
 
@@ -39,7 +32,7 @@ function download_test {
     local _temp=$2
     echo -e "\n[ ] Downloading test"
 
-    location=$(curl -sL -w %{url_effective} -o $_temp -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "id:${_test_id}" $PRELUDE_API)
+    location=$(curl -sL -w %{url_effective} -o $_temp -H "token:${PRELUDE_TOKEN}" -H "dos:${dos}" -H "id:${_test_id}" -H "version:2.0" $PRELUDE_API)
     test=$(echo $location | grep -o '[0-9a-f]\{8\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{12\}' | head -n 1)
     sleep 1 && tput cuu 1 && tput el
     if [ -z "$test" ];then
@@ -58,12 +51,8 @@ function execute_test {
     sleep 1 && tput cuu 1 && tput el
     $_temp
     local _res=$?
-    if ( echo "100 9 17 18 105 127" | grep -w -q $_res );then
-        if [[ ("$_test_name" == 'Health check' || "$_test_name" == 'Will a long running VST be stopped properly?') ]] && [ $_res != 100 ];then
-          echo -e "${YELLOW}[!] Health check should not be quarantined or blocked${NC}"
-        else
-          echo -e "${GREEN}[✓] Executed test: control test passed${NC}"
-        fi
+    if ( echo $PROTECTED | grep -w -q $_res );then
+        echo -e "${GREEN}[✓] Executed test: control test passed${NC}"
     elif [ $_res -eq 101 ];then
         echo -e "${RED}[!] Executed test: control test failed${NC}"
     else
@@ -86,7 +75,7 @@ function execute_cleanup {
 
 function post_results {
     local _dat="$1:$2"
-    curl -sfSL -H "token: ${PRELUDE_TOKEN}" -H "dos: ${dos}" -H "dat: ${_dat}" $PRELUDE_API
+    curl -sfSL -H "token: ${PRELUDE_TOKEN}" -H "dos: ${dos}" -H "dat: ${_dat}" -H "version:2.0" $PRELUDE_API
 }
 
 function run_demo {
@@ -94,7 +83,7 @@ function run_demo {
     local _test_name=${names[$1]}
     local _temp=$PRELUDE_DIR/$(uuidgen)
     echo -e "\n${STANDOUT}Test: ${_test_name}${NC}"
-    echo -e "\nMore details at: https://github.com/preludeorg/test/tree/master/tests/${_test_id}"
+    echo -e "\nMore details at: https://www.preludesecurity.com/advisories/aa23-075a"
     sleep 1
     echo -e "\nStarting test at: $(date +"%T")"
     check_relevance
@@ -103,7 +92,7 @@ function run_demo {
     local _res=$?
     execute_cleanup $_temp
     post_results $_test_id $_res
-    if ( echo "100 9 17 18 105 127" | grep -w -q $_res );then
+    if ( echo $PROTECTED | grep -w -q $_res );then
         results+=( "${GREEN}${_test_name}\tPROTECTED${NC}" )
     elif [ $_res -eq 101 ];then
         results+=( "${RED}${_test_name}\tUNPROTECTED${NC}" )
@@ -111,19 +100,11 @@ function run_demo {
         results+=( "${YELLOW}${_test_name}\tERROR${NC}" )
     fi
     echo -e "\n###########################################################################################################"
-    if [[ $1 == 1 ]];then
-        echo -e "\n\nCompleted Health Check tests. Beginning quarantine tests.\n"
-        echo -e "\n###########################################################################################################"
-    fi
     sleep 3
 }
 
 mkdir -p $PRELUDE_DIR
 trap 'rm -rf -- "$PRELUDE_DIR"' EXIT
-
-echo -e "\n###########################################################################################################"
-echo -e "\n\nRunning safety checks to ensure quarantine tests will run as expected.\n"
-echo -e "\n###########################################################################################################"
 
 for i in "${!tests[@]}"
 do
@@ -131,9 +112,5 @@ do
 done
 
 rm -rf $PRELUDE_DIR
-
-echo -e "###########################################################################################################"
-echo -e "\nSummary of test results:\n"
-paste <(printf "%b\n" "${results[@]}") | column -ts $'\t'
 
 echo -e "\n[*] Go to https://platform.preludesecurity.com to register for an account\n"

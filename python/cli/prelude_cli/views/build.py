@@ -8,7 +8,7 @@ from rich import print_json
 from datetime import datetime
 from pathlib import Path, PurePath
 
-from prelude_cli.views.shared import handle_api_error
+from prelude_cli.views.shared import handle_api_error, Spinner
 from prelude_sdk.controllers.build_controller import BuildController
 
 
@@ -22,64 +22,77 @@ def build(ctx):
     ctx.obj = BuildController(account=ctx.obj)
 
 
-@build.command('test')
-@click.argument('test_id')
-@click.pass_obj
-@handle_api_error
-def get_test(controller, test_id):
-    """ List properties for a test """
-    print_json(data=controller.get_test(test_id=test_id))
-
-
 @build.command('create-test')
 @click.argument('name')
+@click.option('-u', '--unit', required=True, help='unit identifier', type=str)
 @click.option('-t', '--test', help='test identifier', default=None, type=str)
+@click.option('-q', '--techniques', help='comma-separated list of valid MITRE ATT&CK codes [e.g. T1557,T1040]', default=None, type=str)
+@click.option('-a', '--advisory', default=None, hidden=True, type=str)
 @click.pass_obj
 @handle_api_error
-def create_test(controller, name, test):
+def create_test(controller, name, unit, test, techniques, advisory):
     """ Create or update a security test """
-    test_id = test or str(uuid.uuid4())
-    controller.create_test(test_id=test_id, name=name)
+    with Spinner(description='Creating new test'):
+        t = controller.create_test(
+            name=name,
+            unit=unit,
+            test_id=test,
+            techniques=techniques,
+            advisory=advisory
+        )
 
     if not test:
-        basename = f'{test_id}.go'
+        basename = f'{t["id"]}.go'
         template = pkg_resources.read_text(templates, 'template.go')
-        template = template.replace('$ID', test_id)
+        template = template.replace('$ID', t['id'])
         template = template.replace('$NAME', name)
+        template = template.replace('$UNIT', unit or '')
         template = template.replace('$CREATED', str(datetime.utcnow()))
-        controller.upload(test_id=test_id, filename=basename, data=template)
+        
+        with Spinner(description='Applying default template to new test'):
+            controller.upload(test_id=t['id'], filename=basename, data=template.encode('utf-8'))
+            t['attachments'] = [basename]
 
-        with open(basename, 'w') as test_code:
+        test_dir = PurePath(t['id'], basename)
+        Path(t['id']).mkdir(parents=True, exist_ok=True)
+        
+        with open(test_dir, 'w', encoding='utf8') as test_code:
             test_code.write(template)
-            click.secho(f'Created {basename}', fg='green')
+
+    print_json(data=t)
+
+
+@build.command('update-test')
+@click.argument('test')
+@click.option('-n', '--name', help='test name', default=None, type=str)
+@click.option('-u', '--unit', help='unit identifier', default=None, type=str)
+@click.option('-q', '--techniques', help='comma-separated list of valid MITRE ATT&CK codes [e.g. T1557,T1040]', default=None, type=str)
+@click.option('-a', '--advisory', help='alert identifier [CVE ID, Advisory ID, etc]', default=None, hidden=True, type=str)
+@click.pass_obj
+@handle_api_error
+def update_test(controller, test, name, unit, techniques, advisory):
+    """ Create or update a security test """
+    with Spinner(description='Updating test'):
+        data = controller.update_test(
+            test_id=test,
+            name=name,
+            unit=unit,
+            techniques=techniques,
+            advisory=advisory
+        )
+    print_json(data=data)
 
 
 @build.command('delete-test')
 @click.argument('test')
-@click.option('-t', '--test', help='test identifier', default=None, type=str)
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
 @handle_api_error
 def delete_test(controller, test):
     """ Delete a test """
-    controller.delete_test(test_id=test)
-    click.secho(f'Deleted {test}', fg='green')
-
-
-@build.command('download')
-@click.argument('test')
-@click.pass_obj
-@handle_api_error
-def download(controller, test):
-    """ Download a test to your local environment """
-    click.secho(f'Downloading {test}')
-    Path(test).mkdir(parents=True, exist_ok=True)
-
-    for attach in controller.get_test(test_id=test).get('attachments'):
-        if Path(attach).suffix:
-            code = controller.download(test_id=test, filename=attach)
-            with open(PurePath(test, attach), 'wb') as f:
-                f.write(code)
+    with Spinner(description='Removing test'):
+        data = controller.delete_test(test_id=test)
+    print_json(data=data)
 
 
 @build.command('upload')
@@ -97,8 +110,13 @@ def upload_attachment(controller, path, test):
 
     def upload(p: Path):
         with open(p, 'rb') as data:
-            controller.upload(test_id=identifier, filename=p.name, data=data.read(), binary=True)
-            click.secho(f'Uploaded {path}', fg='green')
+            with Spinner(description='Uploading to test'):
+                data = controller.upload(
+                    test_id=identifier, 
+                    filename=p.name, 
+                    data=data.read()
+                )
+            print_json(data=data)
 
     identifier = test or test_id()
     
@@ -106,24 +124,7 @@ def upload_attachment(controller, path, test):
         upload(p=Path(path))
     else:
         for obj in Path(path).rglob('*'):
-            upload(p=Path(obj))
-
-
-@build.command('map')
-@click.argument('test')
-@click.argument('identifier')
-@click.pass_obj
-@handle_api_error
-def map(controller, test, identifier):
-    """ Map an identifier to a test """
-    print_json(data=controller.map(test_id=test, x=identifier))
-
-
-@build.command('unmap')
-@click.argument('test')
-@click.argument('identifier')
-@click.pass_obj
-@handle_api_error
-def unmap(controller, test, identifier):
-    """ Unmap an identifier from a test """
-    print_json(data=controller.unmap(test_id=test, x=identifier))
+            try:
+                upload(p=Path(obj))
+            except ValueError as e:
+                click.secho(e.args[0], fg='red')

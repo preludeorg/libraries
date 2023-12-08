@@ -90,7 +90,7 @@
       async function setupAccount() {
         document.getElementById("log").innerHTML = "";
 
-        const host = "https://api.staging.preludesecurity.com";
+        const host = "https://api.us2.preludesecurity.com";
 
         console.log("Using host", host);
         const service = new Prelude.Service({
@@ -245,8 +245,6 @@
                 "39de298a-911d-4a3b-aed4-1e8281010a9a"
               )
             );
-
-            console.log("Search", await service.detect.search("CVE-2017-0199"));
 
             console.log(
               "Activity",

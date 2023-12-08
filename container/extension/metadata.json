@@ -1,0 +1,10 @@
+{
+  "icon": "Prelude.svg",
+  "ui": {
+    "dashboard-tab": {
+      "title": "Prelude Detect",
+      "src": "index.html",
+      "root": "/ui"
+    }
+  }
+}

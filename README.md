@@ -4,37 +4,17 @@ Prelude maintains a collection of open-source libraries that interact with [Dete
 
 You must have a [Prelude Account](https://docs.preludesecurity.com/docs/prelude-account) to use these libraries. 
 
-## Prelude Account
+## What's here
 
-Create a free account by installing the [Prelude CLI](https://docs.preludesecurity.com/docs/prelude-cli) and running the ``create-account`` command:
-```bash
-pip3 install prelude-cli
-prelude iam create-account
-```
+Libraries are organized by language and categorized into Probes, SDK(s), and Tests.
 
-> Alternatively, if you use the [UI](https://platform.preludesecurity.com) you can export your credentials from inside the application.
-
-## Getting started
-
-Libraries are organized by language and categorized into Probes and SDK(s).
-
-> If you want to run security tests on your infrastructure, select a probe and follow the instructions. If you want to write your own client against the API, select an SDK.
-
-### Probe
-
-A [probe](https://docs.preludesecurity.com/docs/probes) is an ephemeral endpoint process that requires no special privileges or installation. Probes have one duty: accept security tests from Detect, execute them, and respond with the result.
+### Probes
+A [probe](https://docs.preludesecurity.com/recipes/probes) is an endpoint process that knows how to run security tests. Probes are lightweight and open-source.
 
 ### SDK
 
-A Software Development Kit (SDK) allows you to build your own tooling against the Prelude Service API. 
+Software Development Kit (SDK) allows you to build your own tooling against the Prelude Service API. The [Prelude CLI](https://docs.preludesecurity.com/recipes/cli) is an example application built on top of the Python SDK.
 
-## Probe compatibility 
+### Tests
 
-Shell probes are the default choice when using a [Prelude installer](https://docs.preludesecurity.com/docs/individual-probe-deployment#installer). 
-
-> A DOS is a platform and architecture combination
-
-| Name  |  Runtime | Supported (DOS)
-| ------------- | ------------- | -------------
-| [Raindrop](https://github.com/preludeorg/libraries/tree/master/shell/probe) | PowerShell | windows-x86_64
-| [Nocturnal](https://github.com/preludeorg/libraries/tree/master/shell/probe) | Bash | linux-x86_64, linux-arm64, darwin-x86_64, darwin-arm64
+Security tests are production ready TTPs. Tests from this repository are automatically loaded into Detect and can be run immediately on any endpoint.

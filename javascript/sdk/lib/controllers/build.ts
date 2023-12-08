@@ -1,10 +1,10 @@
 import Client from "../client";
-import type { RequestOptions, TestData } from "../types";
-
-interface MapParams {
-  testId: string;
-  key: string;
-}
+import type {
+  AttachedTest,
+  RequestOptions,
+  StatusResponse,
+  UploadedAttachment,
+} from "../types";
 
 export default class BuildController {
   #client: Client;
@@ -15,94 +15,85 @@ export default class BuildController {
 
   /** Create or update a test */
   async createTest(
-    id: string,
     name: string,
+    unit: string,
+    techniques?: string,
+    advisory?: string,
+    testId?: string,
     options: RequestOptions = {}
-  ): Promise<void> {
-    await this.#client.requestWithAuth(`/build/tests/${id}`, {
+  ): Promise<AttachedTest> {
+    const response = await this.#client.requestWithAuth(`/build/tests`, {
       method: "POST",
-      body: JSON.stringify({ name }),
+      body: JSON.stringify({ name, unit, techniques, advisory, id: testId }),
       ...options,
     });
+
+    return (await response.json()) as AttachedTest;
   }
 
-  /** Delete an existing test */
-  async deleteTest(id: string, options: RequestOptions = {}): Promise<void> {
-    await this.#client.requestWithAuth(`/build/tests/${id}`, {
-      method: "DELETE",
-      ...options,
-    });
-  }
-
-  /** Get properties of an existing test */
-  async getTest(
+  /** Update a test */
+  async updateTest(
     testId: string,
+    name?: string,
+    unit?: string,
+    techniques?: string,
+    advisory?: string,
     options: RequestOptions = {}
-  ): Promise<TestData> {
+  ): Promise<AttachedTest> {
     const response = await this.#client.requestWithAuth(
       `/build/tests/${testId}`,
       {
+        method: "POST",
+        body: JSON.stringify({ name, unit, techniques, advisory }),
         ...options,
       }
     );
 
-    return await response.json();
+    return (await response.json()) as AttachedTest;
   }
 
-  /** Clone a test file or attachment */
-  async download(
+  /** Delete an existing test */
+  async deleteTest(
     testId: string,
-    filename: string,
     options: RequestOptions = {}
-  ): Promise<string> {
+  ): Promise<StatusResponse> {
     const response = await this.#client.requestWithAuth(
-      `/build/tests/${testId}/${filename}`,
+      `/build/tests/${testId}`,
       {
+        method: "DELETE",
         ...options,
-        headers: {
-          "Content-Type": "",
-          ...(options.headers ?? {}),
-        },
       }
     );
-    return response.text();
+
+    return (await response.json()) as StatusResponse;
   }
 
   /** Upload a test or attachment */
   async upload(
     testId: string,
     filename: string,
-    code: string,
+    data: BodyInit,
     options: RequestOptions = {}
-  ): Promise<void> {
-    await this.#client.requestWithAuth(`/build/tests/${testId}/${filename}`, {
-      method: "POST",
-      body: JSON.stringify({ code }),
-      ...options,
-    });
-  }
+  ): Promise<UploadedAttachment> {
+    if (data.toString().length > 1000000) {
+      throw new Error(`File size must be under 1MB (${filename})`);
+    }
 
-  async map(params: MapParams, options: RequestOptions = {}): Promise<string> {
+    const headers = {
+      "Content-Type": "application/octet-stream",
+      ...options.headers,
+    };
+
     const response = await this.#client.requestWithAuth(
-      `/build/tests/${params.testId}/map/${params.key}`,
+      `/build/tests/${testId}/${filename}`,
       {
         method: "POST",
-        body: JSON.stringify({ id: params.testId }),
+        body: data,
+        headers,
         ...options,
       }
     );
 
-    return response.text();
-  }
-
-  async unmap(params: MapParams, options: RequestOptions = {}): Promise<void> {
-    await this.#client.requestWithAuth(
-      `/build/tests/${params.testId}/map/${params.key}`,
-      {
-        method: "DELETE",
-        body: JSON.stringify({ id: params.testId }),
-        ...options,
-      }
-    );
+    return (await response.json()) as UploadedAttachment;
   }
 }

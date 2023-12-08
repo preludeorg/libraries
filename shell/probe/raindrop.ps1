@@ -21,42 +21,35 @@ function FromEnv { param ([string]$envVar, [string]$default)
     if ($envVal) { return $envVal } else { return $default }
 }
 
-$Dir = FromEnv "PRELUDE_DIR" ".vst"
-$Sleep = FromEnv "PRELUDE_SLEEP" 14440
-$CA = "prelude-account-prod-us-west-1.s3.amazonaws.com"
-
-$Api = "https://api.preludesecurity.com"
-$Dos = "windows-$Env:PROCESSOR_ARCHITECTURE"
-$Dat = ""
+$ca = FromEnv "PRELUDE_CA" "prelude-account-us1-us-east-2.s3.amazonaws.com"
+$dir = FromEnv "PRELUDE_DIR" $ca
+$dat = ""
 
 while ($true) {
     try {
-        $Vst = New-Item -Path "$Dir\$(New-Guid).exe" -Force
-        $Headers = @{
-            'token' = FromEnv "PRELUDE_TOKEN"
-            'dos' = $Dos
-            'dat' = $Dat
-            'version' = "1.0"
-        }
-        $Response = Invoke-WebRequest -URI $Api -UseBasicParsing -Headers $Headers -MaximumRedirection 1 -OutFile $Vst -PassThru
-        $Test = $Response.BaseResponse.ResponseUri.AbsolutePath.Split("/")[-1].Split("_")[0]
-    
-        if ($Test) {
-            if ($CA -eq $Response.BaseResponse.ResponseUri.Authority) {
-                Write-Output "[P] Running $Test [$Vst]"
-                $Code = Execute $Vst   
-                $Dat = "${Test}:$Code"
-            }
-        } elseif ($Response.BaseResponse.ResponseUri -contains "upgrade") {
-            Write-Output "[P] Upgrade required"
-            exit 1
+        $task = Invoke-WebRequest -Uri "https://api.preludesecurity.com" -Headers @{
+            "token" = $env:PRELUDE_TOKEN
+            "dos" = "windows-$Env:PROCESSOR_ARCHITECTURE"
+            "dat" = $dat
+            "version" = "2"
+        } -UseBasicParsing -MaximumRedirection 0 -ErrorAction SilentlyContinue
+        
+        $uuid = $task.content -replace ".*?([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}).*", '$1'
+        $auth = $task.content -replace '^[^/]*//([^/]*)/.*', '$1'
+
+        if ($uuid -and $auth -eq $ca) {
+            Invoke-WebRequest -Uri $task.content -OutFile (New-Item -path "$dir\$uuid.exe" -Force ) -UseBasicParsing
+            $code = Execute "$dir\$uuid.exe"
+            $dat = "${uuid}:${code}"
+        } elseif ($task -eq "stop") {
+            exit
         } else {
-            $Dat = ""
-            Remove-Item $Dir -Force -Recurse
-            Start-Sleep -Seconds $Sleep
+            throw "Test cycle done"
         }
-    } catch { 
-        Write-Error $_
-        Start-Sleep -Seconds $Sleep
+    } catch {
+        Write-Output $_.Exception
+        Remove-Item $dir -Force -Recurse -ErrorAction SilentlyContinue
+        $dat = ""
+        Start-Sleep -Seconds 3600
     }
 }
