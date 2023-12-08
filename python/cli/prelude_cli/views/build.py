@@ -1,7 +1,7 @@
 import re
 import uuid
 import click
-import prelude_cli.testTemplates as testTemplates
+import prelude_cli.templates as templates
 import importlib.resources as pkg_resources
 
 from rich import print_json
