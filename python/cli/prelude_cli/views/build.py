@@ -68,10 +68,11 @@ def create_test(controller, name, unit, test, techniques, advisory):
         readmeTemplate = readmeTemplate.replace('$TIME', utcTime)
 
         with Spinner(description='Applying default template to new test'):
-            controller.upload(test_id=t['id'], filename=basename, data=readmeTemplate.encode('utf-8'))
+            controller.upload(test_id=t['id'], filename='README.md', data=readmeTemplate.encode('utf-8'))
 
         with open(test_dir, 'w', encoding='utf8') as test_readme:
             test_readme.write(readmeTemplate)
+            t['attachments'] = ['README.md']
 
     print_json(data=t)
 
