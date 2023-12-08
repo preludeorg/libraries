@@ -1,7 +1,7 @@
 import re
 import uuid
 import click
-import prelude_cli.templates as templates
+import prelude_cli.testTemplates as testTemplates
 import importlib.resources as pkg_resources
 
 from rich import print_json
@@ -42,22 +42,36 @@ def create_test(controller, name, unit, test, techniques, advisory):
         )
 
     if not test:
+        """ Mark-up, upload, and write the test file template. """
         basename = f'{t["id"]}.go'
-        template = pkg_resources.read_text(templates, 'template.go')
-        template = template.replace('$ID', t['id'])
-        template = template.replace('$NAME', name)
-        template = template.replace('$UNIT', unit or '')
-        template = template.replace('$CREATED', str(datetime.utcnow()))
+        utcTime = str(datetime.utcnow())
+        testTemplate = pkg_resources.read_text(templates, 'template.go')
+        testTemplate = testTemplate.replace('$ID', t['id'])
+        testTemplate = testTemplate.replace('$NAME', name)
+        testTemplate = testTemplate.replace('$UNIT', unit or '')
+        testTemplate = testTemplate.replace('$CREATED', utcTime)
         
         with Spinner(description='Applying default template to new test'):
-            controller.upload(test_id=t['id'], filename=basename, data=template.encode('utf-8'))
+            controller.upload(test_id=t['id'], filename=basename, data=testTemplate.encode('utf-8'))
             t['attachments'] = [basename]
 
         test_dir = PurePath(t['id'], basename)
         Path(t['id']).mkdir(parents=True, exist_ok=True)
         
         with open(test_dir, 'w', encoding='utf8') as test_code:
-            test_code.write(template)
+            test_code.write(testTemplate)
+
+        """ Mark up, upload, and write the test README template. """
+        readmeTemplate = pkg_resources.read_text(templates, 'README.md')
+        readmeTemplate = readmeTemplate.replace('$NAME', name)
+        readmeTemplate = readmeTemplate.replace('$ID', t['id'])
+        readmeTemplate = readmeTemplate.replace('$TIME', utcTime)
+
+        with Spinner(description='Applying default template to new test'):
+            controller.upload(test_id=t['id'], filename=basename, data=readmeTemplate.encode('utf-8'))
+
+        with open(test_dir, 'w', encoding='utf8') as test_readme:
+            test_readme.write(readmeTemplate)
 
     print_json(data=t)
 
