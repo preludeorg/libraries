@@ -15,7 +15,7 @@ def complete_profile(ctx, param, incomplete):
 @click.version_option()
 @click.pass_context
 @click.option('--profile', default='default', help='The prelude keychain profile to use', show_default=True, shell_complete=complete_profile)
-def cli(ctx, profile, interactive):
+def cli(ctx, profile):
     ctx.obj = Account(profile=profile)
     if ctx.invoked_subcommand is None:
         click.echo(ctx.get_help())
