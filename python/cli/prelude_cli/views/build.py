@@ -61,6 +61,8 @@ def create_test(controller, name, unit, test, techniques, advisory):
         with open(test_dir, 'w', encoding='utf8') as test_code:
             test_code.write(testTemplate)
 
+        print_json(data=t)
+
         """ Mark up, upload, and write the test README template. """
         readmeTemplate = pkg_resources.read_text(templates, 'README.md')
         readmeTemplate = readmeTemplate.replace('$NAME', name)
@@ -70,7 +72,9 @@ def create_test(controller, name, unit, test, techniques, advisory):
         with Spinner(description='Applying default template to new test'):
             controller.upload(test_id=t['id'], filename='README.md', data=readmeTemplate.encode('utf-8'))
 
-        with open(test_dir, 'w', encoding='utf8') as test_readme:
+        readme_dir = PurePath(t['id'], 'README.md')
+
+        with open(readme_dir, 'w', encoding='utf8') as test_readme:
             test_readme.write(readmeTemplate)
             t['attachments'] = ['README.md']
 
