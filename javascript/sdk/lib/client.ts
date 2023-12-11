@@ -18,20 +18,23 @@ function combineHeaders(...headers: HeadersInit[]): HeadersInit {
 }
 
 export default class Client {
-  #host: URL;
+  host: URL;
   #credentials?: Credentials;
   #requestInterceptor?: (request: Request) => Request;
+  #responseInterceptor?: (request: Request, response: Response) => Response;
 
   constructor(
     host: string,
     credentials?: Credentials,
-    requestInterceptor?: (request: Request) => Request
+    requestInterceptor?: (request: Request) => Request,
+    responseInterceptor?: (request: Request, response: Response) => Response
   ) {
-    this.#host = new URL(host);
-    assertValidURL(this.#host);
+    this.host = new URL(host);
+    assertValidURL(this.host);
 
     this.#credentials = credentials;
     this.#requestInterceptor = requestInterceptor;
+    this.#responseInterceptor = responseInterceptor;
   }
 
   setCredentials(credentials: Credentials) {
@@ -53,7 +56,10 @@ export default class Client {
   async #fetch(request: Request, options: RequestInit = {}) {
     const response = await fetch(request);
 
-    if (options.redirect === "manual" && response.status === 302) {
+    if (
+      options.redirect === "manual" &&
+      (response.status === 302 || response.status === 0)
+    ) {
       return response;
     }
 
@@ -65,7 +71,7 @@ export default class Client {
   }
 
   async request(path: string, options: RequestInit = {}) {
-    let req = new Request(new URL(path, this.#host), {
+    let req = new Request(new URL(path, this.host), {
       ...options,
       headers: combineHeaders(defaultHeaders, options.headers ?? {}),
     });
@@ -74,13 +80,19 @@ export default class Client {
       req = this.#requestInterceptor(req);
     }
 
-    return this.#fetch(req, options);
+    const response = await this.#fetch(req, options);
+
+    if (this.#responseInterceptor) {
+      return this.#responseInterceptor(req, response);
+    }
+
+    return response;
   }
 
   async requestWithAuth(path: string, options: RequestInit = {}) {
     const credentials = this.#ensureCredentials();
 
-    let req = new Request(new URL(path, this.#host), {
+    let req = new Request(new URL(path, this.host), {
       ...options,
       headers: combineHeaders(
         defaultHeaders,
@@ -89,10 +101,12 @@ export default class Client {
       ),
     });
 
-    if (this.#requestInterceptor) {
-      req = this.#requestInterceptor(req);
+    const response = await this.#fetch(req, options);
+
+    if (this.#responseInterceptor) {
+      return this.#responseInterceptor(req, response);
     }
 
-    return this.#fetch(req, options);
+    return response;
   }
 }

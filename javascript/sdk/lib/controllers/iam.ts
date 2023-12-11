@@ -77,11 +77,11 @@ export default class IAMController {
     return (await response.json()) as Account;
   }
 
-  /** Exchange  verification token for bearer token */
+  /** Exchange verification token for bearer token */
   async exchangeToken(
     token: string,
     options: RequestOptions = {}
-  ): Promise<Credentials> {
+  ): Promise<Credentials & { handle: string }> {
     const searchParams = new URLSearchParams({
       token,
     });
@@ -95,23 +95,45 @@ export default class IAMController {
 
     const json = (await response.json()) as {
       account_id: string;
-      oauth_token: string;
+      token: string;
+      handle: string;
     };
 
     return {
       account: json.account_id,
-      token: json.oauth_token,
+      token: `Bearer ${json.token}`,
+      handle: json.handle,
     };
+  }
+
+  /** Get the redirect url for login */
+  async verifySSO(email: string, options: RequestOptions = {}) {
+    const searchParams = new URLSearchParams({
+      email,
+    });
+    await this.#client.request(
+      `/iam/account/login?${searchParams.toString()}`,
+      {
+        method: "GET",
+        redirect: "manual",
+        ...options,
+      }
+    );
+
+    return new URL(
+      `iam/account/login?${searchParams.toString()}`,
+      this.#client.host
+    ).toString();
   }
 
   /** Create a new user inside an account */
   async createUser(
-    { permission, email, name, expires }: CreateUserParams,
+    { permission, email, name, expires, oidc }: CreateUserParams,
     options: RequestOptions = {}
   ): Promise<CreatedUser> {
     const response = await this.#client.requestWithAuth("/iam/user", {
       method: "POST",
-      body: JSON.stringify({ permission, handle: email, name, expires }),
+      body: JSON.stringify({ permission, handle: email, name, expires, oidc }),
       ...options,
     });
 

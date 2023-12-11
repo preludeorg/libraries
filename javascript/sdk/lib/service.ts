@@ -19,7 +19,8 @@ export class Service {
     this.#client = new Client(
       config.host,
       config.credentials,
-      config.requestInterceptor
+      config.requestInterceptor,
+      config.responseInterceptor
     );
 
     this.build = new BuildController(this.#client);

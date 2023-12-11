@@ -4,6 +4,8 @@ export interface ServiceConfig {
   credentials?: Credentials;
   /** requestInterceptor allows you to modify the request before it is sent */
   requestInterceptor?: (request: Request) => Request;
+  /** responseInterceptor allows you to modify the response before it is returned */
+  responseInterceptor?: (request: Request, response: Response) => Response;
 }
 
 export interface Credentials {
@@ -87,6 +89,7 @@ export interface CreateUserParams {
   email: string;
   name?: string;
   expires?: string;
+  oidc: boolean;
 }
 
 export interface CreatedUser {
