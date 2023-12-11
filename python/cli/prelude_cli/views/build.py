@@ -5,7 +5,7 @@ import prelude_cli.templates as templates
 import importlib.resources as pkg_resources
 
 from rich import print_json
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path, PurePath
 
 from prelude_cli.views.shared import handle_api_error, Spinner
@@ -44,7 +44,7 @@ def create_test(controller, name, unit, test, techniques, advisory):
     if not test:
         """ Mark-up, upload, and write the test file template. """
         basename = f'{t["id"]}.go'
-        utc_time = str(datetime.utcnow())
+        utc_time = str(datetime.now(timezone.utc))
         test_template = pkg_resources.read_text(templates, 'template.go')
         test_template = test_template.replace('$ID', t['id'])
         test_template = test_template.replace('$NAME', name)
