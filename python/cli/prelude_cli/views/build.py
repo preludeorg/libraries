@@ -44,38 +44,38 @@ def create_test(controller, name, unit, test, techniques, advisory):
     if not test:
         """ Mark-up, upload, and write the test file template. """
         basename = f'{t["id"]}.go'
-        utcTime = str(datetime.utcnow())
-        testTemplate = pkg_resources.read_text(templates, 'template.go')
-        testTemplate = testTemplate.replace('$ID', t['id'])
-        testTemplate = testTemplate.replace('$NAME', name)
-        testTemplate = testTemplate.replace('$UNIT', unit or '')
-        testTemplate = testTemplate.replace('$CREATED', utcTime)
+        utc_time = str(datetime.utcnow())
+        test_template = pkg_resources.read_text(templates, 'template.go')
+        test_template = test_template.replace('$ID', t['id'])
+        test_template = test_template.replace('$NAME', name)
+        test_template = test_template.replace('$UNIT', unit or '')
+        test_template = test_template.replace('$CREATED', utc_time)
         
         with Spinner(description='Applying default template to new test'):
-            controller.upload(test_id=t['id'], filename=basename, data=testTemplate.encode('utf-8'))
+            controller.upload(test_id=t['id'], filename=basename, data=test_template.encode('utf-8'))
             t['attachments'] = [basename]
 
         test_dir = PurePath(t['id'], basename)
         Path(t['id']).mkdir(parents=True, exist_ok=True)
         
         with open(test_dir, 'w', encoding='utf8') as test_code:
-            test_code.write(testTemplate)
+            test_code.write(test_template)
 
         print_json(data=t)
 
         """ Mark up, upload, and write the test README template. """
-        readmeTemplate = pkg_resources.read_text(templates, 'README.md')
-        readmeTemplate = readmeTemplate.replace('$NAME', name)
-        readmeTemplate = readmeTemplate.replace('$ID', t['id'])
-        readmeTemplate = readmeTemplate.replace('$TIME', utcTime)
+        readme_template = pkg_resources.read_text(templates, 'README.md')
+        readme_template = readme_template.replace('$NAME', name)
+        readme_template = readme_template.replace('$ID', t['id'])
+        readme_template = readme_template.replace('$TIME', utc_time)
 
         with Spinner(description='Applying default template to new test'):
-            controller.upload(test_id=t['id'], filename='README.md', data=readmeTemplate.encode('utf-8'))
+            controller.upload(test_id=t['id'], filename='README.md', data=readme_template.encode('utf-8'))
 
         readme_dir = PurePath(t['id'], 'README.md')
 
         with open(readme_dir, 'w', encoding='utf8') as test_readme:
-            test_readme.write(readmeTemplate)
+            test_readme.write(readme_template)
             t['attachments'] = ['README.md']
 
     print_json(data=t)
