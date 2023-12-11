@@ -1,6 +1,8 @@
 import Client from "../client";
 import type {
   Account,
+  AttachOIDC,
+  AttachedOIDC,
   AuditLog,
   CreateAccountParams,
   CreateUserParams,
@@ -184,5 +186,27 @@ export default class IAMController {
     );
 
     return (await response.json()) as AuditLog[];
+  }
+
+  async attachOIDC(
+    params: AttachOIDC,
+    options: RequestOptions = {}
+  ): Promise<AttachedOIDC> {
+    const response = await this.#client.requestWithAuth("iam/account/oidc", {
+      method: "POST",
+      body: JSON.stringify(params),
+      ...options,
+    });
+
+    return (await response.json()) as AttachedOIDC;
+  }
+
+  async detachOIDC(options: RequestOptions = {}): Promise<{ domain: string }> {
+    const response = await this.#client.requestWithAuth("iam/account/oidc", {
+      method: "DELETE",
+      ...options,
+    });
+
+    return (await response.json()) as { domain: string };
   }
 }

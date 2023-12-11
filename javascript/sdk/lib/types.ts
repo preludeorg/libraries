@@ -446,3 +446,18 @@ export interface ProtectedActivity {
   date: string;
   protected: number;
 }
+
+export const OIDCOptions = ["google", "okta", "azure"] as const;
+export type OIDC = (typeof OIDCOptions)[number];
+
+export interface AttachOIDC {
+  issuer: OIDC;
+  client_id: string;
+  client_secret: string;
+  oidc_config_url: string;
+}
+
+export interface AttachedOIDC {
+  issuer: OIDC;
+  domain: string;
+}
