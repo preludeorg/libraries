@@ -8,10 +8,13 @@ from prelude_sdk.models.account import Account
 from prelude_cli.views.configure import configure
 
 
+def complete_profile(ctx, param, incomplete):
+    return [x for x in Account().read_keychain_config() if x.startswith(incomplete)]
+
 @click.group(invoke_without_command=True)
 @click.version_option()
 @click.pass_context
-@click.option('--profile', default='default', help='The prelude keychain profile to use', show_default=True)
+@click.option('--profile', default='default', help='The prelude keychain profile to use', show_default=True, shell_complete=complete_profile)
 def cli(ctx, profile):
     ctx.obj = Account(profile=profile)
     if ctx.invoked_subcommand is None:
