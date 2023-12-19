@@ -41,38 +41,28 @@ def create_test(controller, name, unit, test, techniques, advisory):
             advisory=advisory
         )
 
-    if not test:
-        basename = f'{t["id"]}.go'
+    def create_template(template, name):
         utc_time = str(datetime.now(timezone.utc))
-        test_template = pkg_resources.read_text(templates, 'template.go')
-        test_template = test_template.replace('$ID', t['id'])
-        test_template = test_template.replace('$NAME', name)
-        test_template = test_template.replace('$UNIT', unit or '')
-        test_template = test_template.replace('$CREATED', utc_time)
+        template = pkg_resources.read_text(templates, template)
+        template = template.replace('$ID', t['id'])
+        template = template.replace('$NAME', name)
+        template = template.replace('$UNIT', unit or '')
+        template = template.replace('$TIME', utc_time)
         
         with Spinner(description='Applying default template to new test'):
-            controller.upload(test_id=t['id'], filename=basename, data=test_template.encode('utf-8'))
-            t['attachments'] = [basename]
+            controller.upload(test_id=t['id'], filename=name, data=template.encode('utf-8'))
+            t['attachments'] += [name]
 
-        test_dir = PurePath(t['id'], basename)
+        dir = PurePath(t['id'], name)
         Path(t['id']).mkdir(parents=True, exist_ok=True)
         
-        with open(test_dir, 'w', encoding='utf8') as test_code:
-            test_code.write(test_template)
+        with open(dir, 'w', encoding='utf8') as code:
+            code.write(template)
 
-        readme_template = pkg_resources.read_text(templates, 'README.md')
-        readme_template = readme_template.replace('$NAME', name)
-        readme_template = readme_template.replace('$ID', t['id'])
-        readme_template = readme_template.replace('$TIME', utc_time)
-
-        with Spinner(description='Applying default template to new test'):
-            controller.upload(test_id=t['id'], filename='README.md', data=readme_template.encode('utf-8'))
-
-        readme_dir = PurePath(t['id'], 'README.md')
-
-        with open(readme_dir, 'w', encoding='utf8') as test_readme:
-            test_readme.write(readme_template)
-            t['attachments'] += ['README.md']
+    if not test:
+        basename = f'{t["id"]}.go'
+        create_template(template='template.go', name=basename)
+        create_template(template='README.md', name='README.md')
 
     print_json(data=t)
 
