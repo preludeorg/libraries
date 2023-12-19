@@ -5,8 +5,8 @@ import prelude_cli.templates as templates
 import importlib.resources as pkg_resources
 
 from rich import print_json
-from datetime import datetime
 from pathlib import Path, PurePath
+from datetime import datetime, timezone
 
 from prelude_cli.views.shared import handle_api_error, Spinner
 from prelude_sdk.controllers.build_controller import BuildController
@@ -32,6 +32,23 @@ def build(ctx):
 @handle_api_error
 def create_test(controller, name, unit, test, techniques, advisory):
     """ Create or update a security test """
+    def create_template(template, name):
+        utc_time = str(datetime.now(timezone.utc))
+        template_body = pkg_resources.read_text(templates, template)
+        template_body = template_body.replace('$ID', t['id'])
+        template_body = template_body.replace('$NAME', t['name'])
+        template_body = template_body.replace('$UNIT', t['unit'])
+        template_body = template_body.replace('$TIME', utc_time)
+        
+        with Spinner(description='Applying default template to new test'):
+            controller.upload(test_id=t['id'], filename=name, data=template_body.encode('utf-8'))
+            t['attachments'] += [name]
+
+        dir = PurePath(t['id'], name)
+        
+        with open(dir, 'w', encoding='utf8') as code:
+            code.write(template_body)
+
     with Spinner(description='Creating new test'):
         t = controller.create_test(
             name=name,
@@ -42,22 +59,9 @@ def create_test(controller, name, unit, test, techniques, advisory):
         )
 
     if not test:
-        basename = f'{t["id"]}.go'
-        template = pkg_resources.read_text(templates, 'template.go')
-        template = template.replace('$ID', t['id'])
-        template = template.replace('$NAME', name)
-        template = template.replace('$UNIT', unit or '')
-        template = template.replace('$CREATED', str(datetime.utcnow()))
-        
-        with Spinner(description='Applying default template to new test'):
-            controller.upload(test_id=t['id'], filename=basename, data=template.encode('utf-8'))
-            t['attachments'] = [basename]
-
-        test_dir = PurePath(t['id'], basename)
         Path(t['id']).mkdir(parents=True, exist_ok=True)
-        
-        with open(test_dir, 'w', encoding='utf8') as test_code:
-            test_code.write(template)
+        create_template(template='template.go', name=f'{t["id"]}.go')
+        create_template(template='README.md', name='README.md')
 
     print_json(data=t)
 
