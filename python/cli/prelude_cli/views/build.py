@@ -37,7 +37,7 @@ def create_test(controller, name, unit, test, techniques, advisory):
         template_body = pkg_resources.read_text(templates, template)
         template_body = template_body.replace('$ID', t['id'])
         template_body = template_body.replace('$NAME', t['name'])
-        template_body = template_body.replace('$UNIT', unit or '')
+        template_body = template_body.replace('$UNIT', t['unit'])
         template_body = template_body.replace('$TIME', utc_time)
         
         with Spinner(description='Applying default template to new test'):
