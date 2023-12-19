@@ -151,7 +151,7 @@ describe("SDK Test", () => {
       data = data.replace("$ID", testId);
       data = data.replace("$NAME", testName);
       data = data.replace("$UNIT", testUnit);
-      data = data.replace("$CREATED", new Date().toISOString());
+      data = data.replace("$TIME", new Date().toISOString());
       const response = await service.build.upload(testId, templateName, data);
       expect(response).toHaveProperty("id");
       expect(response.id.length).toEqual(36);

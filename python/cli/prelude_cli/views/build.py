@@ -43,25 +43,24 @@ def create_test(controller, name, unit, test, techniques, advisory):
 
     def create_template(template, name):
         utc_time = str(datetime.now(timezone.utc))
-        template = pkg_resources.read_text(templates, template)
-        template = template.replace('$ID', t['id'])
-        template = template.replace('$NAME', name)
-        template = template.replace('$UNIT', unit or '')
-        template = template.replace('$TIME', utc_time)
+        template_body = pkg_resources.read_text(templates, template)
+        template_body = template_body.replace('$ID', t['id'])
+        template_body = template_body.replace('$NAME', name)
+        template_body = template_body.replace('$UNIT', unit or '')
+        template_body = template_body.replace('$TIME', utc_time)
         
         with Spinner(description='Applying default template to new test'):
-            controller.upload(test_id=t['id'], filename=name, data=template.encode('utf-8'))
+            controller.upload(test_id=t['id'], filename=name, data=template_body.encode('utf-8'))
             t['attachments'] += [name]
 
         dir = PurePath(t['id'], name)
-        Path(t['id']).mkdir(parents=True, exist_ok=True)
         
         with open(dir, 'w', encoding='utf8') as code:
-            code.write(template)
+            code.write(template_body)
 
     if not test:
-        basename = f'{t["id"]}.go'
-        create_template(template='template.go', name=basename)
+        Path(t['id']).mkdir(parents=True, exist_ok=True)
+        create_template(template='template.go', name=f'{t["id"]}.go')
         create_template(template='README.md', name='README.md')
 
     print_json(data=t)
