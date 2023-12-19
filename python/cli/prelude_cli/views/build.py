@@ -31,6 +31,14 @@ def build(ctx):
 @click.pass_obj
 @handle_api_error
 def create_test(controller, name, unit, test, techniques, advisory):
+    def create_template(template, name):
+        utc_time = str(datetime.now(timezone.utc))
+        template_body = pkg_resources.read_text(templates, template)
+        template_body = template_body.replace('$ID', t['id'])
+        template_body = template_body.replace('$NAME', name)
+        template_body = template_body.replace('$UNIT', unit or '')
+        template_body = template_body.replace('$TIME', utc_time)
+
     """ Create or update a security test """
     with Spinner(description='Creating new test'):
         t = controller.create_test(
@@ -40,14 +48,6 @@ def create_test(controller, name, unit, test, techniques, advisory):
             techniques=techniques,
             advisory=advisory
         )
-
-    def create_template(template, name):
-        utc_time = str(datetime.now(timezone.utc))
-        template_body = pkg_resources.read_text(templates, template)
-        template_body = template_body.replace('$ID', t['id'])
-        template_body = template_body.replace('$NAME', name)
-        template_body = template_body.replace('$UNIT', unit or '')
-        template_body = template_body.replace('$TIME', utc_time)
         
         with Spinner(description='Applying default template to new test'):
             controller.upload(test_id=t['id'], filename=name, data=template_body.encode('utf-8'))
