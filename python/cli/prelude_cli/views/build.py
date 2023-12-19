@@ -39,15 +39,6 @@ def create_test(controller, name, unit, test, techniques, advisory):
         template_body = template_body.replace('$NAME', name)
         template_body = template_body.replace('$UNIT', unit or '')
         template_body = template_body.replace('$TIME', utc_time)
-
-    with Spinner(description='Creating new test'):
-        t = controller.create_test(
-            name=name,
-            unit=unit,
-            test_id=test,
-            techniques=techniques,
-            advisory=advisory
-        )
         
         with Spinner(description='Applying default template to new test'):
             controller.upload(test_id=t['id'], filename=name, data=template_body.encode('utf-8'))
@@ -57,6 +48,15 @@ def create_test(controller, name, unit, test, techniques, advisory):
         
         with open(dir, 'w', encoding='utf8') as code:
             code.write(template_body)
+
+    with Spinner(description='Creating new test'):
+        t = controller.create_test(
+            name=name,
+            unit=unit,
+            test_id=test,
+            techniques=techniques,
+            advisory=advisory
+        )
 
     if not test:
         Path(t['id']).mkdir(parents=True, exist_ok=True)
