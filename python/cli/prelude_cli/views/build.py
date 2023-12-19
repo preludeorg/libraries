@@ -36,7 +36,7 @@ def create_test(controller, name, unit, test, techniques, advisory):
         utc_time = str(datetime.now(timezone.utc))
         template_body = pkg_resources.read_text(templates, template)
         template_body = template_body.replace('$ID', t['id'])
-        template_body = template_body.replace('$NAME', name)
+        template_body = template_body.replace('$NAME', t['name'])
         template_body = template_body.replace('$UNIT', unit or '')
         template_body = template_body.replace('$TIME', utc_time)
         
