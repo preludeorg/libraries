@@ -31,6 +31,7 @@ def build(ctx):
 @click.pass_obj
 @handle_api_error
 def create_test(controller, name, unit, test, techniques, advisory):
+    """ Create or update a security test """
     def create_template(template, name):
         utc_time = str(datetime.now(timezone.utc))
         template_body = pkg_resources.read_text(templates, template)
@@ -39,7 +40,6 @@ def create_test(controller, name, unit, test, techniques, advisory):
         template_body = template_body.replace('$UNIT', unit or '')
         template_body = template_body.replace('$TIME', utc_time)
 
-    """ Create or update a security test """
     with Spinner(description='Creating new test'):
         t = controller.create_test(
             name=name,
