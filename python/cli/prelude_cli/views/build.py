@@ -5,8 +5,8 @@ import prelude_cli.templates as templates
 import importlib.resources as pkg_resources
 
 from rich import print_json
-from datetime import datetime, timezone
 from pathlib import Path, PurePath
+from datetime import datetime, timezone
 
 from prelude_cli.views.shared import handle_api_error, Spinner
 from prelude_sdk.controllers.build_controller import BuildController
@@ -42,7 +42,6 @@ def create_test(controller, name, unit, test, techniques, advisory):
         )
 
     if not test:
-        """ Mark-up, upload, and write the test file template. """
         basename = f'{t["id"]}.go'
         utc_time = str(datetime.now(timezone.utc))
         test_template = pkg_resources.read_text(templates, 'template.go')
@@ -61,9 +60,6 @@ def create_test(controller, name, unit, test, techniques, advisory):
         with open(test_dir, 'w', encoding='utf8') as test_code:
             test_code.write(test_template)
 
-        print_json(data=t)
-
-        """ Mark up, upload, and write the test README template. """
         readme_template = pkg_resources.read_text(templates, 'README.md')
         readme_template = readme_template.replace('$NAME', name)
         readme_template = readme_template.replace('$ID', t['id'])
@@ -76,7 +72,7 @@ def create_test(controller, name, unit, test, techniques, advisory):
 
         with open(readme_dir, 'w', encoding='utf8') as test_readme:
             test_readme.write(readme_template)
-            t['attachments'] = ['README.md']
+            t['attachments'] += ['README.md']
 
     print_json(data=t)
 
