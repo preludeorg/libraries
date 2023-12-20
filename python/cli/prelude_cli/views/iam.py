@@ -1,7 +1,7 @@
 import click
 
 from rich import print_json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from prelude_sdk.models.codes import AuditEvent, Mode, Permission
 from prelude_cli.views.shared import handle_api_error, Spinner
@@ -99,13 +99,12 @@ def describe_account(controller):
 @handle_api_error
 def create_user(controller, days, permission, name, oidc, email):
     """ Create a new user in your account """
-    expires = datetime.utcnow() + timedelta(days=days)
     with Spinner(description='Creating new user'):
         data = controller.create_user(
             email=email,
             permission=Permission[permission],
             name=name,
-            expires=expires,
+            expires=datetime.now(timezone.utc) + timedelta(days=days),
             oidc=oidc
         )
     print_json(data=data)
@@ -145,7 +144,7 @@ def update_user(controller, days, permission, name, oidc, email):
             email=email,
             permission=Permission[permission] if permission else None,
             name=name,
-            expires=datetime.utcnow() + timedelta(days=days) if days else None,
+            expires=datetime.now(timezone.utc) + timedelta(days=days) if days else None,
             oidc=oidc
         )
     print_json(data=data)
