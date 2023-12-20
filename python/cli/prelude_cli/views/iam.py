@@ -129,6 +129,27 @@ def reset_password(controller, email, account):
     print_json(data=data)
 
 
+@iam.command('update-user')
+@click.option('-d', '--days', help='days from now this user will remain active', type=int)
+@click.option('-p', '--permission', help='user permission level',
+              type=click.Choice([p.name for p in Permission if p not in [Permission.INVALID, Permission.SERVICE]], case_sensitive=False))
+@click.option('-n', '--name', help='name of user', type=str)
+@click.option('--oidc/--no-oidc', help='whether user must login via SSO', default=None)
+@click.argument('email')
+@click.pass_obj
+@handle_api_error
+def update_user(controller, days, permission, name, oidc, email):
+    """ Update a user in your account """
+    with Spinner(description='Updating user'):
+        data = controller.update_user(
+            email=email,
+            permission=Permission[permission] if permission else None,
+            name=name,
+            expires=datetime.utcnow() + timedelta(days=days) if days else None,
+            oidc=oidc
+        )
+    print_json(data=data)
+
 
 @iam.command('delete-user')
 @click.confirmation_option(prompt='Are you sure?')
