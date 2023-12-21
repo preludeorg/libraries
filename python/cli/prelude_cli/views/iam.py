@@ -69,6 +69,7 @@ def attach_oidc(controller, issuer, client_id, client_secret, oidc_config_url):
 
 
 @iam.command('detach-oidc')
+@click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
 @handle_api_error
 def detach_oidc(controller):
