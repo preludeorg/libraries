@@ -1,7 +1,7 @@
 import click
 
 from rich import print_json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from prelude_sdk.models.codes import AuditEvent, Mode, Permission
 from prelude_cli.views.shared import handle_api_error, Spinner
@@ -69,6 +69,7 @@ def attach_oidc(controller, issuer, client_id, client_secret, oidc_config_url):
 
 
 @iam.command('detach-oidc')
+@click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
 @handle_api_error
 def detach_oidc(controller):
@@ -99,13 +100,12 @@ def describe_account(controller):
 @handle_api_error
 def create_user(controller, days, permission, name, oidc, email):
     """ Create a new user in your account """
-    expires = datetime.utcnow() + timedelta(days=days)
     with Spinner(description='Creating new user'):
         data = controller.create_user(
             email=email,
             permission=Permission[permission],
             name=name,
-            expires=expires,
+            expires=datetime.now(timezone.utc) + timedelta(days=days),
             oidc=oidc
         )
     print_json(data=data)
@@ -128,6 +128,27 @@ def reset_password(controller, email, account):
         data = controller.verify_user(token=token)
     print_json(data=data)
 
+
+@iam.command('update-user')
+@click.option('-d', '--days', help='days from now this user will remain active', type=int)
+@click.option('-p', '--permission', help='user permission level',
+              type=click.Choice([p.name for p in Permission if p not in [Permission.INVALID, Permission.SERVICE]], case_sensitive=False))
+@click.option('-n', '--name', help='name of user', type=str)
+@click.option('--oidc/--no-oidc', help='whether user must login via SSO', default=None)
+@click.argument('email')
+@click.pass_obj
+@handle_api_error
+def update_user(controller, days, permission, name, oidc, email):
+    """ Update a user in your account """
+    with Spinner(description='Updating user'):
+        data = controller.update_user(
+            email=email,
+            permission=Permission[permission] if permission else None,
+            name=name,
+            expires=datetime.now(timezone.utc) + timedelta(days=days) if days else None,
+            oidc=oidc
+        )
+    print_json(data=data)
 
 
 @iam.command('delete-user')

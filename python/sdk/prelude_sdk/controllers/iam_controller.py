@@ -129,6 +129,29 @@ class IAMController:
         raise Exception(res.text)
 
     @verify_credentials
+    def update_user(self, email: str, permission: Permission = None, expires: datetime = None, name: str = None, oidc: bool = False):
+        """ Update properties on a user """
+        body = dict(handle=email)
+        if permission is not None:
+            body['permission'] = permission.name
+        if expires:
+            body['expires'] = expires.isoformat()
+        if name is not None:
+            body['name'] = name
+        if oidc is not None:
+            body['oidc'] = oidc
+
+        res = requests.put(
+            f'{self.account.hq}/iam/user',
+            json=body,
+            headers=self.account.headers,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
     def delete_user(self, handle):
         """ Delete a user from an account """
         res = requests.delete(

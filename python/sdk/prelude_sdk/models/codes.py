@@ -182,7 +182,9 @@ class AuditEvent(Enum, metaclass=MissingItem):
     UPDATE_ACCOUNT = 13
     UPDATE_ENDPOINT = 14
     UPDATE_TEST = 15
+    UPDATE_USER = 17
     UPLOAD_TEST_ATTACHMENT = 16
+    # Next value: 18
 
     @classmethod
     def _missing_(cls, value):
