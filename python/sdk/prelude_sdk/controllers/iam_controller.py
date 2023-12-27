@@ -11,12 +11,14 @@ class IAMController:
         self.account = account
 
     @verify_credentials
-    def new_account(self, user_email: str, user_name: str = None, company: str = None):
+    def new_account(self, user_email: str, user_name: str = None, company: str = None, slug: str = None):
         body = dict(handle=user_email)
         if user_name:
             body['user_name'] = user_name
         if company:
             body['company'] = company
+        if slug:
+            slug['company'] = slug
 
         res = requests.post(
             url=f'{self.account.hq}/iam/account',
@@ -47,13 +49,15 @@ class IAMController:
         raise Exception(res.text)
 
     @verify_credentials
-    def update_account(self, mode: Mode = None, company: str = None):
+    def update_account(self, mode: Mode = None, company: str = None, slug: str = None):
         """ Update properties on an account """
         body = dict()
         if mode is not None:
             body['mode'] = mode.name
         if company is not None:
             body['company'] = company
+        if slug is not None:
+            body['slug'] = slug
 
         res = requests.put(
             f'{self.account.hq}/iam/account',
