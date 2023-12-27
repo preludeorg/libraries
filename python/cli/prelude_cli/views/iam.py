@@ -40,7 +40,7 @@ def register_account(controller):
 @click.option('-s', '--slug', help='provide your unique slug', default=None, show_default=False, type=str)
 @click.pass_obj
 @handle_api_error
-def update_account(controller, mode, company):
+def update_account(controller, mode, company, slug):
     """ Update an account """
     with Spinner(description='Updating account information'):
         data = controller.update_account(
