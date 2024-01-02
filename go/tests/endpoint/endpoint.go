@@ -17,27 +17,6 @@ import (
 	"time"
 )
 
-type fn func()
-
-var cleanup fn = func() {}
-
-func Start(test fn, clean ...fn) {
-	if len(clean) > 0 {
-		cleanup = clean[0]
-	}
-
-	Say(fmt.Sprintf("Starting test at: %s", time.Now().Format("2006-01-02T15:04:05")))
-
-	go func() {
-		test()
-	}()
-
-	select {
-	case <-time.After(30 * time.Second):
-		os.Exit(102)
-	}
-}
-
 const (
 	// Errors
 	UnexpectedTestError      int = 1
@@ -62,6 +41,27 @@ const (
 	TestIncorrectlyBlocked int = 110
 )
 
+type fn func()
+
+var cleanup fn = func() {}
+
+func Start(test fn, clean ...fn) {
+	if len(clean) > 0 {
+		cleanup = clean[0]
+	}
+
+	Say(fmt.Sprintf("Starting test at: %s", time.Now().Format("2006-01-02T15:04:05")))
+
+	go func() {
+		test()
+	}()
+
+	select {
+	case <-time.After(30 * time.Second):
+		os.Exit(102)
+	}
+}
+
 func Stop(code int) {
 	cleanup()
 	// Get the caller's line number
@@ -74,10 +74,22 @@ func Stop(code int) {
 	os.Exit(code)
 }
 
+// NB: time.Duration is an int64 cast
+func Wait(dur time.Duration) {
+	if dur <= 0 { // default
+		Say("Waiting for 3 seconds.")
+		time.Sleep(3 * time.Second)
+	} else {
+		Say(fmt.Sprintf("Waiting for %d seconds.", dur))
+		time.Sleep(dur * time.Second)
+	}
+}
+
 func Say(print string) {
 	filename := filepath.Base(os.Args[0])
 	name := strings.TrimSuffix(filename, filepath.Ext(filename))
-	fmt.Printf("[%s] %v\n", name, print)
+	timeStamp := time.Now().Format("2006-01-02T15:04:05")
+	fmt.Printf("[%s][%s] %v\n", timeStamp, name, print)
 }
 
 func Find(ext string) []string {
