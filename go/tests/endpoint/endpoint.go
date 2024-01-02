@@ -77,10 +77,10 @@ func Stop(code int) {
 // NB: time.Duration is an int64 cast
 func Wait(dur time.Duration) {
 	if dur <= 0 { // default
-		Say("Waiting for 3 seconds.")
+		Say("Waiting for 3 seconds")
 		time.Sleep(3 * time.Second)
 	} else {
-		Say(fmt.Sprintf("Waiting for %d seconds.", dur))
+		Say(fmt.Sprintf("Waiting for %d seconds", dur))
 		time.Sleep(dur * time.Second)
 	}
 }
