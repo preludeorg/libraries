@@ -108,7 +108,7 @@ func Find(ext string) []string {
 }
 
 func Read(path string) []byte {
-	bit, err := os.ReadFile(pwd(path))
+	bit, err := os.ReadFile(Pwd(path))
 	if err != nil {
 		Say(fmt.Sprintf("Error: %s", err))
 	}
@@ -116,7 +116,7 @@ func Read(path string) []byte {
 }
 
 func Write(filename string, contents []byte) {
-	err := os.WriteFile(pwd(filename), contents, 0644)
+	err := os.WriteFile(Pwd(filename), contents, 0644)
 	if err != nil {
 		Say("Failed to write " + filename)
 	}
@@ -132,7 +132,7 @@ func Exists(path string) bool {
 
 func Quarantined(filename string, contents []byte) bool {
 	Write(filename, contents)
-	path := pwd(filename)
+	path := Pwd(filename)
 	time.Sleep(3 * time.Second)
 	if Exists(path) {
 		file, err := os.Open(path)
@@ -199,7 +199,7 @@ func IsSecure() bool {
 	return false
 }
 
-func pwd(filename string) string {
+func Pwd(filename string) string {
 	bin, err := os.Executable()
 	if err != nil {
 		Say("Failed to get path")
