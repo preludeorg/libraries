@@ -21,6 +21,7 @@ class RunCode(Enum, metaclass=MissingItem):
     MONTHLY = 3
     SMART = 4
     DEBUG = 5
+    RUN_ONCE = 6
     MONDAY = 10
     TUESDAY = 11
     WEDNESDAY = 12
