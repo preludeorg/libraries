@@ -24,7 +24,7 @@ def register_account(controller):
     email = click.prompt('Enter your email')
     name = click.prompt('(Optional) Enter your name', default='', show_default=False)
     company = click.prompt('(Optional) Enter your associated company', default='', show_default=False)
-    slug = click.prompt('(Optional) Enter an account slug', default='', show_default=False)
+    slug = click.prompt('(Optional) Enter an unique human-readable identifier for your account', default='', show_default=False)
     with Spinner(description='Creating new account'):
         data = controller.new_account(user_email=email, user_name=name, company=company, slug=slug)
     print_json(data=data)
@@ -37,7 +37,7 @@ def register_account(controller):
               default=None, show_default=False,
               type=click.Choice([m.name for m in Mode], case_sensitive=False))
 @click.option('-c', '--company', help='provide your associated company', default=None, show_default=False, type=str)
-@click.option('-s', '--slug', help='provide your unique slug', default=None, show_default=False, type=str)
+@click.option('-s', '--slug', help='provide a unique human-readable identifier for your account', default=None, show_default=False, type=str)
 @click.pass_obj
 @handle_api_error
 def update_account(controller, mode, company, slug):
