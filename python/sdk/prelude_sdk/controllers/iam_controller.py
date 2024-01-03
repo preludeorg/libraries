@@ -18,7 +18,7 @@ class IAMController:
         if company:
             body['company'] = company
         if slug:
-            slug['company'] = slug
+            body['slug'] = slug
 
         res = requests.post(
             url=f'{self.account.hq}/iam/account',
