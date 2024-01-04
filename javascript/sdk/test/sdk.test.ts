@@ -83,6 +83,7 @@ describe("SDK Test", () => {
         permission: getEnumName(Permissions, 3),
         email: "registration",
         name: "registration",
+        oidc: false,
         expires: addDays(new Date(), 1).toISOString(),
       });
       expect(result.token).toMatch(
@@ -91,6 +92,18 @@ describe("SDK Test", () => {
       const account = await service.iam.getAccount();
       expect(account).toHaveProperty("users");
       expect(account.users).toHaveLength(2);
+    });
+
+    it("updateUser should return a status true", async () => {
+      const result = await service.iam.updateUser({
+        email: "registration",
+        name: "updated-name",
+      });
+      expect(result.status).toEqual(true);
+      const account = await service.iam.getAccount();
+      expect(
+        account.users.find((u) => u.handle === "registration")?.name
+      ).toEqual("updated-name");
     });
 
     it("deleteUser should return a status true", async () => {
@@ -151,7 +164,7 @@ describe("SDK Test", () => {
       data = data.replace("$ID", testId);
       data = data.replace("$NAME", testName);
       data = data.replace("$UNIT", testUnit);
-      data = data.replace("$TIME", new Date().toISOString());
+      data = data.replace("$CREATED", new Date().toISOString());
       const response = await service.build.upload(testId, templateName, data);
       expect(response).toHaveProperty("id");
       expect(response.id.length).toEqual(36);

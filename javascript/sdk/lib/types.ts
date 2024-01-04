@@ -83,6 +83,7 @@ export interface CreateAccountParams {
   email: string;
   name?: string;
   company?: string;
+  slug?: string;
 }
 
 export interface CreateUserParams {
@@ -91,6 +92,14 @@ export interface CreateUserParams {
   name?: string;
   expires?: string;
   oidc: boolean;
+}
+
+export interface UpdateUserParams {
+  email: string;
+  permission?: PermissionName;
+  expires?: string;
+  name?: string;
+  oidc?: boolean;
 }
 
 export interface CreatedUser {
@@ -127,6 +136,7 @@ export const RunCodes = {
   MONTHLY: 3,
   SMART: 4,
   DEBUG: 5,
+  RUN_ONCE: 6,
   MONDAY: 10,
   TUESDAY: 11,
   WEDNESDAY: 12,
