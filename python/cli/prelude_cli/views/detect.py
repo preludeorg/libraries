@@ -3,7 +3,7 @@ import asyncio
 
 from rich import print_json
 from pathlib import Path, PurePath
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone, time
 
 from prelude_sdk.models.codes import RunCode, Control
 from prelude_cli.views.shared import handle_api_error, Spinner
@@ -200,8 +200,8 @@ def clone(controller):
 def describe_activity(controller, days, view, tests, advisories, endpoints, dos, os, policy, control, social):
     """ View my Detect results """
     filters = dict(
-        start=datetime.utcnow() - timedelta(days=days),
-        finish=datetime.utcnow() + timedelta(days=1)
+        start=datetime.combine(datetime.now(timezone.utc) - timedelta(days=29), time.min),
+        finish=datetime.combine(datetime.now(timezone.utc), time.max)
     )
     if tests:
         filters['tests'] = tests
