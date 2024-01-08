@@ -18,6 +18,6 @@ do
     else
         rm -rf $vst
         unset dat
-        sleep 3600
+        sleep $task
     fi
 done

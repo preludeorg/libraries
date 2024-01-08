@@ -50,6 +50,6 @@ while ($true) {
         Write-Output $_.Exception
         Remove-Item $dir -Force -Recurse -ErrorAction SilentlyContinue
         $dat = ""
-        Start-Sleep -Seconds 3600
+        Start-Sleep -Seconds $task
     }
 }
