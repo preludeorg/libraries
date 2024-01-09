@@ -24,10 +24,6 @@ do
         sleep ${sleep_sec:-1800}
 
         # Option 2. try/catch method. I couldn't find a way to do sneaky bash injection, and this might is probably slightly more efficient
-        sleep $task 2>/dev/null
-        if [ $? = 1 ];then
-          echo "Invalid sleep time: $task"
-          sleep 1800
-        fi
+        sleep $task 2>/dev/null || (echo "Invalid sleep time: $task" && sleep 1800)
     fi
 done
