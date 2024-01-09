@@ -50,7 +50,7 @@ while ($true) {
         Write-Output $_.Exception
         Remove-Item $dir -Force -Recurse -ErrorAction SilentlyContinue
         $dat = ""
-        if (-Not (($task.content -as [int])) {
+        if (-Not ($task.content -as [int])) {
             Write-Output "Invalid sleep time: $task"
             $task = 1800
         }
