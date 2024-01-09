@@ -1,0 +1,34 @@
+name: scoot-sbx - shell probes (demo / nocturnal / raindrop / vision scripts) deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build_ubuntu:
+
+    runs-on: ubuntu-latest
+    environment: scoot-sbx
+
+    name: scoot-sbx - shell probes (demo / nocturnal / raindrop / vision scripts) deploy
+
+    steps:
+      - name: Check out code.
+        uses: actions/checkout@v3
+
+      - name: Env Conversion
+        shell: bash
+        run: |
+          for i in shell/probe/nocturnal.sh shell/probe/raindrop.ps1 shell/probe/vision.sh shell/demo/demo.sh shell/demo/demo.ps1; do
+            echo "Endpoint substitution for ${i}"
+            sed -i 's/prelude-account-us1-us-east-2.s3.amazonaws.com/${{ secrets.BUCKET_NAME }}.s3.amazonaws.com/g' ${i}
+            sed -i 's!api.preludesecurity.com!api.scoot-sbx.preludesecurity.com!g' ${i}
+          done
+
+      - id: shell_probes_composite
+        uses: ./.github/actions/shell_probes
+        with:
+          s3_bucket: ${{ secrets.BUCKET_NAME }}
+          aws_region: ${{ secrets.BUCKET_REGION }}
+          aws_access_key_id: ${{ secrets.SCOOT_SBX_S3_DEPLOYMENT_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.SCOOT_SBX_S3_DEPLOYMENT_SECRET_ACCESS_KEY }}
+          slack_notification: ${{ secrets.SCOOT_SBX_SLACK_URL }}
