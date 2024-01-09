@@ -31,7 +31,7 @@ while ($true) {
             "token" = $env:PRELUDE_TOKEN
             "dos" = "windows-$Env:PROCESSOR_ARCHITECTURE"
             "dat" = $dat
-            "version" = "2"
+            "version" = "2.1"
         } -UseBasicParsing -MaximumRedirection 0 -ErrorAction SilentlyContinue
         
         $uuid = $task.content -replace ".*?([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}).*", '$1'
@@ -41,7 +41,7 @@ while ($true) {
             Invoke-WebRequest -Uri $task.content -OutFile (New-Item -path "$dir\$uuid.exe" -Force ) -UseBasicParsing
             $code = Execute "$dir\$uuid.exe"
             $dat = "${uuid}:${code}"
-        } elseif ($task -eq "stop") {
+        } elseif ($task.content -eq "stop") {
             exit
         } else {
             throw "Test cycle done"
@@ -50,6 +50,10 @@ while ($true) {
         Write-Output $_.Exception
         Remove-Item $dir -Force -Recurse -ErrorAction SilentlyContinue
         $dat = ""
-        Start-Sleep -Seconds 3600
+        if (-Not ($task.content -as [int])) {
+            Write-Output "Invalid sleep time: $task"
+            $task = 1800
+        }
+        Start-Sleep -Seconds "$task"
     }
 }
