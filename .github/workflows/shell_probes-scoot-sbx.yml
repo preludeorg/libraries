@@ -31,4 +31,4 @@ jobs:
           aws_region: ${{ secrets.BUCKET_REGION }}
           aws_access_key_id: ${{ secrets.SCOOT_SBX_S3_DEPLOYMENT_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.SCOOT_SBX_S3_DEPLOYMENT_SECRET_ACCESS_KEY }}
-          slack_notification: ${{ secrets.US2_SLACK_URL }}
+          slack_notification: ${{ secrets.SCOOT_SBX_SLACK_URL }}
