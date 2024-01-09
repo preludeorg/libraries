@@ -18,12 +18,7 @@ do
     else
         rm -rf $vst
         unset dat
-
-        # Option 1. Explicitly check that sleep is an int. Otherwise default to 1800s
         sleep_sec=$(echo "$task" | grep -E '^[0-9]+$')
         sleep ${sleep_sec:-1800}
-
-        # Option 2. try/catch method. I couldn't find a way to do sneaky bash injection, and this might is probably slightly more efficient
-        sleep $task 2>/dev/null || (echo "Invalid sleep time: $task" && sleep 1800)
     fi
 done
