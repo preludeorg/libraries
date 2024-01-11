@@ -11,6 +11,7 @@ import type {
   ModeName,
   RequestOptions,
   StatusResponse,
+  UpdateUserParams,
   VerifiedUser,
 } from "../types";
 
@@ -22,12 +23,12 @@ export default class IAMController {
   }
 
   async newAccount(
-    { email, name, company }: CreateAccountParams,
+    { email, name, company, slug }: CreateAccountParams,
     options: RequestOptions = {}
   ): Promise<Credentials> {
     const response = await this.#client.request("/iam/account", {
       method: "POST",
-      body: JSON.stringify({ handle: email, user_name: name, company }),
+      body: JSON.stringify({ handle: email, user_name: name, company, slug }),
       ...options,
     });
 
@@ -54,13 +55,16 @@ export default class IAMController {
 
   /** Update properties on an account */
   async updateAccount(
-    mode?: ModeName,
-    company?: string,
+    {
+      mode,
+      company,
+      slug,
+    }: { mode?: ModeName; company?: string; slug?: string },
     options: RequestOptions = {}
   ): Promise<StatusResponse> {
     const response = await this.#client.requestWithAuth("/iam/account", {
       method: "PUT",
-      body: JSON.stringify({ mode, company }),
+      body: JSON.stringify({ mode, company, slug }),
       ...options,
     });
 
@@ -107,9 +111,10 @@ export default class IAMController {
   }
 
   /** Get the redirect url for login */
-  async verifySSO(email: string, options: RequestOptions = {}) {
+  async verifySSO(email: string, slug: string, options: RequestOptions = {}) {
     const searchParams = new URLSearchParams({
       email,
+      slug,
     });
     await this.#client.request(
       `/iam/account/login?${searchParams.toString()}`,
@@ -138,6 +143,22 @@ export default class IAMController {
     });
 
     return (await response.json()) as CreatedUser;
+  }
+
+  /** Update properties on a user */
+  async updateUser(
+    params: UpdateUserParams,
+    options: RequestOptions = {}
+  ): Promise<StatusResponse> {
+    const { email, ...otherParams } = params;
+
+    const response = await this.#client.requestWithAuth("/iam/user", {
+      method: "PUT",
+      body: JSON.stringify({ ...otherParams, handle: email }),
+      ...options,
+    });
+
+    return (await response.json()) as StatusResponse;
   }
 
   /** Reset a user's password */
