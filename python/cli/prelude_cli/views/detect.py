@@ -68,6 +68,27 @@ def get_test(controller, test_id):
     print_json(data=data)
 
 
+@detect.command('threats')
+@click.pass_obj
+@handle_api_error
+def threats(controller):
+    """ List all Prelude threats """
+    with Spinner(description='Fetching threats'):
+        data = controller.list_threats()
+    print_json(data=data)
+
+
+@detect.command('threat')
+@click.argument('threat_id')
+@click.pass_obj
+@handle_api_error
+def get_threat(controller, threat_id):
+    """ List properties for a threat """
+    with Spinner(description='Fetching data for threat'):
+        data = controller.get_threat(threat_id=threat_id)
+    print_json(data=data)
+
+
 @detect.command('download')
 @click.argument('test')
 @click.pass_obj

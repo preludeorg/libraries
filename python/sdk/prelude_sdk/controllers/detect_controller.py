@@ -123,6 +123,31 @@ class DetectController:
         raise Exception(res.text)
 
     @verify_credentials
+    def list_threats(self):
+        """ List threats """
+        res = requests.get(
+            f'{self.account.hq}/detect/threats',
+            headers=self.account.headers,
+            params={},
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def get_threat(self, threat_id):
+        """ Get properties of an existing threat """
+        res = requests.get(
+            f'{self.account.hq}/detect/threats/{threat_id}',
+            headers=self.account.headers,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
     def download(self, test_id, filename):
         """ Clone a test file or attachment"""
         res = requests.get(

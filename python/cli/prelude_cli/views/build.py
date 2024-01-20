@@ -132,3 +132,57 @@ def upload_attachment(controller, path, test):
                 upload(p=Path(obj))
             except ValueError as e:
                 click.secho(e.args[0], fg='red')
+
+
+@build.command('create-threat')
+@click.argument('name')
+@click.option('-i', '--id', help='identifier', type=str)
+@click.option('-s', '--source', help='source of threat (ex. CISA)', default=None, type=str)
+@click.option('-p', '--published', help='date the threat was published', default=None, type=str)
+@click.option('-t', '--tests', help='comma-separated list of test IDs', default=None, type=str)
+@click.pass_obj
+@handle_api_error
+def create_threat(controller, name, id, source, published, tests):
+    """ Create a security threat """
+    with Spinner(description='Creating new threat'):
+        t = controller.create_threat(
+            name=name,
+            threat_id=id,
+            source=source,
+            published=published,
+            tests=tests
+        )
+    print_json(data=t)
+
+
+@build.command('update-threat')
+@click.argument('threat')
+@click.option('-n', '--name', help='test name', default=None, type=str)
+@click.option('-s', '--source', help='source of threat (ex. CISA)', default=None, type=str)
+@click.option('-p', '--published', help='date the threat was published', default=None, type=str)
+@click.option('-t', '--tests', help='comma-separated list of test IDs', default=None, type=str)
+@click.pass_obj
+@handle_api_error
+def update_threat(controller, threat, name,  id, source, published, tests):
+    """ Create or update a security threat """
+    with Spinner(description='Updating threat'):
+        data = controller.update_threat(
+            threat_id=threat,
+            name=name,
+            source=source,
+            published=published,
+            tests=tests
+        )
+    print_json(data=data)
+
+
+@build.command('delete-threat')
+@click.argument('threat')
+@click.confirmation_option(prompt='Are you sure?')
+@click.pass_obj
+@handle_api_error
+def delete_threat(controller, test):
+    """ Delete a threat """
+    with Spinner(description='Removing threat'):
+        data = controller.delete_threat(threat_id=threat)
+    print_json(data=data)

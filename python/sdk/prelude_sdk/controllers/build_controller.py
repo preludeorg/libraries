@@ -80,3 +80,61 @@ class BuildController:
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
+
+    @verify_credentials
+    def create_threat(self, name, threat_id=None, source=None, published=None, tests=None):
+        """ Create a threat """
+        body = dict(name=name)
+        if threat_id:
+            body['id'] = threat_id
+        if source:
+            body['source'] = source
+        if published:
+            body['published'] = published
+        if tests:
+            body['tests'] = tests
+
+        res = requests.post(
+            f'{self.account.hq}/build/threats',
+            json=body,
+            headers=self.account.headers,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def update_threat(self, threat_id, name=None, source=None, published=None, tests=None):
+        """ Update a threat """
+        body = dict()
+        if name:
+            body['name'] = name
+        if source is not None:
+            body['source'] = source
+        if published is not None:
+            body['published'] = published
+        if tests is not None:
+            body['tests'] = tests
+
+        res = requests.post(
+            f'{self.account.hq}/build/threats/{threat_id}',
+            json=body,
+            headers=self.account.headers,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def delete_threat(self, threat_id):
+        """ Delete an existing threat """
+        res = requests.delete(
+            f'{self.account.hq}/build/threats/{threat_id}',
+            headers=self.account.headers,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
