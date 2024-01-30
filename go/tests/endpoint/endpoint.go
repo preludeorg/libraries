@@ -197,24 +197,23 @@ func Pwd(filename string) string {
 	return filePath
 }
 
-func XorEncrypt(data []byte) ([]byte, byte, error) {
+func XorEncrypt(data []byte) ([]byte, []byte, error) {
 	keyData, err := generateKey()
 	if err != nil {
-		return nil, 0, err
+		return nil, nil, err
 	}
-	key := keyData[0] // Use the first byte of the generated key
 
 	encrypted := make([]byte, len(data))
 	for i, v := range data {
-		encrypted[i] = v ^ key
+		encrypted[i] = v ^ (keyData[i % len(keyData)] + byte(i))
 	}
-	return encrypted, key, nil
+	return encrypted, keyData, nil
 }
 
-func XorDecrypt(data []byte, key byte) []byte {
+func XorDecrypt(data []byte, key []byte) []byte {
 	decrypted := make([]byte, len(data))
 	for i, v := range data {
-		decrypted[i] = v ^ key
+		decrypted[i] = v ^ (key[i % len(key)] + byte(i))
 	}
 	return decrypted
 }
