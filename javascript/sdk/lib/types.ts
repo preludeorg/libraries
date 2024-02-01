@@ -333,25 +333,6 @@ export interface ActivityQuery {
   policy?: string;
 }
 
-export interface DayActivity {
-  datetime: string;
-  unprotected: number;
-  volume: number;
-}
-
-export interface Insight {
-  dos: string | null;
-  test: string | null;
-  volume: { error: number; protected: number; unprotected: number };
-}
-
-export interface ProbeActivity {
-  dos: Platform;
-  endpoint_id: string;
-  state: "PROTECTED" | "UNPROTECTED" | "ERROR";
-  control: ControlCode;
-}
-
 export type EndpointActivity = {
   id: string;
   protected: number;

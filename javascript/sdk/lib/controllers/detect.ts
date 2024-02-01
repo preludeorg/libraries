@@ -5,16 +5,13 @@ import {
   AdvisoriesActivity,
   Advisory,
   AttachedTest,
-  DayActivity,
   DisableTest,
   EnableTest,
   EnabledTest,
   EndpointActivity,
   FindingsActivity,
-  Insight,
   MetricsActivity,
   Probe,
-  ProbeActivity,
   ProtectedActivity,
   RegisterEndpointParams,
   RequestOptions,
@@ -117,19 +114,6 @@ export default class DetectController {
     query: ActivityQuery & { view: "logs" },
     options?: RequestOptions
   ): Promise<Activity[]>;
-  /** Get daily activity for an Account */
-  async describeActivity(
-    query: ActivityQuery & { view: "days" },
-    options?: RequestOptions
-  ): Promise<DayActivity[]>;
-  async describeActivity(
-    query: ActivityQuery & { view: "insights" },
-    options?: RequestOptions
-  ): Promise<Insight[]>;
-  async describeActivity(
-    query: ActivityQuery & { view: "probes" },
-    options?: RequestOptions
-  ): Promise<ProbeActivity[]>;
   async describeActivity(
     query: ActivityQuery & { view: "endpoints" },
     options?: RequestOptions
@@ -157,10 +141,7 @@ export default class DetectController {
   async describeActivity(
     query: ActivityQuery & {
       view:
-        | "days"
         | "logs"
-        | "insights"
-        | "probes"
         | "endpoints"
         | "metrics"
         | "advisories"
