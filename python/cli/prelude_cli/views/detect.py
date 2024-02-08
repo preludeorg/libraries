@@ -206,26 +206,32 @@ def clone(controller):
 @click.option('--view',
               help='retrieve a specific result view',
               default='logs', show_default=True,
-              type=click.Choice(['logs', 'tests', 'advisories', 'metrics', 'endpoints', 'protected', 'findings']))
+              type=click.Choice(['advisories', 'endpoints', 'findings', 'logs', 'metrics', 'protected', 'techniques', 'tests', 'threats']))
 @click.option('--days', help='days to look back', default=29, type=int)
 @click.option('--tests', help='comma-separated list of test IDs', type=str)
+@click.option('--techniques', help='comma-separated list of techniques', type=str)
+@click.option('--threats', help='comma-separated list of threat IDs', type=str)
 @click.option('--advisories', help='comma-separated list of advisory IDs', type=str)
 @click.option('--endpoints', help='comma-separated list of endpoint IDs', type=str)
 @click.option('--dos', help='comma-separated list of DOS', type=str)
 @click.option('--os', help='comma-separated list of OS', type=str)
 @click.option('--policy', help='comma-separated list of policies', type=str)
 @click.option('--control', type=click.Choice([c.name for c in Control], case_sensitive=False))
-@click.option('--social', help='whether to fetch account-specific or social stats. Applicable to the following views: tests, advisories, protected', is_flag=True)
+@click.option('--social', help='whether to fetch account-specific or social stats. Applicable to the following views: protected', is_flag=True)
 @click.pass_obj
 @handle_api_error
-def describe_activity(controller, days, view, tests, advisories, endpoints, dos, os, policy, control, social):
+def describe_activity(controller, days, view, tests, techniques, threats, advisories, endpoints, dos, os, policy, control, social):
     """ View my Detect results """
     filters = dict(
-        start=datetime.combine(datetime.now(timezone.utc) - timedelta(days=29), time.min),
+        start=datetime.combine(datetime.now(timezone.utc) - timedelta(days=MIN(days, 29)), time.min),
         finish=datetime.combine(datetime.now(timezone.utc), time.max)
     )
     if tests:
         filters['tests'] = tests
+    if techniques:
+        filters['techniques'] = techniques
+    if threats:
+        filters['threats'] = threats
     if advisories:
         filters['advisories'] = advisories
     if endpoints:
