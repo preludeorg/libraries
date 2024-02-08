@@ -184,3 +184,29 @@ class DetectController:
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
+
+    @verify_credentials
+    def schedule(self, test_id: str = None, threat_id: str = None, run_code: RunCode = RunCode.DAILY, tags: str = ''):
+        """ Enable a test or threat so endpoints will start running it """
+        res = requests.post(
+            url=f'{self.account.hq}/detect/queue',
+            headers=self.account.headers,
+            json=dict(test_id=test_id, threat_id=threat_id, code=run_code.name, tags=tags),
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def unschedule(self, test_id: str = None, threat_id: str = None, tags: str = ''):
+        """ Disable a test or threat so endpoints will stop running it """
+        res = requests.delete(
+            f'{self.account.hq}/detect/queue',
+            headers=self.account.headers,
+            params=dict(test_id=test_id, threat_id=threat_id, tags=tags),
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
