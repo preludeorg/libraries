@@ -262,7 +262,7 @@ def clone(controller):
 def describe_activity(controller, days, view, tests, techniques, threats, advisories, endpoints, dos, os, policy, control, social):
     """ View my Detect results """
     filters = dict(
-        start=datetime.combine(datetime.now(timezone.utc) - timedelta(days=MIN(days, 29)), time.min),
+        start=datetime.combine(datetime.now(timezone.utc) - timedelta(days=min(days, 29)), time.min),
         finish=datetime.combine(datetime.now(timezone.utc), time.max)
     )
     if tests:
