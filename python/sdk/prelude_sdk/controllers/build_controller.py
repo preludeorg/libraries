@@ -82,11 +82,13 @@ class BuildController:
         raise Exception(res.text)
 
     @verify_credentials
-    def create_threat(self, name, threat_id=None, source=None, published=None, tests=None):
+    def create_threat(self, name, threat_id=None, source_id=None, source=None, published=None, tests=None):
         """ Create a threat """
         body = dict(name=name)
         if threat_id:
             body['id'] = threat_id
+        if source_id:
+            body['source_id'] = source_id
         if source:
             body['source'] = source
         if published:
@@ -105,11 +107,13 @@ class BuildController:
         raise Exception(res.text)
 
     @verify_credentials
-    def update_threat(self, threat_id, name=None, source=None, published=None, tests=None):
+    def update_threat(self, threat_id, name=None, source_id=None, source=None, published=None, tests=None):
         """ Update a threat """
         body = dict()
         if name:
             body['name'] = name
+        if source_id is not None:
+            body['source_id'] = source_id
         if source is not None:
             body['source'] = source
         if published is not None:
