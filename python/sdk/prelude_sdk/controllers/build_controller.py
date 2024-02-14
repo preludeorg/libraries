@@ -9,11 +9,11 @@ class BuildController:
         self.account = account
 
     @verify_credentials
-    def create_test(self, name, unit, techniques=None, advisory=None, test_id=None):
+    def create_test(self, name, unit, technique=None, advisory=None, test_id=None):
         """ Create or update a test """
         body = dict(name=name, unit=unit)
-        if techniques:
-            body['techniques'] = techniques
+        if technique:
+            body['technique'] = technique
         if advisory:
             body['advisory'] = advisory
         if test_id:
@@ -30,15 +30,15 @@ class BuildController:
         raise Exception(res.text)
 
     @verify_credentials
-    def update_test(self, test_id, name=None, unit=None, techniques=None, advisory=None):
+    def update_test(self, test_id, name=None, unit=None, technique=None, advisory=None):
         """ Update a test """
         body = dict()
         if name:
             body['name'] = name
         if unit:
             body['unit'] = unit
-        if techniques is not None:
-            body['techniques'] = techniques
+        if technique is not None:
+            body['technique'] = technique
         if advisory is not None:
             body['advisory'] = advisory
 
