@@ -13,7 +13,6 @@ from testutils import *
 
 crowdstrike = ("crowdstrike",
                dict(
-                   # endpoint
                    host='Mahinas-MacBook-Pro.local',
                    edr_id='0b4bedce421e4338a7cb2f7c40b99a9b',
                    control=Control.CROWDSTRIKE,
@@ -21,7 +20,6 @@ crowdstrike = ("crowdstrike",
                    platform='darwin',
                    policy='731180f1d7294302a8934c972d71392a',
                    policy_name='Phase 3 - optimal protection',
-                   # partner
                    partner_api=os.getenv('CROWDSTRIKE_API'),
                    user=os.getenv('CROWDSTRIKE_USER'),
                    secret=os.getenv('CROWDSTRIKE_SECRET'),
@@ -30,7 +28,6 @@ crowdstrike = ("crowdstrike",
 
 defender = ("defender",
             dict(
-                # endpoint
                 host='desktop-vs2aj6k',
                 edr_id='17e491f75f40da854a7171666c0d2974926fa92f',
                 control=Control.DEFENDER,
@@ -38,7 +35,6 @@ defender = ("defender",
                 platform='windows',
                 policy=None,
                 policy_name=None,
-                # partner
                 partner_api=os.getenv('DEFENDER_API'),
                 user=os.getenv('DEFENDER_USER'),
                 secret=os.getenv('DEFENDER_SECRET'),
@@ -47,7 +43,6 @@ defender = ("defender",
 
 sentinel_one = ("sentinel_one",
                 dict(
-                    # endpoint
                     host='ip-172-31-91-156.ec2.internal',
                     edr_id='1885110387239488349',
                     control=Control.SENTINELONE,
@@ -55,7 +50,6 @@ sentinel_one = ("sentinel_one",
                     platform='linux',
                     policy='account/1723291585224869190/site/1723291586072118613/group/1723291586088895830',
                     policy_name='Prelude Security / Default site / Default Group',
-                    # partner
                     partner_api=os.getenv('S1_API'),
                     user=os.getenv('S1_USER'),
                     secret=os.getenv('S1_SECRET'),
@@ -90,7 +84,7 @@ class TestPartner:
         self.host = 'pardner-host'
 
     def test_attach(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys):
-        # Create first endpoint (before attaching partner)
+        # Create endpoint before attach
         pytest.token = unwrap(self.detect.register_endpoint)(self.detect, host=host, serial_num=host)
         pytest.endpoint_1 = dict(host=host, serial_num=host, edr_id=edr_id, control=control.value, tags=[], dos=None,
                                os=os, policy=policy, policy_name=policy_name)
@@ -100,19 +94,17 @@ class TestPartner:
         expected = dict(api=partner_api, connected=True)
         assert expected == res
 
-        # Create second endpoint (after partner is attached)
+        # Create endpoint after attach
         unwrap(self.detect.register_endpoint)(self.detect, host=host, serial_num=host + '2')
         pytest.endpoint_2 = pytest.endpoint_1 | dict(serial_num=host + '2')
 
     def test_get_account(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys):
-        # Check partner is attached to account
         res = unwrap(self.iam.get_account)(self.iam)
         expected = [dict(api=partner_api, id=control.value)]
         assert expected == res['controls']
 
     def test_list_endpoints(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys):
         try:
-            # List endpoints
             res = unwrap(self.detect.list_endpoints)(self.detect)
             assert len(res) >= 2
             sorted_res = {r['serial_num']: r for r in res}
@@ -126,7 +118,6 @@ class TestPartner:
             unwrap(self.detect.delete_endpoint)(self.detect, ident=pytest.endpoint_2['endpoint_id'])
 
     def test_partner_endpoints(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys):
-        # Show Crowdstrike endpoints
         res = unwrap(self.partner.endpoints)(self.partner, partner=control, platform=platform, hostname=host)
         expected = {edr_id: {'hostname': host, 'os': os}}
         if policy:
@@ -136,13 +127,11 @@ class TestPartner:
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_activity_logs(self, unwrap, api, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys):
-        # Save a test result
         res = requests.get(api, headers=dict(token=pytest.token, dos=f'{platform}-x86_64', dat=f'{pytest.test_id}:100',
                                              version='2.1'))
         assert res.status_code in [200, 302]
         pytest.endpoint_1['dos'] = f'{platform}-x86_64'
 
-        # Check activity logs
         filters = dict(
             start=datetime.utcnow() - timedelta(days=7),
             finish=datetime.utcnow() + timedelta(days=1),
@@ -163,13 +152,11 @@ class TestPartner:
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_generate_webhook(self, unwrap, api, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys):
-        # Generate webhook
         res = unwrap(self.partner.generate_webhook)(self.partner, partner=control)
         assert webhook_keys == res.keys()
         assert res['url'].startswith(f'{api}/partner/suppress/{control.name.lower()}')
 
     def test_block(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys):
-        # Create an IOC for the test
         res = unwrap(self.partner.block)(self.partner, partner=control, test_id=pytest.test_id)
         assert len(res) == 5
         assert {'file', 'ioc_id'} == res[0].keys()
@@ -177,12 +164,10 @@ class TestPartner:
 
     def test_detach(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys):
         try:
-            # Detach Crowdstrike
             unwrap(self.partner.detach)(self.partner, partner=control)
             res = unwrap(self.iam.get_account)(self.iam)
             assert res['controls'] == []
         finally:
-            # Delete endpoint
             unwrap(self.detect.delete_endpoint)(self.detect, ident=pytest.endpoint_1['endpoint_id'])
 
 
@@ -256,7 +241,6 @@ class TestSiems:
                                                  version='2.1'))
             assert res.status_code in [200, 302]
         finally:
-            # Delete endpoint
             unwrap(self.detect.delete_endpoint)(self.detect, ident=pytest.endpoint_id)
 
     def test_detach_splunk(self, unwrap):
