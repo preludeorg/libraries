@@ -6,9 +6,7 @@ def unwrap():
     def unwrapper(func):
         if not hasattr(func, '__wrapped__'):
             return func
-
         return unwrapper(func.__wrapped__)
-
     yield unwrapper
 
 
@@ -40,3 +38,8 @@ def api(pytestconfig):
 @pytest.fixture(scope='session')
 def email(pytestconfig):
     return pytestconfig.getoption('email')
+
+
+@pytest.fixture(scope='session')
+def manual(pytestconfig):
+    return not pytestconfig.getoption('email').endswith('@auto-accept.developer.preludesecurity.com')
