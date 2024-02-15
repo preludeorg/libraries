@@ -18,7 +18,6 @@ from testutils import *
 class TestBuild:
 
     def setup_class(self):
-        """Setup the test class. Requires: new_account"""
         self.build = BuildController(pytest.account)
         self.detect = DetectController(pytest.account)
 
@@ -29,7 +28,6 @@ class TestBuild:
         self.technique = 'T1234.001'
 
     def test_create_test(self, unwrap):
-        """Test create_test method"""
         res = unwrap(self.build.create_test)(self.build, test_id=self.test_id, name=self.name, unit=self.unit)
 
         pytest.test_id = self.test_id
@@ -48,7 +46,6 @@ class TestBuild:
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_upload(self, unwrap):
-        """Test upload method"""
         template = files(templates).joinpath('template.go').read_text()
         res = unwrap(self.build.upload)(self.build, test_id=self.test_id, filename=f'{self.test_id}.go',
                                         data=template.encode("utf-8"))
@@ -62,7 +59,6 @@ class TestBuild:
         pytest.expected_test['attachments'].append(res['filename'])
 
     def test_get_test(self, unwrap):
-        """Test get_test method"""
         def wait_for_compile():
             timeout = time.time() + 60
             while time.time() < timeout:
@@ -83,7 +79,6 @@ class TestBuild:
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_list_tests(self, unwrap):
-        """Test list_tests method"""
         res = unwrap(self.detect.list_tests)(self.detect)
         owners = set([r['account_id'] for r in res])
         assert owners == {'prelude', pytest.account.headers['account']}
@@ -95,7 +90,6 @@ class TestBuild:
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_update_test(self, unwrap):
-        """Test update_test method"""
         res = unwrap(self.build.update_test)(self.build, test_id=self.test_id, name=self.updated_name, technique=self.technique)
 
         pytest.expected_test['name'] = self.updated_name
@@ -105,7 +99,6 @@ class TestBuild:
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_download(self, unwrap):
-        """Test download_test method"""
         filename = f'{self.test_id}.go'
         res = unwrap(self.detect.download)(self.detect, test_id=self.test_id, filename=filename)
         assert res is not None
@@ -116,7 +109,6 @@ class TestBuild:
 
     @pytest.mark.order(-2)
     def test_delete_test(self, unwrap):
-        """Test delete_test method"""
         unwrap(self.build.delete_test)(self.build, test_id=pytest.test_id)
         res = unwrap(self.detect.get_test)(self.detect, test_id=pytest.test_id)
         pytest.expected_test['tombstoned'] = res['tombstoned']

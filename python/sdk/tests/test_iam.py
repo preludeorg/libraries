@@ -31,14 +31,12 @@ class Account:
 class TestIAM:
 
     def setup_class(self):
-        """Setup the test class"""
         self.iam = IAMController(Account())
 
         self.company = 'prelude'
         self.second_user = 'registration'
 
     def test_new_account(self, unwrap, manual, pause_for_manual_action, email, api):
-        """Test new_account method"""
         pytest.account = Account(hq=api)
         self.iam.account = pytest.account
         res = unwrap(self.iam.new_account)(self.iam, user_email=email, user_name='Bob')
@@ -82,7 +80,6 @@ class TestIAM:
         )
 
     def test_account_subscribe(self, unwrap, manual, email):
-        """Test subscribe method"""
         if not manual:
             pytest.skip("Not manual mode")
 
@@ -97,7 +94,6 @@ class TestIAM:
         pytest.expected_account['users'][0]['subscriptions'] = res['subscriptions']
 
     def test_get_account(self, unwrap, manual):
-        """Test get_account method"""
         res = unwrap(self.iam.get_account)(self.iam)
         diffs = check_dict_items(pytest.expected_account, res)
         assert not diffs, json.dumps(diffs, indent=2)
@@ -107,7 +103,6 @@ class TestIAM:
             assert parse(res['users'][0]['expires']) <= datetime.utcnow() + timedelta(days=1)
 
     def test_create_user(self, unwrap):
-        """Test create_user method"""
         res = unwrap(self.iam.create_user)(self.iam, email=self.second_user, permission=Permission.SERVICE, name='Rob',
                                       expires=(datetime.utcnow() + timedelta(days=1)))
         assert self.second_user == res['handle']
@@ -132,7 +127,6 @@ class TestIAM:
         assert parse(res['users'][1]['expires']) <= datetime.utcnow() + timedelta(days=1)
 
     def test_account_unsubscribe(self, unwrap, manual, email):
-        """Test unsubscribe method"""
         if not manual:
             pytest.skip("Not manual mode")
 
@@ -147,7 +141,6 @@ class TestIAM:
         pytest.expected_account['users'][0]['subscriptions'] = res['subscriptions']
 
     def test_update_user(self, unwrap):
-        """Test update method"""
         unwrap(self.iam.update_user)(self.iam, email=self.second_user, name='Robb',
                                      expires=(datetime.utcnow() + timedelta(days=365)))
         pytest.expected_account['users'][pytest.second_user_index]['name'] = 'Robb'
@@ -158,7 +151,6 @@ class TestIAM:
         assert parse(res['users'][pytest.second_user_index]['expires']) >= datetime.utcnow() + timedelta(days=360)
 
     def test_delete_user(self, unwrap):
-        """Test delete_user method"""
         unwrap(self.iam.delete_user)(self.iam, handle=self.second_user)
         del pytest.expected_account['users'][pytest.second_user_index]
 
@@ -167,7 +159,6 @@ class TestIAM:
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_update_account(self, unwrap):
-        """Test update_account method"""
         unwrap(self.iam.update_account)(self.iam, mode=Mode.MANUAL, company=self.company)
         pytest.expected_account['mode'] = Mode.MANUAL.value
         pytest.expected_account['company'] = self.company
@@ -178,7 +169,6 @@ class TestIAM:
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_audit_logs(self, unwrap, email):
-        """Test account audit_logs method"""
         res = unwrap(self.iam.audit_logs)(self.iam, limit=1)[0]
         expected = dict(
             event='update_account',
@@ -191,7 +181,6 @@ class TestIAM:
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_reset_account(self, unwrap, manual, pause_for_manual_action, email):
-        """Test reset_account method"""
         if not manual:
             pytest.skip("Not manual mode")
 
@@ -206,6 +195,5 @@ class TestIAM:
 
     @pytest.mark.order(-1)
     def test_purge_account(self, unwrap):
-        """Test purge_account method"""
         iam = IAMController(pytest.account)
         unwrap(iam.purge_account)(iam)

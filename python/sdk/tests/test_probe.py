@@ -14,7 +14,6 @@ from prelude_sdk.controllers.detect_controller import DetectController
 class TestProbe:
 
     def setup_class(self):
-        """Setup the test class. Requires: new_account or update_account"""
         self.iam = IAMController(pytest.account)
         self.detect = DetectController(pytest.account)
         self.probe = ProbeController(pytest.account)
@@ -30,7 +29,6 @@ class TestProbe:
         pytest.endpoint_id = ep[0]['endpoint_id']
 
     def test_enable_tests(self, unwrap):
-        """Test enable_test method"""
         unwrap(self.detect.enable_test)(self.detect, ident='2e705bac-a889-4283-9a8e-a12358fa1d09', run_code=RunCode.DEBUG,
                                         tags='')
         unwrap(self.detect.enable_test)(self.detect, ident='b74ad239-2ddd-4b1e-b608-8397a43c7c54', run_code=RunCode.RUN_ONCE,
@@ -46,8 +44,7 @@ class TestProbe:
         queue = unwrap(self.iam.get_account)(self.iam)['queue']
         assert 5 == len(queue), json.dumps(queue, indent=2)
 
-    def test_download(self):
-        """Test download method"""
+    def test_download_probe(self):
         probe_name = 'nocturnal'
         res = self.probe.download(name=probe_name, dos='darwin-arm64')
         assert res is not None
@@ -59,7 +56,6 @@ class TestProbe:
         os.chmod(pytest.probe_file, 0o755)
 
     def test_describe_activity(self, unwrap):
-        """Test describe_activity method"""
         try:
             with pytest.raises(subprocess.TimeoutExpired):
                 subprocess.run([pytest.probe_file], capture_output=True, env={'PRELUDE_TOKEN': pytest.token}, timeout=40)
@@ -74,8 +70,7 @@ class TestProbe:
         finally:
             os.remove(pytest.probe_file)
 
-    def test_disable_test(self, unwrap):
-        """Test disable_test method"""
+    def test_disable_tests(self, unwrap):
         unwrap(self.detect.disable_test)(self.detect, ident='2e705bac-a889-4283-9a8e-a12358fa1d09', tags='')
         unwrap(self.detect.disable_test)(self.detect, ident='b74ad239-2ddd-4b1e-b608-8397a43c7c54', tags='')
         unwrap(self.detect.disable_test)(self.detect, ident='db201110-d875-4133-9709-2732a47f252f', tags='')
@@ -87,7 +82,6 @@ class TestProbe:
         assert 0 == len(queue), json.dumps(queue, indent=2)
 
     def test_delete_endpoint(self, unwrap):
-        """Test delete_endpoint method"""
         unwrap(self.detect.delete_endpoint)(self.detect, ident=pytest.endpoint_id)
         print(pytest.endpoint_id)
         res = unwrap(self.detect.list_endpoints)(self.detect)

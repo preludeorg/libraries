@@ -11,20 +11,6 @@ from prelude_sdk.controllers.partner_controller import PartnerController
 from testutils import *
 
 
-def pytest_generate_tests(metafunc):
-    idlist = []
-    argvalues = []
-    if metafunc.cls is TestPartner:
-        for scenario in metafunc.cls.scenarios:
-            idlist.append(scenario[0])
-            items = scenario[1].items()
-            argnames = [x[0] for x in items]
-            if not all([scenario[1][k] for k in ['partner_api', 'user', 'secret']]):
-                argvalues.append(pytest.param(*[x[1] for x in items], marks=pytest.mark.skip('Creds not supplied')))
-            else:
-                argvalues.append([x[1] for x in items])
-        metafunc.parametrize(argnames, argvalues, ids=idlist, scope="class")
-
 crowdstrike = ("crowdstrike",
                dict(
                    # endpoint
@@ -40,7 +26,7 @@ crowdstrike = ("crowdstrike",
                    user=os.getenv('CROWDSTRIKE_USER'),
                    secret=os.getenv('CROWDSTRIKE_SECRET'),
                    webhook_keys={'url', 'description', 'secret'}
-             ))
+               ))
 
 defender = ("defender",
             dict(
@@ -77,12 +63,26 @@ sentinel_one = ("sentinel_one",
                 ))
 
 
+def pytest_generate_tests(metafunc):
+    idlist = []
+    argvalues = []
+    if metafunc.cls is TestPartner:
+        for scenario in metafunc.cls.scenarios:
+            idlist.append(scenario[0])
+            items = scenario[1].items()
+            argnames = [x[0] for x in items]
+            if not all([scenario[1][k] for k in ['partner_api', 'user', 'secret']]):
+                argvalues.append(pytest.param(*[x[1] for x in items], marks=pytest.mark.skip('Creds not supplied')))
+            else:
+                argvalues.append([x[1] for x in items])
+        metafunc.parametrize(argnames, argvalues, ids=idlist, scope="class")
+
+
 @pytest.mark.order(4)
 class TestPartner:
     scenarios = [crowdstrike, defender, sentinel_one]
 
     def setup_class(self):
-        """Setup the test class. Requires: new_account or create_test or upload or get_test"""
         self.iam = IAMController(pytest.account)
         self.detect = DetectController(pytest.account)
         self.partner = PartnerController(pytest.account)
@@ -90,7 +90,6 @@ class TestPartner:
         self.host = 'pardner-host'
 
     def test_attach(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys):
-        """Test partner attach. Create endpoints before and after attaching."""
         # Create first endpoint (before attaching partner)
         pytest.token = unwrap(self.detect.register_endpoint)(self.detect, host=host, serial_num=host)
         pytest.endpoint_1 = dict(host=host, serial_num=host, edr_id=edr_id, control=control.value, tags=[], dos=None,
@@ -106,14 +105,12 @@ class TestPartner:
         pytest.endpoint_2 = pytest.endpoint_1 | dict(serial_num=host + '2')
 
     def test_get_account(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys):
-        """Test partner is on account"""
         # Check partner is attached to account
         res = unwrap(self.iam.get_account)(self.iam)
         expected = [dict(api=partner_api, id=control.value)]
         assert expected == res['controls']
 
     def test_list_endpoints(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys):
-        """Test endpoints have partner information"""
         try:
             # List endpoints
             res = unwrap(self.detect.list_endpoints)(self.detect)
@@ -129,7 +126,6 @@ class TestPartner:
             unwrap(self.detect.delete_endpoint)(self.detect, ident=pytest.endpoint_2['endpoint_id'])
 
     def test_partner_endpoints(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys):
-        """Test partner endpoints call"""
         # Show Crowdstrike endpoints
         res = unwrap(self.partner.endpoints)(self.partner, partner=control, platform=platform, hostname=host)
         expected = {edr_id: {'hostname': host, 'os': os}}
@@ -140,7 +136,6 @@ class TestPartner:
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_activity_logs(self, unwrap, api, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys):
-        """Test activity logs show partner info"""
         # Save a test result
         res = requests.get(api, headers=dict(token=pytest.token, dos=f'{platform}-x86_64', dat=f'{pytest.test_id}:100',
                                              version='2.1'))
@@ -168,14 +163,12 @@ class TestPartner:
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_generate_webhook(self, unwrap, api, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys):
-        """Test generate_webhook"""
         # Generate webhook
         res = unwrap(self.partner.generate_webhook)(self.partner, partner=control)
         assert webhook_keys == res.keys()
         assert res['url'].startswith(f'{api}/partner/suppress/{control.name.lower()}')
 
     def test_block(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys):
-        """Test block"""
         # Create an IOC for the test
         res = unwrap(self.partner.block)(self.partner, partner=control, test_id=pytest.test_id)
         assert len(res) == 5
@@ -183,7 +176,6 @@ class TestPartner:
         assert res[0]['file'].startswith(pytest.test_id)
 
     def test_detach(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys):
-        """Test partner detach"""
         try:
             # Detach Crowdstrike
             unwrap(self.partner.detach)(self.partner, partner=control)
@@ -198,7 +190,6 @@ class TestPartner:
 class TestSiems:
 
     def setup_class(self):
-        """Setup the test class. Requires: new_account or create_test or upload or get_test"""
         self.iam = IAMController(pytest.account)
         self.detect = DetectController(pytest.account)
         self.partner = PartnerController(pytest.account)
@@ -221,7 +212,6 @@ class TestSiems:
         pytest.endpoint_id = ep[0]['endpoint_id']
 
     def test_attach_splunk(self, unwrap):
-        """Test partner attach"""
         if not self.splunk:
             pytest.skip("Creds not supplied")
 
@@ -234,7 +224,6 @@ class TestSiems:
         pytest.expected_siems.append(dict(api=api, id=Control.SPLUNK.value))
 
     def test_attach_vectr(self, unwrap):
-        """Test partner attach"""
         if not self.vectr:
             pytest.skip("Creds not supplied")
 
@@ -247,7 +236,6 @@ class TestSiems:
         pytest.expected_siems.append(dict(api=api, id=Control.VECTR.value))
 
     def test_attach_s3(self, unwrap):
-        """Test partner attach"""
         if not self.s3:
             pytest.skip("Creds not supplied")
 
@@ -259,14 +247,10 @@ class TestSiems:
         pytest.expected_siems.append(dict(api=bucket, id=Control.S3.value))
 
     def test_get_account(self, unwrap):
-        """Test partner is on account"""
         res = unwrap(self.iam.get_account)(self.iam)
         assert pytest.expected_siems == res['controls']
 
     def test_save_result(self, unwrap, api):
-        """
-        Save a test result and go check the various SIEM dashboards
-        """
         try:
             res = requests.get(api, headers=dict(token=pytest.token, dos=f'linux-x86_64', dat=f'{pytest.test_id}:101',
                                                  version='2.1'))
@@ -276,7 +260,6 @@ class TestSiems:
             unwrap(self.detect.delete_endpoint)(self.detect, ident=pytest.endpoint_id)
 
     def test_detach_splunk(self, unwrap):
-        """Test partner detach"""
         if not self.splunk:
             pytest.skip("Creds not supplied")
 
@@ -286,7 +269,6 @@ class TestSiems:
         assert pytest.expected_siems == res['controls']
 
     def test_detach_vectr(self, unwrap):
-        """Test partner detach"""
         if not self.vectr:
             pytest.skip("Creds not supplied")
 
@@ -296,7 +278,6 @@ class TestSiems:
         assert pytest.expected_siems == res['controls']
 
     def test_detach_s3(self, unwrap):
-        """Test partner detach"""
         if not self.s3:
             pytest.skip("Creds not supplied")
 
