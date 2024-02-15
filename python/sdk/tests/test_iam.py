@@ -96,12 +96,15 @@ class TestIAM:
 
         pytest.expected_account['users'][0]['subscriptions'] = res['subscriptions']
 
-    def test_get_account(self, unwrap):
+    def test_get_account(self, unwrap, manual):
         """Test get_account method"""
         res = unwrap(self.iam.get_account)(self.iam)
         diffs = check_dict_items(pytest.expected_account, res)
         assert not diffs, json.dumps(diffs, indent=2)
-        assert parse(res['users'][0]['expires']) <= datetime.utcnow() + timedelta(days=1)
+        if manual:
+            assert parse(res['users'][0]['expires']) >= datetime.utcnow() + timedelta(days=364)
+        else:
+            assert parse(res['users'][0]['expires']) <= datetime.utcnow() + timedelta(days=1)
 
     def test_create_user(self, unwrap):
         """Test create_user method"""
