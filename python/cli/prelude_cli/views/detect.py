@@ -160,7 +160,7 @@ def schedule(controller, id, type, run_code, tags):
 @click.argument('id')
 @click.option('-t', '--type', help='whether you are unscheduling a test or threat', required=True,
               type=click.Choice(['TEST', 'THREAT'], case_sensitive=False))
-@click.option('-t', '--tags', help='only disable for these tags (comma-separated list)', type=str, default='')
+@click.option('--tags', help='only disable for these tags (comma-separated list)', type=str, default='')
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
 @handle_api_error
