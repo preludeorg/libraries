@@ -1,3 +1,5 @@
+Requires: Python3.11
+
 To run all tests:
 ```
 pytest tests/ -v
