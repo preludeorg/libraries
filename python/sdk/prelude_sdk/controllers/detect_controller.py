@@ -123,6 +123,31 @@ class DetectController:
         raise Exception(res.text)
 
     @verify_credentials
+    def list_threats(self):
+        """ List threats """
+        res = requests.get(
+            f'{self.account.hq}/detect/threats',
+            headers=self.account.headers,
+            params={},
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def get_threat(self, threat_id):
+        """ Get properties of an existing threat """
+        res = requests.get(
+            f'{self.account.hq}/detect/threats/{threat_id}',
+            headers=self.account.headers,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
     def download(self, test_id, filename):
         """ Clone a test file or attachment"""
         res = requests.get(
@@ -154,6 +179,32 @@ class DetectController:
             f'{self.account.hq}/detect/queue/{ident}',
             headers=self.account.headers,
             params=dict(tags=tags),
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def schedule(self, test_id: str = None, threat_id: str = None, run_code: RunCode = RunCode.DAILY, tags: str = ''):
+        """ Enable a test or threat so endpoints will start running it """
+        res = requests.post(
+            url=f'{self.account.hq}/detect/queue',
+            headers=self.account.headers,
+            json=dict(test_id=test_id, threat_id=threat_id, code=run_code.name, tags=tags),
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def unschedule(self, test_id: str = None, threat_id: str = None, tags: str = ''):
+        """ Disable a test or threat so endpoints will stop running it """
+        res = requests.delete(
+            f'{self.account.hq}/detect/queue',
+            headers=self.account.headers,
+            params=dict(test_id=test_id, threat_id=threat_id, tags=tags),
             timeout=10
         )
         if res.status_code == 200:

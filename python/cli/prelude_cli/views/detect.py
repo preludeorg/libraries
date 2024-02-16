@@ -68,6 +68,27 @@ def get_test(controller, test_id):
     print_json(data=data)
 
 
+@detect.command('threats')
+@click.pass_obj
+@handle_api_error
+def threats(controller):
+    """ List all Prelude threats """
+    with Spinner(description='Fetching threats'):
+        data = controller.list_threats()
+    print_json(data=data)
+
+
+@detect.command('threat')
+@click.argument('threat_id')
+@click.pass_obj
+@handle_api_error
+def get_threat(controller, threat_id):
+    """ List properties for a threat """
+    with Spinner(description='Fetching data for threat'):
+        data = controller.get_threat(threat_id=threat_id)
+    print_json(data=data)
+
+
 @detect.command('download')
 @click.argument('test')
 @click.pass_obj
@@ -111,6 +132,45 @@ def disable_test(controller, test, tags):
     """ Remove test from your queue """
     with Spinner(description='Disabling test'):
         data = controller.disable_test(ident=test, tags=tags)
+    print_json(data=data)
+
+
+@detect.command('schedule')
+@click.argument('id')
+@click.option('-t', '--type', help='whether you are scheduling a test or threat', required=True,
+              type=click.Choice(['TEST', 'THREAT'], case_sensitive=False))
+@click.option('--tags', help='only enable for these tags (comma-separated list)', type=str, default='')
+@click.option('-r', '--run_code',
+              help='provide a run_code',
+              default=RunCode.DAILY.name, show_default=True,
+              type=click.Choice([r.name for r in RunCode if r != RunCode.INVALID], case_sensitive=False))
+@click.pass_obj
+@handle_api_error
+def schedule(controller, id, type, run_code, tags):
+    """ Add test or threat to your queue """
+    with Spinner(description=f'Scheduling {type.lower()}'):
+        if type == 'TEST':
+            data = controller.schedule(test_id=id, run_code=RunCode[run_code], tags=tags)
+        else:
+            data = controller.schedule(threat_id=id, run_code=RunCode[run_code], tags=tags)
+    print_json(data=data)
+
+
+@detect.command('unschedule')
+@click.argument('id')
+@click.option('-t', '--type', help='whether you are unscheduling a test or threat', required=True,
+              type=click.Choice(['TEST', 'THREAT'], case_sensitive=False))
+@click.option('--tags', help='only disable for these tags (comma-separated list)', type=str, default='')
+@click.confirmation_option(prompt='Are you sure?')
+@click.pass_obj
+@handle_api_error
+def unschedule(controller, id, type, tags):
+    """ Remove test or threat from your queue """
+    with Spinner(description=f'Unscheduling {type.lower()}'):
+        if type == 'TEST':
+            data = controller.unschedule(test_id=id, tags=tags)
+        else:
+            data = controller.unschedule(threat_id=id, tags=tags)
     print_json(data=data)
 
 
@@ -185,26 +245,32 @@ def clone(controller):
 @click.option('--view',
               help='retrieve a specific result view',
               default='logs', show_default=True,
-              type=click.Choice(['logs', 'tests', 'advisories', 'metrics', 'endpoints', 'protected', 'findings']))
-@click.option('--days', help='days to look back', default=29, type=int)
+              type=click.Choice(['advisories', 'endpoints', 'findings', 'logs', 'metrics', 'protected', 'techniques', 'tests', 'threats']))
+@click.option('--days', help='days to look back (max: 29)', default=29, type=int)
 @click.option('--tests', help='comma-separated list of test IDs', type=str)
+@click.option('--techniques', help='comma-separated list of techniques', type=str)
+@click.option('--threats', help='comma-separated list of threat IDs', type=str)
 @click.option('--advisories', help='comma-separated list of advisory IDs', type=str)
 @click.option('--endpoints', help='comma-separated list of endpoint IDs', type=str)
 @click.option('--dos', help='comma-separated list of DOS', type=str)
 @click.option('--os', help='comma-separated list of OS', type=str)
 @click.option('--policy', help='comma-separated list of policies', type=str)
 @click.option('--control', type=click.Choice([c.name for c in Control], case_sensitive=False))
-@click.option('--social', help='whether to fetch account-specific or social stats. Applicable to the following views: tests, advisories, protected', is_flag=True)
+@click.option('--social', help='whether to fetch account-specific or social stats. Applicable to the following views: protected', is_flag=True)
 @click.pass_obj
 @handle_api_error
-def describe_activity(controller, days, view, tests, advisories, endpoints, dos, os, policy, control, social):
+def describe_activity(controller, days, view, tests, techniques, threats, advisories, endpoints, dos, os, policy, control, social):
     """ View my Detect results """
     filters = dict(
-        start=datetime.combine(datetime.now(timezone.utc) - timedelta(days=29), time.min),
+        start=datetime.combine(datetime.now(timezone.utc) - timedelta(days=min(days, 29)), time.min),
         finish=datetime.combine(datetime.now(timezone.utc), time.max)
     )
     if tests:
         filters['tests'] = tests
+    if techniques:
+        filters['techniques'] = techniques
+    if threats:
+        filters['threats'] = threats
     if advisories:
         filters['advisories'] = advisories
     if endpoints:
