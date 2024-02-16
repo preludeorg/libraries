@@ -19,13 +19,26 @@ export interface StatusResponse {
   status: true;
 }
 
+export interface Threat {
+  account_id: string;
+  id: string;
+  source_id: string | null;
+  name: string;
+  source: string | null;
+  published: string | null;
+  tests: string[];
+  tombstoned: string | null;
+  created: string;
+}
+
 export interface Test {
   account_id: string;
   id: string;
   name: string;
   unit: string;
-  techniques: string[];
   advisory: string;
+  technique: string | null;
+  tombstoned: string | null;
   created: string;
 }
 
@@ -85,6 +98,7 @@ export interface CreateAccountParams {
   name?: string;
   company?: string;
   slug?: string;
+  additionalFields?: Record<string, string>;
 }
 
 export interface CreateUserParams {
@@ -108,7 +122,8 @@ export interface CreatedUser {
 }
 
 export interface Queue {
-  test: string;
+  test: string | null;
+  threat: string | null;
   run_code: RunCode;
   tag: string | null;
   started: string;
@@ -299,7 +314,20 @@ export interface Activity {
 
 export interface TestsActivity {
   id: string;
-  protected: number;
+  protected: number | null;
+  social: number | null;
+}
+
+export interface TechniquesActivity {
+  id: string;
+  protected: number | null;
+  social: number | null;
+}
+
+export interface ThreatsActivity {
+  id: string;
+  protected: number | null;
+  social: number | null;
 }
 
 export class APIError extends Error {
@@ -318,7 +346,8 @@ export interface Advisory {
 
 export interface AdvisoriesActivity {
   id: string;
-  protected: number;
+  protected: number | null;
+  social: number | null;
 }
 
 export interface ActivityQuery {
