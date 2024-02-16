@@ -3,6 +3,7 @@ import type {
   AttachedTest,
   RequestOptions,
   StatusResponse,
+  Threat,
   UploadedAttachment,
 } from "../types";
 
@@ -17,14 +18,14 @@ export default class BuildController {
   async createTest(
     name: string,
     unit: string,
-    techniques?: string,
+    technique?: string,
     advisory?: string,
     testId?: string,
     options: RequestOptions = {}
   ): Promise<AttachedTest> {
     const response = await this.#client.requestWithAuth(`/build/tests`, {
       method: "POST",
-      body: JSON.stringify({ name, unit, techniques, advisory, id: testId }),
+      body: JSON.stringify({ name, unit, technique, advisory, id: testId }),
       ...options,
     });
 
@@ -36,7 +37,7 @@ export default class BuildController {
     testId: string,
     name?: string,
     unit?: string,
-    techniques?: string,
+    technique?: string,
     advisory?: string,
     options: RequestOptions = {}
   ): Promise<AttachedTest> {
@@ -44,7 +45,7 @@ export default class BuildController {
       `/build/tests/${testId}`,
       {
         method: "POST",
-        body: JSON.stringify({ name, unit, techniques, advisory }),
+        body: JSON.stringify({ name, unit, technique, advisory }),
         ...options,
       }
     );
@@ -59,6 +60,77 @@ export default class BuildController {
   ): Promise<StatusResponse> {
     const response = await this.#client.requestWithAuth(
       `/build/tests/${testId}`,
+      {
+        method: "DELETE",
+        ...options,
+      }
+    );
+
+    return (await response.json()) as StatusResponse;
+  }
+
+  /** Create a threat */
+  async createThreat(
+    name: string,
+    threat_id?: string,
+    source_id?: string,
+    source?: string,
+    published?: string,
+    tests?: string,
+    options: RequestOptions = {}
+  ): Promise<Threat> {
+    const response = await this.#client.requestWithAuth(`/build/threats`, {
+      method: "POST",
+      body: JSON.stringify({
+        name,
+        threat_id,
+        source_id,
+        source,
+        published,
+        tests,
+      }),
+      ...options,
+    });
+
+    return (await response.json()) as Threat;
+  }
+
+  /** Update a threat */
+  async updateThreat(
+    threat_id: string,
+    name?: string,
+    source_id?: string,
+    source?: string,
+    published?: string,
+    tests?: string,
+    options: RequestOptions = {}
+  ): Promise<Threat> {
+    const response = await this.#client.requestWithAuth(
+      `/build/threats/${threat_id}`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          name,
+          threat_id,
+          source_id,
+          source,
+          published,
+          tests,
+        }),
+        ...options,
+      }
+    );
+
+    return (await response.json()) as Threat;
+  }
+
+  /** Delete an existing threat */
+  async deleteThreat(
+    threat_id: string,
+    options: RequestOptions = {}
+  ): Promise<StatusResponse> {
+    const response = await this.#client.requestWithAuth(
+      `/build/threats/${threat_id}`,
       {
         method: "DELETE",
         ...options,

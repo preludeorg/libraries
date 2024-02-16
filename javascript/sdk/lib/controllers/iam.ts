@@ -23,12 +23,12 @@ export default class IAMController {
   }
 
   async newAccount(
-    { email, name, company, slug }: CreateAccountParams,
+    { email, name, company, slug, additionalFields }: CreateAccountParams,
     options: RequestOptions = {}
   ): Promise<Credentials> {
     const response = await this.#client.request("/iam/account", {
       method: "POST",
-      body: JSON.stringify({ handle: email, user_name: name, company, slug }),
+      body: JSON.stringify({ handle: email, user_name: name, company, slug, additionalFields }),
       ...options,
     });
 
