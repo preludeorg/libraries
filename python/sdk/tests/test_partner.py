@@ -1,4 +1,5 @@
 import os
+import json
 import pytest
 import requests
 
@@ -13,13 +14,13 @@ from testutils import *
 
 crowdstrike = ("crowdstrike",
                dict(
-                   host='Mahinas-MacBook-Pro.local',
-                   edr_id='0b4bedce421e4338a7cb2f7c40b99a9b',
+                   host=os.getenv('CROWDSTRIKE_HOST'),
+                   edr_id=os.getenv('CROWDSTRIKE_EDR_ID'),
                    control=Control.CROWDSTRIKE,
-                   os='Ventura (13)',
-                   platform='darwin',
-                   policy='731180f1d7294302a8934c972d71392a',
-                   policy_name='Phase 3 - optimal protection',
+                   os=os.getenv('CROWDSTRIKE_OS'),
+                   platform=os.getenv('CROWDSTRIKE_PLATFORM'),
+                   policy=os.getenv('CROWDSTRIKE_POLICY'),
+                   policy_name=os.getenv('CROWDSTRIKE_POLICY_NAME'),
                    partner_api=os.getenv('CROWDSTRIKE_API'),
                    user=os.getenv('CROWDSTRIKE_USER'),
                    secret=os.getenv('CROWDSTRIKE_SECRET'),
@@ -28,11 +29,11 @@ crowdstrike = ("crowdstrike",
 
 defender = ("defender",
             dict(
-                host='desktop-vs2aj6k',
-                edr_id='17e491f75f40da854a7171666c0d2974926fa92f',
+                host=os.getenv('DEFENDER_HOST'),
+                edr_id=os.getenv('DEFENDER_EDR_ID'),
                 control=Control.DEFENDER,
-                os='Windows11',
-                platform='windows',
+                os=os.getenv('DEFENDER_OS'),
+                platform=os.getenv('DEFENDER_PLATFORM'),
                 policy=None,
                 policy_name=None,
                 partner_api=os.getenv('DEFENDER_API'),
@@ -43,13 +44,13 @@ defender = ("defender",
 
 sentinel_one = ("sentinel_one",
                 dict(
-                    host='ip-172-31-91-156.ec2.internal',
-                    edr_id='1885110387239488349',
+                    host=os.getenv('S1_HOST'),
+                    edr_id=os.getenv('S1_EDR_ID'),
                     control=Control.SENTINELONE,
-                    os='Linux (Amazon 2023 6.1.75-99.163.amzn2023.x86_64)',
-                    platform='linux',
-                    policy='account/1723291585224869190/site/1723291586072118613/group/1723291586088895830',
-                    policy_name='Prelude Security / Default site / Default Group',
+                    os=os.getenv('S1_OS'),
+                    platform=os.getenv('S1_PLATFORM'),
+                    policy=os.getenv('S1_POLICY'),
+                    policy_name=os.getenv('S1_POLICY_NAME'),
                     partner_api=os.getenv('S1_API'),
                     user=os.getenv('S1_USER'),
                     secret=os.getenv('S1_SECRET'),
@@ -87,7 +88,7 @@ class TestPartner:
         # Create endpoint before attach
         pytest.token = unwrap(self.detect.register_endpoint)(self.detect, host=host, serial_num=host)
         pytest.endpoint_1 = dict(host=host, serial_num=host, edr_id=edr_id, control=control.value, tags=[], dos=None,
-                               os=os, policy=policy, policy_name=policy_name)
+                                 os=os, policy=policy, policy_name=policy_name)
 
         # Attach partner
         res = unwrap(self.partner.attach)(self.partner, partner=control, api=partner_api, user=user, secret=secret)

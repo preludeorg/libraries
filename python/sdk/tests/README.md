@@ -32,14 +32,30 @@ My `pytest.ini` file looks like:
 ```
 [pytest]
 env =
+    CROWDSTRIKE_HOST=blah
+    CROWDSTRIKE_EDR_ID=blah
+    CROWDSTRIKE_OS=blah
+    CROWDSTRIKE_PLATFORM=blah
+    CROWDSTRIKE_POLICY=blah
+    CROWDSTRIKE_POLICY_NAME=blah
     CROWDSTRIKE_API=blah
     CROWDSTRIKE_USER=blah
     CROWDSTRIKE_SECRET=blah
 
+    DEFENDER_HOST=blah
+    DEFENDER_EDR_ID=blah
+    DEFENDER_OS=blah
+    DEFENDER_PLATFORM=blah
     DEFENDER_API=blah
     DEFENDER_USER=blah
     DEFENDER_SECRET=blah
 
+    S1_HOST=blah
+    S1_EDR_ID=blah
+    S1_OS=blah
+    S1_PLATFORM=blah
+    S1_POLICY=blah
+    S1_POLICY_NAME=blah
     S1_API=blah
     S1_USER=blah
     S1_SECRET=blah
