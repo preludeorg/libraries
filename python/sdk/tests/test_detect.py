@@ -23,14 +23,6 @@ class TestDetect:
         self.tags = 'alpha'
         self.updated_tags = 'beta'
 
-    def test_list_advisories(self, unwrap):
-        res = unwrap(self.detect.list_advisories)(self.detect)
-        assert len(res) > 0
-        assert 'id' in res[0]
-        assert 'name' in res[0]
-        assert 'source' in res[0]
-        assert 'published' in res[0]
-
     def test_register_endpoint(self, unwrap):
         res = unwrap(self.detect.register_endpoint)(self.detect, host=self.host, serial_num=self.serial, tags=self.tags)
         assert 32 == len(res)

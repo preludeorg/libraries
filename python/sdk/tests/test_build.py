@@ -36,7 +36,6 @@ class TestBuild:
             id=self.test_id,
             name=self.name,
             unit=self.unit,
-            advisory=None,
             technique=None,
             attachments=[],
             tombstoned=None
