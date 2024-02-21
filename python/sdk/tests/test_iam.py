@@ -51,6 +51,7 @@ class TestIAM:
 
         pytest.account.headers['account'] = res['account_id']
         pytest.account.headers['token'] = res['token']
+        print(f'[account_id: {res["account_id"]}]', end=' ')
 
         pytest.expected_account = dict(
             account_id=res['account_id'],
