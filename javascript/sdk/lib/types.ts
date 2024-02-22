@@ -36,7 +36,6 @@ export interface Test {
   id: string;
   name: string;
   unit: string;
-  advisory: string;
   technique: string | null;
   tombstoned: string | null;
   created: string;
@@ -337,23 +336,11 @@ export class APIError extends Error {
   }
 }
 
-export interface Advisory {
-  id: string;
-  name: string;
-  source: string;
-  published: string;
-}
-
-export interface AdvisoriesActivity {
-  id: string;
-  protected: number | null;
-  social: number | null;
-}
-
 export interface ActivityQuery {
   start: string;
   finish: string;
   tests?: string;
+  threats?: string;
   endpoints?: string;
   dos?: string;
   control?: string;
