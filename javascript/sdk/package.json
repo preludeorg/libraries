@@ -5,14 +5,14 @@
   "files": [
     "dist"
   ],
-  "main": "lib/main.ts",
-  "types": "lib/main.ts",
+   "main": "./dist/sdk.umd.cjs",
+  "module": "./dist/sdk.js",
+  "types": "./dist/main.d.ts",
   "exports": {
     ".": {
-      "import": "./lib/main.ts",
-      "require": "./lib/main.ts"
+      "import": "./dist/sdk.js",
+      "require": "./dist/sdk.umd.cjs"
     }
-  },
   "scripts": {
     "build": "vite build",
     "typecheck": "tsc --noEmit",
