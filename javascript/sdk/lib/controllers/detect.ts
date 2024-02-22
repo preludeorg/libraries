@@ -2,8 +2,6 @@ import Client from "../client";
 import {
   Activity,
   ActivityQuery,
-  AdvisoriesActivity,
-  Advisory,
   AttachedTest,
   DisableTest,
   EnableTest,
@@ -102,19 +100,6 @@ export default class DetectController {
     return (await response.json()) as Probe[];
   }
 
-  /** List advisories */
-  async listAdvisories(options: RequestOptions = {}): Promise<Advisory[]> {
-    const searchParams = new URLSearchParams();
-    const response = await this.#client.requestWithAuth(
-      `/detect/advisories?${searchParams.toString()}`,
-      {
-        method: "GET",
-        ...options,
-      }
-    );
-    return (await response.json()) as Advisory[];
-  }
-
   /** List threats */
   async listThreats(options: RequestOptions = {}): Promise<Threat[]> {
     const response = await this.#client.requestWithAuth(`/detect/threats`, {
@@ -154,10 +139,6 @@ export default class DetectController {
     options?: RequestOptions
   ): Promise<MetricsActivity[]>;
   async describeActivity(
-    query: ActivityQuery & { view: "advisories" },
-    options?: RequestOptions
-  ): Promise<AdvisoriesActivity[]>;
-  async describeActivity(
     query: ActivityQuery & { view: "tests" },
     options?: RequestOptions
   ): Promise<TestsActivity[]>;
@@ -183,7 +164,6 @@ export default class DetectController {
         | "logs"
         | "endpoints"
         | "metrics"
-        | "advisories"
         | "tests"
         | "findings"
         | "protected"
