@@ -1,7 +1,10 @@
 {
   "name": "@theprelude/sdk",
-  "version": "1.5.8",
+  "version": "1.6.2",
   "type": "module",
+  "files": [
+    "dist"
+  ],
   "main": "lib/main.ts",
   "types": "lib/main.ts",
   "exports": {
