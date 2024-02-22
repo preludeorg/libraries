@@ -73,7 +73,7 @@ def pytest_generate_tests(metafunc):
         metafunc.parametrize(argnames, argvalues, ids=idlist, scope="class")
 
 
-@pytest.mark.order(4)
+@pytest.mark.order(5)
 class TestPartner:
     scenarios = [crowdstrike, defender, sentinel_one]
 
@@ -172,7 +172,7 @@ class TestPartner:
             unwrap(self.detect.delete_endpoint)(self.detect, ident=pytest.endpoint_1['endpoint_id'])
 
 
-@pytest.mark.order(5)
+@pytest.mark.order(6)
 class TestSiems:
 
     def setup_class(self):

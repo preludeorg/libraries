@@ -11,7 +11,7 @@ from prelude_sdk.controllers.detect_controller import DetectController
 from testutils import *
 
 
-@pytest.mark.order(3)
+@pytest.mark.order(4)
 class TestDetect:
 
     def setup_class(self):
@@ -61,13 +61,31 @@ class TestDetect:
         diffs = check_dict_items(pytest.expected_endpoint, res[0])
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_enable_test(self, unwrap):
-        res = unwrap(self.detect.enable_test)(self.detect, ident=pytest.test_id, run_code=RunCode.DEBUG,
+    def test_schedule_threat(self, unwrap):
+        res = unwrap(self.detect.schedule)(self.detect, threat_id=pytest.threat_id, run_code=RunCode.DAILY)
+        assert res['id'] == pytest.threat_id
+
+        queue = unwrap(self.iam.get_account)(self.iam)['queue']
+        assert 1 == len(queue), json.dumps(queue, indent=2)
+        expected = dict(
+            threat=pytest.threat_id,
+            run_code=RunCode.DAILY.value
+        )
+        diffs = check_dict_items(expected, queue[0])
+        assert not diffs, json.dumps(diffs, indent=2)
+
+    def test_unschedule_threat(self, unwrap):
+        unwrap(self.detect.unschedule)(self.detect, threat_id=pytest.threat_id)
+        queue = unwrap(self.iam.get_account)(self.iam)['queue']
+        assert 0 == len(queue), json.dumps(queue, indent=2)
+
+    def test_schedule_test(self, unwrap):
+        res = unwrap(self.detect.schedule)(self.detect, test_id=pytest.test_id, run_code=RunCode.DEBUG,
                                               tags=self.updated_tags)
         assert res['id'] == pytest.test_id
 
         queue = unwrap(self.iam.get_account)(self.iam)['queue']
-        assert len(queue) == 1
+        assert 1 == len(queue), json.dumps(queue, indent=2)
         expected = dict(
             test=pytest.test_id,
             run_code=RunCode.DEBUG.value,
@@ -75,6 +93,11 @@ class TestDetect:
         )
         diffs = check_dict_items(expected, queue[0])
         assert not diffs, json.dumps(diffs, indent=2)
+
+    def test_unschedule_test(self, unwrap):
+        unwrap(self.detect.unschedule)(self.detect, test_id=pytest.test_id, tags=self.updated_tags)
+        queue = unwrap(self.iam.get_account)(self.iam)['queue']
+        assert 0 == len(queue), json.dumps(queue, indent=2)
 
     def test_describe_activity(self, unwrap, api):
         res = requests.get(api, headers=dict(token=pytest.token, dos=f'darwin-x86_64', dat=f'{pytest.test_id}:100',
@@ -87,11 +110,6 @@ class TestDetect:
         )
         res = unwrap(self.detect.describe_activity)(self.detect, view='logs', filters=filters)
         assert 1 == len(res), json.dumps(res, indent=2)
-
-    def test_disable_test(self, unwrap):
-        unwrap(self.detect.disable_test)(self.detect, ident=pytest.test_id, tags=self.updated_tags)
-        queue = unwrap(self.iam.get_account)(self.iam)['queue']
-        assert 0 == len(queue), json.dumps(queue, indent=2)
 
     def test_delete_endpoint(self, unwrap):
         unwrap(self.detect.delete_endpoint)(self.detect, ident=pytest.endpoint_id)

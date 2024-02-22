@@ -116,3 +116,38 @@ class TestBuild:
         assert not diffs, json.dumps(diffs, indent=2)
         assert parse(res['tombstoned']) <= datetime.utcnow() + timedelta(minutes=1)
 
+
+@pytest.mark.order(3)
+class TestThreat:
+
+    def setup_class(self):
+        self.detect = DetectController(pytest.account)
+
+        self.threat_id = '09d1a6b6-64d0-4473-af02-9a72b386cc79'
+
+    def test_get_threat(self, unwrap):
+        res = unwrap(self.detect.get_threat)(self.detect, threat_id=self.threat_id)
+
+        pytest.threat_id = self.threat_id
+        pytest.expected_threat = dict(
+            account_id='prelude',
+            id=self.threat_id,
+            source_id='aa23-061a',
+            name='User Execution of Malicious File, Ransomware Data Encryption',
+            source='https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-061a',
+            published=None,
+            tests=['881f9052-fb52-4daf-9ad2-0a7ad9615baf', 'b74ad239-2ddd-4b1e-b608-8397a43c7c54'],
+            tombstoned=None
+        )
+
+        diffs = check_dict_items(pytest.expected_threat, res)
+        assert not diffs, json.dumps(diffs, indent=2)
+
+    def test_list_threats(self, unwrap):
+        res = unwrap(self.detect.list_threats)(self.detect)
+        owners = set([r['account_id'] for r in res])
+        assert owners == {'prelude'}
+
+        threat = [r for r in res if r['id'] == pytest.threat_id][0]
+        diffs = check_dict_items(pytest.expected_threat, threat)
+        assert not diffs, json.dumps(diffs, indent=2)

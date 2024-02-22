@@ -10,7 +10,7 @@ from prelude_sdk.controllers.probe_controller import ProbeController
 from prelude_sdk.controllers.detect_controller import DetectController
 
 
-@pytest.mark.order(6)
+@pytest.mark.order(7)
 class TestProbe:
 
     def setup_class(self):
@@ -28,18 +28,19 @@ class TestProbe:
         ep = [r for r in res if r['serial_num'] == self.serial]
         pytest.endpoint_id = ep[0]['endpoint_id']
 
-    def test_enable_tests(self, unwrap):
-        unwrap(self.detect.enable_test)(self.detect, ident='2e705bac-a889-4283-9a8e-a12358fa1d09', run_code=RunCode.DEBUG,
-                                        tags='')
-        unwrap(self.detect.enable_test)(self.detect, ident='b74ad239-2ddd-4b1e-b608-8397a43c7c54', run_code=RunCode.RUN_ONCE,
-                                        tags='')
-        unwrap(self.detect.enable_test)(self.detect, ident='db201110-d875-4133-9709-2732a47f252f', run_code=RunCode.DAILY,
-                                        tags='')
+    def test_schedule(self, unwrap):
+        unwrap(self.detect.schedule)(self.detect, test_id='2e705bac-a889-4283-9a8e-a12358fa1d09',
+                                     run_code=RunCode.DEBUG, tags='')
+        unwrap(self.detect.schedule)(self.detect, test_id='b74ad239-2ddd-4b1e-b608-8397a43c7c54',
+                                     run_code=RunCode.RUN_ONCE, tags='')
+        # 2 tests in this threat (881.., b74...)
+        unwrap(self.detect.schedule)(self.detect, threat_id=pytest.threat_id, run_code=RunCode.DAILY, tags='')
         # windows only test
-        unwrap(self.detect.enable_test)(self.detect, ident='9db16ec3-1412-4a6b-9417-81d17790e55f', run_code=RunCode.DEBUG,
-                                        tags='')
-        unwrap(self.detect.enable_test)(self.detect, ident='8f9558f3-d451-46e3-bdda-97378c1e8ce4', run_code=RunCode.DAILY,
-                                        tags='diff-tag')
+        unwrap(self.detect.schedule)(self.detect, test_id='9db16ec3-1412-4a6b-9417-81d17790e55f',
+                                     run_code=RunCode.DEBUG, tags='')
+        # should not run
+        unwrap(self.detect.schedule)(self.detect, test_id='8f9558f3-d451-46e3-bdda-97378c1e8ce4',
+                                     run_code=RunCode.DAILY, tags='diff-tag')
 
         queue = unwrap(self.iam.get_account)(self.iam)['queue']
         assert 5 == len(queue), json.dumps(queue, indent=2)
@@ -66,23 +67,22 @@ class TestProbe:
                 endpoints=pytest.endpoint_id
             )
             res = unwrap(self.detect.describe_activity)(self.detect, view='logs', filters=filters)
-            assert 4 == len(res), json.dumps(res, indent=2)
+            assert 7 == len(res), json.dumps(res, indent=2)
         finally:
             os.remove(pytest.probe_file)
 
-    def test_disable_tests(self, unwrap):
-        unwrap(self.detect.disable_test)(self.detect, ident='2e705bac-a889-4283-9a8e-a12358fa1d09', tags='')
-        unwrap(self.detect.disable_test)(self.detect, ident='b74ad239-2ddd-4b1e-b608-8397a43c7c54', tags='')
-        unwrap(self.detect.disable_test)(self.detect, ident='db201110-d875-4133-9709-2732a47f252f', tags='')
+    def test_unschedule(self, unwrap):
+        unwrap(self.detect.unschedule)(self.detect, test_id='2e705bac-a889-4283-9a8e-a12358fa1d09', tags='')
+        unwrap(self.detect.unschedule)(self.detect, test_id='b74ad239-2ddd-4b1e-b608-8397a43c7c54', tags='')
+        unwrap(self.detect.unschedule)(self.detect, threat_id=pytest.threat_id, tags='')
         # windows only test
-        unwrap(self.detect.disable_test)(self.detect, ident='9db16ec3-1412-4a6b-9417-81d17790e55f', tags='')
-        unwrap(self.detect.disable_test)(self.detect, ident='8f9558f3-d451-46e3-bdda-97378c1e8ce4', tags='diff-tag')
+        unwrap(self.detect.unschedule)(self.detect, test_id='9db16ec3-1412-4a6b-9417-81d17790e55f', tags='')
+        unwrap(self.detect.unschedule)(self.detect, test_id='8f9558f3-d451-46e3-bdda-97378c1e8ce4', tags='diff-tag')
 
         queue = unwrap(self.iam.get_account)(self.iam)['queue']
         assert 0 == len(queue), json.dumps(queue, indent=2)
 
     def test_delete_endpoint(self, unwrap):
         unwrap(self.detect.delete_endpoint)(self.detect, ident=pytest.endpoint_id)
-        print(pytest.endpoint_id)
         res = unwrap(self.detect.list_endpoints)(self.detect)
         assert 0 == len(res), json.dumps(res, indent=2)
