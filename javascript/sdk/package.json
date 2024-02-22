@@ -5,7 +5,7 @@
   "files": [
     "dist"
   ],
-   "main": "./dist/sdk.umd.cjs",
+  "main": "./dist/sdk.umd.cjs",
   "module": "./dist/sdk.js",
   "types": "./dist/main.d.ts",
   "exports": {
@@ -13,6 +13,7 @@
       "import": "./dist/sdk.js",
       "require": "./dist/sdk.umd.cjs"
     }
+  },
   "scripts": {
     "build": "vite build",
     "typecheck": "tsc --noEmit",
