@@ -305,6 +305,7 @@ export interface Activity {
   id: string;
   status: ExitCode;
   test: string;
+  threat: string | null;
   dos: Platform;
   control: ControlCode;
   policy: string | null;
