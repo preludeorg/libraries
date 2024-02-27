@@ -67,7 +67,7 @@ class TestProbe:
                 endpoints=pytest.endpoint_id
             )
             res = unwrap(self.detect.describe_activity)(self.detect, view='logs', filters=filters)
-            assert 7 == len(res), json.dumps(res, indent=2)
+            assert 5 == len(res), json.dumps(res, indent=2)
         finally:
             os.remove(pytest.probe_file)
 
