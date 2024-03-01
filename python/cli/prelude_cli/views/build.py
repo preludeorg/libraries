@@ -85,13 +85,14 @@ def update_test(controller, test, name, unit, technique):
 
 @build.command('delete-test')
 @click.argument('test')
+@click.option('-p', '--purge', is_flag=True, help='purge test and associated files')
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
 @handle_api_error
-def delete_test(controller, test):
+def delete_test(controller, test, purge):
     """ Delete a test """
     with Spinner(description='Removing test'):
-        data = controller.delete_test(test_id=test)
+        data = controller.delete_test(test_id=test, purge=purge)
     print_json(data=data)
 
 
@@ -178,11 +179,12 @@ def update_threat(controller, threat, name,  source_id, source, published, tests
 
 @build.command('delete-threat')
 @click.argument('threat')
+@click.option('-p', '--purge', is_flag=True, help='purge threat')
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
 @handle_api_error
-def delete_threat(controller, threat):
+def delete_threat(controller, threat, purge):
     """ Delete a threat """
     with Spinner(description='Removing threat'):
-        data = controller.delete_threat(threat_id=threat)
+        data = controller.delete_threat(threat_id=threat, purge=purge)
     print_json(data=data)
