@@ -108,13 +108,20 @@ class TestBuild:
 
     @pytest.mark.order(-2)
     def test_delete_test(self, unwrap):
-        unwrap(self.build.delete_test)(self.build, test_id=pytest.test_id)
+        unwrap(self.build.delete_test)(self.build, test_id=pytest.test_id, purge=False)
         res = unwrap(self.detect.get_test)(self.detect, test_id=pytest.test_id)
         pytest.expected_test['tombstoned'] = res['tombstoned']
 
         diffs = check_dict_items(pytest.expected_test, res)
         assert not diffs, json.dumps(diffs, indent=2)
         assert parse(res['tombstoned']) <= datetime.utcnow() + timedelta(minutes=1)
+
+    def test_purge_test(self, unwrap):
+        purge_test_id = str(uuid.uuid4())
+        unwrap(self.build.create_test)(self.build, test_id=purge_test_id, name=self.name, unit=self.unit)
+        unwrap(self.build.delete_test)(self.build, test_id=purge_test_id, purge=True)
+        with pytest.raises(Exception):
+            unwrap(self.detect.get_test)(self.detect, test_id=purge_test_id)
 
 
 @pytest.mark.order(3)
