@@ -75,7 +75,7 @@ class TestIAM:
                     tag='autopilot'
                 )
             ],
-            probe_sleep='1800s',
+            probe_sleep='600s',
             oidc=dict(),
             oidc_enabled=False
         )
