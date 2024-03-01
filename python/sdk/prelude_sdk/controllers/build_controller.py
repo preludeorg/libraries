@@ -51,9 +51,9 @@ class BuildController:
     @verify_credentials
     def delete_test(self, test_id, purge):
         """ Delete an existing test """
-        purge_arg = '?purge=true' if purge else ''
         res = requests.delete(
-            f'{self.account.hq}/build/tests/{test_id}{purge_arg}',
+            f'{self.account.hq}/build/tests/{test_id}',
+            json=dict(purge=purge),
             headers=self.account.headers,
             timeout=10
         )
@@ -131,9 +131,9 @@ class BuildController:
     @verify_credentials
     def delete_threat(self, threat_id, purge):
         """ Delete an existing threat """
-        purge_arg = '?purge=true' if purge else ''
         res = requests.delete(
-            f'{self.account.hq}/build/threats/{threat_id}{purge_arg}',
+            f'{self.account.hq}/build/threats/{threat_id}',
+            json=dict(purge=purge),
             headers=self.account.headers,
             timeout=10
         )
