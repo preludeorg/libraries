@@ -147,32 +147,6 @@ class DetectController:
         raise Exception(res.text)
 
     @verify_credentials
-    def enable_test(self, ident: str, run_code: RunCode, tags: str):
-        """ Enable a test so endpoints will start running it """
-        res = requests.post(
-            url=f'{self.account.hq}/detect/queue/{ident}',
-            headers=self.account.headers,
-            json=dict(code=run_code.name, tags=tags),
-            timeout=10
-        )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
-
-    @verify_credentials
-    def disable_test(self, ident: str, tags: str):
-        """ Disable a test so endpoints will stop running it """
-        res = requests.delete(
-            f'{self.account.hq}/detect/queue/{ident}',
-            headers=self.account.headers,
-            params=dict(tags=tags),
-            timeout=10
-        )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
-
-    @verify_credentials
     def schedule(self, test_id: str = None, threat_id: str = None, run_code: RunCode = RunCode.DAILY, tags: str = ''):
         """ Enable a test or threat so endpoints will start running it """
         res = requests.post(
