@@ -106,35 +106,6 @@ def download(controller, test):
                 f.write(code)
 
 
-@detect.command('enable-test')
-@click.argument('test')
-@click.option('-t', '--tags', help='only enable for these tags (comma-separated list)', type=str, default='')
-@click.option('-r', '--run_code',
-              help='provide a run_code',
-              default=RunCode.DAILY.name, show_default=True,
-              type=click.Choice([r.name for r in RunCode if r != RunCode.INVALID], case_sensitive=False))
-@click.pass_obj
-@handle_api_error
-def enable_test(controller, test, run_code, tags):
-    """ Add test to your queue """
-    with Spinner(description='Enabling test'):
-        data = controller.enable_test(ident=test, run_code=RunCode[run_code], tags=tags)
-    print_json(data=data)
-
-
-@detect.command('disable-test')
-@click.argument('test')
-@click.option('-t', '--tags', help='only disable for these tags (comma-separated list)', type=str, default='')
-@click.confirmation_option(prompt='Are you sure?')
-@click.pass_obj
-@handle_api_error
-def disable_test(controller, test, tags):
-    """ Remove test from your queue """
-    with Spinner(description='Disabling test'):
-        data = controller.disable_test(ident=test, tags=tags)
-    print_json(data=data)
-
-
 @detect.command('schedule')
 @click.argument('id')
 @click.option('-t', '--type', help='whether you are scheduling a test or threat', required=True,
