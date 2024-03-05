@@ -107,41 +107,32 @@ def download(controller, test):
 
 
 @detect.command('schedule')
-@click.argument('id')
-@click.option('-t', '--type', help='whether you are scheduling a test or threat', required=True,
-              type=click.Choice(['TEST', 'THREAT'], case_sensitive=False))
-@click.option('--tags', help='only enable for these tags (comma-separated list)', type=str, default='')
 @click.option('-r', '--run_code',
-              help='provide a run_code',
-              default=RunCode.DAILY.name, show_default=True,
-              type=click.Choice([r.name for r in RunCode if r != RunCode.INVALID], case_sensitive=False))
+                help='provide a run_code', default=RunCode.DAILY.name, show_default=True,
+                type=click.Choice([r.name for r in RunCode if r != RunCode.INVALID], case_sensitive=False))
+@click.option('--tags', help='only schedule for these tags (comma-separated list)', type=str, default='')
+@click.option('--tests', help='tests you want to schedule (comma-separated list)', type=str, default='')
+@click.option('--threats', help='threats you want to schedule (comma-separated list)', type=str, default='')
 @click.pass_obj
 @handle_api_error
-def schedule(controller, id, type, run_code, tags):
-    """ Add test or threat to your queue """
-    with Spinner(description=f'Scheduling {type.lower()}'):
-        if type == 'TEST':
-            data = controller.schedule(test_id=id, run_code=RunCode[run_code], tags=tags)
-        else:
-            data = controller.schedule(threat_id=id, run_code=RunCode[run_code], tags=tags)
+def schedule(controller, run_code, tags, tests, threats):
+    """ Add tests and threats to your queue """
+    with Spinner(description=f'Scheduling items'):
+        data = controller.schedule(run_code=RunCode[run_code], tags=tags, test_ids=tests, threat_ids=threats)
     print_json(data=data)
 
 
 @detect.command('unschedule')
-@click.argument('id')
-@click.option('-t', '--type', help='whether you are unscheduling a test or threat', required=True,
-              type=click.Choice(['TEST', 'THREAT'], case_sensitive=False))
-@click.option('--tags', help='only disable for these tags (comma-separated list)', type=str, default='')
+@click.option('--tags', help='only unschedule for these tags (comma-separated list)', type=str, default='')
+@click.option('--tests', help='tests you want to unschedule (comma-separated list)', type=str, default='')
+@click.option('--threats', help='threats you want to unschedule (comma-separated list)', type=str, default='')
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
 @handle_api_error
-def unschedule(controller, id, type, tags):
-    """ Remove test or threat from your queue """
-    with Spinner(description=f'Unscheduling {type.lower()}'):
-        if type == 'TEST':
-            data = controller.unschedule(test_id=id, tags=tags)
-        else:
-            data = controller.unschedule(threat_id=id, tags=tags)
+def unschedule(controller, tags, tests, threats):
+    """ Remove tests or threats from your queue """
+    with Spinner(description=f'Unscheduling items'):
+        data = controller.unschedule(tags=tags, test_ids=tests, threat_ids=threats)
     print_json(data=data)
 
 
