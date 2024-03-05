@@ -1,4 +1,4 @@
-name: Deploy (demo / nocturnal / raindrop / vision scripts)
+name: Deploy (nocturnal / raindrop / vision scripts)
 description: Copy script to s3
 inputs:
   s3_bucket:
@@ -30,7 +30,7 @@ runs:
       shell: bash
       run: |
 
-        NIX_FILES=(shell/demo/demo.sh,demo/demo shell/probe/nocturnal.sh,nocturnal/nocturnal shell/probe/vision.sh,vision/vision)
+        NIX_FILES=(shell/probe/nocturnal.sh,nocturnal/nocturnal shell/probe/vision.sh,vision/vision)
         NIX_ARCHS=(darwin-arm64 darwin-x86_64 linux-arm64 linux-x86_64)
 
         for f in ${NIX_FILES[@]}; do
@@ -45,7 +45,7 @@ runs:
           done
         done
 
-        WIN_FILES=(shell/demo/demo.ps1,demo/demo shell/probe/raindrop.ps1,raindrop/raindrop)
+        WIN_FILES=(shell/probe/raindrop.ps1,raindrop/raindrop)
         WIN_ARCHS=(windows-x86_64)
 
         for f in ${WIN_FILES[@]}; do
