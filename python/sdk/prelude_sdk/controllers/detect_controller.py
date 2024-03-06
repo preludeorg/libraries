@@ -147,12 +147,16 @@ class DetectController:
         raise Exception(res.text)
 
     @verify_credentials
-    def schedule(self, test_id: str = None, threat_id: str = None, run_code: RunCode = RunCode.DAILY, tags: str = ''):
-        """ Enable a test or threat so endpoints will start running it """
+    def schedule(self, items: list):
+        """ Schedule tests and threats so endpoints will start running them
+
+        Example: items=[dict(code='DAILY', tags='grp-1,grp2', test_id='123-123-123'),
+                        dict(code='DAILY', tags='grp-1', threat_id='abc-def-ghi')]
+        """
         res = requests.post(
             url=f'{self.account.hq}/detect/queue',
             headers=self.account.headers,
-            json=dict(test_id=test_id, threat_id=threat_id, code=run_code.name, tags=tags),
+            json=dict(items=items),
             timeout=10
         )
         if res.status_code == 200:
@@ -160,12 +164,16 @@ class DetectController:
         raise Exception(res.text)
 
     @verify_credentials
-    def unschedule(self, test_id: str = None, threat_id: str = None, tags: str = ''):
-        """ Disable a test or threat so endpoints will stop running it """
+    def unschedule(self, items: list):
+        """ Unschedule tests and threats so endpoints will stop running them
+
+        Example: items=[dict(tags='grp-1,grp2', test_id='123-123-123'),
+                        dict(tags='grp-1', threat_id='abc-def-ghi')]
+        """
         res = requests.delete(
             f'{self.account.hq}/detect/queue',
             headers=self.account.headers,
-            params=dict(test_id=test_id, threat_id=threat_id, tags=tags),
+            json=dict(items=items),
             timeout=10
         )
         if res.status_code == 200:

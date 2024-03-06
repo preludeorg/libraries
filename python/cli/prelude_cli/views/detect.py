@@ -121,9 +121,9 @@ def schedule(controller, id, type, run_code, tags):
     """ Add test or threat to your queue """
     with Spinner(description=f'Scheduling {type.lower()}'):
         if type == 'TEST':
-            data = controller.schedule(test_id=id, run_code=RunCode[run_code], tags=tags)
+            data = controller.schedule([dict(test_id=id, code=run_code, tags=tags)])
         else:
-            data = controller.schedule(threat_id=id, run_code=RunCode[run_code], tags=tags)
+            data = controller.schedule([dict(test_id=id, code=run_code, tags=tags)])
     print_json(data=data)
 
 
@@ -139,9 +139,9 @@ def unschedule(controller, id, type, tags):
     """ Remove test or threat from your queue """
     with Spinner(description=f'Unscheduling {type.lower()}'):
         if type == 'TEST':
-            data = controller.unschedule(test_id=id, tags=tags)
+            data = controller.unschedule([dict(test_id=id, tags=tags)])
         else:
-            data = controller.unschedule(threat_id=id, tags=tags)
+            data = controller.unschedule([dict(threat_id=id, tags=tags)])
     print_json(data=data)
 
 
