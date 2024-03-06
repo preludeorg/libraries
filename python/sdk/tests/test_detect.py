@@ -62,7 +62,7 @@ class TestDetect:
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_schedule_threat(self, unwrap):
-        res = unwrap(self.detect.schedule)(self.detect, threat_id=pytest.threat_id, run_code=RunCode.DAILY)
+        res = unwrap(self.detect.schedule)(self.detect, [dict(threat_id=pytest.threat_id, run_code=RunCode.DAILY)])
         assert res['id'] == pytest.threat_id
 
         queue = unwrap(self.iam.get_account)(self.iam)['queue']
@@ -75,13 +75,15 @@ class TestDetect:
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_unschedule_threat(self, unwrap):
-        unwrap(self.detect.unschedule)(self.detect, threat_id=pytest.threat_id)
+        unwrap(self.detect.unschedule)(self.detect, [dict(threat_id=pytest.threat_id)])
         queue = unwrap(self.iam.get_account)(self.iam)['queue']
         assert 0 == len(queue), json.dumps(queue, indent=2)
 
     def test_schedule_test(self, unwrap):
-        res = unwrap(self.detect.schedule)(self.detect, test_id=pytest.test_id, run_code=RunCode.DEBUG,
-                                              tags=self.updated_tags)
+        res = unwrap(self.detect.schedule)(
+            self.detect,
+            [dict(test_id=pytest.test_id, run_code=RunCode.DEBUG, tags=self.updated_tags)]
+        )
         assert res['id'] == pytest.test_id
 
         queue = unwrap(self.iam.get_account)(self.iam)['queue']
@@ -95,7 +97,7 @@ class TestDetect:
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_unschedule_test(self, unwrap):
-        unwrap(self.detect.unschedule)(self.detect, test_id=pytest.test_id, tags=self.updated_tags)
+        unwrap(self.detect.unschedule)(self.detect, [dict(test_id=pytest.test_id, tags=self.updated_tags)])
         queue = unwrap(self.iam.get_account)(self.iam)['queue']
         assert 0 == len(queue), json.dumps(queue, indent=2)
 
