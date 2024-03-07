@@ -1,12 +1,13 @@
-import os
 import json
+import os
+import pytest
 import time
 import uuid
-import pytest
+from datetime import datetime, timedelta
+from importlib.resources import files
 
 from dateutil.parser import parse
-from importlib.resources import files
-from datetime import datetime, timedelta
+
 from prelude_sdk.controllers.build_controller import BuildController
 from prelude_sdk.controllers.detect_controller import DetectController
 
@@ -137,9 +138,9 @@ class TestThreat:
             account_id='prelude',
             id=self.threat_id,
             source_id='aa23-061a',
-            name='User Execution of Malicious File, Ransomware Data Encryption',
+            name='User Execution of Malicious File, Ransomware Data Encryption (#StopRansomware: Royal Ransomware)',
             source='https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-061a',
-            published=None,
+            published='2023-11-13',
             tests=['881f9052-fb52-4daf-9ad2-0a7ad9615baf', 'b74ad239-2ddd-4b1e-b608-8397a43c7c54'],
             tombstoned=None
         )

@@ -1,14 +1,14 @@
 import json
 import pytest
 import requests
+from datetime import datetime, timedelta
 
 from dateutil.parser import parse
-from datetime import datetime, timedelta
-from prelude_sdk.models.codes import RunCode
-from prelude_sdk.controllers.iam_controller import IAMController
-from prelude_sdk.controllers.detect_controller import DetectController
-
 from testutils import *
+
+from prelude_sdk.controllers.detect_controller import DetectController
+from prelude_sdk.controllers.iam_controller import IAMController
+from prelude_sdk.models.codes import RunCode
 
 
 @pytest.mark.order(4)
@@ -62,8 +62,10 @@ class TestDetect:
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_schedule_threat(self, unwrap):
-        res = unwrap(self.detect.schedule)(self.detect, [dict(threat_id=pytest.threat_id, run_code=RunCode.DAILY)])
-        assert res['id'] == pytest.threat_id
+        res = unwrap(self.detect.schedule)(self.detect, [dict(threat_id=pytest.threat_id, code=RunCode.DAILY.name)])
+        assert 1 == len(res), json.dumps(res, indent=2)
+        diffs = check_dict_items(dict(threat=pytest.threat_id, run_code=RunCode.DAILY.value, tag=None), res[0])
+        assert not diffs, json.dumps(diffs, indent=2)
 
         queue = unwrap(self.iam.get_account)(self.iam)['queue']
         assert 1 == len(queue), json.dumps(queue, indent=2)
@@ -80,11 +82,10 @@ class TestDetect:
         assert 0 == len(queue), json.dumps(queue, indent=2)
 
     def test_schedule_test(self, unwrap):
-        res = unwrap(self.detect.schedule)(
-            self.detect,
-            [dict(test_id=pytest.test_id, run_code=RunCode.DEBUG, tags=self.updated_tags)]
-        )
-        assert res['id'] == pytest.test_id
+        res = unwrap(self.detect.schedule)(self.detect, [dict(test_id=pytest.test_id, code=RunCode.DEBUG.name, tags=self.updated_tags)])
+        assert 1 == len(res), json.dumps(res, indent=2)
+        diffs = check_dict_items(dict(test=pytest.test_id, run_code=RunCode.DEBUG.value, tag=self.updated_tags), res[0])
+        assert not diffs, json.dumps(diffs, indent=2)
 
         queue = unwrap(self.iam.get_account)(self.iam)['queue']
         assert 1 == len(queue), json.dumps(queue, indent=2)
