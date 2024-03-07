@@ -150,8 +150,8 @@ class DetectController:
     def schedule(self, items: list):
         """ Schedule tests and threats so endpoints will start running them
 
-        Example: items=[dict(code='DAILY', tags='grp-1,grp2', test_id='123-123-123'),
-                        dict(code='DAILY', tags='grp-1', threat_id='abc-def-ghi')]
+        Example: items=[dict(run_code='DAILY', tags='grp-1,grp2', test_id='123-123-123'),
+                        dict(run_code='DAILY', tags='grp-1', threat_id='abc-def-ghi')]
         """
         res = requests.post(
             url=f'{self.account.hq}/detect/queue',
