@@ -121,9 +121,9 @@ def schedule(controller, id, type, run_code, tags):
     """ Add test or threat to your queue """
     with Spinner(description=f'Scheduling {type.lower()}'):
         if type == 'TEST':
-            data = controller.schedule([dict(test_id=id, code=run_code, tags=tags)])
+            data = controller.schedule([dict(test_id=id, run_code=run_code, tags=tags)])
         else:
-            data = controller.schedule([dict(test_id=id, code=run_code, tags=tags)])
+            data = controller.schedule([dict(test_id=id, run_code=run_code, tags=tags)])
     print_json(data=data)
 
 

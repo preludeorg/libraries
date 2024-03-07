@@ -32,14 +32,14 @@ class TestProbe:
         unwrap(self.detect.schedule)(
             self.detect,
             [
-                dict(test_id='2e705bac-a889-4283-9a8e-a12358fa1d09', code=RunCode.DEBUG.name, tags=''),
-                dict(test_id='b74ad239-2ddd-4b1e-b608-8397a43c7c54', code=RunCode.RUN_ONCE.name, tags=''),
+                dict(test_id='2e705bac-a889-4283-9a8e-a12358fa1d09', run_code=RunCode.DEBUG.name, tags=''),
+                dict(test_id='b74ad239-2ddd-4b1e-b608-8397a43c7c54', run_code=RunCode.RUN_ONCE.name, tags=''),
                 # 2 tests in this threat (881.., b74...)
-                dict(threat_id=pytest.threat_id, code=RunCode.DAILY.name, tags=''),
+                dict(threat_id=pytest.threat_id, run_code=RunCode.DAILY.name, tags=''),
                 # windows only test
-                dict(test_id='9db16ec3-1412-4a6b-9417-81d17790e55f', code=RunCode.DEBUG.name, tags=''),
+                dict(test_id='9db16ec3-1412-4a6b-9417-81d17790e55f', run_code=RunCode.DEBUG.name, tags=''),
                 # should not run
-                dict(test_id='8f9558f3-d451-46e3-bdda-97378c1e8ce4', code=RunCode.DAILY.name, tags='diff-tag')
+                dict(test_id='8f9558f3-d451-46e3-bdda-97378c1e8ce4', run_code=RunCode.DAILY.name, tags='diff-tag')
             ]
         )
 
