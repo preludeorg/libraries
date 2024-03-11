@@ -138,7 +138,7 @@ class TestThreat:
             account_id='prelude',
             id=self.threat_id,
             source_id='aa23-061a',
-            name='User Execution of Malicious File, Ransomware Data Encryption (#StopRansomware: Royal Ransomware)',
+            name='#StopRansomware: Royal Ransomware',
             source='https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-061a',
             published='2023-11-13',
             tests=['881f9052-fb52-4daf-9ad2-0a7ad9615baf', 'b74ad239-2ddd-4b1e-b608-8397a43c7c54'],
