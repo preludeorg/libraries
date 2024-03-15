@@ -220,13 +220,17 @@ def create_detection(controller, rules, rules_file, test, partner, detection_id,
 @build.command('update-detection')
 @click.argument('detection')
 @click.option('-r', '--rules', help='CRWD detection rules, as string-formatted json', default=None, type=str)
+@click.option('--rules_file', help='CRWD detection rules, from a json file', default=None, type=click.File())
 @click.option('--test', help='ID of the test this detection is for', default=None, type=str)
 @click.pass_obj
 @handle_api_error
-def update_detection(controller, detection, rules, test):
+def update_detection(controller, detection, rules, rules_file, test):
     """ Update a detection rule """
-    if rules:
-        rules = json.loads(rules)
+    if rules and rules_file:
+        raise UsageError('At most one of --rules and --rules_file must be set')
+
+    if rules or rules_file:
+        rules = json.loads(rules) if rules else json.load(rules_file)
     with Spinner(description='Updating detection'):
         data = controller.update_detection(
             rules=rules,
