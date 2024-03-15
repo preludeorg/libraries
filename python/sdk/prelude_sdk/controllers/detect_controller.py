@@ -1,7 +1,7 @@
 import requests
 
-from prelude_sdk.models.codes import RunCode
 from prelude_sdk.models.account import verify_credentials
+from prelude_sdk.models.codes import RunCode
 
 
 class DetectController:
@@ -127,6 +127,31 @@ class DetectController:
         """ Get properties of an existing threat """
         res = requests.get(
             f'{self.account.hq}/detect/threats/{threat_id}',
+            headers=self.account.headers,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def list_detections(self):
+        """ List detections """
+        res = requests.get(
+            f'{self.account.hq}/detect/detections',
+            headers=self.account.headers,
+            params={},
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def get_detection(self, detection_id):
+        """ Get properties of an existing detection """
+        res = requests.get(
+            f'{self.account.hq}/detect/detections/{detection_id}',
             headers=self.account.headers,
             timeout=10
         )

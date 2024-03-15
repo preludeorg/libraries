@@ -1,15 +1,17 @@
+import importlib.resources as pkg_resources
+import json
 import re
 import uuid
-import click
-import prelude_cli.templates as templates
-import importlib.resources as pkg_resources
-
-from rich import print_json
-from pathlib import Path, PurePath
 from datetime import datetime, timezone
+from pathlib import Path, PurePath
 
+import click
+from rich import print_json
+
+import prelude_cli.templates as templates
 from prelude_cli.views.shared import handle_api_error, Spinner
 from prelude_sdk.controllers.build_controller import BuildController
+from prelude_sdk.models.codes import Control
 
 
 UUID = re.compile('[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}')
@@ -187,4 +189,65 @@ def delete_threat(controller, threat, purge):
     """ Delete a threat """
     with Spinner(description='Removing threat'):
         data = controller.delete_threat(threat_id=threat, purge=purge)
+    print_json(data=data)
+
+
+@build.command('create-detection')
+@click.argument('name')
+@click.option('-r', '--rules', help='CRWD detection rules, as string-formatted json', required=True, type=str)
+@click.option('-t', '--test', help='ID of the test this detection is for', required=True, type=str)
+@click.option('-p', '--partner', help='EDR partner that detection is for', required=True,
+                type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False))
+@click.option('--detection_id', help='detection ID', default=None, type=str)
+@click.option('-d', '--description', help='description of the detection', default=None, type=str)
+@click.option('--rule_id', help='rule ID', default=None, type=str)
+@click.pass_obj
+@handle_api_error
+def create_detection(controller, name, rules, test, partner, detection_id, description, rule_id):
+    """ Create an EDR detection rule """
+    with Spinner(description='Creating new detection'):
+        t = controller.create_detection(
+            name=name,
+            rules=json.loads(rules),
+            test_id=test,
+            partner=partner,
+            detection_id=detection_id,
+            description=description,
+            rule_id=rule_id
+        )
+    print_json(data=t)
+
+
+@build.command('update-detection')
+@click.argument('detection')
+@click.option('-n', '--name', help='Name of the detection rule', default=None, type=str)
+@click.option('-r', '--rules', help='CRWD detection rules, as string-formatted json', default=None, type=str)
+@click.option('--test', help='ID of the test this detection is for', default=None, type=str)
+@click.option('-d', '--description', help='description of the detection', default=None, type=str)
+@click.pass_obj
+@handle_api_error
+def update_detection(controller, detection, name, rules, test, description):
+    """ Update a detection rule """
+    if rules:
+        rules = json.loads(rules)
+    with Spinner(description='Updating detection'):
+        data = controller.update_detection(
+            name=name,
+            rules=rules,
+            test_id=test,
+            detection_id=detection,
+            description=description
+        )
+    print_json(data=data)
+
+
+@build.command('delete-detection')
+@click.argument('detection')
+@click.confirmation_option(prompt='Are you sure?')
+@click.pass_obj
+@handle_api_error
+def delete_test(controller, detection):
+    """ Delete a detection """
+    with Spinner(description='Removing detection'):
+        data = controller.delete_detection(detection_id=detection)
     print_json(data=data)
