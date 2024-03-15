@@ -193,26 +193,25 @@ def delete_threat(controller, threat, purge):
 
 
 @build.command('create-detection')
-@click.argument('name')
-@click.option('-r', '--rules', help='CRWD detection rules, as string-formatted json', required=True, type=str)
+@click.argument('partner', type=click.Choice([Control.CROWDSTRIKE.name], case_sensitive=False))
+@click.option('-r', '--rules', help='CRWD detection rules, as string-formatted json', default=None, type=str)
+@click.option('--rules_file', help='CRWD detection rules, from a json file', default=None, type=click.File())
 @click.option('-t', '--test', help='ID of the test this detection is for', required=True, type=str)
-@click.option('-p', '--partner', help='EDR partner that detection is for', required=True,
-                type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False))
 @click.option('--detection_id', help='detection ID', default=None, type=str)
-@click.option('-d', '--description', help='description of the detection', default=None, type=str)
 @click.option('--rule_id', help='rule ID', default=None, type=str)
 @click.pass_obj
 @handle_api_error
-def create_detection(controller, name, rules, test, partner, detection_id, description, rule_id):
+def create_detection(controller, rules, rules_file, test, partner, detection_id, rule_id):
     """ Create an EDR detection rule """
+    if (rules and rules_file) or (not rules and not rules_file):
+        raise UsageError('Exactly one of --rules and --rules_file must be set')
+
     with Spinner(description='Creating new detection'):
         t = controller.create_detection(
-            name=name,
-            rules=json.loads(rules),
+            rules=json.loads(rules) if rules else json.load(rules_file),
             test_id=test,
-            partner=partner,
+            partner=Control[partner],
             detection_id=detection_id,
-            description=description,
             rule_id=rule_id
         )
     print_json(data=t)
@@ -220,23 +219,19 @@ def create_detection(controller, name, rules, test, partner, detection_id, descr
 
 @build.command('update-detection')
 @click.argument('detection')
-@click.option('-n', '--name', help='Name of the detection rule', default=None, type=str)
 @click.option('-r', '--rules', help='CRWD detection rules, as string-formatted json', default=None, type=str)
 @click.option('--test', help='ID of the test this detection is for', default=None, type=str)
-@click.option('-d', '--description', help='description of the detection', default=None, type=str)
 @click.pass_obj
 @handle_api_error
-def update_detection(controller, detection, name, rules, test, description):
+def update_detection(controller, detection, rules, test):
     """ Update a detection rule """
     if rules:
         rules = json.loads(rules)
     with Spinner(description='Updating detection'):
         data = controller.update_detection(
-            name=name,
             rules=rules,
             test_id=test,
             detection_id=detection,
-            description=description
         )
     print_json(data=data)
 
@@ -246,7 +241,7 @@ def update_detection(controller, detection, name, rules, test, description):
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
 @handle_api_error
-def delete_test(controller, detection):
+def delete_detection(controller, detection):
     """ Delete a detection """
     with Spinner(description='Removing detection'):
         data = controller.delete_detection(detection_id=detection)

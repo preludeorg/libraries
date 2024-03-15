@@ -143,17 +143,13 @@ class BuildController:
         raise Exception(res.text)
 
     @verify_credentials
-    def create_detection(self, name: str, rules: dict, test_id: str, partner: Control, detection_id=None, description=None, rule_id=None):
+    def create_detection(self, rules: dict, test_id: str, partner: Control, detection_id=None, rule_id=None):
         """ Create a detection """
-        body = dict(name=name, rules=rules, test_id=test_id, control=partner.name)
+        body = dict(rules=rules, test_id=test_id, control=partner.name)
         if detection_id:
             body['detection_id'] = detection_id
-        if description:
-            body['description'] = tedescriptionst_id
         if rule_id:
             body['rule_id'] = rule_id
-        if threat_id:
-            body['threat_id'] = threat_id
 
         res = requests.post(
             f'{self.account.hq}/build/detections',
@@ -166,13 +162,9 @@ class BuildController:
         raise Exception(res.text)
 
     @verify_credentials
-    def update_detection(self, detection_id: str, description=None, name=None, rules=None, test_id=None):
+    def update_detection(self, detection_id: str, rules=None, test_id=None):
         """ Update a detection """
         body = dict()
-        if description:
-            body['description'] = description
-        if name:
-            body['name'] = name
         if rules:
             body['rules'] = rules
         if test_id:
