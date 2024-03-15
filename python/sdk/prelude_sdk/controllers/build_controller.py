@@ -1,6 +1,7 @@
 import requests
 
 from prelude_sdk.models.account import verify_credentials
+from prelude_sdk.models.codes import Control
 
 
 class BuildController:
@@ -134,6 +135,56 @@ class BuildController:
         res = requests.delete(
             f'{self.account.hq}/build/threats/{threat_id}',
             json=dict(purge=purge),
+            headers=self.account.headers,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def create_detection(self, rules: dict, test_id: str, partner: Control, detection_id=None, rule_id=None):
+        """ Create a detection """
+        body = dict(rules=rules, test_id=test_id, control=partner.name)
+        if detection_id:
+            body['detection_id'] = detection_id
+        if rule_id:
+            body['rule_id'] = rule_id
+
+        res = requests.post(
+            f'{self.account.hq}/build/detections',
+            json=body,
+            headers=self.account.headers,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def update_detection(self, detection_id: str, rules=None, test_id=None):
+        """ Update a detection """
+        body = dict()
+        if rules:
+            body['rules'] = rules
+        if test_id:
+            body['test_id'] = test_id
+
+        res = requests.post(
+            f'{self.account.hq}/build/detections/{detection_id}',
+            json=body,
+            headers=self.account.headers,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def delete_detection(self, detection_id: str):
+        """ Delete an existing detection """
+        res = requests.delete(
+            f'{self.account.hq}/build/detections/{detection_id}',
             headers=self.account.headers,
             timeout=10
         )
