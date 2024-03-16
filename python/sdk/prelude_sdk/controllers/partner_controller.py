@@ -88,3 +88,17 @@ class PartnerController:
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
+
+    @verify_credentials
+    def list_reports(self, partner: Control, test_id: str):
+        """ Get reports to a partner for a test """
+        params = dict(test_id=test_id)
+        res = requests.get(
+            f'{self.account.hq}/partner/reports/{partner.name}',
+            headers=self.account.headers,
+            json=params,
+            timeout=30
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
