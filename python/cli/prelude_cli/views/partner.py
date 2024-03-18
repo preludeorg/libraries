@@ -1,10 +1,9 @@
 import click
-
 from rich import print_json
 
-from prelude_sdk.models.codes import Control
 from prelude_cli.views.shared import handle_api_error, Spinner
 from prelude_sdk.controllers.partner_controller import PartnerController
+from prelude_sdk.models.codes import Control
 
 
 @click.group()
@@ -93,3 +92,15 @@ def generate_webhook(controller, partner):
         data = controller.generate_webhook(partner=Control[partner])
     print_json(data=data)
     print("\nVisit https://docs.preludesecurity.com/docs/alert-management for details on configuring your EDR to forward alerts.\n")
+
+
+@partner.command('reports')
+@click.argument('partner', type=click.Choice([Control.CROWDSTRIKE.name], case_sensitive=False))
+@click.option('-t', '--test_id', required=True, help='test to get reports for')
+@click.pass_obj
+@handle_api_error
+def partner_reports(controller, partner, test_id):
+    """ Get reports to a partner for a test """
+    with Spinner(description='Getting reports to partner'):
+        data = controller.list_reports(partner=Control[partner], test_id=test_id)
+    print_json(data=data)
