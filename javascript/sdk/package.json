@@ -1,13 +1,17 @@
 {
   "name": "@theprelude/sdk",
-  "version": "1.5.8",
+  "version": "1.7.0",
   "type": "module",
-  "main": "lib/main.ts",
-  "types": "lib/main.ts",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/sdk.umd.cjs",
+  "module": "./dist/sdk.js",
+  "types": "./dist/main.d.ts",
   "exports": {
     ".": {
-      "import": "./lib/main.ts",
-      "require": "./lib/main.ts"
+      "import": "./dist/sdk.js",
+      "require": "./dist/sdk.umd.cjs"
     }
   },
   "scripts": {
