@@ -135,7 +135,7 @@ export interface Queue {
  */
 export function getEnumName<T extends Record<string, unknown>>(
   enumType: T,
-  value: T[keyof T]
+  value: T[keyof T],
 ): keyof T {
   const key = Object.keys(enumType).find((k) => enumType[k] === value);
   if (key === undefined) {
@@ -186,19 +186,8 @@ export const Modes = {
 export type ModeName = keyof typeof Modes;
 export type Mode = (typeof Modes)[keyof typeof Modes];
 
-export interface EnableTest {
-  test: string;
-  runCode: RunCodeName;
-  tags?: string;
-}
-
 export interface EnabledTest {
   id: string;
-}
-
-export interface DisableTest {
-  test: string;
-  tags: string;
 }
 
 export interface Probe {
@@ -290,14 +279,17 @@ export type ControlCode = (typeof ControlCodes)[ControlCodeName];
 
 export type NonArchPlatform = "darwin" | "linux" | "windows";
 
-export type Platform =
-  | "darwin-arm64"
-  | "darwin-x86_64"
-  | "linux-x86_64"
-  | "linux-arm64"
-  | "windows-x86_64"
-  | "windows-arm64"
-  | "unknown";
+export const Platforms = [
+  "linux-arm64",
+  "linux-x86_64",
+  "windows-arm64",
+  "windows-x86_64",
+  "darwin-arm64",
+  "darwin-x86_64",
+  "unknown",
+] as const;
+
+export type Platform = (typeof Platforms)[number];
 
 export interface Activity {
   date: string;
@@ -320,6 +312,7 @@ export interface TestsActivity {
 
 export interface TechniquesActivity {
   id: string;
+  name: string | null;
   protected: number | null;
   social: number | null;
 }
@@ -331,7 +324,10 @@ export interface ThreatsActivity {
 }
 
 export class APIError extends Error {
-  constructor(message: string, public status: number) {
+  constructor(
+    message: string,
+    public status: number,
+  ) {
     super(message);
     this.name = "APIError";
   }
@@ -343,12 +339,14 @@ export interface ActivityQuery {
   tests?: string;
   threats?: string;
   endpoints?: string;
-  dos?: string;
+  dos?: Platform;
   control?: string;
   impersonate?: string;
   os?: string;
   policy?: string;
 }
+
+export type ActivityQueryKey = keyof ActivityQuery;
 
 export type EndpointActivity = {
   id: string;
@@ -450,9 +448,10 @@ export interface AuditLog {
 export type AuditLogValues = Record<string, unknown>;
 
 export interface BlockResponse {
-  file: string;
-  already_reported?: boolean;
-  ioc_id?: string;
+  platform: "windows" | "linux" | "mac";
+  status: "already_exists" | "created" | "error";
+  created?: string;
+  error?: string;
 }
 
 export interface ProtectedActivity {
@@ -473,4 +472,59 @@ export interface AttachOIDC {
 export interface AttachedOIDC {
   issuer: OIDC;
   domain: string;
+}
+
+export interface ScheduleItem {
+  id: string;
+  type: "test" | "threat";
+  runCode: RunCodeName;
+  tags: string;
+}
+
+export interface UnscheduleItem {
+  id: string;
+  type: "test" | "threat";
+  tags: string;
+}
+
+export interface DetectionRules {
+  name: string;
+  ruletype_id: string;
+  field_values: FieldValue[];
+}
+
+export interface FieldValue {
+  name: string;
+  type: string;
+  label: string;
+  values: Value[];
+}
+
+export interface Value {
+  label: string;
+  value: string;
+}
+
+export interface CreateDetectionRule {
+  testId: string;
+  rules: DetectionRules;
+  detectionId?: string;
+  ruleId?: string;
+  control: ControlCodeName;
+}
+
+export interface Detection {
+  account_id: string;
+  created: string;
+  id: string;
+  name: string;
+  platform: "windows" | "linux" | "mac";
+  rule_id: string;
+  test: string;
+  rules: DetectionRules;
+}
+
+export interface DetectionReport {
+  platform: "windows" | "linux" | "mac";
+  created: string;
 }
