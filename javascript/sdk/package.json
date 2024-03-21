@@ -1,17 +1,13 @@
 {
   "name": "@theprelude/sdk",
-  "version": "1.6.2",
+  "version": "1.5.8",
   "type": "module",
-  "files": [
-    "dist"
-  ],
-  "main": "./dist/sdk.umd.cjs",
-  "module": "./dist/sdk.js",
-  "types": "./dist/main.d.ts",
+  "main": "lib/main.ts",
+  "types": "lib/main.ts",
   "exports": {
     ".": {
-      "import": "./dist/sdk.js",
-      "require": "./dist/sdk.umd.cjs"
+      "import": "./lib/main.ts",
+      "require": "./lib/main.ts"
     }
   },
   "scripts": {
@@ -29,7 +25,8 @@
     "typescript": "^4.6.4",
     "vite": "5.0.12",
     "vitest": "^0.30.0",
-    "date-fns": "^2.30.0"
+    "date-fns": "^2.30.0",
+    "prettier-config-custom": "*"
   },
   "description": "Use this utility if you want direct access to the Prelude API.",
   "directories": {

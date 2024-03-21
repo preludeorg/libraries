@@ -3,8 +3,7 @@ import {
   Activity,
   ActivityQuery,
   AttachedTest,
-  DisableTest,
-  EnableTest,
+  Detection,
   EnabledTest,
   EndpointActivity,
   FindingsActivity,
@@ -13,17 +12,16 @@ import {
   ProtectedActivity,
   RegisterEndpointParams,
   RequestOptions,
-  RunCodeName,
-  RunCodes,
+  ScheduleItem,
   StatusResponse,
   TechniquesActivity,
   Test,
   TestsActivity,
   Threat,
   ThreatsActivity,
+  UnscheduleItem,
   UpdateEndpointParams,
   UpdatedEndpoint,
-  getEnumName,
 } from "../types";
 
 export default class DetectController {
@@ -36,7 +34,7 @@ export default class DetectController {
   /** Register (or re-register) an endpoint to your account */
   async registerEndpoint(
     { host, serial_num, tags }: RegisterEndpointParams,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<string> {
     const response = await this.#client.requestWithAuth("/detect/endpoint", {
       method: "POST",
@@ -53,7 +51,7 @@ export default class DetectController {
   /** Update an endpoint in your account */
   async updateEndpoint(
     { endpoint_id, tags }: UpdateEndpointParams,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<UpdatedEndpoint> {
     const response = await this.#client.requestWithAuth(
       `/detect/endpoint/${endpoint_id}`,
@@ -63,7 +61,7 @@ export default class DetectController {
           tags,
         }),
         ...options,
-      }
+      },
     );
 
     return (await response.json()) as UpdatedEndpoint;
@@ -72,7 +70,7 @@ export default class DetectController {
   /** Delete an endpoint from your account */
   async deleteEndpoint(
     endpoint_id: string,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<StatusResponse> {
     const response = await this.#client.requestWithAuth(`/detect/endpoint`, {
       method: "DELETE",
@@ -86,7 +84,7 @@ export default class DetectController {
   /** List all endpoints on your account */
   async listEndpoints(
     days: number = 90,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<Probe[]> {
     const searchParams = new URLSearchParams({ days: days.toString() });
     const response = await this.#client.requestWithAuth(
@@ -94,7 +92,7 @@ export default class DetectController {
       {
         method: "GET",
         ...options,
-      }
+      },
     );
 
     return (await response.json()) as Probe[];
@@ -112,14 +110,14 @@ export default class DetectController {
   /** List properties for a threat */
   async getThreat(
     threat_id: string,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<Threat> {
     const response = await this.#client.requestWithAuth(
       `/detect/threats/${threat_id}`,
       {
         method: "GET",
         ...options,
-      }
+      },
     );
 
     return (await response.json()) as Threat;
@@ -128,35 +126,35 @@ export default class DetectController {
   /** Get logs for an Account */
   async describeActivity(
     query: ActivityQuery & { view: "logs" },
-    options?: RequestOptions
+    options?: RequestOptions,
   ): Promise<Activity[]>;
   async describeActivity(
     query: ActivityQuery & { view: "endpoints" },
-    options?: RequestOptions
+    options?: RequestOptions,
   ): Promise<EndpointActivity[]>;
   async describeActivity(
     query: ActivityQuery & { view: "metrics" },
-    options?: RequestOptions
+    options?: RequestOptions,
   ): Promise<MetricsActivity[]>;
   async describeActivity(
     query: ActivityQuery & { view: "tests" },
-    options?: RequestOptions
+    options?: RequestOptions,
   ): Promise<TestsActivity[]>;
   async describeActivity(
     query: ActivityQuery & { view: "findings" },
-    options?: RequestOptions
+    options?: RequestOptions,
   ): Promise<FindingsActivity[]>;
   async describeActivity(
     query: ActivityQuery & { view: "protected" },
-    options?: RequestOptions
+    options?: RequestOptions,
   ): Promise<ProtectedActivity[]>;
   async describeActivity(
     query: ActivityQuery & { view: "threats" },
-    options?: RequestOptions
+    options?: RequestOptions,
   ): Promise<ThreatsActivity[]>;
   async describeActivity(
     query: ActivityQuery & { view: "techniques" },
-    options?: RequestOptions
+    options?: RequestOptions,
   ): Promise<TechniquesActivity[]>;
   async describeActivity(
     query: ActivityQuery & {
@@ -170,13 +168,14 @@ export default class DetectController {
         | "threats"
         | "techniques";
     },
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ) {
     const searchParams = new URLSearchParams();
     searchParams.set("view", query.view);
     searchParams.set("start", query.start);
     searchParams.set("finish", query.finish);
     if (query.tests) searchParams.set("tests", query.tests);
+    if (query.threats) searchParams.set("threats", query.threats);
     if (query.endpoints) searchParams.set("endpoints", query.endpoints);
     if (query.dos) searchParams.set("dos", query.dos);
     if (query.control) searchParams.set("control", query.control);
@@ -189,7 +188,7 @@ export default class DetectController {
       {
         method: "GET",
         ...options,
-      }
+      },
     );
 
     return await response.json();
@@ -208,13 +207,13 @@ export default class DetectController {
   /** Get properties of an existing test */
   async getTest(
     testId: string,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<AttachedTest> {
     const response = await this.#client.requestWithAuth(
       `/detect/tests/${testId}`,
       {
         ...options,
-      }
+      },
     );
 
     return (await response.json()) as AttachedTest;
@@ -228,7 +227,7 @@ export default class DetectController {
   async download(
     testId: string,
     filename: string,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<string> {
     const response = await this.#client.requestWithAuth(
       `/detect/tests/${testId}/${filename}`,
@@ -238,60 +237,25 @@ export default class DetectController {
           "Content-Type": "",
           ...(options.headers ?? {}),
         },
-      }
+      },
     );
     return response.text();
   }
 
   /** Enable a test so endpoints will start running it */
-  async enableTest(
-    { test, runCode, tags = "" }: EnableTest,
-    options: RequestOptions = {}
-  ): Promise<EnabledTest> {
-    const response = await this.#client.requestWithAuth(
-      `/detect/queue/${test}`,
-      {
-        method: "POST",
-        body: JSON.stringify({ code: runCode, tags }),
-        ...options,
-      }
-    );
-
-    return (await response.json()) as EnabledTest;
-  }
-
-  /** Disable a test so endpoints will stop running it */
-  async disableTest(
-    { test, tags }: DisableTest,
-    options: RequestOptions = {}
-  ): Promise<StatusResponse> {
-    const params = new URLSearchParams({ tags });
-    const response = await this.#client.requestWithAuth(
-      `/detect/queue/${test}?${params.toString()}`,
-      {
-        method: "DELETE",
-        ...options,
-      }
-    );
-
-    return (await response.json()) as StatusResponse;
-  }
-
-  /** Enable a test so endpoints will start running it */
   async schedule(
-    type: "test" | "threat",
-    id: string,
-    run_code: RunCodeName = getEnumName(RunCodes, RunCodes.DAILY),
-    tags: string = "",
-    options: RequestOptions = {}
-  ): Promise<any> {
+    items: ScheduleItem[],
+    options: RequestOptions = {},
+  ): Promise<EnabledTest> {
     const response = await this.#client.requestWithAuth(`/detect/queue`, {
       method: "POST",
       body: JSON.stringify({
-        test_id: type === "test" ? id : undefined,
-        threat_id: type === "threat" ? id : undefined,
-        code: run_code,
-        tags,
+        items: items.map((item) => ({
+          test_id: item.type === "test" ? item.id : undefined,
+          threat_id: item.type === "threat" ? item.id : undefined,
+          run_code: item.runCode,
+          tags: item.tags,
+        })),
       }),
       ...options,
     });
@@ -301,21 +265,46 @@ export default class DetectController {
 
   /** Disable a test so endpoints will stop running it */
   async unschedule(
-    type: "test" | "threat",
-    id: string,
-    tags: string = "",
-    options: RequestOptions = {}
+    items: UnscheduleItem[],
+    options: RequestOptions = {},
   ): Promise<StatusResponse> {
     const response = await this.#client.requestWithAuth(`/detect/queue`, {
       method: "DELETE",
       body: JSON.stringify({
-        test_id: type === "test" ? id : undefined,
-        threat_id: type === "threat" ? id : undefined,
-        tags,
+        items: items.map((item) => ({
+          test_id: item.type === "test" ? item.id : undefined,
+          threat_id: item.type === "threat" ? item.id : undefined,
+          tags: item.tags,
+        })),
       }),
       ...options,
     });
 
     return (await response.json()) as StatusResponse;
+  }
+
+  /** List Detections */
+  async listDetections(options: RequestOptions = {}): Promise<unknown> {
+    const response = await this.#client.requestWithAuth(`/detect/detections`, {
+      method: "GET",
+      ...options,
+    });
+
+    return (await response.json()) as Detection[];
+  }
+
+  /** Get properties of an existing detection */
+  async getDetection(
+    detectionId: string,
+    options: RequestOptions = {},
+  ): Promise<unknown> {
+    const response = await this.#client.requestWithAuth(
+      `/detect/detections/${detectionId}`,
+      {
+        ...options,
+      },
+    );
+
+    return await response.json();
   }
 }

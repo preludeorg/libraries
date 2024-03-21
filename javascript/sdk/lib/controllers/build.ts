@@ -1,6 +1,7 @@
 import Client from "../client";
 import type {
   AttachedTest,
+  CreateDetectionRule,
   RequestOptions,
   StatusResponse,
   Threat,
@@ -20,7 +21,7 @@ export default class BuildController {
     unit: string,
     technique?: string,
     testId?: string,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<AttachedTest> {
     const response = await this.#client.requestWithAuth(`/build/tests`, {
       method: "POST",
@@ -37,7 +38,7 @@ export default class BuildController {
     name?: string,
     unit?: string,
     technique?: string,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<AttachedTest> {
     const response = await this.#client.requestWithAuth(
       `/build/tests/${testId}`,
@@ -45,7 +46,7 @@ export default class BuildController {
         method: "POST",
         body: JSON.stringify({ name, unit, technique }),
         ...options,
-      }
+      },
     );
 
     return (await response.json()) as AttachedTest;
@@ -53,15 +54,16 @@ export default class BuildController {
 
   /** Delete an existing test */
   async deleteTest(
-    testId: string,
-    options: RequestOptions = {}
+    { test_id, purge = false }: { test_id: string; purge?: boolean },
+    options: RequestOptions = {},
   ): Promise<StatusResponse> {
     const response = await this.#client.requestWithAuth(
-      `/build/tests/${testId}`,
+      `/build/tests/${test_id}`,
       {
         method: "DELETE",
+        body: JSON.stringify({ purge }),
         ...options,
-      }
+      },
     );
 
     return (await response.json()) as StatusResponse;
@@ -75,7 +77,7 @@ export default class BuildController {
     source?: string,
     published?: string,
     tests?: string,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<Threat> {
     const response = await this.#client.requestWithAuth(`/build/threats`, {
       method: "POST",
@@ -101,7 +103,7 @@ export default class BuildController {
     source?: string,
     published?: string,
     tests?: string,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<Threat> {
     const response = await this.#client.requestWithAuth(
       `/build/threats/${threat_id}`,
@@ -116,7 +118,7 @@ export default class BuildController {
           tests,
         }),
         ...options,
-      }
+      },
     );
 
     return (await response.json()) as Threat;
@@ -124,15 +126,16 @@ export default class BuildController {
 
   /** Delete an existing threat */
   async deleteThreat(
-    threat_id: string,
-    options: RequestOptions = {}
+    { threat_id, purge = false }: { threat_id: string; purge?: boolean },
+    options: RequestOptions = {},
   ): Promise<StatusResponse> {
     const response = await this.#client.requestWithAuth(
       `/build/threats/${threat_id}`,
       {
         method: "DELETE",
+        body: JSON.stringify({ purge }),
         ...options,
-      }
+      },
     );
 
     return (await response.json()) as StatusResponse;
@@ -143,7 +146,7 @@ export default class BuildController {
     testId: string,
     filename: string,
     data: BodyInit,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<UploadedAttachment> {
     if (data.toString().length > 1000000) {
       throw new Error(`File size must be under 1MB (${filename})`);
@@ -161,9 +164,65 @@ export default class BuildController {
         body: data,
         headers,
         ...options,
-      }
+      },
     );
 
     return (await response.json()) as UploadedAttachment;
+  }
+
+  /** Create detection */
+  async createDetection(
+    { rules, ruleId, testId, control, detectionId }: CreateDetectionRule,
+    options: RequestOptions = {},
+  ) {
+    const response = await this.#client.requestWithAuth(`/build/detections`, {
+      method: "POST",
+      body: JSON.stringify({
+        rules,
+        test_id: testId,
+        control,
+        detection_id: detectionId,
+        rule_id: ruleId,
+      }),
+      ...options,
+    });
+
+    return (await response.json()) as StatusResponse;
+  }
+
+  /** Update detection */
+  async updateDetection(
+    {
+      detectionId,
+      rules,
+      testId,
+    }: { detectionId: string; rules?: string; testId?: string },
+    options: RequestOptions = {},
+  ) {
+    const response = await this.#client.requestWithAuth(
+      `/build/detections/${detectionId}`,
+      {
+        method: "POST",
+        body: JSON.stringify({ rules, test_id: testId }),
+        ...options,
+      },
+    );
+
+    return (await response.json()) as StatusResponse;
+  }
+
+  async deleteDetection(
+    detectionId: string,
+    options: RequestOptions = {},
+  ): Promise<StatusResponse> {
+    const response = await this.#client.requestWithAuth(
+      `/build/detections/${detectionId}`,
+      {
+        method: "DELETE",
+        ...options,
+      },
+    );
+
+    return (await response.json()) as StatusResponse;
   }
 }
