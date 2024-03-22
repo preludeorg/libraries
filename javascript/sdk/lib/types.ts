@@ -135,7 +135,7 @@ export interface Queue {
  */
 export function getEnumName<T extends Record<string, unknown>>(
   enumType: T,
-  value: T[keyof T],
+  value: T[keyof T]
 ): keyof T {
   const key = Object.keys(enumType).find((k) => enumType[k] === value);
   if (key === undefined) {
@@ -189,6 +189,7 @@ export type Mode = (typeof Modes)[keyof typeof Modes];
 export interface EnabledTest {
   id: string;
 }
+
 
 export interface Probe {
   endpoint_id: string;
@@ -324,10 +325,7 @@ export interface ThreatsActivity {
 }
 
 export class APIError extends Error {
-  constructor(
-    message: string,
-    public status: number,
-  ) {
+  constructor(message: string, public status: number) {
     super(message);
     this.name = "APIError";
   }
@@ -448,10 +446,9 @@ export interface AuditLog {
 export type AuditLogValues = Record<string, unknown>;
 
 export interface BlockResponse {
-  platform: "windows" | "linux" | "mac";
-  status: "already_exists" | "created" | "error";
-  created?: string;
-  error?: string;
+  file: string;
+  already_reported?: boolean;
+  ioc_id?: string;
 }
 
 export interface ProtectedActivity {
@@ -474,10 +471,11 @@ export interface AttachedOIDC {
   domain: string;
 }
 
+
 export interface ScheduleItem {
   id: string;
   type: "test" | "threat";
-  runCode: RunCodeName;
+  runCode: RunCodeName,
   tags: string;
 }
 
@@ -485,46 +483,4 @@ export interface UnscheduleItem {
   id: string;
   type: "test" | "threat";
   tags: string;
-}
-
-export interface DetectionRules {
-  name: string;
-  ruletype_id: string;
-  field_values: FieldValue[];
-}
-
-export interface FieldValue {
-  name: string;
-  type: string;
-  label: string;
-  values: Value[];
-}
-
-export interface Value {
-  label: string;
-  value: string;
-}
-
-export interface CreateDetectionRule {
-  testId: string;
-  rules: DetectionRules;
-  detectionId?: string;
-  ruleId?: string;
-  control: ControlCodeName;
-}
-
-export interface Detection {
-  account_id: string;
-  created: string;
-  id: string;
-  name: string;
-  platform: "windows" | "linux" | "mac";
-  rule_id: string;
-  test: string;
-  rules: DetectionRules;
-}
-
-export interface DetectionReport {
-  platform: "windows" | "linux" | "mac";
-  created: string;
 }
