@@ -80,17 +80,15 @@ class BuildController:
         raise Exception(res.text)
 
     @verify_credentials
-    def create_threat(self, name, threat_id=None, source_id=None, source=None, published=None, tests=None):
+    def create_threat(self, name, published, threat_id=None, source_id=None, source=None, tests=None):
         """ Create a threat """
-        body = dict(name=name)
+        body = dict(name=name, published=published)
         if threat_id:
             body['id'] = threat_id
         if source_id:
             body['source_id'] = source_id
         if source:
             body['source'] = source
-        if published:
-            body['published'] = published
         if tests:
             body['tests'] = tests
 
