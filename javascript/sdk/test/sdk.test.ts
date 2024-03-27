@@ -87,7 +87,7 @@ describe("SDK Test", () => {
         expires: addDays(new Date(), 1).toISOString(),
       });
       expect(result.token).toMatch(
-        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
+        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
       );
       const account = await service.iam.getAccount();
       expect(account).toHaveProperty("users");
@@ -102,7 +102,7 @@ describe("SDK Test", () => {
       expect(result.status).toEqual(true);
       const account = await service.iam.getAccount();
       expect(
-        account.users.find((u) => u.handle === "registration")?.name
+        account.users.find((u) => u.handle === "registration")?.name,
       ).toEqual("updated-name");
     });
 
@@ -119,14 +119,14 @@ describe("SDK Test", () => {
       const account = await service.iam.getAccount();
       const result = await service.iam.resetPassword(
         account.account_id,
-        testEmail
+        testEmail,
       );
       expect(result).toHaveProperty("status");
       expect(result.status).toEqual(true);
     });
   });
 
-  describe("Build Controller", async () => {
+  describe.only("Build Controller", async () => {
     const testId = randomUUID();
     const testName = "test";
     const updatedTestName = "updatedTest";
@@ -151,7 +151,7 @@ describe("SDK Test", () => {
         testName,
         testUnit,
         undefined,
-        testId
+        testId,
       );
       expect(response.name).eq(testName);
     });
@@ -251,7 +251,7 @@ describe("SDK Test", () => {
         expect(download).toContain(testId);
         expect(download).toContain(testName);
       },
-      { timeout: 15_000 }
+      { timeout: 15_000 },
     );
 
     it("enableTest should add a new test to the queue", async function () {
@@ -261,8 +261,7 @@ describe("SDK Test", () => {
           id: activeTest,
           runCode: getEnumName(RunCodes, RunCodes.DAILY),
           tags,
-        }
-
+        },
       ]);
 
       const result = (await service.iam.getAccount()).queue;
@@ -273,7 +272,7 @@ describe("SDK Test", () => {
             test: activeTest,
             run_code: RunCodes.DAILY,
           }),
-        ])
+        ]),
       );
     });
 
@@ -321,7 +320,7 @@ describe("SDK Test", () => {
           });
           await sleep(10_000);
         },
-        { timeout: 20_000 }
+        { timeout: 20_000 },
       );
 
       it(
@@ -336,10 +335,10 @@ describe("SDK Test", () => {
           expect(result).toEqual(
             expect.arrayContaining([
               expect.objectContaining({ test: activeTest }),
-            ])
+            ]),
           );
         },
-        { retry: 5 }
+        { retry: 5 },
       );
     });
 
@@ -351,15 +350,19 @@ describe("SDK Test", () => {
       expect(result.id.length).toEqual(36);
       const endpoints = await service.detect.listEndpoints();
       const endpoint = endpoints.find(
-        (endpoint) => endpoint.endpoint_id === result.id
+        (endpoint) => endpoint.endpoint_id === result.id,
       );
       expect(endpoint?.tags[0]).eq(updatedTags);
     });
 
     it("disableTest should remove the test from the queue", async function () {
-      await service.detect.unschedule([{
-        type: "test", id: activeTest, tags
-      }]);
+      await service.detect.unschedule([
+        {
+          type: "test",
+          id: activeTest,
+          tags,
+        },
+      ]);
       const result = (await service.iam.getAccount()).queue;
       expect(result).not.toEqual(
         expect.arrayContaining([
@@ -367,7 +370,7 @@ describe("SDK Test", () => {
             test: activeTest,
             run_code: RunCodes.DAILY,
           }),
-        ])
+        ]),
       );
     });
 
