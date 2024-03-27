@@ -7,6 +7,7 @@ import {
   ControlCodeName,
   DeployParams,
   DeployedEndpoints,
+  DetectionReport,
   EndpointsParams,
   PartnerEndpoints,
   RequestOptions,
@@ -22,7 +23,7 @@ export default class PartnerController {
 
   async attachPartner(
     { partnerCode, api, user, secret = "" }: AttachPartnerParams,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<AttachedPartner> {
     const response = await this.#client.requestWithAuth(
       `/partner/${partnerCode}`,
@@ -30,7 +31,7 @@ export default class PartnerController {
         method: "POST",
         body: JSON.stringify({ api, user, secret }),
         ...options,
-      }
+      },
     );
 
     return (await response.json()) as AttachedPartner;
@@ -39,7 +40,7 @@ export default class PartnerController {
   async block(
     partnerCode: ControlCode,
     test_id: string,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<BlockResponse[]> {
     const response = await this.#client.requestWithAuth(
       `/partner/block/${partnerCode}`,
@@ -47,7 +48,7 @@ export default class PartnerController {
         method: "POST",
         body: JSON.stringify({ test_id }),
         ...options,
-      }
+      },
     );
 
     return (await response.json()) as BlockResponse[];
@@ -55,7 +56,7 @@ export default class PartnerController {
 
   async detachPartner(
     partner: ControlCodeName,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<StatusResponse> {
     const response = await this.#client.requestWithAuth(`/partner/${partner}`, {
       method: "DELETE",
@@ -74,7 +75,7 @@ export default class PartnerController {
       offset = 0,
       count = 100,
     }: EndpointsParams,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<PartnerEndpoints> {
     const searchParams = new URLSearchParams({
       platform,
@@ -88,7 +89,7 @@ export default class PartnerController {
       {
         method: "GET",
         ...options,
-      }
+      },
     );
 
     return response.json();
@@ -97,7 +98,7 @@ export default class PartnerController {
   /** Deploy probes on all specified partner endpoints */
   async deploy(
     { partnerCode, hostIds }: DeployParams,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<DeployedEndpoints> {
     const response = await this.#client.requestWithAuth(
       `/partner/deploy/${partnerCode}`,
@@ -105,7 +106,7 @@ export default class PartnerController {
         method: "POST",
         body: JSON.stringify({ host_ids: hostIds }),
         ...options,
-      }
+      },
     );
 
     return (await response.json()) as DeployedEndpoints;
@@ -114,14 +115,31 @@ export default class PartnerController {
   /** Generate webhook authenication information for specified partner */
   async webhookGenerate(
     partnerCode: ControlCode,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<StatusResponse> {
     const response = await this.#client.requestWithAuth(
       `/partner/suppress/${partnerCode}`,
       {
         method: "GET",
         ...options,
-      }
+      },
+    );
+
+    return await response.json();
+  }
+
+  async listReports(
+    partner: ControlCode,
+    testId: string,
+    options: RequestOptions = {},
+  ): Promise<DetectionReport[]> {
+    const searchParams = new URLSearchParams({ test_id: testId });
+    const response = await this.#client.requestWithAuth(
+      `/partner/reports/${partner}?${searchParams.toString()}`,
+      {
+        method: "GET",
+        ...options,
+      },
     );
 
     return await response.json();
