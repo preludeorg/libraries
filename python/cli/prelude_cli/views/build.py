@@ -159,7 +159,7 @@ def create_threat(controller, name, published, id, source_id, source, tests, dir
                         config = json.load(f)
                     test = controller.create_test(name=config['name'], unit=config['unit'], technique=config['technique'])
                     created_tests.append(test)
-                    uploads.append(controller.upload(test_id=test['id'], filename='test.go', data=go_code.encode()))
+                    uploads.append(controller.upload(test_id=test['id'], filename=f'{test["id"]}.go', data=go_code.encode()))
                 tests = ','.join([t['id'] for t in created_tests])
             threat = controller.create_threat(
                 name=name,
