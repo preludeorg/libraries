@@ -141,7 +141,7 @@ def upload_attachment(controller, path, test):
 @click.option('-s', '--source', help='source of threat (ex. www.cisa.gov)', default=None, type=str)
 @click.option('-i', '--source_id', help='ID of the threat, per the source (ex. aa23-075a)', default=None, type=str)
 @click.option('-t', '--tests', help='comma-separated list of test IDs', default=None, type=str)
-@click.option('-d', '--directory', help='directory containing tests and IOAs', default=None, type=click.Path(exists=True, dir_okay=True, file_okay=False))
+@click.option('-d', '--directory', help='directory containing tests and IOAs generated from threat_intel', default=None, type=click.Path(exists=True, dir_okay=True, file_okay=False))
 @click.pass_obj
 @handle_api_error
 def create_threat(controller, name, published, id, source_id, source, tests, directory):
