@@ -1,3 +1,6 @@
+import json
+import os
+
 import requests
 
 from prelude_sdk.models.account import verify_credentials
@@ -101,6 +104,24 @@ class BuildController:
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
+
+    @verify_credentials
+    def create_threat_from_directory(self, directory: str, **kwargs):
+        tests = list()
+        uploads = list()
+        try:
+            for technique_dir in os.listdir(directory):
+                with open(f'{directory}/{technique_dir}/test.go', 'r') as f:
+                    go_code = f.read()
+                with open(f'{directory}/{technique_dir}/config.json', 'r') as f:
+                    config = json.load(f)
+                test = self.create_test(name=config['name'], unit=config['unit'], technique=config['technique'])
+                tests.append(test)
+                uploads.append(self.upload(test_id=test['id'], filename='test.go', data=go_code.encode()))
+        except FileNotFoundError as e:
+            raise Exception(e)
+        threat = self.create_threat(**kwargs, tests=','.join([t['id'] for t in tests]))
+        return {'threat': threat, 'tests': tests, 'uploads': uploads}
 
     @verify_credentials
     def update_threat(self, threat_id, name=None, source_id=None, source=None, published=None, tests=None):

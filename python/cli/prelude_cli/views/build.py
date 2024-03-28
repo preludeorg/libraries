@@ -140,19 +140,30 @@ def upload_attachment(controller, path, test):
 @click.option('-s', '--source', help='source of threat (ex. www.cisa.gov)', default=None, type=str)
 @click.option('-i', '--source_id', help='ID of the threat, per the source (ex. aa23-075a)', default=None, type=str)
 @click.option('-t', '--tests', help='comma-separated list of test IDs', default=None, type=str)
+@click.option('-d', '--directory', help='directory containing tests and IOAs', default=None, type=click.Path(exists=True, dir_okay=True, file_okay=False))
 @click.pass_obj
 @handle_api_error
-def create_threat(controller, name, published, id, source_id, source, tests):
+def create_threat(controller, name, published, id, source_id, source, tests, directory):
     """ Create a security threat """
     with Spinner(description='Creating new threat'):
-        t = controller.create_threat(
-            name=name,
-            threat_id=id,
-            source_id=source_id,
-            source=source,
-            published=published,
-            tests=tests
-        )
+        if directory:
+            t = controller.create_threat_from_directory(
+                directory=directory,
+                name=name,
+                threat_id=id,
+                source_id=source_id,
+                source=source,
+                published=published,
+            )
+        else:
+            t = controller.create_threat(
+                name=name,
+                threat_id=id,
+                source_id=source_id,
+                source=source,
+                published=published,
+                tests=tests,
+            )
     print_json(data=t)
 
 
