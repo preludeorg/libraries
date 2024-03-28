@@ -1,5 +1,6 @@
 import importlib.resources as pkg_resources
 import json
+import os
 import re
 import uuid
 from datetime import datetime, timezone
@@ -146,17 +147,21 @@ def upload_attachment(controller, path, test):
 def create_threat(controller, name, published, id, source_id, source, tests, directory):
     """ Create a security threat """
     with Spinner(description='Creating new threat'):
-        if directory:
-            t = controller.create_threat_from_directory(
-                directory=directory,
-                name=name,
-                threat_id=id,
-                source_id=source_id,
-                source=source,
-                published=published,
-            )
-        else:
-            t = controller.create_threat(
+        try:
+            created_tests = list()
+            uploads = list()
+            threat = None
+            if directory:
+                for technique_dir in os.listdir(directory):
+                    with open(f'{directory}/{technique_dir}/test.go', 'r') as f:
+                        go_code = f.read()
+                    with open(f'{directory}/{technique_dir}/config.json', 'r') as f:
+                        config = json.load(f)
+                    test = controller.create_test(name=config['name'], unit=config['unit'], technique=config['technique'])
+                    created_tests.append(test)
+                    uploads.append(controller.upload(test_id=test['id'], filename='test.go', data=go_code.encode()))
+                tests = ','.join([t['id'] for t in created_tests])
+            threat = controller.create_threat(
                 name=name,
                 threat_id=id,
                 source_id=source_id,
@@ -164,7 +169,10 @@ def create_threat(controller, name, published, id, source_id, source, tests, dir
                 published=published,
                 tests=tests,
             )
-    print_json(data=t)
+        except FileNotFoundError as e:
+            raise Exception(e)
+        finally:
+            print_json(data=dict(threat=threat, created_tests=created_tests, uploads=uploads))
 
 
 @build.command('update-threat')
