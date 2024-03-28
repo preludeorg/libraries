@@ -1,12 +1,12 @@
 import click
 
+from prelude_cli.views.build import build
+from prelude_cli.views.configure import configure
+from prelude_cli.views.detect import detect
 from prelude_cli.views.generate import generate
 from prelude_cli.views.iam import iam
-from prelude_cli.views.build import build
-from prelude_cli.views.detect import detect
 from prelude_cli.views.partner import partner
 from prelude_sdk.models.account import Account
-from prelude_cli.views.configure import configure
 
 
 def complete_profile(ctx, param, incomplete):

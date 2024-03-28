@@ -16,13 +16,13 @@ def generate(ctx):
 
 
 @generate.command('threat-intel')
-@click.argument('file', type=click.Path(exists=True, file_okay=True, dir_okay=False, readable=True))
+@click.argument('threat_pdf', type=click.Path(exists=True, file_okay=True, dir_okay=False, readable=True))
 @click.argument('output_dir', type=click.Path(dir_okay=True, file_okay=False, writable=True))
 @click.pass_obj
 @handle_api_error
-def generate_threat_intel(controller: GenerateController, file: str, output_dir: str):
+def generate_threat_intel(controller: GenerateController, threat_pdf: str, output_dir: str):
     with Spinner('Uploading') as spinner:
-        job_id = controller.upload_threat_intel(file)['job_id']
+        job_id = controller.upload_threat_intel(threat_pdf)['job_id']
         spinner.update(spinner.task_ids[-1], description='Parsing PDF')
         while (result := controller.get_threat_intel(job_id)) and result['status'] == 'RUNNING':
             if result['step'] == 'GENERATE':
