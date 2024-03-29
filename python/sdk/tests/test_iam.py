@@ -77,7 +77,11 @@ class TestIAM:
             ],
             probe_sleep='600s',
             oidc=dict(),
-            features=dict(oidc=False, threat_intel=False, detections=False),
+            features=dict(
+                oidc=False,
+                threat_intel=False,
+                detections=False
+            )
         )
 
     def test_account_subscribe(self, unwrap, manual, email):
