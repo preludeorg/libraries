@@ -27,12 +27,13 @@ class TestBuild:
         self.unit = 'custom'
         self.technique = 'T1234.001'
 
-    def test_create_test(self, unwrap):
+    def test_create_test(self, unwrap, email):
         res = unwrap(self.build.create_test)(self.build, test_id=self.test_id, name=self.name, unit=self.unit)
 
         pytest.test_id = self.test_id
         pytest.expected_test = dict(
             account_id=pytest.account.headers['account'],
+            author=email,
             id=self.test_id,
             name=self.name,
             unit=self.unit,
@@ -136,7 +137,7 @@ class TestThreat:
         self.source = 'https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-061a'
         self.tests = ['881f9052-fb52-4daf-9ad2-0a7ad9615baf', 'b74ad239-2ddd-4b1e-b608-8397a43c7c54', pytest.test_id]
 
-    def test_create_threat(self, unwrap):
+    def test_create_threat(self, unwrap, email):
         res = unwrap(self.build.create_threat)(self.build, name=self.name, published=self.published,
                                                threat_id=self.threat_id, source_id=self.source_id, source=self.source,
                                                tests=','.join(self.tests))
@@ -144,6 +145,7 @@ class TestThreat:
         pytest.threat_id = self.threat_id
         pytest.expected_threat = dict(
             account_id=pytest.account.headers['account'],
+            author=email,
             id=self.threat_id,
             source_id=self.source_id,
             name=self.name,
