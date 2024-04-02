@@ -141,9 +141,9 @@ class BuildController:
         raise Exception(res.text)
 
     @verify_credentials
-    def create_detection(self, rules: dict, test_id: str, partner: Control, detection_id=None, rule_id=None):
+    def create_detection(self, rule: str, test_id: str, detection_id=None, rule_id=None):
         """ Create a detection """
-        body = dict(rules=rules, test_id=test_id, control=partner.name)
+        body = dict(rule=rule, test_id=test_id)
         if detection_id:
             body['detection_id'] = detection_id
         if rule_id:
@@ -160,11 +160,11 @@ class BuildController:
         raise Exception(res.text)
 
     @verify_credentials
-    def update_detection(self, detection_id: str, rules=None, test_id=None):
+    def update_detection(self, detection_id: str, rule=None, test_id=None):
         """ Update a detection """
         body = dict()
-        if rules:
-            body['rules'] = rules
+        if rule:
+            body['rule'] = rule
         if test_id:
             body['test_id'] = test_id
 

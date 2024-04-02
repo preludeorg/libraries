@@ -212,24 +212,20 @@ def delete_threat(controller, threat, purge):
 
 
 @build.command('create-detection')
-@click.argument('partner', type=click.Choice([Control.CROWDSTRIKE.name], case_sensitive=False))
-@click.option('-r', '--rules', help='CRWD detection rules, as string-formatted json', default=None, type=str)
-@click.option('--rules_file', help='CRWD detection rules, from a json file', default=None, type=click.File())
+@click.argument('sigma_rule_file', type=click.Path(exists=True, dir_okay=False))
 @click.option('-t', '--test', help='ID of the test this detection is for', required=True, type=str)
 @click.option('--detection_id', help='detection ID', default=None, type=str)
 @click.option('--rule_id', help='rule ID', default=None, type=str)
 @click.pass_obj
 @handle_api_error
-def create_detection(controller, rules, rules_file, test, partner, detection_id, rule_id):
-    """ Create an EDR detection rule """
-    if (rules and rules_file) or (not rules and not rules_file):
-        raise UsageError('Exactly one of --rules and --rules_file must be set')
-
+def create_detection(controller, sigma_rule_file, test, detection_id, rule_id):
+    """ Create a detection rule """
     with Spinner(description='Creating new detection'):
+        with open(sigma_rule_file, 'r') as f:
+            rule = f.read()
         t = controller.create_detection(
-            rules=json.loads(rules) if rules else json.load(rules_file),
+            rule=rule,
             test_id=test,
-            partner=Control[partner],
             detection_id=detection_id,
             rule_id=rule_id
         )
@@ -238,21 +234,18 @@ def create_detection(controller, rules, rules_file, test, partner, detection_id,
 
 @build.command('update-detection')
 @click.argument('detection')
-@click.option('-r', '--rules', help='CRWD detection rules, as string-formatted json', default=None, type=str)
-@click.option('--rules_file', help='CRWD detection rules, from a json file', default=None, type=click.File())
-@click.option('--test', help='ID of the test this detection is for', default=None, type=str)
+@click.option('--sigma_rule_file', help='Sigma rule, from a yaml file',
+              default=None, type=click.Path(exists=True, dir_okay=False))
+@click.option('-t', '--test', help='ID of the test this detection is for', default=None, type=str)
 @click.pass_obj
 @handle_api_error
-def update_detection(controller, detection, rules, rules_file, test):
-    """ Update a detection rule """
-    if rules and rules_file:
-        raise UsageError('At most one of --rules and --rules_file must be set')
-
-    if rules or rules_file:
-        rules = json.loads(rules) if rules else json.load(rules_file)
+def update_detection(controller, detection, sigma_rule_file, test):
+    """ Update a detection """
     with Spinner(description='Updating detection'):
+        with open(sigma_rule_file, 'r') as f:
+            rule = f.read()
         data = controller.update_detection(
-            rules=rules,
+            rule=rule,
             test_id=test,
             detection_id=detection,
         )
