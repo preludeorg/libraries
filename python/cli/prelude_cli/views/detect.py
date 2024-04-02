@@ -1,14 +1,15 @@
+import asyncio
 import click
-import asyncio 
 
-from rich import print_json
+from datetime import datetime, time, timedelta, timezone
+from dateutil.parser import parse
 from pathlib import Path, PurePath
-from datetime import datetime, timedelta, timezone, time
+from rich import print_json
 
-from prelude_sdk.models.codes import RunCode, Control
 from prelude_cli.views.shared import handle_api_error, Spinner
-from prelude_sdk.controllers.iam_controller import IAMController
 from prelude_sdk.controllers.detect_controller import DetectController
+from prelude_sdk.controllers.iam_controller import IAMController
+from prelude_sdk.models.codes import RunCode, Control
 
 
 @click.group()
@@ -229,22 +230,25 @@ def clone(controller):
               default='logs', show_default=True,
               type=click.Choice(['endpoints', 'findings', 'logs', 'metrics', 'protected', 'techniques', 'tests', 'threats']))
 @click.option('--control', type=click.Choice([c.name for c in Control], case_sensitive=False))
-@click.option('--days', help='days to look back (max: 29)', default=29, type=int)
 @click.option('--dos', help='comma-separated list of DOS', type=str)
 @click.option('--endpoints', help='comma-separated list of endpoint IDs', type=str)
+@click.option('--finish', help='end date of activity (end of day)', type=str)
 @click.option('--os', help='comma-separated list of OS', type=str)
 @click.option('--policy', help='comma-separated list of policies', type=str)
 @click.option('--social', help='whether to fetch account-specific or social stats. Applicable to the following views: protected', is_flag=True)
+@click.option('--start', help='start date of activity (beginning of day)', type=str)
 @click.option('--techniques', help='comma-separated list of techniques', type=str)
 @click.option('--tests', help='comma-separated list of test IDs', type=str)
 @click.option('--threats', help='comma-separated list of threat IDs', type=str)
 @click.pass_obj
 @handle_api_error
-def describe_activity(controller, control, days, dos, endpoints, os, policy, social, techniques, tests, threats, view):
+def describe_activity(controller, control, dos, endpoints, finish, os, policy, social, start, techniques, tests, threats, view):
     """ View my Detect results """
+    start = parse(start) if start else datetime.now(timezone.utc) - timedelta(days=29)
+    finish = parse(finish) if finish else datetime.now(timezone.utc)
     filters = dict(
-        start=datetime.combine(datetime.now(timezone.utc) - timedelta(days=min(days, 29)), time.min),
-        finish=datetime.combine(datetime.now(timezone.utc), time.max)
+        start=datetime.combine(start, time.min),
+        finish=datetime.combine(finish, time.max)
     )
     if control:
         filters['control'] = Control[control.upper()].value
