@@ -1,12 +1,15 @@
 import requests
 
+from prelude_sdk.controllers.http_controller import HttpController
+
 from prelude_sdk.models.account import verify_credentials
 from prelude_sdk.models.codes import RunCode
 
 
-class DetectController:
+class DetectController(HttpController):
 
     def __init__(self, account):
+        super().__init__()
         self.account = account
 
     @verify_credentials
@@ -16,7 +19,7 @@ class DetectController:
         if tags:
             body['tags'] = tags
 
-        res = requests.post(
+        res = self._session.post(
             f'{self.account.hq}/detect/endpoint',
             headers=self.account.headers,
             json=body,
@@ -33,7 +36,7 @@ class DetectController:
         if tags is not None:
             body['tags'] = tags
 
-        res = requests.post(
+        res = self._session.post(
             f'{self.account.hq}/detect/endpoint/{endpoint_id}',
             headers=self.account.headers,
             json=body,
@@ -47,7 +50,7 @@ class DetectController:
     def delete_endpoint(self, ident: str):
         """ Delete an endpoint from your account """
         params = dict(id=ident)
-        res = requests.delete(
+        res = self._session.delete(
             f'{self.account.hq}/detect/endpoint',
             headers=self.account.headers,
             json=params,
@@ -61,7 +64,7 @@ class DetectController:
     def list_endpoints(self, days: int = 90):
         """ List all endpoints on your account """
         params = dict(days=days)
-        res = requests.get(
+        res = self._session.get(
             f'{self.account.hq}/detect/endpoint',
             headers=self.account.headers,
             params=params,
@@ -75,7 +78,7 @@ class DetectController:
     def describe_activity(self, filters: dict, view: str = 'protected'):
         """ Get report for an Account """
         params = dict(view=view, **filters)
-        res = requests.get(
+        res = self._session.get(
             f'{self.account.hq}/detect/activity',
             headers=self.account.headers,
             params=params,
@@ -88,7 +91,7 @@ class DetectController:
     @verify_credentials
     def list_tests(self):
         """ List all tests available to an account """
-        res = requests.get(
+        res = self._session.get(
             f'{self.account.hq}/detect/tests',
             headers=self.account.headers,
             timeout=10
@@ -100,7 +103,7 @@ class DetectController:
     @verify_credentials
     def get_test(self, test_id):
         """ Get properties of an existing test """
-        res = requests.get(
+        res = self._session.get(
             f'{self.account.hq}/detect/tests/{test_id}',
             headers=self.account.headers,
             timeout=10
@@ -112,7 +115,7 @@ class DetectController:
     @verify_credentials
     def list_threats(self):
         """ List threats """
-        res = requests.get(
+        res = self._session.get(
             f'{self.account.hq}/detect/threats',
             headers=self.account.headers,
             params={},
@@ -125,7 +128,7 @@ class DetectController:
     @verify_credentials
     def get_threat(self, threat_id):
         """ Get properties of an existing threat """
-        res = requests.get(
+        res = self._session.get(
             f'{self.account.hq}/detect/threats/{threat_id}',
             headers=self.account.headers,
             timeout=10
@@ -137,7 +140,7 @@ class DetectController:
     @verify_credentials
     def list_detections(self):
         """ List detections """
-        res = requests.get(
+        res = self._session.get(
             f'{self.account.hq}/detect/detections',
             headers=self.account.headers,
             params={},
@@ -150,7 +153,7 @@ class DetectController:
     @verify_credentials
     def get_detection(self, detection_id):
         """ Get properties of an existing detection """
-        res = requests.get(
+        res = self._session.get(
             f'{self.account.hq}/detect/detections/{detection_id}',
             headers=self.account.headers,
             timeout=10
@@ -162,7 +165,7 @@ class DetectController:
     @verify_credentials
     def download(self, test_id, filename):
         """ Clone a test file or attachment"""
-        res = requests.get(
+        res = self._session.get(
             f'{self.account.hq}/detect/tests/{test_id}/{filename}',
             headers=self.account.headers,
             timeout=10
@@ -178,7 +181,7 @@ class DetectController:
         Example: items=[dict(run_code='DAILY', tags='grp-1,grp2', test_id='123-123-123'),
                         dict(run_code='DAILY', tags='grp-1', threat_id='abc-def-ghi')]
         """
-        res = requests.post(
+        res = self._session.post(
             url=f'{self.account.hq}/detect/queue',
             headers=self.account.headers,
             json=dict(items=items),
@@ -195,7 +198,7 @@ class DetectController:
         Example: items=[dict(tags='grp-1,grp2', test_id='123-123-123'),
                         dict(tags='grp-1', threat_id='abc-def-ghi')]
         """
-        res = requests.delete(
+        res = self._session.delete(
             f'{self.account.hq}/detect/queue',
             headers=self.account.headers,
             json=dict(items=items),

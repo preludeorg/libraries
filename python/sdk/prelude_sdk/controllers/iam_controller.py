@@ -1,13 +1,16 @@
 import requests
 import datetime
 
+from prelude_sdk.controllers.http_controller import HttpController
+
 from prelude_sdk.models.codes import AuditEvent, Mode, Permission
 from prelude_sdk.models.account import verify_credentials
 
 
-class IAMController:
+class IAMController(HttpController):
 
     def __init__(self, account):
+        super().__init__()
         self.account = account
 
     @verify_credentials
@@ -20,7 +23,7 @@ class IAMController:
         if slug:
             body['slug'] = slug
 
-        res = requests.post(
+        res = self._session.post(
             url=f'{self.account.hq}/iam/account',
             json=body,
             headers=self.account.headers,
@@ -39,7 +42,7 @@ class IAMController:
     @verify_credentials
     def purge_account(self):
         """ Delete an account and all things in it """
-        res = requests.delete(
+        res = self._session.delete(
             f'{self.account.hq}/iam/account',
             headers=self.account.headers,
             timeout=10
@@ -59,7 +62,7 @@ class IAMController:
         if slug is not None:
             body['slug'] = slug
 
-        res = requests.put(
+        res = self._session.put(
             f'{self.account.hq}/iam/account',
             headers=self.account.headers,
             json=body,
@@ -79,7 +82,7 @@ class IAMController:
             oidc_config_url=oidc_config_url
         )
 
-        res = requests.post(
+        res = self._session.post(
             f'{self.account.hq}/iam/account/oidc',
             headers=self.account.headers,
             json=body,
@@ -92,7 +95,7 @@ class IAMController:
     @verify_credentials
     def detach_oidc(self):
         """ Detach OIDC to an account """
-        res = requests.delete(
+        res = self._session.delete(
             f'{self.account.hq}/iam/account/oidc',
             headers=self.account.headers,
             timeout=10
@@ -104,7 +107,7 @@ class IAMController:
     @verify_credentials
     def get_account(self):
         """ Get account properties """
-        res = requests.get(
+        res = self._session.get(
             f'{self.account.hq}/iam/account',
             headers=self.account.headers,
             timeout=10
@@ -122,7 +125,7 @@ class IAMController:
         if expires:
             body['expires'] = expires.isoformat()
 
-        res = requests.post(
+        res = self._session.post(
             url=f'{self.account.hq}/iam/user',
             json=body,
             headers=self.account.headers,
@@ -145,7 +148,7 @@ class IAMController:
         if oidc is not None:
             body['oidc'] = oidc
 
-        res = requests.put(
+        res = self._session.put(
             f'{self.account.hq}/iam/user',
             json=body,
             headers=self.account.headers,
@@ -158,7 +161,7 @@ class IAMController:
     @verify_credentials
     def delete_user(self, handle):
         """ Delete a user from an account """
-        res = requests.delete(
+        res = self._session.delete(
             f'{self.account.hq}/iam/user',
             json=dict(handle=handle),
             headers=self.account.headers,
@@ -175,7 +178,7 @@ class IAMController:
             account_id=account_id or self.account.headers['account'],
             handle=email
         )
-        res = requests.post(
+        res = self._session.post(
             f'{self.account.hq}/iam/user/reset',
             json=data,
             timeout=10
@@ -188,7 +191,7 @@ class IAMController:
     def verify_user(self, token: str):
         """ Verify a user """
         params = dict(token=token, request_credentials='true')
-        res = requests.get(
+        res = self._session.get(
             f'{self.account.hq}/iam/user',
             params=params,
             timeout=10
@@ -206,7 +209,7 @@ class IAMController:
     def audit_logs(self, days: int = 7, limit: int = 1000):
         """ Get audit logs from the last X days """
         params = dict(days=days, limit=limit)
-        res = requests.get(
+        res = self._session.get(
             f'{self.account.hq}/iam/audit',
             headers=self.account.headers,
             params=params,
@@ -219,7 +222,7 @@ class IAMController:
     @verify_credentials
     def subscribe(self, event: AuditEvent):
         """ Subscribe to email notifications for an event """
-        res = requests.post(
+        res = self._session.post(
             f'{self.account.hq}/iam/subscribe/{event.name}',
             headers=self.account.headers,
             timeout=10
@@ -231,7 +234,7 @@ class IAMController:
     @verify_credentials
     def unsubscribe(self, event: AuditEvent):
         """ Unsubscribe to email notifications for an event """
-        res = requests.delete(
+        res = self._session.delete(
             f'{self.account.hq}/iam/subscribe/{event.name}',
             headers=self.account.headers,
             timeout=10

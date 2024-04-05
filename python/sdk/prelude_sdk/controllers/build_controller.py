@@ -1,12 +1,15 @@
 import requests
 
+from prelude_sdk.controllers.http_controller import HttpController
+
 from prelude_sdk.models.account import verify_credentials
 from prelude_sdk.models.codes import Control
 
 
-class BuildController:
+class BuildController(HttpController):
 
     def __init__(self, account):
+        super().__init__()
         self.account = account
 
     @verify_credentials
@@ -18,7 +21,7 @@ class BuildController:
         if test_id:
             body['id'] = test_id
 
-        res = requests.post(
+        res = self._session.post(
             f'{self.account.hq}/build/tests',
             json=body,
             headers=self.account.headers,
@@ -39,7 +42,7 @@ class BuildController:
         if technique is not None:
             body['technique'] = technique
 
-        res = requests.post(
+        res = self._session.post(
             f'{self.account.hq}/build/tests/{test_id}',
             json=body,
             headers=self.account.headers,
@@ -52,7 +55,7 @@ class BuildController:
     @verify_credentials
     def delete_test(self, test_id, purge):
         """ Delete an existing test """
-        res = requests.delete(
+        res = self._session.delete(
             f'{self.account.hq}/build/tests/{test_id}',
             json=dict(purge=purge),
             headers=self.account.headers,
@@ -69,7 +72,7 @@ class BuildController:
             raise ValueError(f'File size must be under 1MB ({filename})')
 
         h = self.account.headers | {'Content-Type': 'application/octet-stream'}
-        res = requests.post(
+        res = self._session.post(
             f'{self.account.hq}/build/tests/{test_id}/{filename}',
             data=data,
             headers=h,
@@ -92,7 +95,7 @@ class BuildController:
         if tests:
             body['tests'] = tests
 
-        res = requests.post(
+        res = self._session.post(
             f'{self.account.hq}/build/threats',
             json=body,
             headers=self.account.headers,
@@ -117,7 +120,7 @@ class BuildController:
         if tests is not None:
             body['tests'] = tests
 
-        res = requests.post(
+        res = self._session.post(
             f'{self.account.hq}/build/threats/{threat_id}',
             json=body,
             headers=self.account.headers,
@@ -130,7 +133,7 @@ class BuildController:
     @verify_credentials
     def delete_threat(self, threat_id, purge):
         """ Delete an existing threat """
-        res = requests.delete(
+        res = self._session.delete(
             f'{self.account.hq}/build/threats/{threat_id}',
             json=dict(purge=purge),
             headers=self.account.headers,
@@ -149,7 +152,7 @@ class BuildController:
         if rule_id:
             body['rule_id'] = rule_id
 
-        res = requests.post(
+        res = self._session.post(
             f'{self.account.hq}/build/detections',
             json=body,
             headers=self.account.headers,
@@ -168,7 +171,7 @@ class BuildController:
         if test_id:
             body['test_id'] = test_id
 
-        res = requests.post(
+        res = self._session.post(
             f'{self.account.hq}/build/detections/{detection_id}',
             json=body,
             headers=self.account.headers,
@@ -181,7 +184,7 @@ class BuildController:
     @verify_credentials
     def delete_detection(self, detection_id: str):
         """ Delete an existing detection """
-        res = requests.delete(
+        res = self._session.delete(
             f'{self.account.hq}/build/detections/{detection_id}',
             headers=self.account.headers,
             timeout=10
