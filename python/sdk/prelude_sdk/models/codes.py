@@ -105,34 +105,35 @@ class State(Enum):
     @classmethod
     def mapping(cls):
         return {
+            State.ERROR: [
+                ExitCode.FAILED_CLEANUP,
+                ExitCode.MALFORMED_TEST,
+                ExitCode.TIMED_OUT,
+                ExitCode.UNEXPECTED_ERROR,
+                ExitCode.UNKNOWN_ERROR,
+                ExitCode.UNREPORTED,
+            ],
             State.NONE: [ExitCode.MISSING],
+            State.NOT_RELEVANT: [
+                ExitCode.ENDPOINT_NOT_RELEVANT,
+                ExitCode.TEST_NOT_RELEVANT,
+            ],
             State.PROTECTED: [
+                ExitCode.BLOCKED,
+                ExitCode.BLOCKED_AT_PERIMETER,
+                ExitCode.DYNAMIC_QUARANTINE,
+                ExitCode.ENDPOINT_NOT_RELEVANT,
+                ExitCode.EXPLOIT_PREVENTED,
                 ExitCode.PROCESS_BLOCKED,
                 ExitCode.PROCESS_BLOCKED_GRACEFULLY,
                 ExitCode.PROTECTED,
-                ExitCode.DYNAMIC_QUARANTINE,
-                ExitCode.BLOCKED_AT_PERIMETER,
-                ExitCode.BLOCKED,
-                ExitCode.EXPLOIT_PREVENTED,
-                ExitCode.TEST_DISALLOWED,
                 ExitCode.STATIC_QUARANTINE,
+                ExitCode.TEST_DISALLOWED,
                 ExitCode.TEST_NOT_RELEVANT,
-                ExitCode.ENDPOINT_NOT_RELEVANT
             ],
             State.UNPROTECTED: [
                 ExitCode.UNPROTECTED,
             ],
-            State.ERROR: [
-                ExitCode.UNKNOWN_ERROR,
-                ExitCode.MALFORMED_TEST,
-                ExitCode.TIMED_OUT,
-                ExitCode.FAILED_CLEANUP,
-                ExitCode.UNEXPECTED_ERROR
-            ],
-            State.NOT_RELEVANT: [
-                ExitCode.TEST_NOT_RELEVANT,
-                ExitCode.ENDPOINT_NOT_RELEVANT
-            ]
         }
 
 
