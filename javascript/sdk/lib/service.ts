@@ -1,6 +1,7 @@
 import Client from "./client";
 import BuildController from "./controllers/build";
 import DetectController from "./controllers/detect";
+import GenerateController from "./controllers/generate";
 import IAMController from "./controllers/iam";
 import PartnerController from "./controllers/partner";
 import ProbeController from "./controllers/probe";
@@ -10,6 +11,7 @@ export class Service {
   #client: Client;
   credentials?: Credentials;
   build: BuildController;
+  generate: GenerateController;
   iam: IAMController;
   detect: DetectController;
   probe: ProbeController;
@@ -20,10 +22,11 @@ export class Service {
       config.host,
       config.credentials,
       config.requestInterceptor,
-      config.responseInterceptor
+      config.responseInterceptor,
     );
 
     this.build = new BuildController(this.#client);
+    this.generate = new GenerateController(this.#client);
     this.iam = new IAMController(this.#client);
     this.detect = new DetectController(this.#client);
     this.probe = new ProbeController(this.#client);

@@ -19,7 +19,28 @@ export interface StatusResponse {
   status: true;
 }
 
+export interface CreateThreatProps {
+  name: string;
+  published: string;
+  id?: string;
+  source_id?: string;
+  source?: string;
+  tests?: string;
+  ai_generated?: boolean;
+}
+
+export interface UpdateThreatProps {
+  threat_id: string;
+  name?: string;
+  source_id?: string;
+  source?: string;
+  published?: string;
+  tests?: string;
+  ai_generated?: boolean;
+}
+
 export interface Threat {
+  author: string | null;
   account_id: string;
   id: string;
   source_id: string | null;
@@ -31,7 +52,16 @@ export interface Threat {
   created: string;
 }
 
+export interface CreateTestProps {
+  name: string;
+  unit: string;
+  technique?: string;
+  testId?: string;
+  ai_generated?: boolean;
+}
+
 export interface Test {
+  author: string | null;
   account_id: string;
   id: string;
   name: string;
@@ -45,9 +75,20 @@ export type AttachedTest = Test & {
   attachments: string[];
 };
 
+export interface UploadProps {
+  testId: string;
+  filename: string;
+  data: BodyInit;
+  ai_generated?: boolean;
+}
+
 export interface UploadedAttachment {
   id: string;
   filename: string;
+}
+
+export interface Terms {
+  threat_intel?: Record<string, string>;
 }
 
 export interface User {
@@ -56,12 +97,15 @@ export interface User {
   expires: string;
   name: string;
   oidc: boolean;
+  subscriptions: string[];
+  terms: Terms;
 }
 
 export interface Control {
   id: ControlCode;
   api: string;
 }
+
 export interface Account {
   account_id: string;
   whoami: string;
@@ -71,8 +115,13 @@ export interface Account {
   mode: Mode;
   slug: string;
   company: string;
+  probe_sleep: string;
   oidc?: OIDCSettings;
-  oidc_enabled?: boolean;
+  features: {
+    oidc: boolean;
+    threat_intel: boolean;
+    detections: boolean;
+  };
 }
 
 export interface OIDCSettings {
@@ -81,6 +130,36 @@ export interface OIDCSettings {
   domain: string;
   issuer: OIDC;
   oidc_config_url: string;
+}
+
+export type ThreatIntel =
+  | ThreatIntelComplete
+  | ThreatIntelFailed
+  | ThreatIntelRunning;
+
+export interface ThreatIntelRunning {
+  status: "RUNNING";
+  step: "PARSE" | "GENERATE";
+  num_tasks: number;
+  completed_tasks: number;
+}
+
+export interface ThreatIntelFailed {
+  status: "FAILED";
+  reason: "FAILED" | "TIMED_OUT" | "ABORTED";
+}
+export interface ThreatIntelComplete {
+  status: "COMPLETE";
+  output: ThreatIntelOutput[];
+  title: string | null;
+}
+
+export interface ThreatIntelOutput {
+  status: "SUCCEEDED" | "FAILED";
+  name: string;
+  technique: string;
+  go_code: string | null;
+  sigma_rules: string[] | null;
 }
 
 export interface VerifiedUser {
@@ -135,7 +214,7 @@ export interface Queue {
  */
 export function getEnumName<T extends Record<string, unknown>>(
   enumType: T,
-  value: T[keyof T]
+  value: T[keyof T],
 ): keyof T {
   const key = Object.keys(enumType).find((k) => enumType[k] === value);
   if (key === undefined) {
@@ -190,7 +269,6 @@ export interface EnabledTest {
   id: string;
 }
 
-
 export interface Probe {
   endpoint_id: string;
   host: string;
@@ -210,6 +288,7 @@ export const ExitCodes = {
   MISSING: -1,
   UNKNOWN_ERROR: 1,
   MALFORMED_TEST: 2,
+  UNREPORTED: 3,
   PROCESS_BLOCKED: 9,
   PROCESS_BLOCKED_GRACEFULLY: 15,
   PROTECTED: 100,
@@ -252,6 +331,7 @@ export const ExitCodeGroup = {
     ExitCodes.TIMED_OUT,
     ExitCodes.FAILED_CLEANUP,
     ExitCodes.UNEXPECTED_ERROR,
+    ExitCodes.UNREPORTED,
   ],
   NOT_RELEVANT: [ExitCodes.TEST_NOT_RELEVANT, ExitCodes.ENDPOINT_NOT_RELEVANT],
 } as const;
@@ -325,7 +405,10 @@ export interface ThreatsActivity {
 }
 
 export class APIError extends Error {
-  constructor(message: string, public status: number) {
+  constructor(
+    message: string,
+    public status: number,
+  ) {
     super(message);
     this.name = "APIError";
   }
@@ -445,10 +528,16 @@ export interface AuditLog {
 
 export type AuditLogValues = Record<string, unknown>;
 
+export interface BlockResponseRule {
+  name: string;
+  status: "CREATED" | "ALREADY_EXISTS" | "ERROR";
+  created?: string;
+  error?: string;
+}
+
 export interface BlockResponse {
-  file: string;
-  already_reported?: boolean;
-  ioc_id?: string;
+  platform: "windows" | "linux" | "mac";
+  rules: BlockResponseRule[];
 }
 
 export interface ProtectedActivity {
@@ -471,11 +560,10 @@ export interface AttachedOIDC {
   domain: string;
 }
 
-
 export interface ScheduleItem {
   id: string;
   type: "test" | "threat";
-  runCode: RunCodeName,
+  runCode: RunCodeName;
   tags: string;
 }
 
@@ -483,4 +571,31 @@ export interface UnscheduleItem {
   id: string;
   type: "test" | "threat";
   tags: string;
+}
+
+export interface DetectionRules {
+  name: string;
+  ruletype_id: string;
+}
+
+export interface CreateDetectionRule {
+  testId: string;
+  rule: string;
+  detectionId?: string;
+  ruleId?: string;
+}
+
+export interface Detection {
+  account_id: string;
+  created: string;
+  id: string;
+  name: string;
+  rule_id: string;
+  test: string;
+  rule: Record<string, unknown>;
+}
+
+export interface DetectionReport {
+  platform: "windows" | "linux" | "mac";
+  created: string;
 }
