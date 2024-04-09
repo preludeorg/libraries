@@ -11,6 +11,7 @@ import type {
   ModeName,
   RequestOptions,
   StatusResponse,
+  Terms,
   UpdateUserParams,
   VerifiedUser,
 } from "../types";
@@ -24,11 +25,17 @@ export default class IAMController {
 
   async newAccount(
     { email, name, company, slug, additionalFields }: CreateAccountParams,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<Credentials> {
     const response = await this.#client.request("/iam/account", {
       method: "POST",
-      body: JSON.stringify({ handle: email, user_name: name, company, slug, additionalFields }),
+      body: JSON.stringify({
+        handle: email,
+        user_name: name,
+        company,
+        slug,
+        additionalFields,
+      }),
       ...options,
     });
 
@@ -60,7 +67,7 @@ export default class IAMController {
       company,
       slug,
     }: { mode?: ModeName; company?: string; slug?: string },
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<StatusResponse> {
     const response = await this.#client.requestWithAuth("/iam/account", {
       method: "PUT",
@@ -84,7 +91,7 @@ export default class IAMController {
   /** Exchange verification token for bearer token */
   async exchangeToken(
     token: string,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<Credentials & { handle: string }> {
     const searchParams = new URLSearchParams({
       token,
@@ -94,7 +101,7 @@ export default class IAMController {
       {
         method: "GET",
         ...options,
-      }
+      },
     );
 
     const json = (await response.json()) as {
@@ -122,19 +129,19 @@ export default class IAMController {
         method: "GET",
         redirect: "manual",
         ...options,
-      }
+      },
     );
 
     return new URL(
       `iam/account/login?${searchParams.toString()}`,
-      this.#client.host
+      this.#client.host,
     ).toString();
   }
 
   /** Create a new user inside an account */
   async createUser(
     { permission, email, name, expires, oidc }: CreateUserParams,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<CreatedUser> {
     const response = await this.#client.requestWithAuth("/iam/user", {
       method: "POST",
@@ -148,7 +155,7 @@ export default class IAMController {
   /** Update properties on a user */
   async updateUser(
     params: UpdateUserParams,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<StatusResponse> {
     const { email, ...otherParams } = params;
 
@@ -165,7 +172,7 @@ export default class IAMController {
   async resetPassword(
     account_id: string,
     email: string,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<StatusResponse> {
     const response = await this.#client.request("/iam/user/reset", {
       method: "POST",
@@ -179,7 +186,7 @@ export default class IAMController {
   /** Verify a user */
   async verifyUser(
     token: string,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<VerifiedUser> {
     const searchParams = new URLSearchParams({
       token: token.toString(),
@@ -190,7 +197,7 @@ export default class IAMController {
       {
         method: "GET",
         ...options,
-      }
+      },
     );
 
     return (await response.json()) as VerifiedUser;
@@ -199,7 +206,7 @@ export default class IAMController {
   /** Delete a user from an account */
   async deleteUser(
     handle: string,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<StatusResponse> {
     const response = await this.#client.requestWithAuth("/iam/user", {
       method: "DELETE",
@@ -214,7 +221,7 @@ export default class IAMController {
   async auditLogs(
     days: number = 7,
     limit: number = 1000,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<AuditLog[]> {
     const searchParams = new URLSearchParams({
       days: days.toString(),
@@ -225,7 +232,7 @@ export default class IAMController {
       {
         method: "GET",
         ...options,
-      }
+      },
     );
 
     return (await response.json()) as AuditLog[];
@@ -233,7 +240,7 @@ export default class IAMController {
 
   async attachOIDC(
     params: AttachOIDC,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<AttachedOIDC> {
     const response = await this.#client.requestWithAuth("iam/account/oidc", {
       method: "POST",
@@ -251,5 +258,22 @@ export default class IAMController {
     });
 
     return (await response.json()) as { domain: string };
+  }
+
+  async acceptTerms(
+    name: keyof Terms,
+    version: string,
+    options: RequestOptions = {},
+  ): Promise<StatusResponse> {
+    const response = await this.#client.requestWithAuth("/iam/terms", {
+      method: "POST",
+      body: JSON.stringify({
+        name,
+        version,
+      }),
+      ...options,
+    });
+
+    return (await response.json()) as StatusResponse;
   }
 }
