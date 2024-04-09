@@ -130,6 +130,16 @@ func Exists(path string) bool {
 	}
 }
 
+func GetOS() string {
+	os := runtime.GOOS
+
+	if os != "windows" && os != "linux" && os != "darwin" {
+		return "unsupported"
+	}
+
+	return os
+}
+
 func Quarantined(filename string, contents []byte) bool {
 	Write(filename, contents)
 	path := Pwd(filename)
@@ -205,7 +215,7 @@ func XorEncrypt(data []byte) ([]byte, []byte, error) {
 
 	encrypted := make([]byte, len(data))
 	for i, v := range data {
-		encrypted[i] = v ^ (keyData[i % len(keyData)] + byte(i))
+		encrypted[i] = v ^ (keyData[i%len(keyData)] + byte(i))
 	}
 	return encrypted, keyData, nil
 }
@@ -213,7 +223,7 @@ func XorEncrypt(data []byte) ([]byte, []byte, error) {
 func XorDecrypt(data []byte, key []byte) []byte {
 	decrypted := make([]byte, len(data))
 	for i, v := range data {
-		decrypted[i] = v ^ (key[i % len(key)] + byte(i))
+		decrypted[i] = v ^ (key[i%len(key)] + byte(i))
 	}
 	return decrypted
 }

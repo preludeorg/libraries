@@ -145,7 +145,7 @@ def schedule(controller, id, type, run_code, tags):
         if type == 'TEST':
             data = controller.schedule([dict(test_id=id, run_code=run_code, tags=tags)])
         else:
-            data = controller.schedule([dict(test_id=id, run_code=run_code, tags=tags)])
+            data = controller.schedule([dict(threat_id=id, run_code=run_code, tags=tags)])
     print_json(data=data)
 
 
