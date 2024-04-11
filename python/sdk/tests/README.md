@@ -11,14 +11,14 @@ To run all tests in one file:
 pytest tests/test_iam.py -v
 ```
 
-Some test files require set up from other files. Pick and choose tests to run with `-k`. Ex. run all the Partner tests:
+Pick and choose specific tests or modules to run with `-k`. Ex. run all the Partner tests:
 ```
-pytest tests/ -v -k "new_account or create_test or upload or get_test or register_endpoint or Partner"
+pytest tests/ -v -k "TestPartner"
 ```
 
 To see what will run (but not actually run the tests), use `--collect-only`:
 ```
-pytest tests/ -v -k "new_account or create_test or upload or get_test or register_endpoint or Partner" --collect-only
+pytest tests/ -v -k "test_create_test" --collect-only
 ```
 
 When running the Partner tests locally, use `pytest-env` to pull env variables from a `pytest.ini` file:

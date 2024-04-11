@@ -2,7 +2,7 @@ import json
 import os
 import pytest
 import subprocess
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from prelude_sdk.controllers.detect_controller import DetectController
 from prelude_sdk.controllers.iam_controller import IAMController
@@ -10,7 +10,8 @@ from prelude_sdk.controllers.probe_controller import ProbeController
 from prelude_sdk.models.codes import RunCode
 
 
-@pytest.mark.order(7)
+@pytest.mark.order(8)
+@pytest.mark.usefixtures('setup_account', 'setup_test', 'setup_threat')
 class TestProbe:
 
     def setup_class(self):
@@ -29,12 +30,13 @@ class TestProbe:
         pytest.endpoint_id = ep[0]['endpoint_id']
 
     def test_schedule(self, unwrap):
+        queue_len = len(pytest.expected_account['queue'])
         unwrap(self.detect.schedule)(
             self.detect,
             [
                 dict(test_id='9f410a6b-76b6-45d6-b80f-d7365add057e', run_code=RunCode.DEBUG.name, tags=''),
                 dict(test_id='b74ad239-2ddd-4b1e-b608-8397a43c7c54', run_code=RunCode.RUN_ONCE.name, tags=''),
-                # 2 tests in this threat (881.., b74...)
+                # 3 tests in this threat (881.., b74..., 740... or uuid)
                 dict(threat_id=pytest.threat_id, run_code=RunCode.DAILY.name, tags=''),
                 # windows only test
                 dict(test_id='f12d00db-571f-4c51-a536-12a3577b5a4b', run_code=RunCode.DEBUG.name, tags=''),
@@ -44,7 +46,8 @@ class TestProbe:
         )
 
         queue = unwrap(self.iam.get_account)(self.iam)['queue']
-        assert 5 == len(queue), json.dumps(queue, indent=2)
+        pytest.expected_account['queue'] = queue
+        assert queue_len + 5 == len(queue), json.dumps(queue, indent=2)
 
     def test_download_probe(self):
         probe_name = 'nocturnal'
@@ -63,16 +66,20 @@ class TestProbe:
                 subprocess.run([pytest.probe_file], capture_output=True, env={'PRELUDE_TOKEN': pytest.token}, timeout=40)
 
             filters = dict(
-                start=datetime.utcnow() - timedelta(days=7),
-                finish=datetime.utcnow() + timedelta(days=1),
+                start=datetime.now(timezone.utc) - timedelta(days=1),
+                finish=datetime.now(timezone.utc) + timedelta(days=1),
                 endpoints=pytest.endpoint_id
             )
             res = unwrap(self.detect.describe_activity)(self.detect, view='logs', filters=filters)
-            assert 5 == len(res), json.dumps(res, indent=2)
+            assert 6 <= len(res), json.dumps(res, indent=2)
+            tests_run = {r['test'] for r in res}
+            queued_tests = ['9f410a6b-76b6-45d6-b80f-d7365add057e', 'b74ad239-2ddd-4b1e-b608-8397a43c7c54', 'f12d00db-571f-4c51-a536-12a3577b5a4b'] + pytest.expected_threat['tests']
+            assert set(queued_tests) <= tests_run, json.dumps(tests_run, indent=2)
         finally:
             os.remove(pytest.probe_file)
 
     def test_unschedule(self, unwrap):
+        queue_len = len(pytest.expected_account['queue'])
         unwrap(self.detect.unschedule)(
             self.detect,
             [
@@ -85,9 +92,11 @@ class TestProbe:
         )
 
         queue = unwrap(self.iam.get_account)(self.iam)['queue']
-        assert 0 == len(queue), json.dumps(queue, indent=2)
+        pytest.expected_account['queue'] = queue
+        assert queue_len - 5 == len(queue), json.dumps(queue, indent=2)
 
     def test_delete_endpoint(self, unwrap):
         unwrap(self.detect.delete_endpoint)(self.detect, ident=pytest.endpoint_id)
         res = unwrap(self.detect.list_endpoints)(self.detect)
-        assert 0 == len(res), json.dumps(res, indent=2)
+        ep = [r for r in res if r['serial_num'] == self.serial]
+        assert 0 == len(ep), json.dumps(ep, indent=2)

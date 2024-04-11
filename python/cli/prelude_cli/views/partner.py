@@ -60,12 +60,13 @@ def partner_block(controller, partner, test_id):
 @click.option('--platform', required=True, help='platform name (e.g. "windows")', type=click.Choice(['windows', 'linux', 'darwin'], case_sensitive=False))
 @click.option('--hostname', default='', help='hostname pattern (e.g. "mycompany-c24oi444")')
 @click.option('--offset', default=0, help='API pagination offset', type=int)
+@click.option('--limit', default=100, help='API pagination limit', type=int)
 @click.pass_obj
 @handle_api_error
-def partner_endpoints(controller, partner, platform, hostname, offset):
+def partner_endpoints(controller, partner, platform, hostname, offset, limit):
     """ Get a list of endpoints from a partner """
     with Spinner(description='Fetching endpoints from partner'):
-        data = controller.endpoints(partner=Control[partner], platform=platform, hostname=hostname, offset=offset)
+        data = controller.endpoints(partner=Control[partner], platform=platform, hostname=hostname, offset=offset, count=limit)
     print_json(data=data)
 
 
