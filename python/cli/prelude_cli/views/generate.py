@@ -32,13 +32,14 @@ def generate_threat_intel(controller: GenerateController, threat_pdf: str, outpu
     if result['status'] == 'COMPLETE':
         for technique in result['output']:
             if technique['status'] == 'SUCCEEDED':
-                technique_filename = technique['technique'].replace('.', '_')
-                os.makedirs(f'{output_dir}/{technique_filename}')
-                with open(f'{output_dir}/{technique_filename}/test.go', 'w') as f:
+                technique_directory = technique['technique'].replace('.', '_')
+                os.makedirs(f'{output_dir}/{technique_directory}')
+                with open(f'{output_dir}/{technique_directory}/test.go', 'w') as f:
                     f.write(technique['go_code'])
-                with open(f'{output_dir}/{technique_filename}/ioa.yaml', 'w') as f:
-                    f.write(technique['ioa_yaml'])
-                with open(f'{output_dir}/{technique_filename}/config.json', 'w') as f:
+                for i, sigma_rule in enumerate(technique['sigma_rules']):
+                    with open(f'{output_dir}/{technique_directory}/sigma_{i}.yaml', 'w') as f:
+                        f.write(sigma_rule)
+                with open(f'{output_dir}/{technique_directory}/config.json', 'w') as f:
                     json.dump(dict(
                         technique=technique['technique'],
                         name=technique['name'],
