@@ -2,7 +2,6 @@ import json
 import os
 import pytest
 import time
-import uuid
 from datetime import datetime, timedelta, timezone
 from importlib.resources import files
 

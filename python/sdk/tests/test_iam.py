@@ -1,8 +1,8 @@
 import json
 import pytest
-import time
 
 from datetime import datetime, timedelta, timezone
+from dateutil.parser import parse
 from prelude_sdk.controllers.iam_controller import IAMController
 from prelude_sdk.models.codes import AuditEvent, Mode, Permission, RunCode
 
@@ -135,6 +135,25 @@ class TestIAM:
         res = unwrap(self.iam.get_account)(self.iam)
         diffs = check_dict_items(pytest.expected_account, res)
         assert not diffs, json.dumps(diffs, indent=2)
+
+    def test_accept_terms(self, unwrap):
+        for user in pytest.expected_account['users']:
+            if user['handle'] == pytest.expected_account['whoami']:
+                if user['terms'].get('threat_intel', {}).get('1.0.0'):
+                    with pytest.raises(Exception) as e:
+                        unwrap(self.iam.accept_terms)(self.iam, name='threat_intel', version='1.0.0')
+                    return
+
+        unwrap(self.iam.accept_terms)(self.iam, name='threat_intel', version='1.0.0')
+        res = unwrap(self.iam.get_account)(self.iam)
+
+        for user in res['users']:
+            if user['handle'] == pytest.expected_account['whoami']:
+                assert user['terms'].get('threat_intel', {}).get('1.0.0'), json.dumps(user, indent=2)
+                assert parse(user['terms']['threat_intel']['1.0.0']) <= datetime.now(timezone.utc)
+                break
+
+        pytest.expected_account['users'] = res['users']
 
     def test_delete_user(self, unwrap):
         unwrap(self.iam.delete_user)(self.iam, handle=self.second_user)
