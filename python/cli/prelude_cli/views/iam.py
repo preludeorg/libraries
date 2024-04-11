@@ -201,6 +201,16 @@ def unsubscribe(controller, event):
         data = controller.unsubscribe(event=AuditEvent[event])
     print_json(data=data)
 
+iam.command('accept-terms')
+@click.argument('name', type=str, required=True)
+@click.option('-v', '--version', type=int, required=True)
+@click.pass_obj
+@handle_api_error
+def accept_terms(controller, name, version):
+    """ Accept terms and conditions """
+    with Spinner(description='Accepting terms and conditions'):
+        data = controller.accept_terms(name=name, version=version)
+    print_json(data=data)
 
 @iam.command('purge')
 @click.confirmation_option(prompt='Are you sure?')
