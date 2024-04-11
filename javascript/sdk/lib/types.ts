@@ -536,7 +536,7 @@ export interface BlockResponseRule {
 }
 
 export interface BlockResponse {
-  platform: "windows" | "linux" | "mac";
+  platform: "windows" | "linux" | "macos";
   rules: BlockResponseRule[];
 }
 
@@ -596,6 +596,6 @@ export interface Detection {
 }
 
 export interface DetectionReport {
-  platform: "windows" | "linux" | "mac";
+  platform: "windows" | "linux" | "macos";
   created: string;
 }
