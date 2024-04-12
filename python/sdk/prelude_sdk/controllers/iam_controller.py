@@ -239,3 +239,16 @@ class IAMController:
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
+
+    @verify_credentials
+    def accept_terms(self, name, version):
+        """ Accept terms and conditions """
+        res = requests.post(
+            f'{self.account.hq}/iam/terms',
+            headers=self.account.headers,
+            json=dict(name=name, version=version),
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)

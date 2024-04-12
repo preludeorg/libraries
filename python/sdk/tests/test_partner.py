@@ -3,7 +3,7 @@ import json
 import pytest
 import requests
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from prelude_sdk.models.codes import Control
 from prelude_sdk.controllers.iam_controller import IAMController
 from prelude_sdk.controllers.detect_controller import DetectController
@@ -73,7 +73,8 @@ def pytest_generate_tests(metafunc):
         metafunc.parametrize(argnames, argvalues, ids=idlist, scope="class")
 
 
-@pytest.mark.order(5)
+@pytest.mark.order(6)
+@pytest.mark.usefixtures('setup_account', 'setup_test', 'setup_detection')
 class TestPartner:
     scenarios = [crowdstrike, defender, sentinel_one]
 
@@ -101,8 +102,8 @@ class TestPartner:
 
     def test_get_account(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys):
         res = unwrap(self.iam.get_account)(self.iam)
-        expected = [dict(api=partner_api, id=control.value)]
-        assert expected == res['controls']
+        expected = dict(api=partner_api, id=control.value)
+        assert expected in res['controls']
 
     def test_list_endpoints(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys):
         try:
@@ -134,8 +135,8 @@ class TestPartner:
         pytest.endpoint_1['dos'] = f'{platform}-x86_64'
 
         filters = dict(
-            start=datetime.utcnow() - timedelta(days=7),
-            finish=datetime.utcnow() + timedelta(days=1),
+            start=datetime.now(timezone.utc) - timedelta(days=7),
+            finish=datetime.now(timezone.utc) + timedelta(days=1),
             endpoints=pytest.endpoint_1['endpoint_id']
         )
         res = unwrap(self.detect.describe_activity)(self.detect, view='logs', filters=filters)
@@ -158,21 +159,33 @@ class TestPartner:
         assert res['url'].startswith(f'{api}/partner/suppress/{control.name.lower()}')
 
     def test_block(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys):
+        if control == Control.CROWDSTRIKE and not pytest.expected_account['features']['detections']:
+            pytest.skip("DETECTIONS feature not enabled")
+
         res = unwrap(self.partner.block)(self.partner, partner=control, test_id=pytest.test_id)
-        assert len(res) == 5
-        assert {'file', 'ioc_id'} == res[0].keys()
-        assert res[0]['file'].startswith(pytest.test_id)
+        if control == Control.CROWDSTRIKE:
+            assert 1 == len(res)
+            assert pytest.expected_detection['rule']['logsource']['product'] == res[0]['platform']
+            assert 1 == len(res[0]['rules'])
+            assert f'{pytest.expected_detection["rule"]["title"]} ({pytest.detection_id[:8]}) (0)' == res[0]['rules'][0]['name']
+            assert res[0]['rules'][0]['status'] in ['ALREADY_EXISTS', 'CREATED']
+        else:
+            assert len(res) == 5
+            assert {'file', 'ioc_id'} == res[0].keys()
+            assert res[0]['file'].startswith(pytest.test_id)
 
     def test_detach(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys):
         try:
             unwrap(self.partner.detach)(self.partner, partner=control)
             res = unwrap(self.iam.get_account)(self.iam)
-            assert res['controls'] == []
+            for c in res['controls']:
+                assert c['id'] != control.value
         finally:
             unwrap(self.detect.delete_endpoint)(self.detect, ident=pytest.endpoint_1['endpoint_id'])
 
 
-@pytest.mark.order(6)
+@pytest.mark.order(7)
+@pytest.mark.usefixtures('setup_account')
 class TestSiems:
 
     def setup_class(self):
@@ -234,11 +247,12 @@ class TestSiems:
 
     def test_get_account(self, unwrap):
         res = unwrap(self.iam.get_account)(self.iam)
-        assert pytest.expected_siems == res['controls']
+        for c in pytest.expected_siems:
+            assert c in res['controls']
 
     def test_save_result(self, unwrap, api):
         try:
-            res = requests.get(api, headers=dict(token=pytest.token, dos=f'linux-x86_64', dat=f'{pytest.test_id}:101',
+            res = requests.get(api, headers=dict(token=pytest.token, dos=f'linux-x86_64', dat='b74ad239-2ddd-4b1e-b608-8397a43c7c54:101',
                                                  version='2.1'))
             assert res.status_code in [200, 302]
         finally:
@@ -250,8 +264,8 @@ class TestSiems:
 
         unwrap(self.partner.detach)(self.partner, partner=Control.SPLUNK)
         res = unwrap(self.iam.get_account)(self.iam)
-        del pytest.expected_siems[0]
-        assert pytest.expected_siems == res['controls']
+        for c in res['controls']:
+            assert c['id'] != Control.SPLUNK.value
 
     def test_detach_vectr(self, unwrap):
         if not self.vectr:
@@ -259,8 +273,8 @@ class TestSiems:
 
         unwrap(self.partner.detach)(self.partner, partner=Control.VECTR)
         res = unwrap(self.iam.get_account)(self.iam)
-        del pytest.expected_siems[0]
-        assert pytest.expected_siems == res['controls']
+        for c in res['controls']:
+            assert c['id'] != Control.VECTR.value
 
     def test_detach_s3(self, unwrap):
         if not self.s3:
@@ -268,5 +282,5 @@ class TestSiems:
 
         unwrap(self.partner.detach)(self.partner, partner=Control.S3)
         res = unwrap(self.iam.get_account)(self.iam)
-        del pytest.expected_siems[0]
-        assert pytest.expected_siems == res['controls']
+        for c in res['controls']:
+            assert c['id'] != Control.S3.value

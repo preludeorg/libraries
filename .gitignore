@@ -11,3 +11,4 @@ swift/probe/moonlight
 **/dist
 .vst/*
 env/
+venv/
