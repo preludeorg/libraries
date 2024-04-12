@@ -246,7 +246,7 @@ class IAMController(HttpController):
     @verify_credentials
     def accept_terms(self, name, version):
         """ Accept terms and conditions """
-        res = requests.post(
+        res = self._session.post(
             f'{self.account.hq}/iam/terms',
             headers=self.account.headers,
             json=dict(name=name, version=version),
