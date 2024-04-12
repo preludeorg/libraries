@@ -1,5 +1,4 @@
 import pytest
-import time
 import uuid
 
 from prelude_sdk.controllers.build_controller import BuildController
@@ -93,8 +92,6 @@ def setup_account(unwrap, manual, pause_for_manual_action, email, api, existing_
     if manual:
         with pause_for_manual_action:
             input("Press ENTER to continue testing after verifying the account...\n")
-    else:
-        time.sleep(5)
 
     pytest.account.headers['account'] = res['account_id']
     pytest.account.headers['token'] = res['token']

@@ -201,7 +201,7 @@ def unsubscribe(controller, event):
         data = controller.unsubscribe(event=AuditEvent[event])
     print_json(data=data)
 
-iam.command('accept-terms')
+iam.command('accept-terms', hidden=True)
 @click.argument('name', type=str, required=True)
 @click.option('-v', '--version', type=int, required=True)
 @click.pass_obj

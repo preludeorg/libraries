@@ -14,7 +14,6 @@ class SortedListEncoder(json.JSONEncoder):
         def get_key(item):
             if isinstance(item, dict):
                 k = get_key(sorted(item.keys())[0])
-                # print(f'sorting on {k}')
                 return k
             else:
                 return str(item)

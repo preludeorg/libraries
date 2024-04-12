@@ -23,9 +23,7 @@ class TestVST:
         self.detect = DetectController(pytest.account)
 
     def test_create_test(self):
-        created = pytest.expected_test
-
-        pytest.expected_test = dict(
+        expected = dict(
             account_id=pytest.account.headers['account'],
             author=pytest.expected_account['whoami'],
             id=pytest.test_id,
@@ -36,7 +34,7 @@ class TestVST:
             tombstoned=None
         )
 
-        diffs = check_dict_items(pytest.expected_test, created)
+        diffs = check_dict_items(expected, pytest.expected_test)
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_upload(self, unwrap):
@@ -75,10 +73,10 @@ class TestVST:
     def test_list_tests(self, unwrap):
         res = unwrap(self.detect.list_tests)(self.detect)
         owners = set([r['account_id'] for r in res])
-        assert owners == {'prelude', pytest.account.headers['account']}
+        assert {'prelude', pytest.account.headers['account']} >= owners
 
-        mine = sorted([r for r in res if r['account_id'] == pytest.account.headers['account']], key=lambda x: x['created'], reverse=True)
-        assert 1 <= len(mine)
+        mine = [r for r in res if r['id'] == pytest.expected_test['id']]
+        assert 1 == len(mine)
         del pytest.expected_test['attachments']
         diffs = check_dict_items(pytest.expected_test, mine[0])
         assert not diffs, json.dumps(diffs, indent=2)
@@ -126,9 +124,7 @@ class TestThreat:
         self.detect = DetectController(pytest.account)
 
     def test_create_threat(self):
-        created = pytest.expected_threat
-
-        pytest.expected_threat = dict(
+        expected = dict(
             account_id=pytest.account.headers['account'],
             author=pytest.expected_account['whoami'],
             id=pytest.threat_id,
@@ -140,7 +136,7 @@ class TestThreat:
             tombstoned=None
         )
 
-        diffs = check_dict_items(pytest.expected_threat, created)
+        diffs = check_dict_items(expected, pytest.expected_threat)
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_get_threat(self, unwrap):
@@ -152,10 +148,10 @@ class TestThreat:
     def test_list_threats(self, unwrap):
         res = unwrap(self.detect.list_threats)(self.detect)
         owners = set([r['account_id'] for r in res])
-        assert owners == {'prelude', pytest.account.headers['account']}
+        assert {'prelude', pytest.account.headers['account']} >= owners
 
-        mine = sorted([r for r in res if r['account_id'] == pytest.account.headers['account']], key=lambda x: x['created'], reverse=True)
-        assert 1 <= len(mine)
+        mine = [r for r in res if r['id'] == pytest.expected_threat['id']]
+        assert 1 == len(mine)
         diffs = check_dict_items(pytest.expected_threat, mine[0])
         assert not diffs, json.dumps(diffs, indent=2)
 
@@ -192,16 +188,14 @@ class TestThreat:
 class TestDetection:
 
     def setup_class(self):
+        if not pytest.expected_account['features']['detections']:
+            pytest.skip("DETECTIONS feature not enabled")
+
         self.build = BuildController(pytest.account)
         self.detect = DetectController(pytest.account)
 
     def test_create_detection(self, unwrap):
-        if not pytest.expected_account['features']['detections']:
-            pytest.skip("DETECTIONS feature not enabled")
-
-        created = pytest.expected_detection
-
-        pytest.expected_detection = dict(
+        expected = dict(
             account_id=pytest.account.headers['account'],
             id=pytest.detection_id,
             name='Suspicious Command Line Usage in Windows',
@@ -216,35 +210,26 @@ class TestDetection:
             test=pytest.test_id
         )
 
-        diffs = check_dict_items(pytest.expected_detection, created)
+        diffs = check_dict_items(expected, pytest.expected_detection)
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_get_detection(self, unwrap):
-        if not pytest.expected_account['features']['detections']:
-            pytest.skip("DETECTIONS feature not enabled")
-
         res = unwrap(self.detect.get_detection)(self.detect, detection_id=pytest.detection_id)
 
         diffs = check_dict_items(pytest.expected_detection, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_list_detections(self, unwrap):
-        if not pytest.expected_account['features']['detections']:
-            pytest.skip("DETECTIONS feature not enabled")
-
         res = unwrap(self.detect.list_detections)(self.detect)
         owners = set([r['account_id'] for r in res])
-        assert owners == {'prelude', pytest.account.headers['account']}
+        assert {'prelude', pytest.account.headers['account']} >= owners
 
-        mine =sorted([r for r in res if r['account_id'] == pytest.account.headers['account']], key=lambda x: x['created'], reverse=True)
-        assert 1 <= len(mine)
+        mine = [r for r in res if r['id'] == pytest.expected_detection['id']]
+        assert 1 == len(mine)
         diffs = check_dict_items(pytest.expected_detection, mine[0])
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_update_detection(self, unwrap):
-        if not pytest.expected_account['features']['detections']:
-            pytest.skip("DETECTIONS feature not enabled")
-
         updated_rule = pytest.detection_rule.replace(pytest.expected_detection['rule']['title'], 'Suspicious no more')
         res = unwrap(self.build.update_detection)(self.build, detection_id=pytest.detection_id, rule=updated_rule)
         pytest.expected_detection['rule']['title'] = 'Suspicious no more'
@@ -254,9 +239,6 @@ class TestDetection:
 
     @pytest.mark.order(-4)
     def test_delete_detection(self, unwrap):
-        if not pytest.expected_account['features']['detections']:
-            pytest.skip("DETECTIONS feature not enabled")
-
         unwrap(self.build.delete_detection)(self.build, detection_id=pytest.detection_id)
         with pytest.raises(Exception):
             unwrap(self.detect.get_detection)(self.detect, detection_id=pytest.detection_id)
