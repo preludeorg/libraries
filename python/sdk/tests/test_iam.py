@@ -95,11 +95,11 @@ class TestIAM:
             dict(
                 handle=self.second_user,
                 permission=Permission.SERVICE.value,
-                # name='Rob',
+                name='Rob',
                 subscriptions=[],
                 oidc=False,
                 terms={},
-                expires=str(ex)[:-6]
+                expires=ex.isoformat()
             )
         )
 
@@ -129,7 +129,7 @@ class TestIAM:
         for i, user in enumerate(pytest.expected_account['users']):
             if user['handle'] == self.second_user:
                 user['name'] = 'Robb'
-                user['expires'] = str(ex)[:-6]
+                user['expires'] = ex.isoformat()
                 break
 
         res = unwrap(self.iam.get_account)(self.iam)
