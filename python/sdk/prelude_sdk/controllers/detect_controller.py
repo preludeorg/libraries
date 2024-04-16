@@ -89,12 +89,12 @@ class DetectController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
-    def list_tests(self, filters: dict):
+    def list_tests(self, filters: dict = None):
         """ List all tests available to an account """
         res = self._session.get(
             f'{self.account.hq}/detect/tests',
             headers=self.account.headers,
-            params=filters,
+            params=filters if filters else {},
             timeout=10
         )
         if res.status_code == 200:
