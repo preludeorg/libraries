@@ -49,12 +49,16 @@ def update_endpoint(controller, endpoint_id, tags):
 
 
 @detect.command('tests')
+@click.option('--techniques', help='comma-separated list of techniques', type=str)
 @click.pass_obj
 @handle_api_error
-def list_tests(controller):
+def list_tests(controller, techniques):
     """ List all security tests """
     with Spinner(description='Fetching all security tests'):
-        data = controller.list_tests()
+        filters = dict()
+        if techniques:
+            filters['techniques'] = techniques
+        data = controller.list_tests(filters=filters)
     print_json(data=data)
 
 
