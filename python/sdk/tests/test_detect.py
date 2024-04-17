@@ -51,7 +51,7 @@ class TestDetect:
 
         diffs = check_dict_items(pytest.expected_endpoint, ep)
         assert not diffs, json.dumps(diffs, indent=2)
-        assert parse(ep['last_seen']).date() == parse(ep['created']).date()
+        assert None == ep['last_seen']
 
     def test_update_endpoint(self, unwrap):
         res = unwrap(self.detect.update_endpoint)(self.detect, endpoint_id=pytest.endpoint_id, tags=self.updated_tags)
@@ -59,7 +59,8 @@ class TestDetect:
         pytest.expected_endpoint['tags'] = [self.updated_tags]
 
         res = unwrap(self.detect.list_endpoints)(self.detect)
-        diffs = check_dict_items(pytest.expected_endpoint, res[0])
+        ep = [r for r in res if r['endpoint_id'] == pytest.endpoint_id][0]
+        diffs = check_dict_items(pytest.expected_endpoint, ep)
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_schedule_threat(self, unwrap):
@@ -122,10 +123,16 @@ class TestDetect:
         filters = dict(
             start=datetime.now(timezone.utc) - timedelta(days=1),
             finish=datetime.now(timezone.utc) + timedelta(days=1),
-            endpoints=pytest.endpoint_id
+            endpoints=pytest.endpoint_id,
+            tests=pytest.test_id,
         )
         res = unwrap(self.detect.describe_activity)(self.detect, view='logs', filters=filters)
         assert 1 == len(res), json.dumps(res, indent=2)
+
+        res = unwrap(self.detect.list_endpoints)(self.detect)
+        assert 1 <= len(res)
+        ep = [r for r in res if r['serial_num'] == self.serial][0]
+        assert parse(ep['last_seen']).date() == parse(ep['created']).date()
 
     def test_delete_endpoint(self, unwrap):
         unwrap(self.detect.delete_endpoint)(self.detect, ident=pytest.endpoint_id)
