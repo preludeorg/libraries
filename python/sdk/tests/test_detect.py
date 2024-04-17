@@ -51,7 +51,7 @@ class TestDetect:
 
         diffs = check_dict_items(pytest.expected_endpoint, ep)
         assert not diffs, json.dumps(diffs, indent=2)
-        assert None == ep['last_seen']
+        assert ep['last_seen'] is None
 
     def test_update_endpoint(self, unwrap):
         res = unwrap(self.detect.update_endpoint)(self.detect, endpoint_id=pytest.endpoint_id, tags=self.updated_tags)
