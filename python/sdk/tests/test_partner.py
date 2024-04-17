@@ -135,9 +135,10 @@ class TestPartner:
         pytest.endpoint_1['dos'] = f'{platform}-x86_64'
 
         filters = dict(
-            start=datetime.now(timezone.utc) - timedelta(days=7),
+            start=datetime.now(timezone.utc) - timedelta(days=1),
             finish=datetime.now(timezone.utc) + timedelta(days=1),
-            endpoints=pytest.endpoint_1['endpoint_id']
+            endpoints=pytest.endpoint_1['endpoint_id'],
+            tests=pytest.test_id,
         )
         res = unwrap(self.detect.describe_activity)(self.detect, view='logs', filters=filters)
         assert len(res) == 1, json.dumps(res, indent=2)
@@ -170,7 +171,7 @@ class TestPartner:
             assert f'{pytest.expected_detection["rule"]["title"]} ({pytest.detection_id[:8]}) (0)' == res[0]['rules'][0]['name']
             assert res[0]['rules'][0]['status'] in ['ALREADY_EXISTS', 'CREATED']
         else:
-            assert len(res) == 5
+            assert 5 == len(res)
             assert {'file', 'ioc_id'} == res[0].keys()
             assert res[0]['file'].startswith(pytest.test_id)
 
