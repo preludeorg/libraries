@@ -312,28 +312,31 @@ export const ExitCodeNames = Object.keys(ExitCodes) as ExitCodeName[];
 export const ExitCodeGroup = {
   NONE: [ExitCodes.MISSING],
   PROTECTED: [
+    ExitCodes.BLOCKED,
+    ExitCodes.BLOCKED_AT_PERIMETER,
+    ExitCodes.DYNAMIC_QUARANTINE,
+    ExitCodes.ENDPOINT_NOT_RELEVANT,
+    ExitCodes.EXPLOIT_PREVENTED,
+    ExitCodes.OS_PREVENTED_EXECUTION,
     ExitCodes.PROCESS_BLOCKED,
     ExitCodes.PROCESS_BLOCKED_GRACEFULLY,
     ExitCodes.PROTECTED,
-    ExitCodes.DYNAMIC_QUARANTINE,
-    ExitCodes.BLOCKED_AT_PERIMETER,
-    ExitCodes.BLOCKED,
-    ExitCodes.EXPLOIT_PREVENTED,
-    ExitCodes.OS_PREVENTED_EXECUTION,
     ExitCodes.STATIC_QUARANTINE,
     ExitCodes.TEST_NOT_RELEVANT,
-    ExitCodes.ENDPOINT_NOT_RELEVANT,
   ],
   UNPROTECTED: [ExitCodes.UNPROTECTED],
   ERROR: [
-    ExitCodes.UNKNOWN_ERROR,
+    ExitCodes.FAILED_CLEANUP,
     ExitCodes.MALFORMED_TEST,
     ExitCodes.TIMED_OUT,
-    ExitCodes.FAILED_CLEANUP,
     ExitCodes.UNEXPECTED_ERROR,
+    ExitCodes.UNKNOWN_ERROR,
     ExitCodes.UNREPORTED,
   ],
-  NOT_RELEVANT: [ExitCodes.TEST_NOT_RELEVANT, ExitCodes.ENDPOINT_NOT_RELEVANT],
+  NOT_RELEVANT: [
+    ExitCodes.ENDPOINT_NOT_RELEVANT,
+    ExitCodes.TEST_NOT_RELEVANT,
+  ],
 } as const;
 
 export const ActionCodes = {
