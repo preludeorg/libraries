@@ -241,12 +241,13 @@ def clone(controller):
 @click.option('--policy', help='comma-separated list of policies', type=str)
 @click.option('--social', help='whether to fetch account-specific or social stats. Applicable to the following views: protected', is_flag=True)
 @click.option('--start', help='start date of activity (beginning of day)', type=str)
+@click.option('--statuses', help='comma-separated list of statuses', type=str)
 @click.option('--techniques', help='comma-separated list of techniques', type=str)
 @click.option('--tests', help='comma-separated list of test IDs', type=str)
 @click.option('--threats', help='comma-separated list of threat IDs', type=str)
 @click.pass_obj
 @handle_api_error
-def describe_activity(controller, control, dos, endpoints, finish, os, policy, social, start, techniques, tests, threats, view):
+def describe_activity(controller, control, dos, endpoints, finish, os, policy, social, start, statuses, techniques, tests, threats, view):
     """ View my Detect results """
     start = parse(start) if start else datetime.now(timezone.utc) - timedelta(days=29)
     finish = parse(finish) if finish else datetime.now(timezone.utc)
@@ -266,6 +267,8 @@ def describe_activity(controller, control, dos, endpoints, finish, os, policy, s
         filters['policy'] = policy
     if social:
         filters['impersonate'] = 'social'
+    if statuses:
+        filters['statuses'] = statuses
     if techniques:
         filters['techniques'] = techniques
     if tests:
