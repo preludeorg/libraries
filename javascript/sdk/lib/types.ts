@@ -320,7 +320,6 @@ export const ExitCodeGroup = {
     ExitCodes.OS_PREVENTED_EXECUTION,
     ExitCodes.PROCESS_BLOCKED,
     ExitCodes.PROCESS_BLOCKED_GRACEFULLY,
-    ExitCodes.PROTECTED,
     ExitCodes.STATIC_QUARANTINE,
     ExitCodes.TEST_NOT_RELEVANT,
   ],
@@ -335,6 +334,7 @@ export const ExitCodeGroup = {
   ],
   NOT_RELEVANT: [
     ExitCodes.ENDPOINT_NOT_RELEVANT,
+    ExitCodes.PROTECTED,
     ExitCodes.TEST_NOT_RELEVANT,
   ],
 } as const;
