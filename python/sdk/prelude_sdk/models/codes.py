@@ -116,6 +116,7 @@ class State(Enum):
             State.NONE: [ExitCode.MISSING],
             State.NOT_RELEVANT: [
                 ExitCode.ENDPOINT_NOT_RELEVANT,
+                ExitCode.PROTECTED,
                 ExitCode.TEST_NOT_RELEVANT,
             ],
             State.PROTECTED: [
@@ -126,7 +127,6 @@ class State(Enum):
                 ExitCode.OS_PREVENTED_EXECUTION,
                 ExitCode.PROCESS_BLOCKED,
                 ExitCode.PROCESS_BLOCKED_GRACEFULLY,
-                ExitCode.PROTECTED,
                 ExitCode.STATIC_QUARANTINE,
             ],
             State.UNPROTECTED: [
