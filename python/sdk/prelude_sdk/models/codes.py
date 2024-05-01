@@ -75,7 +75,7 @@ class ExitCode(Enum):
     BLOCKED_AT_PERIMETER = 106
     EXPLOIT_PREVENTED = 107
     ENDPOINT_NOT_RELEVANT = 108
-    OS_PREVENTED_EXECUTION = 126
+    PREVENTED_EXECUTION = 126
     STATIC_QUARANTINE = 127
     BLOCKED = 137
     UNEXPECTED_ERROR = 256
@@ -123,7 +123,7 @@ class State(Enum):
                 ExitCode.BLOCKED_AT_PERIMETER,
                 ExitCode.DYNAMIC_QUARANTINE,
                 ExitCode.EXPLOIT_PREVENTED,
-                ExitCode.OS_PREVENTED_EXECUTION,
+                ExitCode.PREVENTED_EXECUTION,
                 ExitCode.PROCESS_BLOCKED,
                 ExitCode.PROCESS_BLOCKED_GRACEFULLY,
                 ExitCode.PROTECTED,
