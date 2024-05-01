@@ -168,7 +168,7 @@ class TestPartner:
             assert 1 == len(res)
             assert pytest.expected_detection['rule']['logsource']['product'] == res[0]['platform']
             assert 1 == len(res[0]['rules'])
-            assert f'{pytest.expected_detection["rule"]["title"]} ({pytest.detection_id[:8]}) (0)' == res[0]['rules'][0]['name']
+            assert f'{pytest.expected_test["name"]} ({pytest.detection_id[:8]}) (0)' == res[0]['rules'][0]['name']
             assert res[0]['rules'][0]['status'] in ['ALREADY_EXISTS', 'CREATED']
         else:
             assert 5 == len(res)

@@ -143,8 +143,7 @@ def setup_detection(unwrap):
         product: windows
     detection:
         selection:
-            ParentImage:
-                - 'cmd.exe'
+            ParentImage: 'cmd.exe'
         condition: selection
     level: medium
     """
