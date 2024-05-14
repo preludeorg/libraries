@@ -1,10 +1,10 @@
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-function Execute { 
-    Param([String]$File)
+function Execute {
+    Param([String]$File, [String]$StdoutFile, [String]$StderrFile)
 
     try {
-        $R = (Start-Process -FilePath $File -Wait -NoNewWindow -PassThru).ExitCode
+        $R = (Start-Process -FilePath $File -Wait -NoNewWindow -PassThru -RedirectStandardOutput $StdoutFile -RedirectStandardError $StderrFile).ExitCode
         $Code = if (Test-Path $File) {$R} Else {127}
         return $Code
     } catch [System.UnauthorizedAccessException] {
@@ -33,13 +33,24 @@ while ($true) {
             "dat" = $dat
             "version" = "2.1"
         } -UseBasicParsing -MaximumRedirection 0 -ErrorAction SilentlyContinue
-        
+
         $uuid = $task.content -replace ".*?([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}).*", '$1'
         $auth = $task.content -replace '^[^/]*//([^/]*)/.*', '$1'
 
         if ($uuid -and $auth -eq $ca) {
             Invoke-WebRequest -Uri $task.content -OutFile (New-Item -path "$dir\$uuid.exe" -Force ) -UseBasicParsing
-            $code = Execute "$dir\$uuid.exe"
+            $stdoutTempFile = New-TemporaryFile
+            $stderrTempFile = New-TemporaryFile
+            $code = Execute "$dir\$uuid.exe" $stdoutTempFile $stderrTempFile
+            $stdout = Get-Content -Path $stdoutTempFile
+            $stdout = if ($stdout) { [string]::Join("; ", $stdout) } else { "" }
+            $stderr = Get-Content -Path $stderrTempFile
+            $stderr = if ($stderr) { [string]::Join("; ", $stderr) } else { "" }
+            if ($stdout -or $stderr) {
+                Write-Output "${stdout};${stderr}"
+            }
+            Remove-Item -Path $stdoutTempFile
+            Remove-Item -Path $stderrTempFile
             $dat = "${uuid}:${code}"
         } elseif ($task.content -eq "stop") {
             exit
