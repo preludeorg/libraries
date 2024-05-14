@@ -1,5 +1,6 @@
 import asyncio
 import click
+import yaml
 
 from datetime import datetime, time, timedelta, timezone
 from dateutil.parser import parse
@@ -106,12 +107,16 @@ def list_detections(controller):
 
 @detect.command('detection')
 @click.argument('detection_id')
+@click.option('-o', '--output_file', help='write the sigma rule to a file', type=click.Path(writable=True))
 @click.pass_obj
 @handle_api_error
-def get_detection(controller, detection_id):
+def get_detection(controller, detection_id, output_file):
     """ List properties for a detection """
     with Spinner(description='Fetching data for detection'):
         data = controller.get_detection(detection_id=detection_id)
+    if output_file:
+        with open(output_file, 'w') as f:
+            f.write(yaml.safe_dump(data['rule']))
     print_json(data=data)
 
 
