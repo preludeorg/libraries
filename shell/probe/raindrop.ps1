@@ -41,7 +41,7 @@ while ($true) {
             "token" = $env:PRELUDE_TOKEN
             "dos" = "windows-$Env:PROCESSOR_ARCHITECTURE"
             "dat" = $dat
-            "version" = "2.1"
+            "version" = "2.2"
         } -UseBasicParsing -MaximumRedirection 0 -ErrorAction SilentlyContinue
         
         $uuid = $task.content -replace ".*?([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}).*", '$1'
