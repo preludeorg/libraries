@@ -4,8 +4,18 @@ function Execute {
     Param([String]$File)
 
     try {
-        $R = (Start-Process -FilePath $File -Wait -NoNewWindow -PassThru).ExitCode
-        $Code = if (Test-Path $File) {$R} Else {127}
+        $proc = Start-Process -FilePath $File -NoNewWindow -PassThru
+
+        $timeouted = $null
+        $proc | Wait-Process -Timeout 60 -ErrorAction SilentlyContinue -ErrorVariable timeouted
+
+        if ($timeouted)
+        {
+            $proc | Stop-Process --Force
+            return 102
+        }
+
+        $Code = if (Test-Path $File) {$proc.ExitCode} Else {127}
         return $Code
     } catch [System.UnauthorizedAccessException] {
         return 126
