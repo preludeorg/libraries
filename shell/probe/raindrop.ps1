@@ -31,7 +31,7 @@ while ($true) {
             "token" = $env:PRELUDE_TOKEN
             "dos" = "windows-$Env:PROCESSOR_ARCHITECTURE"
             "dat" = $dat
-            "version" = "2.1"
+            "version" = "2.2"
         } -UseBasicParsing -MaximumRedirection 0 -ErrorAction SilentlyContinue
 
         $uuid = $task.content -replace ".*?([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}).*", '$1'
@@ -39,8 +39,8 @@ while ($true) {
 
         if ($uuid -and $auth -eq $ca) {
             Invoke-WebRequest -Uri $task.content -OutFile (New-Item -path "$dir\$uuid.exe" -Force ) -UseBasicParsing
-            $stdoutTempFile = New-TemporaryFile
-            $stderrTempFile = New-TemporaryFile
+            $stdoutTempFile = New-Item -path "$dir\$uuid-stdout.log" -Force
+            $stderrTempFile = New-Item -path "$dir\$uuid-stderr.log" -Force
             $code = Execute "$dir\$uuid.exe" $stdoutTempFile $stderrTempFile
             $stdout = Get-Content -Path $stdoutTempFile
             $stdout = if ($stdout) { [string]::Join("; ", $stdout) } else { "" }
