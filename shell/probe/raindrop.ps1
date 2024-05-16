@@ -11,7 +11,7 @@ function Execute {
 
         if ($timeouted)
         {
-            $proc | Stop-Process --Force
+            $proc | kill
             return 102
         }
 
