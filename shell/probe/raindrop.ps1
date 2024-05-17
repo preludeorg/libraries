@@ -1,10 +1,12 @@
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-function Execute { 
+function Execute {
     Param([String]$File)
 
     try {
-        $R = (Start-Process -FilePath $File -Wait -NoNewWindow -PassThru).ExitCode
+        $stdoutTempFile = New-Item -path "$dir\stdout.log" -Force
+        $stderrTempFile = New-Item -path "$dir\stderr.log" -Force
+        $R = (Start-Process -FilePath $File -Wait -NoNewWindow -PassThru -RedirectStandardOutput $stdoutTempFile -RedirectStandardError $stderrTempFile).ExitCode
         $Code = if (Test-Path $File) {$R} Else {127}
         return $Code
     } catch [System.UnauthorizedAccessException] {
@@ -13,6 +15,14 @@ function Execute {
         return 127
     } catch {
         return 1
+    } finally {
+        $stdout = Get-Content -Path $stdoutTempFile
+        $stdout = if ($stdout) { [string]::Join("; ", $stdout) } else { "" }
+        $stderr = Get-Content -Path $stderrTempFile
+        $stderr = if ($stderr) { [string]::Join("; ", $stderr) } else { "" }
+        if ($stdout -or $stderr) {
+            Write-Host "${stdout}; ${stderr}"
+        }
     }
 }
 
@@ -31,9 +41,9 @@ while ($true) {
             "token" = $env:PRELUDE_TOKEN
             "dos" = "windows-$Env:PROCESSOR_ARCHITECTURE"
             "dat" = $dat
-            "version" = "2.1"
+            "version" = "2.2"
         } -UseBasicParsing -MaximumRedirection 0 -ErrorAction SilentlyContinue
-        
+
         $uuid = $task.content -replace ".*?([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}).*", '$1'
         $auth = $task.content -replace '^[^/]*//([^/]*)/.*', '$1'
 
