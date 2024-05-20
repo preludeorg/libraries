@@ -12,6 +12,7 @@ function Execute {
         $proc | Wait-Process -Timeout 45 -ErrorAction SilentlyContinue -ErrorVariable errVar
 
         if ($errVar) {
+            Write-Host $errVar
             $proc | kill
             return 102
         }
