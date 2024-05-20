@@ -13,7 +13,7 @@ do
         curl -sf --max-redirs 0 --create-dirs -o $vst/$uuid $task
         chmod +x $vst/$uuid && $vst/$uuid & test_pid=$!
         elapsed_time=0
-        while kill -0 $test_pid 2>/dev/null; do
+        while kill -0 $test_pid 2> /dev/null; do
           if [ $elapsed_time -ge 60 ]; then
             kill -9 $test_pid 2> /dev/null
             echo "TIMEOUT: Killed long running test ${uuid}"
