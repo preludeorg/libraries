@@ -11,8 +11,7 @@ function Execute {
         $timeouted = $null
         $proc | Wait-Process -Timeout 45 -ErrorAction SilentlyContinue -ErrorVariable timeouted
 
-        if ($timeouted)
-        {
+        if ($timeouted) {
             $proc | kill
             return 102
         }
