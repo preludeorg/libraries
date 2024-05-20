@@ -16,6 +16,7 @@ do
         while kill -0 $test_pid 2>/dev/null; do
           if [ $elapsed_time -ge 60 ]; then
             kill -9 $test_pid 2> /dev/null
+            echo "TIMEOUT: Killed long running test ${uuid}"
             code=102
           fi
           sleep 1
@@ -26,6 +27,7 @@ do
           code=$?
         fi
         dat="${uuid}:$([ -f $vst/$uuid ] && echo $code || echo 127)"
+        unset code
     elif [ "$task" = "stop" ];then
         exit
     else
