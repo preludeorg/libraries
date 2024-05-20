@@ -9,7 +9,7 @@ function Execute {
         $proc = Start-Process -FilePath $file -NoNewWindow -PassThru -RedirectStandardOutput $stdoutTempFile -RedirectStandardError $stderrTempFile
 
         $timeouted = $null
-        $proc | Wait-Process -Timeout 60 -ErrorAction SilentlyContinue -ErrorVariable timeouted
+        $proc | Wait-Process -Timeout 45 -ErrorAction SilentlyContinue -ErrorVariable timeouted
 
         if ($timeouted)
         {
