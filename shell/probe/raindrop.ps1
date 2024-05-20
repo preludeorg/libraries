@@ -1,12 +1,12 @@
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 function Execute {
-    Param([String]$file)
+    Param([String]$File)
 
     try {
         $stdoutTempFile = New-Item -path "$dir\stdout.log" -Force
         $stderrTempFile = New-Item -path "$dir\stderr.log" -Force
-        $proc = Start-Process -FilePath $file -NoNewWindow -PassThru -RedirectStandardOutput $stdoutTempFile -RedirectStandardError $stderrTempFile
+        $proc = Start-Process -FilePath $File -NoNewWindow -PassThru -RedirectStandardOutput $stdoutTempFile -RedirectStandardError $stderrTempFile
 
         $timeouted = $null
         $proc | Wait-Process -Timeout 45 -ErrorAction SilentlyContinue -ErrorVariable timeouted
@@ -16,7 +16,7 @@ function Execute {
             return 102
         }
 
-        $code = if (Test-Path $file) {$proc.ExitCode} Else {127}
+        $code = if (Test-Path $File) {$proc.ExitCode} Else {127}
         return $code
     } catch [System.UnauthorizedAccessException] {
         return 126
