@@ -6,9 +6,19 @@ function Execute {
     try {
         $stdoutTempFile = New-Item -path "$dir\stdout.log" -Force
         $stderrTempFile = New-Item -path "$dir\stderr.log" -Force
-        $R = (Start-Process -FilePath $File -Wait -NoNewWindow -PassThru -RedirectStandardOutput $stdoutTempFile -RedirectStandardError $stderrTempFile).ExitCode
-        $Code = if (Test-Path $File) {$R} Else {127}
-        return $Code
+        $proc = Start-Process -FilePath $File -NoNewWindow -PassThru -RedirectStandardOutput $stdoutTempFile -RedirectStandardError $stderrTempFile
+
+        $errVar = $null
+        $proc | Wait-Process -Timeout 45 -ErrorAction SilentlyContinue -ErrorVariable errVar
+
+        if ($errVar) {
+            Write-Host $errVar
+            $proc | kill
+            return 102
+        }
+
+        $code = if (Test-Path $File) {$proc.ExitCode} Else {127}
+        return $code
     } catch [System.UnauthorizedAccessException] {
         return 126
     } catch [System.InvalidOperationException] {
@@ -32,7 +42,7 @@ function FromEnv { param ([string]$envVar, [string]$default)
 }
 
 $ca = FromEnv "PRELUDE_CA" "prelude-account-us1-us-east-2.s3.amazonaws.com"
-$dir = FromEnv "PRELUDE_DIR" $ca
+$dir = FromEnv "PRELUDE_DIR" ".vst"
 $dat = ""
 
 while ($true) {
