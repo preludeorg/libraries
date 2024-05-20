@@ -26,7 +26,7 @@ def register_account(controller):
     name = click.prompt('(Optional) Enter your name', default='', show_default=False)
     slug = click.prompt('(Optional) Enter an unique human-readable identifier for your account', default='', show_default=False)
     with Spinner(description='Creating new account'):
-        data = controller.new_account(user_email=email, user_name=name, company=company, slug=slug)
+        data = controller.new_account(user_email=email, company=company, user_name=name, slug=slug)
     print_json(data=data)
     print("\nCheck your email to verify your account.\n")
 
