@@ -88,7 +88,7 @@ def setup_account(unwrap, manual, pause_for_manual_action, email, api, existing_
         pytest.expected_account = unwrap(iam.get_account)(iam)
         return
 
-    res = unwrap(iam.new_account)(iam, user_email=email, user_name='Bob')
+    res = unwrap(iam.new_account)(iam, company='pysdk-tests', user_email=email, user_name='Bob')
     if manual:
         with pause_for_manual_action:
             input("Press ENTER to continue testing after verifying the account...\n")

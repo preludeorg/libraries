@@ -14,12 +14,10 @@ class IAMController(HttpController):
         self.account = account
 
     @verify_credentials
-    def new_account(self, user_email: str, user_name: str = None, company: str = None, slug: str = None):
-        body = dict(handle=user_email)
+    def new_account(self, user_email: str, company: str, user_name: str = None, slug: str = None):
+        body = dict(handle=user_email, company=company)
         if user_name:
             body['user_name'] = user_name
-        if company:
-            body['company'] = company
         if slug:
             body['slug'] = slug
 
