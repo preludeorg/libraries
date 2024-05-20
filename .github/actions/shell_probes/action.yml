@@ -20,7 +20,7 @@ runs:
   using: "composite"
   steps:
     - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1-node16
+      uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: ${{ inputs.aws_region }}
         aws-access-key-id: ${{ inputs.aws_access_key_id }}
