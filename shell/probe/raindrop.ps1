@@ -1,9 +1,11 @@
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-function Execute { 
+function Execute {
     Param([String]$File)
 
     try {
+        $stdoutTempFile = New-Item -path "$dir\stdout.log" -Force
+        $stderrTempFile = New-Item -path "$dir\stderr.log" -Force
         $proc = Start-Process -FilePath $File -NoNewWindow -PassThru
 
         $timeouted = $null
@@ -23,6 +25,14 @@ function Execute {
         return 127
     } catch {
         return 1
+    } finally {
+        $stdout = Get-Content -Path $stdoutTempFile
+        $stdout = if ($stdout) { [string]::Join("; ", $stdout) } else { "" }
+        $stderr = Get-Content -Path $stderrTempFile
+        $stderr = if ($stderr) { [string]::Join("; ", $stderr) } else { "" }
+        if ($stdout -or $stderr) {
+            Write-Host "${stdout}; ${stderr}"
+        }
     }
 }
 
@@ -43,7 +53,7 @@ while ($true) {
             "dat" = $dat
             "version" = "2.2"
         } -UseBasicParsing -MaximumRedirection 0 -ErrorAction SilentlyContinue
-        
+
         $uuid = $task.content -replace ".*?([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}).*", '$1'
         $auth = $task.content -replace '^[^/]*//([^/]*)/.*', '$1'
 

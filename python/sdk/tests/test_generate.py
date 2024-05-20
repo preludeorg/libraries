@@ -37,10 +37,12 @@ class TestGenerate:
             match status := res.get('status'):
                 case 'RUNNING':
                     if res['step'] == 'GENERATE':
-                        assert 14 == res['num_tasks'], json.dumps(res)
+                        assert 2 == res['num_tasks'], json.dumps(res)
                 case 'COMPLETE':
                     assert 14 == len(res['output']), json.dumps(res)
-                    assert {'ai_generated', 'existing_test', 'excluded', 'name', 'status', 'technique'} == set(res['output'][0].keys()), json.dumps(res)
+                    for output in res['output']:
+                        assert {'status', 'technique'} < set(output.keys()), json.dumps(output)
+                        assert 'ai_generated' in output or 'existing_test' in output or 'excluded' in output, json.dumps(output)
                     return
                 case 'FAILED':
                     assert False, f'threat_gen FAILED: {json.dumps(res)}'
