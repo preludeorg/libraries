@@ -34,7 +34,7 @@ class TestIAM:
             account_id=created['account_id'],
             whoami=email,
             slug=created['account_id'],
-            company='',
+            company='pysdk-tests',
             mode=Mode.AUTOPILOT.value,
             controls=[],
             users=[

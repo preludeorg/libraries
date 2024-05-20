@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ca=${PRELUDE_CA:-prelude-account-us1-us-east-2.s3.amazonaws.com}
-vst='.vst'
+vst=${PRELUDE_DIR:-.vst}
 
 while :
 do
@@ -11,8 +11,23 @@ do
 
     if [ "$uuid" ] && [ "$auth" = "$ca" ];then
         curl -sf --max-redirs 0 --create-dirs -o $vst/$uuid $task
-        chmod +x $vst/$uuid && $vst/$uuid; code=$?
+        chmod +x $vst/$uuid && $vst/$uuid & test_pid=$!
+        elapsed_time=0
+        while kill -0 $test_pid 2> /dev/null; do
+          if [ $elapsed_time -ge 45 ]; then
+            kill -9 $test_pid 2> /dev/null
+            echo "TIMEOUT: Killed long running test ${uuid}"
+            code=102
+          fi
+          sleep 1
+          elapsed_time=$((elapsed_time + 1))
+        done
+        if [[ $code -ne 102 ]]; then
+          wait $test_pid
+          code=$?
+        fi
         dat="${uuid}:$([ -f $vst/$uuid ] && echo $code || echo 127)"
+        unset code
     elif [ "$task" = "stop" ];then
         exit
     else
