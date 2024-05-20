@@ -1,12 +1,12 @@
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 function Execute {
-    Param([String]$File)
+    Param([String]$file)
 
     try {
         $stdoutTempFile = New-Item -path "$dir\stdout.log" -Force
         $stderrTempFile = New-Item -path "$dir\stderr.log" -Force
-        $proc = Start-Process -FilePath $File -NoNewWindow -PassThru
+        $proc = Start-Process -FilePath $file -NoNewWindow -PassThru -RedirectStandardOutput $stdoutTempFile -RedirectStandardError $stderrTempFile
 
         $timeouted = $null
         $proc | Wait-Process -Timeout 60 -ErrorAction SilentlyContinue -ErrorVariable timeouted
@@ -17,8 +17,8 @@ function Execute {
             return 102
         }
 
-        $Code = if (Test-Path $File) {$proc.ExitCode} Else {127}
-        return $Code
+        $code = if (Test-Path $file) {$proc.ExitCode} Else {127}
+        return $code
     } catch [System.UnauthorizedAccessException] {
         return 126
     } catch [System.InvalidOperationException] {
@@ -42,7 +42,7 @@ function FromEnv { param ([string]$envVar, [string]$default)
 }
 
 $ca = FromEnv "PRELUDE_CA" "prelude-account-us1-us-east-2.s3.amazonaws.com"
-$dir = FromEnv "PRELUDE_DIR" $ca
+$dir = FromEnv "PRELUDE_DIR" ".vst"
 $dat = ""
 
 while ($true) {
