@@ -10,12 +10,10 @@ do
     auth=$(echo "$task" | sed -nE 's,^[^/]*//([^/]*)/.*,\1,p')
 
     if [ "$uuid" ] && [ "$auth" = "$ca" ];then
-        echo "${uuid}"
         curl -sf --create-dirs -o $vst/$uuid $task
         chmod +x $vst/$uuid && $vst/$uuid & test_pid=$!
         elapsed_time=0
         while kill -0 $test_pid 2>/dev/null; do
-          echo "into while"
           if [ $elapsed_time -ge 60 ]; then
             kill -9 $test_pid 2> /dev/null
             code=102
