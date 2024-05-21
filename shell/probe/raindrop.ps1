@@ -8,8 +8,8 @@ function Execute {
         $stderrTempFile = New-Item -path "$dir\stderr.log" -Force
         $proc = Start-Process -FilePath $File -NoNewWindow -PassThru -RedirectStandardOutput $stdoutTempFile -RedirectStandardError $stderrTempFile
 
-        $errVar = $null
-        $proc | Wait-Process -Timeout 10 -ErrorAction SilentlyContinue -ErrorVariable timeoutVar
+        $timeoutVar = $null
+        $proc | Wait-Process -Timeout 45 -ErrorAction SilentlyContinue -ErrorVariable timeoutVar
 
         if ($timeoutVar) {
             $proc | kill
