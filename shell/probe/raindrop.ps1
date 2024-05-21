@@ -29,7 +29,7 @@ function Execute {
         $stdout = if ($stdout) { [string]::Join("; ", $stdout) } else { "" }
         $stderr = Get-Content -Path $stderrTempFile
         $stderr = if ($stderr) { [string]::Join("; ", $stderr) } else { "" }
-        if ($timeoutVar) {$stdErr = [string]::Join(" ", $stderr, "TEST TIMEOUT; ") } 
+        if ($timeoutVar) {$stdErr = [string]::Join(" ", $stderr, "TEST TIMEOUT; ") }
         if ($stdout -or $stderr) {
             Write-Host "${stdout}; ${stderr}"
         }
@@ -41,13 +41,13 @@ function FromEnv { param ([string]$envVar, [string]$default)
     if ($envVal) { return $envVal } else { return $default }
 }
 
-$ca = FromEnv "PRELUDE_CA" "prelude-account-us2-us-east-1.s3.amazonaws.com"
+$ca = FromEnv "PRELUDE_CA" "prelude-account-us1-us-east-2.s3.amazonaws.com"
 $dir = FromEnv "PRELUDE_DIR" ".vst"
 $dat = ""
 
 while ($true) {
     try {
-        $task = Invoke-WebRequest -Uri "https://api.us2.preludesecurity.com" -Headers @{
+        $task = Invoke-WebRequest -Uri "https://api.preludesecurity.com" -Headers @{
             "token" = $env:PRELUDE_TOKEN
             "dos" = "windows-$Env:PROCESSOR_ARCHITECTURE"
             "dat" = $dat
