@@ -6,9 +6,17 @@ function Execute {
     try {
         $stdoutTempFile = New-Item -path "$dir\stdout.log" -Force
         $stderrTempFile = New-Item -path "$dir\stderr.log" -Force
-        $R = (Start-Process -FilePath $File -Wait -NoNewWindow -PassThru -RedirectStandardOutput $stdoutTempFile -RedirectStandardError $stderrTempFile).ExitCode
-        $Code = if (Test-Path $File) {$R} Else {127}
-        return $Code
+        $proc = Start-Process -FilePath $File -NoNewWindow -PassThru -RedirectStandardOutput $stdoutTempFile -RedirectStandardError $stderrTempFile
+
+        $proc | Wait-Process -Timeout 45 -ErrorAction SilentlyContinue -ErrorVariable timeoutVar
+
+        if ($timeoutVar) {
+            $proc | kill
+            return 102
+        }
+
+        $code = if (Test-Path $File) {$proc.ExitCode} Else {127}
+        return $code
     } catch [System.UnauthorizedAccessException] {
         return 126
     } catch [System.InvalidOperationException] {
@@ -20,8 +28,9 @@ function Execute {
         $stdout = if ($stdout) { [string]::Join("; ", $stdout) } else { "" }
         $stderr = Get-Content -Path $stderrTempFile
         $stderr = if ($stderr) { [string]::Join("; ", $stderr) } else { "" }
-        if ($stdout -or $stderr) {
-            Write-Host "${stdout}; ${stderr}"
+
+        if ($stdout -or $stderr -or $timeoutVar) {
+            Write-Host "${stdout}; ${stderr}; ${timeoutVar}"
         }
     }
 }
@@ -32,8 +41,11 @@ function FromEnv { param ([string]$envVar, [string]$default)
 }
 
 $ca = FromEnv "PRELUDE_CA" "prelude-account-us1-us-east-2.s3.amazonaws.com"
-$dir = FromEnv "PRELUDE_DIR" $ca
+$dir = FromEnv "PRELUDE_DIR" ".vst"
 $dat = ""
+$version = "2.2"
+
+Write-Output "Prelude probe: version ${version}"
 
 while ($true) {
     try {
@@ -41,7 +53,7 @@ while ($true) {
             "token" = $env:PRELUDE_TOKEN
             "dos" = "windows-$Env:PROCESSOR_ARCHITECTURE"
             "dat" = $dat
-            "version" = "2.2"
+            "version" = $version
         } -UseBasicParsing -MaximumRedirection 0 -ErrorAction SilentlyContinue
 
         $uuid = $task.content -replace ".*?([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}).*", '$1'
