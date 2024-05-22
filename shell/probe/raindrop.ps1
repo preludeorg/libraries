@@ -8,11 +8,9 @@ function Execute {
         $stderrTempFile = New-Item -path "$dir\stderr.log" -Force
         $proc = Start-Process -FilePath $File -NoNewWindow -PassThru -RedirectStandardOutput $stdoutTempFile -RedirectStandardError $stderrTempFile
 
-        $errVar = $null
-        $proc | Wait-Process -Timeout 45 -ErrorAction SilentlyContinue -ErrorVariable errVar
+        $proc | Wait-Process -Timeout 45 -ErrorAction SilentlyContinue -ErrorVariable timeoutVar
 
-        if ($errVar) {
-            Write-Host $errVar
+        if ($timeoutVar) {
             $proc | kill
             return 102
         }
@@ -30,8 +28,9 @@ function Execute {
         $stdout = if ($stdout) { [string]::Join("; ", $stdout) } else { "" }
         $stderr = Get-Content -Path $stderrTempFile
         $stderr = if ($stderr) { [string]::Join("; ", $stderr) } else { "" }
-        if ($stdout -or $stderr) {
-            Write-Host "${stdout}; ${stderr}"
+
+        if ($stdout -or $stderr -or $timeoutVar) {
+            Write-Host "${stdout}; ${stderr}; ${timeoutVar}"
         }
     }
 }
