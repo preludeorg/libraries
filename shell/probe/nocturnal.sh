@@ -4,7 +4,7 @@ ca=${PRELUDE_CA:-prelude-account-us1-us-east-2.s3.amazonaws.com}
 vst=${PRELUDE_DIR:-.vst}
 version='2.2'
 
-echo "Prelude probe version ${version}"
+echo "Prelude probe: version ${version}"
 
 while :
 do
