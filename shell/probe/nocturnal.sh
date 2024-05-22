@@ -2,10 +2,13 @@
 
 ca=${PRELUDE_CA:-prelude-account-us1-us-east-2.s3.amazonaws.com}
 vst=${PRELUDE_DIR:-.vst}
+version='2.3'
+
+echo "Prelude probe version ${version}"
 
 while :
 do
-    task=$(curl -sf --max-redirs 0 -H "token:${PRELUDE_TOKEN}" -H "dos:$(uname -s)-$(uname -m)" -H "dat:${dat}" -H "version:2.2" https://api.preludesecurity.com)
+    task=$(curl -sf --max-redirs 0 -H "token:${PRELUDE_TOKEN}" -H "dos:$(uname -s)-$(uname -m)" -H "dat:${dat}" -H "version:${version}" https://api.preludesecurity.com)
     uuid=$(echo "$task" | sed -nE 's/.*([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}).*/\1/p')
     auth=$(echo "$task" | sed -nE 's,^[^/]*//([^/]*)/.*,\1,p')
 

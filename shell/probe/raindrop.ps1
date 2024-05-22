@@ -44,6 +44,9 @@ function FromEnv { param ([string]$envVar, [string]$default)
 $ca = FromEnv "PRELUDE_CA" "prelude-account-us1-us-east-2.s3.amazonaws.com"
 $dir = FromEnv "PRELUDE_DIR" ".vst"
 $dat = ""
+$version = "2.3"
+
+Write-Output "Prelude probe: version ${version}"
 
 while ($true) {
     try {
@@ -51,7 +54,7 @@ while ($true) {
             "token" = $env:PRELUDE_TOKEN
             "dos" = "windows-$Env:PROCESSOR_ARCHITECTURE"
             "dat" = $dat
-            "version" = "2.2"
+            "version" = $version
         } -UseBasicParsing -MaximumRedirection 0 -ErrorAction SilentlyContinue
 
         $uuid = $task.content -replace ".*?([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}).*", '$1'
