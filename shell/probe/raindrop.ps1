@@ -29,9 +29,9 @@ function Execute {
         $stdout = if ($stdout) { [string]::Join("; ", $stdout) } else { "" }
         $stderr = Get-Content -Path $stderrTempFile
         $stderr = if ($stderr) { [string]::Join("; ", $stderr) } else { "" }
-        if ($timeoutVar) {$stdErr = [string]::Join(" ", $stderr, "TEST TIMEOUT; ") }
-        if ($stdout -or $stderr) {
-            Write-Host "${stdout}; ${stderr}"
+
+        if ($stdout -or $stderr -or $timeoutVar) {
+            Write-Host "${stdout}; ${stderr}; ${timeoutVar}"
         }
     }
 }
