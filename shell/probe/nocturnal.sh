@@ -27,7 +27,7 @@ do
           sleep 1
           elapsed_time=$((elapsed_time + 1))
         done
-        if [[ $code -ne 102 ]]; then
+        if [ $code -ne 102 ]; then
           wait $test_pid
           code=$?
         fi
