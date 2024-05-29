@@ -107,17 +107,22 @@ def list_detections(controller):
 
 @detect.command('detection')
 @click.argument('detection_id')
-@click.option('-o', '--output_file', help='write the sigma rule to a file', type=click.Path(writable=True))
+@click.option('-s', '--sigma_only', help='output the sigma rule only in yaml format', is_flag=True)
+@click.option('-o', '--output_file', help='write the sigma rule to a file in yaml format', type=click.Path(writable=True))
 @click.pass_obj
 @handle_api_error
-def get_detection(controller, detection_id, output_file):
+def get_detection(controller, detection_id, sigma_only, output_file):
     """ List properties for a detection """
     with Spinner(description='Fetching data for detection'):
         data = controller.get_detection(detection_id=detection_id)
     if output_file:
         with open(output_file, 'w') as f:
             f.write(yaml.safe_dump(data['rule']))
-    print_json(data=data)
+
+    if sigma_only:
+        print(yaml.safe_dump(data['rule']))
+    else:
+        print_json(data=data)
 
 
 @detect.command('download')
