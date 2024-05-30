@@ -8,11 +8,9 @@ function Execute {
         $stderrTempFile = New-Item -path "$dir\stderr.log" -Force
         $proc = Start-Process -FilePath $File -NoNewWindow -PassThru -RedirectStandardOutput $stdoutTempFile -RedirectStandardError $stderrTempFile
 
-        $errVar = $null
-        $proc | Wait-Process -Timeout 45 -ErrorAction SilentlyContinue -ErrorVariable errVar
+        $proc | Wait-Process -Timeout 45 -ErrorAction SilentlyContinue -ErrorVariable timeoutVar
 
-        if ($errVar) {
-            Write-Host $errVar
+        if ($timeoutVar) {
             $proc | kill
             return 102
         }
@@ -30,8 +28,9 @@ function Execute {
         $stdout = if ($stdout) { [string]::Join("; ", $stdout) } else { "" }
         $stderr = Get-Content -Path $stderrTempFile
         $stderr = if ($stderr) { [string]::Join("; ", $stderr) } else { "" }
-        if ($stdout -or $stderr) {
-            Write-Host "${stdout}; ${stderr}"
+
+        if ($stdout -or $stderr -or $timeoutVar) {
+            Write-Host "${stdout}; ${stderr}; ${timeoutVar}"
         }
     }
 }
@@ -44,7 +43,7 @@ function FromEnv { param ([string]$envVar, [string]$default)
 $ca = FromEnv "PRELUDE_CA" "prelude-account-us1-us-east-2.s3.amazonaws.com"
 $dir = FromEnv "PRELUDE_DIR" ".vst"
 $dat = ""
-$version = "2.2"
+$version = "2.3"
 
 Write-Output "Prelude probe: version ${version}"
 
