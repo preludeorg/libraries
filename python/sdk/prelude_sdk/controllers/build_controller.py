@@ -83,6 +83,17 @@ class BuildController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
+    def get_compile_status(self, job_id):
+        res = self._session.get(
+            f'{self.account.hq}/build/compile/{job_id}',
+            headers=self.account.headers,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
     def create_threat(self, name, published, threat_id=None, source_id=None, source=None, tests=None):
         """ Create a threat """
         body = dict(name=name, published=published)
