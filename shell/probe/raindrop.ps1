@@ -43,7 +43,7 @@ function FromEnv { param ([string]$envVar, [string]$default)
 $ca = FromEnv "PRELUDE_CA" "prelude-account-us1-us-east-2.s3.amazonaws.com"
 $dir = FromEnv "PRELUDE_DIR" ".vst"
 $dat = ""
-$version = "2.3"
+$version = "2.4"
 
 Write-Output "Prelude probe: version ${version}"
 
