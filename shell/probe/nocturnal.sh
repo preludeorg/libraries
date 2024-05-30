@@ -2,7 +2,7 @@
 
 ca=${PRELUDE_CA:-prelude-account-us1-us-east-2.s3.amazonaws.com}
 vst=${PRELUDE_DIR:-.vst}
-version='2.3'
+version='2.4'
 
 echo "Prelude probe: version ${version}"
 
@@ -27,7 +27,7 @@ do
           sleep 1
           elapsed_time=$((elapsed_time + 1))
         done
-        if [ $code -ne 102 ]; then
+        if [ "$code" != "102" ]; then
           wait $test_pid
           code=$?
         fi
