@@ -2,6 +2,7 @@ import importlib.resources as pkg_resources
 import json
 import os
 import re
+import time
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path, PurePath
@@ -114,12 +115,19 @@ def upload_attachment(controller, path, test):
 
     def upload(p: Path):
         with open(p, 'rb') as data:
-            with Spinner(description='Uploading to test'):
+            with Spinner(description='Uploading to test') as spinner:
                 data = controller.upload(
                     test_id=identifier, 
                     filename=p.name, 
                     data=data.read()
                 )
+                if data.get('compile_job_id'):
+                    spinner.update(spinner.task_ids[-1], description='Compiling')
+                    while (result := controller.get_compile_status(data['compile_job_id'])) and result['status'] == 'RUNNING':
+                        time.sleep(2)
+                    if result['status'] == 'FAILED':
+                        result['error'] = 'Failed to compile'
+                    data |= result
             print_json(data=data)
 
     identifier = test or test_id()
