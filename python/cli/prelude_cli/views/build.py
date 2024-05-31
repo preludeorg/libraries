@@ -121,12 +121,12 @@ def upload_attachment(controller, path, test):
                     filename=p.name, 
                     data=data.read()
                 )
-                if 'compile_job_id' in data:
+                if data.get('compile_job_id'):
                     spinner.update(spinner.task_ids[-1], description='Compiling')
                     while (result := controller.get_compile_status(data['compile_job_id'])) and result['status'] == 'RUNNING':
                         time.sleep(2)
                     if result['status'] == 'FAILED':
-                        raise Exception('Failed to process attachment')
+                        result['error'] = 'Failed to compile'
                     data |= result
             print_json(data=data)
 
