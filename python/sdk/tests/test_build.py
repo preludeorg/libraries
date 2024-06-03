@@ -38,31 +38,29 @@ class TestVST:
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_upload(self, unwrap):
+        def wait_for_compile(job_id):
+            timeout = time.time() + 60
+            while time.time() < timeout:
+                time.sleep(5)
+                res = unwrap(self.build.get_compile_status)(self.build, job_id=job_id)
+                if res['status'] != 'RUNNING':
+                    break
+
         template = files(templates).joinpath('template.go').read_text()
         res = unwrap(self.build.upload)(self.build, test_id=pytest.test_id, filename=f'{pytest.test_id}.go',
                                         data=template.encode("utf-8"))
+        pytest.expected_test['attachments'].append(res['filename'])
 
+        assert res.get('compile_job_id') is not None
+        wait_for_compile(res['compile_job_id'])
         expected = dict(
+            compile_job_id=res['compile_job_id'],
+            filename=f'{pytest.test_id}.go',
             id=pytest.test_id,
-            filename=f'{pytest.test_id}.go'
         )
         assert expected == res
 
-        pytest.expected_test['attachments'].append(res['filename'])
-
     def test_get_test(self, unwrap):
-        def wait_for_compile():
-            timeout = time.time() + 60
-            while time.time() < timeout:
-                time.sleep(6)
-                res = unwrap(self.detect.get_test)(self.detect, test_id=pytest.test_id)
-                if len(res['attachments']) == 6:
-                    break
-                # Hack to clear test from cache
-                unwrap(self.build.update_test)(self.build, test_id=pytest.test_id, name=pytest.expected_test['name'])
-            return
-
-        wait_for_compile()
         for suffix in ['darwin-arm64', 'darwin-x86_64', 'linux-arm64', 'linux-x86_64', 'windows-x86_64']:
             pytest.expected_test['attachments'].append(f'{pytest.test_id}_{suffix}')
         res = unwrap(self.detect.get_test)(self.detect, test_id=pytest.test_id)
