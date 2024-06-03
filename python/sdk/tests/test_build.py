@@ -45,18 +45,31 @@ class TestVST:
                 res = unwrap(self.build.get_compile_status)(self.build, job_id=job_id)
                 if res['status'] != 'RUNNING':
                     break
+            return res
 
         template = files(templates).joinpath('template.go').read_text()
         res = unwrap(self.build.upload)(self.build, test_id=pytest.test_id, filename=f'{pytest.test_id}.go',
                                         data=template.encode("utf-8"))
         pytest.expected_test['attachments'].append(res['filename'])
 
-        assert res.get('compile_job_id') is not None
-        wait_for_compile(res['compile_job_id'])
         expected = dict(
             compile_job_id=res['compile_job_id'],
             filename=f'{pytest.test_id}.go',
             id=pytest.test_id,
+        )
+        assert expected == res
+
+        assert res.get('compile_job_id') is not None
+        res = wait_for_compile(res['compile_job_id'])
+        per_platform_res = res.pop('results')
+        assert 5 == len(per_platform_res)
+        for platform in per_platform_res:
+            assert 'SUCCEEDED' == platform['status']
+        expected = dict(
+            compile_job_id=res['compile_job_id'],
+            filename=f'{pytest.test_id}.go',
+            id=pytest.test_id,
+            status='COMPLETE',
         )
         assert expected == res
 
