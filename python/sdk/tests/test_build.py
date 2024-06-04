@@ -42,9 +42,6 @@ class TestVST:
             timeout = time.time() + 60
             while time.time() < timeout:
                 time.sleep(5)
-                import sys
-                # print(sys.path)
-                # print(dir(self.build))
                 res = unwrap(self.build.get_compile_status)(self.build, job_id=job_id)
                 if res['status'] != 'RUNNING':
                     break
