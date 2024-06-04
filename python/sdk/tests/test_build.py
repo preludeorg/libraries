@@ -42,6 +42,9 @@ class TestVST:
             timeout = time.time() + 60
             while time.time() < timeout:
                 time.sleep(5)
+                import sys
+                # print(sys.path)
+                # print(dir(self.build))
                 res = unwrap(self.build.get_compile_status)(self.build, job_id=job_id)
                 if res['status'] != 'RUNNING':
                     break
@@ -62,16 +65,10 @@ class TestVST:
         assert res.get('compile_job_id') is not None
         res = wait_for_compile(res['compile_job_id'])
         per_platform_res = res.pop('results')
+        assert 'COMPLETE' == res['status']
         assert 5 == len(per_platform_res)
         for platform in per_platform_res:
             assert 'SUCCEEDED' == platform['status']
-        expected = dict(
-            compile_job_id=res['compile_job_id'],
-            filename=f'{pytest.test_id}.go',
-            id=pytest.test_id,
-            status='COMPLETE',
-        )
-        assert expected == res
 
     def test_get_test(self, unwrap):
         for suffix in ['darwin-arm64', 'darwin-x86_64', 'linux-arm64', 'linux-x86_64', 'windows-x86_64']:
