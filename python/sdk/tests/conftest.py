@@ -149,3 +149,20 @@ def setup_detection(unwrap):
     """
 
     pytest.expected_detection = unwrap(build.create_detection)(build, rule=pytest.detection_rule, test_id=pytest.test_id, detection_id=pytest.detection_id, rule_id=str(uuid.uuid4()))
+
+
+@pytest.fixture(scope='session')
+def setup_threat_hunt(unwrap):
+    if not pytest.expected_account['features']['threat_intel']:
+        return
+    if hasattr(pytest, 'expected_threat_hunt'):
+        return
+
+    build = BuildController(pytest.account)
+    pytest.threat_hunt_id = str(uuid.uuid4())
+    pytest.expected_threat_hunt = unwrap(build.create_threat_hunt)(
+        build,
+        test_id=pytest.test_id,
+        name='test threat hunt',
+        query='test query',
+        threat_hunt_id=pytest.threat_hunt_id)

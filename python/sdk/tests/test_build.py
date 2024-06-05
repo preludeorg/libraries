@@ -247,3 +247,57 @@ class TestDetection:
         unwrap(self.build.delete_detection)(self.build, detection_id=pytest.detection_id)
         with pytest.raises(Exception):
             unwrap(self.detect.get_detection)(self.detect, detection_id=pytest.detection_id)
+
+@pytest.mark.order(4)
+@pytest.mark.usefixtures('setup_account', 'setup_test', 'setup_threat_hunt')
+class TestThreatHunt:
+
+    def setup_class(self):
+        if not pytest.expected_account['features']['threat_intel']:
+            pytest.skip("threat intel feature not enabled")
+
+        self.build = BuildController(pytest.account)
+        self.detect = DetectController(pytest.account)
+
+    def test_create_threat_hunt(self, unwrap):
+        expected = dict(
+            account_id=pytest.account.headers['account'],
+            threat_hunt_id=pytest.threat_hunt_id,
+            name='test threat hunt',
+            query='test query',
+            test_id=pytest.test_id
+        )
+
+        diffs = check_dict_items(expected, pytest.expected_threat_hunt)
+        assert not diffs, json.dumps(diffs, indent=2)
+
+    def test_get_threat_hunt(self, unwrap):
+        res = unwrap(self.detect.get_threat_hunt)(self.detect, threat_hunt_id=pytest.threat_hunt_id)
+
+        diffs = check_dict_items(pytest.expected_threat_hunt, res)
+        assert not diffs, json.dumps(diffs, indent=2)
+
+    def test_list_threat_hunts(self, unwrap):
+        res = unwrap(self.detect.list_threat_hunts)(self.detect)
+        owners = set([r['account_id'] for r in res])
+        assert {'prelude', pytest.account.headers['account']} >= owners
+
+        mine = [r for r in res if r['threat_hunt_id'] == pytest.expected_threat_hunt['threat_hunt_id']]
+        assert 1 == len(mine)
+        diffs = check_dict_items(pytest.expected_threat_hunt, mine[0])
+        assert not diffs, json.dumps(diffs, indent=2)
+
+    def test_update_threat_hunt(self, unwrap):
+        res = unwrap(self.build.update_threat_hunt)(
+            self.build,
+            threat_hunt_id=pytest.threat_hunt_id,
+            name='updated threat hunt',
+            query='updated query')
+        assert res['name'] == 'updated threat hunt'
+        assert res['query'] == 'updated query'
+
+    @pytest.mark.order(-4)
+    def test_delete_threat_hunt(self, unwrap):
+        unwrap(self.build.delete_threat_hunt)(self.build, threat_hunt_id=pytest.threat_hunt_id)
+        with pytest.raises(Exception):
+            unwrap(self.detect.get_threat_hunt)(self.detect, threat_hunt_id=pytest.threat_hunt_id)
