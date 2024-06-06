@@ -63,7 +63,7 @@ class TestProbe:
     def test_describe_activity(self, unwrap):
         try:
             with pytest.raises(subprocess.TimeoutExpired):
-                subprocess.run([pytest.probe_file], capture_output=True, env={'PRELUDE_TOKEN': pytest.token}, timeout=40)
+                subprocess.run([pytest.probe_file], capture_output=True, env={'PRELUDE_TOKEN': pytest.token}, timeout=120)
 
             filters = dict(
                 start=datetime.now(timezone.utc) - timedelta(days=1),
