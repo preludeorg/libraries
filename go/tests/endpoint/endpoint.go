@@ -22,7 +22,6 @@ const (
 	UnexpectedTestError      int = 1
 	TimeoutExceeded          int = 102
 	CleanupFailed            int = 103
-	OutOfMemory              int = 137
 	UnexpectedExecutionError int = 256
 
 	// Not Relevant
@@ -32,13 +31,12 @@ const (
 	TestCompletedNormally       int = 100
 	FileQuarantinedOnExtraction int = 105
 	NetworkConnectionBlocked    int = 106
-	HostNotVulnerabile          int = 107
+	HostNotVulnerable           int = 107
 	ExecutionPrevented          int = 126
 	FileQuarantinedOnExecution  int = 127
 
 	// Unprotected
 	Unprotected            int = 101
-	TestIncorrectlyBlocked int = 110
 )
 
 type fn func()
