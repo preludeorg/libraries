@@ -18,6 +18,7 @@ import {
   Test,
   TestsActivity,
   Threat,
+  ThreatHunt,
   ThreatsActivity,
   UnscheduleItem,
   UpdateEndpointParams,
@@ -182,6 +183,7 @@ export default class DetectController {
     if (query.impersonate) searchParams.set("impersonate", query.impersonate);
     if (query.os) searchParams.set("os", query.os);
     if (query.policy) searchParams.set("policy", query.policy);
+    if (query.statuses) searchParams.set("statuses", query.statuses);
 
     const response = await this.#client.requestWithAuth(
       `/detect/activity?${searchParams.toString()}`,
@@ -195,11 +197,19 @@ export default class DetectController {
   }
 
   /** List all tests available to an account */
-  async listTests(options: RequestOptions = {}): Promise<Test[]> {
-    const response = await this.#client.requestWithAuth("/detect/tests", {
-      method: "GET",
-      ...options,
-    });
+  async listTests(
+    techniques?: string,
+    options: RequestOptions = {},
+  ): Promise<Test[]> {
+    const searchParams = new URLSearchParams();
+    if (techniques) searchParams.set("techniques", techniques);
+    const response = await this.#client.requestWithAuth(
+      `/detect/tests?${searchParams.toString()}`,
+      {
+        method: "GET",
+        ...options,
+      },
+    );
 
     return await response.json();
   }
@@ -306,5 +316,39 @@ export default class DetectController {
     );
 
     return await response.json();
+  }
+
+  /** List threat hunts */
+  async listThreatHunts(
+    tests?: string,
+    options: RequestOptions = {},
+  ): Promise<ThreatHunt[]> {
+    const searchParams = new URLSearchParams();
+    if (tests) searchParams.set("tests", tests);
+    const response = await this.#client.requestWithAuth(
+      `/detect/threat_hunts?${searchParams.toString()}`,
+      {
+        method: "GET",
+        ...options,
+      },
+    );
+
+    return (await response.json()) as ThreatHunt[];
+  }
+
+  /** List properties for an existing threat hunt query */
+  async getThreatHunt(
+    threatHuntId: string,
+    options: RequestOptions = {},
+  ): Promise<ThreatHunt> {
+    const response = await this.#client.requestWithAuth(
+      `/detect/threat_hunts/${threatHuntId}`,
+      {
+        method: "GET",
+        ...options,
+      },
+    );
+
+    return (await response.json()) as ThreatHunt;
   }
 }

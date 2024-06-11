@@ -1,5 +1,5 @@
 import Client from "../client";
-import type { RequestOptions, ThreatIntel } from "../types";
+import type { GeneratedTechnique, RequestOptions, ThreatIntel } from "../types";
 
 export default class GenerateController {
   #client: Client;
@@ -11,15 +11,18 @@ export default class GenerateController {
   /** Upload a threat intel pdf */
   async uploadThreatIntel(
     file: File,
+    force_ai: boolean,
     options: RequestOptions = {},
   ): Promise<{ job_id: string }> {
+    const searchParams = new URLSearchParams();
+    searchParams.set("force_ai", force_ai ? "true" : "false");
     const headers = {
       "Content-Type": "application/pdf",
       ...options.headers,
     };
 
     const response = await this.#client.requestWithAuth(
-      `/generate/threat-intel`,
+      `/generate/threat-intel?${searchParams.toString()}`,
       {
         method: "POST",
         body: await file.arrayBuffer(),
@@ -45,5 +48,21 @@ export default class GenerateController {
     );
 
     return (await response.json()) as ThreatIntel;
+  }
+
+  /** Generate a technique from threat intel build process */
+  async generateTechnique(
+    technique: string,
+    parent_job_id: string,
+    intel_context?: string,
+    options: RequestOptions = {},
+  ): Promise<GeneratedTechnique> {
+    const response = await this.#client.requestWithAuth(`/generate/technique`, {
+      method: "POST",
+      body: JSON.stringify({ technique, parent_job_id, intel_context }),
+      ...options,
+    });
+
+    return (await response.json()) as GeneratedTechnique;
   }
 }

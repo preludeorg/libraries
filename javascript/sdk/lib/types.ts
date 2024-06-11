@@ -137,9 +137,16 @@ export type ThreatIntel =
   | ThreatIntelFailed
   | ThreatIntelRunning;
 
-export interface ThreatIntelRunning {
+export type ThreatIntelRunning = ThreatIntelParsing | ThreatIntelGenerating;
+
+export interface ThreatIntelParsing {
   status: "RUNNING";
-  step: "PARSE" | "GENERATE";
+  step: "PARSE";
+}
+
+export interface ThreatIntelGenerating {
+  status: "RUNNING";
+  step: "GENERATE";
   num_tasks: number;
   completed_tasks: number;
 }
@@ -155,11 +162,37 @@ export interface ThreatIntelComplete {
 }
 
 export interface ThreatIntelOutput {
-  status: "SUCCEEDED" | "FAILED";
+  status: "SUCCEEDED" | "FAILED" | "SKIPPED";
   name: string;
   technique: string;
-  go_code: string | null;
-  sigma_rules: string[] | null;
+  ai_generated: AiGeneratedOutput | null;
+  existing_test: ExistingTestOutput | null;
+  excluded: ExcludedOutput | null;
+}
+
+export interface ExcludedOutput {
+  classification: "EXCLUDED" | "TOO MANY TECHNIQUES";
+}
+
+export interface AiGeneratedOutput {
+  go_code: string;
+  sigma_rules: string[];
+  intel_context: string;
+  threat_hunt_queries: ThreatHuntQueries[];
+}
+
+export interface ExistingTestOutput {
+  go_code: string;
+  sigma_rules: string[];
+  test_id: string;
+  test_name: string;
+  threat_hunt_queries: ThreatHuntQueries[];
+}
+
+export interface ThreatHuntQueries {
+  name: string;
+  query: string;
+  control: ControlCode;
 }
 
 export interface VerifiedUser {
@@ -188,7 +221,7 @@ export interface CreateUserParams {
 }
 
 export interface UpdateUserParams {
-  email: string;
+  handle: string;
   permission?: PermissionName;
   expires?: string;
   name?: string;
@@ -276,7 +309,7 @@ export interface Probe {
   edr_id: string | null;
   control: ControlCode;
   tags: string[];
-  last_seen: string;
+  last_seen: string | null;
   created: string;
   dos: Platform | null;
   os?: string | null;
@@ -300,7 +333,7 @@ export const ExitCodes = {
   BLOCKED_AT_PERIMETER: 106,
   EXPLOIT_PREVENTED: 107,
   ENDPOINT_NOT_RELEVANT: 108,
-  OS_PREVENTED_EXECUTION: 126,
+  EXECUTION_PREVENTED: 126,
   STATIC_QUARANTINE: 127,
   BLOCKED: 137,
   UNEXPECTED_ERROR: 256,
@@ -315,14 +348,12 @@ export const ExitCodeGroup = {
     ExitCodes.BLOCKED,
     ExitCodes.BLOCKED_AT_PERIMETER,
     ExitCodes.DYNAMIC_QUARANTINE,
-    ExitCodes.ENDPOINT_NOT_RELEVANT,
     ExitCodes.EXPLOIT_PREVENTED,
-    ExitCodes.OS_PREVENTED_EXECUTION,
+    ExitCodes.EXECUTION_PREVENTED,
     ExitCodes.PROCESS_BLOCKED,
     ExitCodes.PROCESS_BLOCKED_GRACEFULLY,
     ExitCodes.PROTECTED,
     ExitCodes.STATIC_QUARANTINE,
-    ExitCodes.TEST_NOT_RELEVANT,
   ],
   UNPROTECTED: [ExitCodes.UNPROTECTED],
   ERROR: [
@@ -333,10 +364,7 @@ export const ExitCodeGroup = {
     ExitCodes.UNKNOWN_ERROR,
     ExitCodes.UNREPORTED,
   ],
-  NOT_RELEVANT: [
-    ExitCodes.ENDPOINT_NOT_RELEVANT,
-    ExitCodes.TEST_NOT_RELEVANT,
-  ],
+  NOT_RELEVANT: [ExitCodes.TEST_NOT_RELEVANT, ExitCodes.ENDPOINT_NOT_RELEVANT],
 } as const;
 
 export const ActionCodes = {
@@ -362,6 +390,7 @@ export type ControlCodeName = keyof typeof ControlCodes;
 export type ControlCode = (typeof ControlCodes)[ControlCodeName];
 
 export type NonArchPlatform = "darwin" | "linux" | "windows";
+export type Architecture = "arm64" | "x86_64";
 
 export const Platforms = [
   "linux-arm64",
@@ -428,6 +457,7 @@ export interface ActivityQuery {
   impersonate?: string;
   os?: string;
   policy?: string;
+  statuses?: string;
 }
 
 export type ActivityQueryKey = keyof ActivityQuery;
@@ -539,7 +569,7 @@ export interface BlockResponseRule {
 }
 
 export interface BlockResponse {
-  platform: "windows" | "linux" | "mac";
+  platform: "windows" | "linux" | "macos";
   rules: BlockResponseRule[];
 }
 
@@ -599,6 +629,31 @@ export interface Detection {
 }
 
 export interface DetectionReport {
-  platform: "windows" | "linux" | "mac";
+  platform: "windows" | "linux" | "macos";
   created: string;
+}
+
+export interface GeneratedTechnique {
+  parent_job_id: string | null;
+  job_id: string;
+}
+
+export interface CompiledResponse {
+  status: "COMPLETE" | "FAILED" | "RUNNING";
+  results?: CompiledResponseResult[];
+}
+
+export interface CompiledResponseResult {
+  platform: NonArchPlatform;
+  architecture: Architecture;
+  status: "SUCCEEDED" | "FAILED" | "SKIPPED";
+  reason: string | null;
+}
+
+export interface ThreatHunt {
+  control: ControlCode;
+  name: string;
+  query: string;
+  test_id: string;
+  threat_hunt_id: string;
 }
