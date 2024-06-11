@@ -273,7 +273,7 @@ def delete_detection(controller, detection):
 
 
 @build.command('create-threat-hunt')
-@click.option('-n', '--name', help='Name of this threat hunt query', required=True, type=str)
+@click.argument('name')
 @click.option('-q', '--query', help='Threat hunt query', required=True, type=str)
 @click.option('-t', '--test', help='ID of the test this threat hunt query is for', required=True, type=str)
 @click.option('--threat_hunt_id', default=None, type=str)

@@ -248,7 +248,7 @@ class TestDetection:
         with pytest.raises(Exception):
             unwrap(self.detect.get_detection)(self.detect, detection_id=pytest.detection_id)
 
-@pytest.mark.order(4)
+@pytest.mark.order(5)
 @pytest.mark.usefixtures('setup_account', 'setup_test', 'setup_threat_hunt')
 class TestThreatHunt:
 
@@ -288,13 +288,13 @@ class TestThreatHunt:
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_update_threat_hunt(self, unwrap):
-        res = unwrap(self.build.update_threat_hunt)(
+        pytest.expected_threat_hunt = unwrap(self.build.update_threat_hunt)(
             self.build,
             threat_hunt_id=pytest.threat_hunt_id,
             name='updated threat hunt',
             query='updated query')
-        assert res['name'] == 'updated threat hunt'
-        assert res['query'] == 'updated query'
+        assert pytest.expected_threat_hunt['name'] == 'updated threat hunt'
+        assert pytest.expected_threat_hunt['query'] == 'updated query'
 
     @pytest.mark.order(-4)
     def test_delete_threat_hunt(self, unwrap):
