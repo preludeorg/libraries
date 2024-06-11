@@ -248,7 +248,7 @@ class TestDetection:
         with pytest.raises(Exception):
             unwrap(self.detect.get_detection)(self.detect, detection_id=pytest.detection_id)
 
-@pytest.mark.order(5)
+@pytest.mark.order(4)
 @pytest.mark.usefixtures('setup_account', 'setup_test', 'setup_threat_hunt')
 class TestThreatHunt:
 
@@ -296,7 +296,7 @@ class TestThreatHunt:
         assert pytest.expected_threat_hunt['name'] == 'updated threat hunt'
         assert pytest.expected_threat_hunt['query'] == 'updated query'
 
-    @pytest.mark.order(-5)
+    @pytest.mark.order(-4)
     def test_delete_threat_hunt(self, unwrap):
         unwrap(self.build.delete_threat_hunt)(self.build, threat_hunt_id=pytest.threat_hunt_id)
         with pytest.raises(Exception):
