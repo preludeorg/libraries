@@ -125,6 +125,31 @@ def get_detection(controller, detection_id, sigma_only, output_file):
         print_json(data=data)
 
 
+@detect.command('threat-hunts')
+@click.option('--tests', help='comma-separated list of tests', type=str)
+@click.pass_obj
+@handle_api_error
+def list_threat_hunts(controller, tests):
+    """ List threat hunts """
+    with Spinner(description='Fetching threat hunts'):
+        filters = dict()
+        if tests:
+            filters['tests'] = tests
+        data = controller.list_threat_hunts(filters)
+    print_json(data=data)
+
+
+@detect.command('threat-hunt')
+@click.argument('threat_hunt_id')
+@click.pass_obj
+@handle_api_error
+def get_threat_hunt(controller, threat_hunt_id):
+    """ List properties for a threat hunt """
+    with Spinner(description='Fetching data for threat hunt'):
+        data = controller.get_threat_hunt(threat_hunt_id=threat_hunt_id)
+    print_json(data=data)
+
+
 @detect.command('download')
 @click.argument('test')
 @click.pass_obj

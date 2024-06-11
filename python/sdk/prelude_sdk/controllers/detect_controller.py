@@ -164,6 +164,31 @@ class DetectController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
+    def list_threat_hunts(self, filters: dict = None):
+        """ List threat hunts """
+        res = self._session.get(
+            f'{self.account.hq}/detect/threat_hunts',
+            headers=self.account.headers,
+            params=filters if filters else {},
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def get_threat_hunt(self, threat_hunt_id):
+        """ Get properties of an existing threat hunt """
+        res = self._session.get(
+            f'{self.account.hq}/detect/threat_hunts/{threat_hunt_id}',
+            headers=self.account.headers,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
     def download(self, test_id, filename):
         """ Clone a test file or attachment"""
         res = self._session.get(
