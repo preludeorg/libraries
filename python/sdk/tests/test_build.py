@@ -296,7 +296,7 @@ class TestThreatHunt:
         assert pytest.expected_threat_hunt['name'] == 'updated threat hunt'
         assert pytest.expected_threat_hunt['query'] == 'updated query'
 
-    @pytest.mark.order(-4)
+    @pytest.mark.order(-5)
     def test_delete_threat_hunt(self, unwrap):
         unwrap(self.build.delete_threat_hunt)(self.build, threat_hunt_id=pytest.threat_hunt_id)
         with pytest.raises(Exception):
