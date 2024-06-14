@@ -167,6 +167,16 @@ class Control(Enum, metaclass=MissingItem):
         return Control.INVALID
 
 
+class EDRResponse(Enum, metaclass=MissingItem):
+    INVALID = -1
+    OBSERVE = 1
+    DETECT = 2
+    PREVENT = 3
+
+    @classmethod
+    def _missing_(cls, value):
+        return EDRResponse.INVALID
+
 class AuditEvent(Enum, metaclass=MissingItem):
     INVALID = 0
     ATTACH_PARTNER = 1
