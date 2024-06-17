@@ -3,6 +3,7 @@ package Endpoint
 import (
 	"archive/zip"
 	"bytes"
+	"context"
 	"crypto/aes"
 	"crypto/cipher"
 	"fmt"
@@ -41,25 +42,21 @@ const (
 	TestIncorrectlyBlocked int = 110
 )
 
-type fn func()
+var cleanup func() = func() {}
 
-var cleanup fn = func() {}
-
-func Start(test fn, clean ...fn) {
+func Start(test func(context.Context), clean ...func()) {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
 	if len(clean) > 0 {
 		cleanup = clean[0]
 	}
 
 	Say(fmt.Sprintf("Starting test at: %s", time.Now().Format("2006-01-02T15:04:05")))
 
-	go func() {
-		test()
-	}()
-
-	select {
-	case <-time.After(30 * time.Second):
-		os.Exit(102)
-	}
+	go test(ctx)
+	<-ctx.Done()
+	Say("Test timed out. Cancelling context.")
+	os.Exit(102)
 }
 
 func Stop(code int) {
@@ -160,8 +157,8 @@ func Remove(path string) bool {
 	return e == nil
 }
 
-func Shell(args []string) (string, error) {
-	cmd := exec.Command(args[0], args[1:]...)
+func Shell(ctx context.Context, args []string) (string, error) {
+	cmd := exec.CommandContext(ctx, args[0], args[1:]...)
 	stdout, err := cmd.Output()
 	if err != nil {
 		if exitError, ok := err.(*exec.ExitError); ok {
@@ -173,7 +170,7 @@ func Shell(args []string) (string, error) {
 	return string(stdout), nil
 }
 
-func ExecuteRandomCommand(commands [][]string) (string, error) {
+func ExecuteRandomCommand(ctx context.Context, commands [][]string) (string, error) {
 	var command []string
 	if len(commands) == 0 {
 		return "", fmt.Errorf("command slice is empty")
@@ -184,7 +181,7 @@ func ExecuteRandomCommand(commands [][]string) (string, error) {
 		command = commands[index]
 	}
 
-	return Shell(command)
+	return Shell(ctx, command)
 }
 
 func IsAvailable(programs ...string) bool {
