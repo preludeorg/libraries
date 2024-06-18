@@ -53,22 +53,32 @@ export interface Threat {
 }
 
 export interface CreateTestProps {
+  ai_generated?: boolean;
+  intel_context?: string;
   name: string;
-  unit: string;
   technique?: string;
   testId?: string;
-  ai_generated?: boolean;
+  unit: string;
+}
+
+export interface UpdateTestProps {
+  intel_context?: string;
+  name?: string,
+  technique?: string,
+  testId: string,
+  unit?: string,
 }
 
 export interface Test {
-  author: string | null;
   account_id: string;
+  author: string | null;
+  created: string;
   id: string;
+  intel_context?: string;
   name: string;
-  unit: string;
   technique: string | null;
   tombstoned: string | null;
-  created: string;
+  unit: string;
 }
 
 export type AttachedTest = Test & {

@@ -1,15 +1,16 @@
 import Client from "../client";
-import type {
-  AttachedTest,
-  CreateDetectionRule,
-  CreateTestProps,
-  CreateThreatProps,
-  RequestOptions,
-  StatusResponse,
-  Threat,
-  UpdateThreatProps,
-  UploadProps,
-  UploadedAttachment,
+import {
+    AttachedTest,
+    CreateDetectionRule,
+    CreateTestProps,
+    CreateThreatProps,
+    RequestOptions,
+    StatusResponse,
+    Threat,
+    UpdateTestProps,
+    UpdateThreatProps,
+    UploadProps,
+    UploadedAttachment,
 } from "../types";
 
 export default class BuildController {
@@ -41,17 +42,14 @@ export default class BuildController {
 
   /** Update a test */
   async updateTest(
-    testId: string,
-    name?: string,
-    unit?: string,
-    technique?: string,
+    { intel_context, name, technique, testId, unit }: UpdateTestProps,
     options: RequestOptions = {},
   ): Promise<AttachedTest> {
     const response = await this.#client.requestWithAuth(
       `/build/tests/${testId}`,
       {
         method: "POST",
-        body: JSON.stringify({ name, unit, technique }),
+        body: JSON.stringify({ intel_context, name, technique, unit }),
         ...options,
       },
     );
