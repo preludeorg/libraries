@@ -309,9 +309,9 @@ def create_threat_hunt(controller, name, query, test, threat_hunt_id):
 
 @build.command('update-threat-hunt')
 @click.argument('threat_hunt')
-@click.option('-n', '--name', help='Name of this threat hunt query', required=True, type=str)
-@click.option('-q', '--query', help='Threat hunt query', required=True, type=str)
-@click.option('-t', '--test', help='ID of the test this threat hunt query is for', required=True, type=str)
+@click.option('-n', '--name', help='Name of this threat hunt query', type=str)
+@click.option('-q', '--query', help='Threat hunt query', type=str)
+@click.option('-t', '--test', help='ID of the test this threat hunt query is for', type=str)
 @click.pass_obj
 @handle_api_error
 def update_threat_hunt(controller, threat_hunt, name, query, test):
