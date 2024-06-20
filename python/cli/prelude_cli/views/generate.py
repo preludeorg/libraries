@@ -34,11 +34,15 @@ def generate_threat_intel(controller: GenerateController, threat_pdf: str, outpu
             if technique['status'] == 'SUCCEEDED':
                 technique_directory = technique['technique'].replace('.', '_')
                 os.makedirs(f'{output_dir}/{technique_directory}')
+                content = technique.get('ai_generated') or technique.get('existing_test')
                 with open(f'{output_dir}/{technique_directory}/test.go', 'w') as f:
-                    f.write(technique['go_code'])
-                for i, sigma_rule in enumerate(technique['sigma_rules']):
+                    f.write(content['go_code'])
+                for i, sigma_rule in enumerate(content['sigma_rules']):
                     with open(f'{output_dir}/{technique_directory}/sigma_{i}.yaml', 'w') as f:
                         f.write(sigma_rule)
+                for i, query in enumerate(content.get('threat_hunt_queries', [])):
+                    with open(f'{output_dir}/{technique_directory}/query_{i}.json', 'w') as f:
+                        json.dump(dict(name=query['name'], query=query['query']), f, indent=4)
                 with open(f'{output_dir}/{technique_directory}/config.json', 'w') as f:
                     json.dump(dict(
                         technique=technique['technique'],

@@ -149,25 +149,35 @@ def upload_attachment(controller, path, test):
 @click.option('-s', '--source', help='source of threat (ex. www.cisa.gov)', default=None, type=str)
 @click.option('-i', '--source_id', help='ID of the threat, per the source (ex. aa23-075a)', default=None, type=str)
 @click.option('-t', '--tests', help='comma-separated list of test IDs', default=None, type=str)
-@click.option('-d', '--directory', help='directory containing tests and IOAs generated from threat_intel', default=None, type=click.Path(exists=True, dir_okay=True, file_okay=False))
+@click.option('-d', '--directory', help='directory containing tests, detections, and hunt queries generated from threat_intel', default=None, type=click.Path(exists=True, dir_okay=True, file_okay=False))
 @click.pass_obj
 @handle_api_error
 def create_threat(controller, name, published, id, source_id, source, tests, directory):
     """ Create a security threat """
     with Spinner(description='Creating new threat'):
         try:
-            created_tests = list()
-            uploads = list()
+            created_tests = []
+            test_uploads = []
+            created_detections = []
+            created_queries = []
             threat = None
             if directory:
                 for technique_dir in os.listdir(directory):
-                    with open(f'{directory}/{technique_dir}/test.go', 'r') as f:
-                        go_code = f.read()
                     with open(f'{directory}/{technique_dir}/config.json', 'r') as f:
                         config = json.load(f)
-                    test = controller.create_test(name=config['name'], unit=config['unit'], technique=config['technique'])
-                    created_tests.append(test)
-                    uploads.append(controller.upload(test_id=test['id'], filename=f'{test["id"]}.go', data=go_code.encode()))
+                        test = controller.create_test(name=config['name'], unit=config['unit'], technique=config['technique'])
+                        created_tests.append(test)
+                    with open(f'{directory}/{technique_dir}/test.go', 'r') as f:
+                        go_code = f.read()
+                        test_uploads.append(controller.upload(test_id=test['id'], filename=f'{test["id"]}.go', data=go_code.encode()))
+                    for sigma_file in Path(f'{directory}/{technique_dir}').glob('sigma*'):
+                        with open(sigma_file, 'r') as f:
+                            rule = f.read()
+                            created_detections.append(controller.create_detection(rule=rule, test_id=test['id']))
+                    for query_file in Path(f'{directory}/{technique_dir}').glob('query*'):
+                        with open(query_file, 'r') as f:
+                            query = json.load(f)
+                            created_queries.append(controller.create_threat_hunt(name=query['name'], query=query['query'], test_id=test['id']))
                 tests = ','.join([t['id'] for t in created_tests])
             threat = controller.create_threat(
                 name=name,
@@ -180,7 +190,13 @@ def create_threat(controller, name, published, id, source_id, source, tests, dir
         except FileNotFoundError as e:
             raise Exception(e)
         finally:
-            print_json(data=dict(threat=threat, created_tests=created_tests, uploads=uploads))
+            print_json(data=dict(
+                threat=threat,
+                created_tests=created_tests,
+                test_uploads=test_uploads,
+                created_detections=created_detections,
+                created_threat_hunt_queries=created_queries
+                ))
 
 
 @build.command('update-threat')
@@ -293,9 +309,9 @@ def create_threat_hunt(controller, name, query, test, threat_hunt_id):
 
 @build.command('update-threat-hunt')
 @click.argument('threat_hunt')
-@click.option('-n', '--name', help='Name of this threat hunt query', required=True, type=str)
-@click.option('-q', '--query', help='Threat hunt query', required=True, type=str)
-@click.option('-t', '--test', help='ID of the test this threat hunt query is for', required=True, type=str)
+@click.option('-n', '--name', help='Name of this threat hunt query', type=str)
+@click.option('-q', '--query', help='Threat hunt query', type=str)
+@click.option('-t', '--test', help='ID of the test this threat hunt query is for', type=str)
 @click.pass_obj
 @handle_api_error
 def update_threat_hunt(controller, threat_hunt, name, query, test):

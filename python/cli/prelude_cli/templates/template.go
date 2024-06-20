@@ -7,11 +7,11 @@ CREATED: $TIME
 package main
 
 import (
-	"github.com/preludeorg/libraries/go/tests/endpoint"
+	Endpoint "github.com/preludeorg/libraries/go/tests/endpoint"
 )
 
 func test() {
-	Endpoint.Stop(100)
+	Endpoint.Stop(Endpoint.TestCompletedNormally)
 }
 
 func clean() {
