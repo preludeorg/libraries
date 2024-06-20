@@ -41,8 +41,8 @@ def generate_threat_intel(controller: GenerateController, threat_pdf: str, outpu
                     with open(f'{output_dir}/{technique_directory}/sigma_{i}.yaml', 'w') as f:
                         f.write(sigma_rule)
                 for i, query in enumerate(content.get('threat_hunt_queries', [])):
-                    with open(f'{output_dir}/{technique_directory}/query_{i}.txt', 'w') as f:
-                        f.write(query['query'])
+                    with open(f'{output_dir}/{technique_directory}/query_{i}.json', 'w') as f:
+                        json.dump(dict(name=query['name'], query=query['query']), f, indent=4)
                 with open(f'{output_dir}/{technique_directory}/config.json', 'w') as f:
                     json.dump(dict(
                         technique=technique['technique'],

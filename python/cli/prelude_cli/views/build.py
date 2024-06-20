@@ -176,8 +176,8 @@ def create_threat(controller, name, published, id, source_id, source, tests, dir
                             created_detections.append(controller.create_detection(rule=rule, test_id=test['id']))
                     for query_file in Path(f'{directory}/{technique_dir}').glob('query*'):
                         with open(query_file, 'r') as f:
-                            queries = f.read()
-                            created_queries.append(controller.create_threat_hunt(name=config['name'], query=queries, test_id=test['id']))
+                            query = json.load(f)
+                            created_queries.append(controller.create_threat_hunt(name=query['name'], query=query['query'], test_id=test['id']))
                 tests = ','.join([t['id'] for t in created_tests])
             threat = controller.create_threat(
                 name=name,
