@@ -337,7 +337,7 @@ def threat_hunt_activity(controller, id, type):
         if type == 'THREAT_HUNT':
             data = controller.threat_hunt_activity(threat_hunt_id=id)
         elif type == 'TEST':
-            data = controller.test_activity(test_id=id)
+            data = controller.threat_hunt_activity(test_id=id)
         else:
-            data = controller.threat_activity(threat_id=id)
+            data = controller.threat_hunt_activity(threat_id=id)
     print_json(data=data)
