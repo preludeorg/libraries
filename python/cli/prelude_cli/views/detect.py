@@ -326,14 +326,18 @@ def describe_activity(controller, control, dos, endpoints, finish, os, policy, s
     print_json(data=data)
 
 @detect.command('threat-hunt-activity')
-@click.option('--threat_hunt_id', help='threat hunt ID', type=str)
-@click.option('--test_id', help='test ID', type=str)
-@click.option('--threat_id', help='threat ID', type=str)
+@click.argument('id')
+@click.option('-t', '--type', help='whether you are scheduling a test or threat', required=True,
+              type=click.Choice(['THREAT_HUNT', 'TEST', 'THREAT'], case_sensitive=False))
 @click.pass_obj
 @handle_api_error
-def threat_hunt_activity(controller, threat_hunt_id, test_id, threat_id):
+def threat_hunt_activity(controller, id, type):
     """ Get threat hunt activity """
-    filters = dict(threat_hunt_id=threat_hunt_id, test_id=test_id, threat_id=threat_id)
     with Spinner(description='Fetching threat hunt activity'):
-        data = controller.threat_hunt_activity(**filters)
+        if type == 'THREAT_HUNT':
+            data = controller.threat_hunt_activity(threat_hunt_id=id)
+        elif type == 'TEST':
+            data = controller.test_activity(test_id=id)
+        else:
+            data = controller.threat_activity(threat_id=id)
     print_json(data=data)
