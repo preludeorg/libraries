@@ -327,7 +327,7 @@ def describe_activity(controller, control, dos, endpoints, finish, os, policy, s
 
 @detect.command('threat-hunt-activity')
 @click.argument('id')
-@click.option('-t', '--type', help='whether you are scheduling a test or threat', required=True,
+@click.option('-t', '--type', help='whether you are getting activity for a threat hunt, test, or threat', required=True,
               type=click.Choice(['THREAT_HUNT', 'TEST', 'THREAT'], case_sensitive=False))
 @click.pass_obj
 @handle_api_error
