@@ -149,6 +149,16 @@ def get_threat_hunt(controller, threat_hunt_id):
         data = controller.get_threat_hunt(threat_hunt_id=threat_hunt_id)
     print_json(data=data)
 
+@detect.command('do-threat-hunt')
+@click.argument('threat_hunt_id')
+@click.pass_obj
+@handle_api_error
+def do_threat_hunt(controller, threat_hunt_id):
+    """ Run a threat hunt query """
+    with Spinner(description='Running threat hunt'):
+        data = controller.do_threat_hunt(threat_hunt_id=threat_hunt_id)
+    print_json(data=data)
+
 
 @detect.command('download')
 @click.argument('test')
@@ -313,4 +323,17 @@ def describe_activity(controller, control, dos, endpoints, finish, os, policy, s
 
     with Spinner(description='Fetching activity'):
         data = controller.describe_activity(view=view, filters=filters)
+    print_json(data=data)
+
+@detect.command('threat-hunt-activity')
+@click.option('--threat_hunt_id', help='threat hunt ID', type=str)
+@click.option('--test_id', help='test ID', type=str)
+@click.option('--threat_id', help='threat ID', type=str)
+@click.pass_obj
+@handle_api_error
+def threat_hunt_activity(controller, threat_hunt_id, test_id, threat_id):
+    """ Get threat hunt activity """
+    filters = dict(threat_hunt_id=threat_hunt_id, test_id=test_id, threat_id=threat_id)
+    with Spinner(description='Fetching threat hunt activity'):
+        data = controller.threat_hunt_activity(**filters)
     print_json(data=data)
