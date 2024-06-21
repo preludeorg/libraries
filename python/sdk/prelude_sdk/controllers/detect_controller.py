@@ -89,6 +89,20 @@ class DetectController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
+    def threat_hunt_activity(self, threat_hunt_id=None, test_id=None, threat_id=None):
+        """ Get threat hunt activity """
+        filters = dict(threat_hunt_id=threat_hunt_id, test_id=test_id, threat_id=threat_id)
+        res = self._session.get(
+            f'{self.account.hq}/detect/threat_hunt_activity',
+            headers=self.account.headers,
+            params=filters,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
     def list_tests(self, filters: dict = None):
         """ List all tests available to an account """
         res = self._session.get(
@@ -180,6 +194,18 @@ class DetectController(HttpController):
     def get_threat_hunt(self, threat_hunt_id):
         """ Get properties of an existing threat hunt """
         res = self._session.get(
+            f'{self.account.hq}/detect/threat_hunts/{threat_hunt_id}',
+            headers=self.account.headers,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def do_threat_hunt(self, threat_hunt_id):
+        """ Run a threat hunt """
+        res = self._session.post(
             f'{self.account.hq}/detect/threat_hunts/{threat_hunt_id}',
             headers=self.account.headers,
             timeout=10
