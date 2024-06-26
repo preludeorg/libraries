@@ -18,6 +18,9 @@ import {
   Test,
   TestsActivity,
   Threat,
+  ThreatHunt,
+  ThreatHuntActivity,
+  ThreatHuntResult,
   ThreatsActivity,
   UnscheduleItem,
   UpdateEndpointParams,
@@ -182,6 +185,7 @@ export default class DetectController {
     if (query.impersonate) searchParams.set("impersonate", query.impersonate);
     if (query.os) searchParams.set("os", query.os);
     if (query.policy) searchParams.set("policy", query.policy);
+    if (query.statuses) searchParams.set("statuses", query.statuses);
 
     const response = await this.#client.requestWithAuth(
       `/detect/activity?${searchParams.toString()}`,
@@ -195,11 +199,19 @@ export default class DetectController {
   }
 
   /** List all tests available to an account */
-  async listTests(options: RequestOptions = {}): Promise<Test[]> {
-    const response = await this.#client.requestWithAuth("/detect/tests", {
-      method: "GET",
-      ...options,
-    });
+  async listTests(
+    techniques?: string,
+    options: RequestOptions = {},
+  ): Promise<Test[]> {
+    const searchParams = new URLSearchParams();
+    if (techniques) searchParams.set("techniques", techniques);
+    const response = await this.#client.requestWithAuth(
+      `/detect/tests?${searchParams.toString()}`,
+      {
+        method: "GET",
+        ...options,
+      },
+    );
 
     return await response.json();
   }
@@ -306,5 +318,74 @@ export default class DetectController {
     );
 
     return await response.json();
+  }
+
+  /** List threat hunts */
+  async listThreatHunts(
+    tests?: string,
+    options: RequestOptions = {},
+  ): Promise<ThreatHunt[]> {
+    const searchParams = new URLSearchParams();
+    if (tests) searchParams.set("tests", tests);
+    const response = await this.#client.requestWithAuth(
+      `/detect/threat_hunts?${searchParams.toString()}`,
+      {
+        method: "GET",
+        ...options,
+      },
+    );
+
+    return (await response.json()) as ThreatHunt[];
+  }
+
+  /** List properties for an existing threat hunt query */
+  async getThreatHunt(
+    threatHuntId: string,
+    options: RequestOptions = {},
+  ): Promise<ThreatHunt> {
+    const response = await this.#client.requestWithAuth(
+      `/detect/threat_hunts/${threatHuntId}`,
+      {
+        method: "GET",
+        ...options,
+      },
+    );
+
+    return (await response.json()) as ThreatHunt;
+  }
+
+  /** Run a threat hunt query and update results */
+  async doThreatHunt(
+    threatHuntId: string,
+    options: RequestOptions = {},
+  ): Promise<ThreatHuntResult[]> {
+    const response = await this.#client.requestWithAuth(
+      `/detect/threat_hunts/${threatHuntId}`,
+      {
+        method: "POST",
+        ...options,
+      },
+    );
+  
+    return (await response.json()) as ThreatHuntResult[];
+  }
+
+  /** Get threat hunt query result summary for a query, test, or threat */
+  async threatHuntActivity(
+    id: string,
+    type: "threat_hunt" | "test" | "threat",
+    options: RequestOptions = {},
+  ): Promise<ThreatHuntActivity[]> {
+    const searchParams = new URLSearchParams();
+    if (type === "threat_hunt") searchParams.set("threat_hunt_id", id);
+    if (type === "test") searchParams.set("test_id", id);
+    if (type === "threat") searchParams.set("threat_id", id);
+    const response = await this.#client.requestWithAuth(
+      `/detect/threat_hunt_activity?${searchParams.toString()}`, {
+      method: "GET",
+      ...options,
+    });
+
+    return await response.json() as ThreatHuntActivity[];
   }
 }

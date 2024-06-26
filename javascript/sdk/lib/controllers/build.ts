@@ -1,12 +1,16 @@
 import Client from "../client";
 import type {
   AttachedTest,
+  CompiledResponse,
+  ControlCode,
   CreateDetectionRule,
   CreateTestProps,
   CreateThreatProps,
   RequestOptions,
   StatusResponse,
   Threat,
+  ThreatHunt,
+  UpdateTestProps,
   UpdateThreatProps,
   UploadProps,
   UploadedAttachment,
@@ -21,7 +25,14 @@ export default class BuildController {
 
   /** Create or update a test */
   async createTest(
-    { name, unit, technique, testId, ai_generated = false }: CreateTestProps,
+    {
+      name,
+      unit,
+      technique,
+      testId,
+      intel_context,
+      ai_generated = false,
+    }: CreateTestProps,
     options: RequestOptions = {},
   ): Promise<AttachedTest> {
     const response = await this.#client.requestWithAuth(`/build/tests`, {
@@ -31,6 +42,7 @@ export default class BuildController {
         unit,
         technique,
         id: testId,
+        intel_context,
         ai_generated,
       }),
       ...options,
@@ -41,17 +53,14 @@ export default class BuildController {
 
   /** Update a test */
   async updateTest(
-    testId: string,
-    name?: string,
-    unit?: string,
-    technique?: string,
+    { intel_context, name, technique, testId, unit }: UpdateTestProps,
     options: RequestOptions = {},
   ): Promise<AttachedTest> {
     const response = await this.#client.requestWithAuth(
       `/build/tests/${testId}`,
       {
         method: "POST",
-        body: JSON.stringify({ name, unit, technique }),
+        body: JSON.stringify({ intel_context, name, technique, unit }),
         ...options,
       },
     );
@@ -188,7 +197,7 @@ export default class BuildController {
     return (await response.json()) as UploadedAttachment;
   }
 
-  /** Create detection */
+  /** Create a detection */
   async createDetection(
     { rule, ruleId, testId, detectionId }: CreateDetectionRule,
     options: RequestOptions = {},
@@ -207,7 +216,7 @@ export default class BuildController {
     return (await response.json()) as StatusResponse;
   }
 
-  /** Update detection */
+  /** Update a detection */
   async updateDetection(
     {
       detectionId,
@@ -228,12 +237,119 @@ export default class BuildController {
     return (await response.json()) as StatusResponse;
   }
 
+  /** Delete an existing detection */
   async deleteDetection(
     detectionId: string,
     options: RequestOptions = {},
   ): Promise<StatusResponse> {
     const response = await this.#client.requestWithAuth(
       `/build/detections/${detectionId}`,
+      {
+        method: "DELETE",
+        ...options,
+      },
+    );
+
+    return (await response.json()) as StatusResponse;
+  }
+
+  /** Compile code (returns jobId) */
+  async compile(
+    code: string,
+    filename?: string,
+    options: RequestOptions = {},
+  ): Promise<{ job_id: string }> {
+    const response = await this.#client.requestWithAuth(`/build/compile`, {
+      method: "POST",
+      body: JSON.stringify({ code, filename }),
+      ...options,
+    });
+
+    return (await response.json()) as { job_id: string };
+  }
+
+  /** Get compile process */
+  async getCompile(
+    id: string,
+    options: RequestOptions = {},
+  ): Promise<CompiledResponse> {
+    const response = await this.#client.requestWithAuth(
+      `/build/compile/${id}`,
+      {
+        method: "GET",
+        ...options,
+      },
+    );
+
+    return (await response.json()) as CompiledResponse;
+  }
+
+  /** Create a threat hunt query */
+  async createThreatHunt(
+    {
+      control,
+      name,
+      query,
+      test_id,
+      threat_hunt_id,
+    }: {
+      control: ControlCode;
+      name: string;
+      query: string;
+      test_id: string;
+      threat_hunt_id?: string;
+    },
+    options: RequestOptions = {},
+  ): Promise<ThreatHunt> {
+    const response = await this.#client.requestWithAuth(`/build/threat_hunts`, {
+      method: "POST",
+      body: JSON.stringify({
+        control,
+        name,
+        query,
+        test_id,
+        threat_hunt_id,
+      }),
+      ...options,
+    });
+
+    return (await response.json()) as ThreatHunt;
+  }
+
+  /** Update a threat hunt query */
+  async updateThreatHunt(
+    {
+      threat_hunt_id,
+      name,
+      query,
+      test_id,
+    }: {
+      threat_hunt_id: string;
+      name?: string;
+      query?: string;
+      test_id?: string;
+    },
+    options: RequestOptions = {},
+  ): Promise<ThreatHunt> {
+    const response = await this.#client.requestWithAuth(
+      `/build/threat_hunts/${threat_hunt_id}`,
+      {
+        method: "POST",
+        body: JSON.stringify({ name, query, test_id }),
+        ...options,
+      },
+    );
+
+    return (await response.json()) as ThreatHunt;
+  }
+
+  /** Delete an existing threat hunt query */
+  async deleteThreatHunt(
+    threat_hunt_id: string,
+    options: RequestOptions = {},
+  ): Promise<StatusResponse> {
+    const response = await this.#client.requestWithAuth(
+      `/build/threat_hunts/${threat_hunt_id}`,
       {
         method: "DELETE",
         ...options,
