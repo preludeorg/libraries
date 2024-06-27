@@ -30,7 +30,7 @@ def build(ctx):
 @click.argument('name')
 @click.option('-u', '--unit', required=True, help='unit identifier', type=str)
 @click.option('-t', '--test', help='test identifier', default=None, type=str)
-@click.option('-q', '--technique', help='MITRE ATT&CK code [e.g. T1557]', default=None, type=str)
+@click.option('-q', '--technique', help='MITRE ATT&CK code [e.g. T1557]', type=str)
 @click.pass_obj
 @handle_api_error
 def create_test(controller, name, unit, test, technique):
@@ -41,6 +41,7 @@ def create_test(controller, name, unit, test, technique):
         template_body = template_body.replace('$ID', t['id'])
         template_body = template_body.replace('$NAME', t['name'])
         template_body = template_body.replace('$UNIT', t['unit'])
+        template_body = template_body.replace('$TECHNIQUE', t['technique'])
         template_body = template_body.replace('$TIME', utc_time)
         
         with Spinner(description='Applying default template to new test'):
