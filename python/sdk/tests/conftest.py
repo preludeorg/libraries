@@ -106,7 +106,7 @@ def setup_test(unwrap):
     
     build = BuildController(pytest.account)
     pytest.test_id = str(uuid.uuid4())
-    pytest.expected_test = unwrap(build.create_test)(build, test_id=pytest.test_id, name='test_name', unit='custom')
+    pytest.expected_test = unwrap(build.create_test)(build, test_id=pytest.test_id, name='test_name', unit='custom', technique=None)
 
 
 @pytest.fixture(scope='session')
