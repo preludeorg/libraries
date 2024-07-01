@@ -37,10 +37,10 @@ def create_test(controller, name, unit, test, technique):
     """ Create or update a security test """
     def create_template(template, name):
         template_body = pkg_resources.read_text(templates, template)
-        template_body = template_body.replace('$ID', t.get('id'))
-        template_body = template_body.replace('$NAME', t.get('name'))
-        template_body = template_body.replace('$UNIT', t.get('unit'))
-        template_body = template_body.replace('$TECHNIQUE', t.get('technique'))
+        template_body = template_body.replace('$ID', t['id'])
+        template_body = template_body.replace('$NAME', t['name'])
+        template_body = template_body.replace('$UNIT', t['unit'])
+        template_body = template_body.replace('$TECHNIQUE', t['technique'] or '')
         template_body = template_body.replace('$TIME', str(datetime.now(timezone.utc)))
         
         with Spinner(description='Applying default template to new test'):
