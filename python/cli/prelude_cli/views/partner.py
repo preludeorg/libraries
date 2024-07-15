@@ -120,10 +120,11 @@ def ioa_stats(controller, test_id):
 
 @partner.command('observed-detected')
 @click.option('-t', '--test_id', help='test to get observed/detected stats for')
+@click.option('-h', '--hours', help='number of hours to look back', type=int)
 @click.pass_obj
 @handle_api_error
-def observed_detected(controller, test_id):
+def observed_detected(controller, test_id, hours):
     """ Get observed / detected stats """
     with Spinner(description='Getting observed / detected stats'):
-        data = controller.observed_detected(test_id=test_id)
+        data = controller.observed_detected(test_id=test_id, hours=hours)
     print_json(data=data)
