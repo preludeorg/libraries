@@ -93,11 +93,39 @@ class PartnerController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
-    def list_reports(self, partner: Control, test_id: str):
+    def list_reports(self, partner: Control, test_id: str | None):
         """ Get reports to a partner for a test """
-        params = dict(test_id=test_id)
+        params = dict(test_id=test_id) if test_id else dict()
         res = self._session.get(
             f'{self.account.hq}/partner/reports/{partner.name}',
+            headers=self.account.headers,
+            json=params,
+            timeout=30
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def ioa_stats(self, test_id: str | None):
+        """ Get IOA stats """
+        params = dict(test_id=test_id) if test_id else dict()
+        res = self._session.get(
+            f'{self.account.hq}/partner/ioa_stats',
+            headers=self.account.headers,
+            json=params,
+            timeout=30
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def observed_detected(self, test_id: str | None):
+        """ Get observed_detected stats"""
+        params = dict(test_id=test_id) if test_id else dict()
+        res = self._session.get(
+            f'{self.account.hq}/partner/observed_detected',
             headers=self.account.headers,
             json=params,
             timeout=30

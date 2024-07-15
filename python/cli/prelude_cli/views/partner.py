@@ -97,11 +97,33 @@ def generate_webhook(controller, partner):
 
 @partner.command('reports')
 @click.argument('partner', type=click.Choice([Control.CROWDSTRIKE.name], case_sensitive=False))
-@click.option('-t', '--test_id', required=True, help='test to get reports for')
+@click.option('-t', '--test_id', help='test to get reports for')
 @click.pass_obj
 @handle_api_error
 def partner_reports(controller, partner, test_id):
     """ Get reports to a partner for a test """
     with Spinner(description='Getting reports to partner'):
         data = controller.list_reports(partner=Control[partner], test_id=test_id)
+    print_json(data=data)
+
+
+@partner.command('ioa-stats')
+@click.option('-t', '--test_id', help='test to get IOA stats for')
+@click.pass_obj
+@handle_api_error
+def ioa_stats(controller, test_id):
+    """ Get IOA stats """
+    with Spinner(description='Getting IOA stats'):
+        data = controller.ioa_stats(test_id=test_id)
+    print_json(data=data)
+
+
+@partner.command('observed-detected')
+@click.option('-t', '--test_id', help='test to get observed/detected stats for')
+@click.pass_obj
+@handle_api_error
+def observed_detected(controller, test_id):
+    """ Get observed / detected stats """
+    with Spinner(description='Getting observed / detected stats'):
+        data = controller.observed_detected(test_id=test_id)
     print_json(data=data)
