@@ -173,18 +173,6 @@ func IsAvailable(programs ...string) bool {
 	return false
 }
 
-func IsSecure() bool {
-	if _, err := os.Stat("/.dockerenv"); err == nil {
-		return true
-	} else if runtime.GOOS == "ios" {
-		return true
-	} else if runtime.GOOS == "android" {
-		return true
-	}
-	Say("Endpoint is not secure by design")
-	return false
-}
-
 func Pwd(filename string) string {
 	bin, err := os.Executable()
 	if err != nil {
