@@ -157,11 +157,9 @@ export default class IAMController {
     params: UpdateUserParams,
     options: RequestOptions = {},
   ): Promise<StatusResponse> {
-    const { email, ...otherParams } = params;
-
     const response = await this.#client.requestWithAuth("/iam/user", {
       method: "PUT",
-      body: JSON.stringify({ ...otherParams, handle: email }),
+      body: JSON.stringify(params),
       ...options,
     });
 
