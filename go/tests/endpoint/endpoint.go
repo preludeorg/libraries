@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
+	crypto_rand "crypto/rand"
 	"fmt"
 	"io"
 	"io/fs"
@@ -279,8 +280,9 @@ func AES256GCMDecrypt(data, key []byte) ([]byte, error) {
 
 func generateKey() ([]byte, error) {
 	key := make([]byte, 32)
-	for i := range key {
-		key[i] = byte(rand.Intn(256))
+	_, err := crypto_rand.Read(key)
+	if err != nil {
+		return nil, err
 	}
 	return key, nil
 }
