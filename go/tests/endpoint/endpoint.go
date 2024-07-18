@@ -153,6 +153,15 @@ func generateKey() ([]byte, error) {
 	return key, nil
 }
 
+func GetTestIdFromExecutableName() string {
+	switch platform := GetOS(); platform {
+	case "windows":
+		return strings.Split(filepath.Base(os.Args[0]), ".")[0]
+	default:
+		return filepath.Base(os.Args[0])
+	}
+}
+
 func GetOS() string {
 	os := runtime.GOOS
 
@@ -257,9 +266,9 @@ func startDropperChildProcess() (*os.Process, error) {
 
 	switch platform := GetOS(); platform {
 	case "windows":
-		listenerPath = filepath.Join(execDir, "prelude_dropper.exe")
+		listenerPath = filepath.Join(execDir, fmt.Sprintf("%s_prelude_dropper.exe", GetTestIdFromExecutableName()))
 	default:
-		listenerPath = filepath.Join(execDir, "prelude_dropper")
+		listenerPath = filepath.Join(execDir, fmt.Sprintf("%s_prelude_dropper", GetTestIdFromExecutableName()))
 	}
 	Say("Launching " + listenerPath)
 
@@ -333,8 +342,10 @@ func Wait(dur time.Duration) {
 func Write(filename string, contents []byte) error {
 	var err error
 	if socketPath != "" {
+		Say("Performing IPC-style file write")
 		err = writeIPC(filename, contents)
 	} else {
+		Say("Performing normal file write")
 		err = os.WriteFile(Pwd(filename), contents, 0644)
 	}
 	if err != nil {
