@@ -220,7 +220,7 @@ func Say(print string, ifc ... intferface{}) {
 	filename := filepath.Base(os.Args[0])
 	name := strings.TrimSuffix(filename, filepath.Ext(filename))
 	timeStamp := time.Now().Format("2006-01-02T15:04:05")
-	fmt.Printf("[%s][%s] %v\n", timeStamp, name, print)
+	fmt.Printf("[%s][%s] %v\n", timeStamp, name, fmt.Sprintf(print, ifc...))
 }
 
 func SetSocketPath() {
