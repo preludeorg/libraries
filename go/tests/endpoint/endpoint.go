@@ -197,7 +197,7 @@ func Quarantined(filename string, contents []byte) bool {
 		Say(fmt.Sprintf("Got error \"%v\" when writing file", err))
 	}
 	Wait(-1)
-	if exists := Exists(filename); exists {
+	if exists := Exists(Pwd(filename)); exists {
 		return false // file exists so return not-quarantined
 	}
 	return true // file does not exist so return yes quarantined
@@ -341,12 +341,13 @@ func Wait(dur time.Duration) {
 
 func Write(filename string, contents []byte) error {
 	var err error
+	path := Pwd(filename)
 	if socketPath != "" {
 		Say("Performing IPC-style file write")
-		err = writeIPC(filename, contents)
+		err = writeIPC(path, contents)
 	} else {
 		Say("Performing normal file write")
-		err = os.WriteFile(Pwd(filename), contents, 0644)
+		err = os.WriteFile(path, contents, 0644)
 	}
 	if err != nil {
 		return err
