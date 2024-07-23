@@ -216,7 +216,7 @@ func Remove(path string) bool {
 	return e == nil
 }
 
-func Say(print string, ifc ... intferface{}) {
+func Say(print string, ifc ... interface{}) {
 	filename := filepath.Base(os.Args[0])
 	name := strings.TrimSuffix(filename, filepath.Ext(filename))
 	timeStamp := time.Now().Format("2006-01-02T15:04:05")
