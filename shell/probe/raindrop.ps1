@@ -52,8 +52,8 @@ function Log { param ([string]$message, [bool]$hostonly = $true)
 }
 
 function RotateLogs {
+    if ($logFileCount -lt 1) { return }
     $logFiles = Get-ChildItem -Path $logDir -Filter "$baseLogFileName-*.log" | Sort-Object LastWriteTime -Descending
-
     if ($logFiles.Count -gt $logFileCount) {
         Log "Rotating Logs"
         $logFiles[$logFileCount..($logFiles.Count - 1)] | ForEach-Object { Remove-Item $_.FullName }
