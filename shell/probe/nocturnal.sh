@@ -13,9 +13,11 @@ do
     auth=$(echo "$task" | sed -nE 's,^[^/]*//([^/]*)/.*,\1,p')
 
     if [ "$uuid" ] && [ "$auth" = "$ca" ];then
-        curl -sf --max-redirs 0 --create-dirs -o $vst/$uuid $task
-        chmod +x $vst/$uuid
+        curl -sf --max-redirs 0 --create-dirs -o "$vst/$uuid" $task
+        chmod +x "$vst/$uuid"
+        pushd "$vst" &>/dev/null
         $vst/$uuid & test_pid=$!
+        popd &>/dev/null
         elapsed_time=0
         while kill -0 $test_pid 2> /dev/null; do
           if [ $elapsed_time -ge 45 ]; then
@@ -31,7 +33,7 @@ do
           wait $test_pid
           code=$?
         fi
-        dat="${uuid}:$([ -f $vst/$uuid ] && echo $code || echo 127)"
+        dat="${uuid}:$([ -f "$vst/$uuid" ] && echo $code || echo 127)"
         unset code
     elif [ "$task" = "stop" ];then
         exit
