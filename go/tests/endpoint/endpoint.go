@@ -256,6 +256,10 @@ func Shell(args []string) (string, error) {
 }
 
 func Start(test fn, clean ...fn) {
+	if len(clean) > 0 {
+		cleanup = clean[0]
+	}
+
 	Say(fmt.Sprintf("Starting test at: %s", time.Now().Format("2006-01-02T15:04:05")))
 
 	go func() {
