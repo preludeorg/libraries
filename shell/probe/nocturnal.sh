@@ -2,7 +2,7 @@
 
 ca=${PRELUDE_CA:-prelude-account-us1-us-east-2.s3.amazonaws.com}
 vst=${PRELUDE_DIR:-.vst}
-version='2.4'
+version='2.5'
 
 echo "Prelude probe: version ${version}"
 
@@ -42,6 +42,7 @@ do
     elif [ "$task" = "stop" ];then
         exit
     else
+        echo "Test cycle done"
         rm -rf $vst
         unset dat
         sleep_sec=$(echo "$task" | grep -E '^[0-9]+$')
