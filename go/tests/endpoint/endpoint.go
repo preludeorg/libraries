@@ -54,6 +54,20 @@ type fn func()
 
 var cleanup fn = func() {}
 
+var cwd, err_cwd = os.Getwd()
+var bin, err_bin = os.Executable()
+
+func init() {
+	if err_cwd == nil && err_bin == nil {
+		bindir := filepath.Dir((bin))
+		if bindir != cwd {
+			os.Chdir(bindir)
+			cwd = bindir
+			Say("Executing out of '%s'", cwd)
+		}
+	}
+}
+
 func AES256GCMDecrypt(data, key []byte) ([]byte, error) {
 	blockCipher, err := aes.NewCipher(key)
 	if err != nil {
@@ -183,12 +197,11 @@ func IsAvailable(programs ...string) bool {
 }
 
 func Pwd(filename string) string {
-	bin, err := os.Executable()
-	if err != nil {
-		Say("Failed to get path")
+	if err_cwd != nil {
+		Say("Failed to get path. %v", err_cwd)
 		Stop(256)
 	}
-	filePath := filepath.Join(filepath.Dir(bin), filename)
+	filePath := filepath.Join(cwd, filename)
 	return filePath
 }
 
@@ -243,10 +256,6 @@ func Shell(args []string) (string, error) {
 }
 
 func Start(test fn, clean ...fn) {
-	if len(clean) > 0 {
-		cleanup = clean[0]
-	}
-
 	Say(fmt.Sprintf("Starting test at: %s", time.Now().Format("2006-01-02T15:04:05")))
 
 	go func() {
