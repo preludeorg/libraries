@@ -186,15 +186,16 @@ def download(controller, test):
               help='provide a run_code',
               default=RunCode.DAILY.name, show_default=True,
               type=click.Choice([r.name for r in RunCode if r != RunCode.INVALID], case_sensitive=False))
+@click.option('-l', '--collect-logs', help='collect logs during test execution and save with the test result', is_flag=True)
 @click.pass_obj
 @handle_api_error
-def schedule(controller, id, type, run_code, tags):
+def schedule(controller, id, type, run_code, tags, collect_logs):
     """ Add test or threat to your queue """
     with Spinner(description=f'Scheduling {type.lower()}'):
         if type == 'TEST':
-            data = controller.schedule([dict(test_id=id, run_code=run_code, tags=tags)])
+            data = controller.schedule([dict(collect_logs=collect_logs, test_id=id, run_code=run_code, tags=tags)])
         else:
-            data = controller.schedule([dict(threat_id=id, run_code=run_code, tags=tags)])
+            data = controller.schedule([dict(collect_logs=collect_logs, threat_id=id, run_code=run_code, tags=tags)])
     print_json(data=data)
 
 
