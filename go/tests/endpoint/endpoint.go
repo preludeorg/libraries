@@ -59,11 +59,12 @@ var bin, binErr = os.Executable()
 
 func init() {
 	if cwdErr == nil && binErr == nil {
-		binDir := filepath.Dir((bin))
-		if binDir != cwd {
-			os.Chdir(binDir)
-			cwd = binDir
-			Say("Executing out of \"%s\"", cwd)
+		bindir := filepath.Dir(bin)
+		if bindir != cwd {
+			Say("Current directory is \"%s\", changing to executable directory \"%s\" for test execution", cwd, bindir)
+			os.Chdir(bindir)
+			cwd = bindir
+			Say("Directory successfully changed to \"%s\"", cwd)
 		}
 	}
 }
