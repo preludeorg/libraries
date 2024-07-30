@@ -118,9 +118,26 @@ func AES256GCMEncrypt(data []byte) ([]byte, []byte, error) {
 	return ciphertext, key, nil
 }
 
-func ClearSocketPath() {
+func clearSocketPath() {
 	Say("Clearing socket path")
 	socketPath = ""
+}
+
+func Dropper(dropper []byte) error {
+	Say("Writing dropper executable to disk")
+	switch platform := GetOS(); platform {
+	case "windows":
+		if err := Write(fmt.Sprintf("%s_prelude_dropper.exe", GetTestIdFromExecutableName()), dropper); err != nil {
+			return fmt.Errorf("got error \"%v\" when writing dropper to host", err)
+		}
+	default:
+		if err := os.WriteFile(fmt.Sprintf("%s_prelude_dropper", GetTestIdFromExecutableName()), dropper, 0744); err != nil {
+			return fmt.Errorf("got error \"%v\" when writing dropper to host", err)
+		}
+	}
+	Say("Wrote dropper successfully")
+	setSocketPath()
+	return nil
 }
 
 func ExecuteRandomCommand(commands [][]string) (string, error) {
@@ -198,8 +215,8 @@ func IsAvailable(programs ...string) bool {
 }
 
 func Pwd(filename string) string {
-	if err_cwd != nil {
-		Say("Failed to get path. %v", err_cwd)
+	if cwdErr != nil {
+		Say("Failed to get path. %v", cwdErr)
 		Stop(256)
 	}
 	filePath := filepath.Join(cwd, filename)
@@ -230,14 +247,14 @@ func Remove(path string) bool {
 	return e == nil
 }
 
-func Say(print string, ifc ... interface{}) {
+func Say(print string, ifc ...interface{}) {
 	filename := filepath.Base(os.Args[0])
 	name := strings.TrimSuffix(filename, filepath.Ext(filename))
 	timeStamp := time.Now().Format("2006-01-02T15:04:05")
 	fmt.Printf("[%s][%s] %v\n", timeStamp, name, fmt.Sprintf(print, ifc...))
 }
 
-func SetSocketPath() {
+func setSocketPath() {
 	Say("Setting socket path")
 	execPath, _ := os.Executable()
 	socketPath = filepath.Join(filepath.Dir(execPath), "prelude_socket")
@@ -398,6 +415,7 @@ func writeIPC(filename string, contents []byte) error {
 	Wait(1)
 	Say("Killing dropper child process")
 	dropProc.Kill()
+	clearSocketPath()
 
 	return nil
 }
