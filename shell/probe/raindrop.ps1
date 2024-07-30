@@ -6,7 +6,7 @@ function Execute {
     try {
         $stdoutTempFile = New-Item -path "$dir\stdout.log" -Force
         $stderrTempFile = New-Item -path "$dir\stderr.log" -Force
-        $proc = Start-Process -FilePath $File -NoNewWindow -PassThru -RedirectStandardOutput $stdoutTempFile -RedirectStandardError $stderrTempFile
+        $proc = Start-Process -WorkingDirectory "$dir" -FilePath $File -NoNewWindow -PassThru -RedirectStandardOutput $stdoutTempFile -RedirectStandardError $stderrTempFile
 
         $proc | Wait-Process -Timeout 45 -ErrorAction SilentlyContinue -ErrorVariable timeoutVar
 
@@ -43,7 +43,7 @@ function FromEnv { param ([string]$envVar, [string]$default)
 $ca = FromEnv "PRELUDE_CA" "prelude-account-us1-us-east-2.s3.amazonaws.com"
 $dir = FromEnv "PRELUDE_DIR" ".vst"
 $dat = ""
-$version = "2.4"
+$version = "2.5"
 
 Write-Output "Prelude probe: version ${version}"
 

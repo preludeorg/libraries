@@ -54,6 +54,21 @@ type fn func()
 
 var cleanup fn = func() {}
 
+var cwd, cwdErr = os.Getwd()
+var bin, binErr = os.Executable()
+
+func init() {
+	if cwdErr == nil && binErr == nil {
+		bindir := filepath.Dir(bin)
+		if bindir != cwd {
+			Say("Current directory is \"%s\", changing to executable directory \"%s\" for test execution", cwd, bindir)
+			os.Chdir(bindir)
+			cwd = bindir
+			Say("Directory successfully changed to \"%s\"", cwd)
+		}
+	}
+}
+
 func AES256GCMDecrypt(data, key []byte) ([]byte, error) {
 	blockCipher, err := aes.NewCipher(key)
 	if err != nil {
@@ -183,12 +198,11 @@ func IsAvailable(programs ...string) bool {
 }
 
 func Pwd(filename string) string {
-	bin, err := os.Executable()
-	if err != nil {
-		Say("Failed to get path")
+	if err_cwd != nil {
+		Say("Failed to get path. %v", err_cwd)
 		Stop(256)
 	}
-	filePath := filepath.Join(filepath.Dir(bin), filename)
+	filePath := filepath.Join(cwd, filename)
 	return filePath
 }
 
