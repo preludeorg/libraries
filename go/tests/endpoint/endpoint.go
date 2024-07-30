@@ -54,16 +54,16 @@ type fn func()
 
 var cleanup fn = func() {}
 
-var cwd, err_cwd = os.Getwd()
-var bin, err_bin = os.Executable()
+var cwd, cwdErr = os.Getwd()
+var bin, binErr = os.Executable()
 
 func init() {
-	if err_cwd == nil && err_bin == nil {
-		bindir := filepath.Dir((bin))
-		if bindir != cwd {
-			os.Chdir(bindir)
-			cwd = bindir
-			Say("Executing out of '%s'", cwd)
+	if cwdErr == nil && binErr == nil {
+		binDir := filepath.Dir((bin))
+		if binDir != cwd {
+			os.Chdir(binDir)
+			cwd = binDir
+			Say("Executing out of \"%s\"", cwd)
 		}
 	}
 }
