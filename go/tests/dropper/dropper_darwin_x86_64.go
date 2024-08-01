@@ -1,4 +1,4 @@
-//go:build linux && amd64
+//go:build darwin && amd64
 
 package Dropper
 
@@ -6,5 +6,5 @@ import (
 	_ "embed"
 )
 
-//go:embed linux-amd64
+//go:embed darwin-x86_64
 var Dropper []byte
