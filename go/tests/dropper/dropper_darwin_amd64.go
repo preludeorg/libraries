@@ -6,5 +6,5 @@ import (
 	_ "embed"
 )
 
-//go:embed src/darwin-amd64
+//go:embed darwin-amd64
 var Dropper []byte

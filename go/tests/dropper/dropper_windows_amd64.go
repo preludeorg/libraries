@@ -6,5 +6,5 @@ import (
 	_ "embed"
 )
 
-//go:embed src/windows-amd64
+//go:embed windows-amd64
 var Dropper []byte
