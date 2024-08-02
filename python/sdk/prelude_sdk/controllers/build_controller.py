@@ -66,6 +66,18 @@ class BuildController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
+    def undelete_test(self, test_id):
+        """ Undelete a tombstoned test """
+        res = self._session.post(
+            f'{self.account.hq}/build/tests/{test_id}/undelete',
+            headers=self.account.headers,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
     def upload(self, test_id, filename, data):
         """ Upload a test or attachment """
         if len(data) > 1000000:
@@ -147,6 +159,18 @@ class BuildController(HttpController):
         res = self._session.delete(
             f'{self.account.hq}/build/threats/{threat_id}',
             json=dict(purge=purge),
+            headers=self.account.headers,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def undelete_threat(self, threat_id):
+        """ Undelete a tombstoned threat """
+        res = self._session.post(
+            f'{self.account.hq}/build/threats/{threat_id}/undelete',
             headers=self.account.headers,
             timeout=10
         )

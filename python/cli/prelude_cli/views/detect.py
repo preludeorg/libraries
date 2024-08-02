@@ -74,11 +74,21 @@ def get_test(controller, test_id):
     print_json(data=data)
 
 
+@detect.command('techniques')
+@click.pass_obj
+@handle_api_error
+def list_techniquess(controller):
+    """ List techniques """
+    with Spinner(description='Fetching techniques'):
+        data = controller.list_techniques()
+    print_json(data=data)
+
+
 @detect.command('threats')
 @click.pass_obj
 @handle_api_error
 def list_threats(controller):
-    """ List all Prelude threats """
+    """ List all threats """
     with Spinner(description='Fetching threats'):
         data = controller.list_threats()
     print_json(data=data)
