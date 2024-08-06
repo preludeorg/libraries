@@ -128,6 +128,18 @@ class DetectController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
+    def list_techniques(self):
+        """ List techniques """
+        res = self._session.get(
+            f'{self.account.hq}/detect/techniques',
+            headers=self.account.headers,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
     def list_threats(self):
         """ List threats """
         res = self._session.get(

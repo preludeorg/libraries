@@ -99,6 +99,16 @@ def delete_test(controller, test, purge):
         data = controller.delete_test(test_id=test, purge=purge)
     print_json(data=data)
 
+@build.command('undelete-test')
+@click.argument('test')
+@click.pass_obj
+@handle_api_error
+def undelete_test(controller, test):
+    """ Undelete a test """
+    with Spinner(description='Restoring test'):
+        data = controller.undelete_test(test_id=test)
+    print_json(data=data)
+
 
 @build.command('upload')
 @click.argument('path', type=click.Path(exists=True))
@@ -232,6 +242,16 @@ def delete_threat(controller, threat, purge):
     """ Delete a threat """
     with Spinner(description='Removing threat'):
         data = controller.delete_threat(threat_id=threat, purge=purge)
+    print_json(data=data)
+
+@build.command('undelete-threat')
+@click.argument('threat')
+@click.pass_obj
+@handle_api_error
+def undelete_threat(controller, threat):
+    """ Undelete a threat """
+    with Spinner(description='Restoring threat'):
+        data = controller.undelete_threat(threat_id=threat)
     print_json(data=data)
 
 
