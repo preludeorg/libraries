@@ -28,7 +28,8 @@ const (
 	UnexpectedExecutionError int = 256
 
 	// Not Relevant
-	NotRelevant int = 104
+	NotRelevant       	int = 104
+	InsufficientPrivileges 	int = 109
 
 	// Protected
 	TestCompletedNormally       int = 100
@@ -116,6 +117,22 @@ func AES256GCMEncrypt(data []byte) ([]byte, []byte, error) {
 
 	ciphertext := gcm.Seal(nonce, nonce, data, nil)
 	return ciphertext, key, nil
+}
+
+func CheckAdmin() bool {
+	switch platform := runtime.GOOS; platform {
+	case "windows":
+		_, err := os.Open("\\\\.\\PHYSICALDRIVE0")
+		if err != nil {
+			return false
+		}
+		return true
+	case "linux", "darwin":
+		return os.Getuid() == 0
+	default:
+		Say("Platform not supported")
+		return false
+	}
 }
 
 func clearSocketPath() {
