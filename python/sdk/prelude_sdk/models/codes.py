@@ -75,6 +75,7 @@ class ExitCode(Enum):
     BLOCKED_AT_PERIMETER = 106
     EXPLOIT_PREVENTED = 107
     ENDPOINT_NOT_RELEVANT = 108
+    INSUFFICIENT_PRIVILEGES = 109
     PREVENTED_EXECUTION = 126
     STATIC_QUARANTINE = 127
     BLOCKED = 137
@@ -117,6 +118,7 @@ class State(Enum):
             State.NOT_RELEVANT: [
                 ExitCode.ENDPOINT_NOT_RELEVANT,
                 ExitCode.TEST_NOT_RELEVANT,
+                ExitCode.INSUFFICIENT_PRIVILEGES,
             ],
             State.PROTECTED: [
                 ExitCode.BLOCKED,
