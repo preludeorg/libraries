@@ -278,6 +278,8 @@ func Start(test fn, clean ...fn) {
 		cleanup = clean[0]
 	}
 
+	defer cleanup()
+
 	Say(fmt.Sprintf("Starting test at: %s", time.Now().Format("2006-01-02T15:04:05")))
 
 	go func() {
@@ -286,7 +288,8 @@ func Start(test fn, clean ...fn) {
 
 	select {
 	case <-time.After(30 * time.Second):
-		os.Exit(102)
+		Say("Test timed out after 30 seconds")
+		Stop(TimeoutExceeded)
 	}
 }
 
