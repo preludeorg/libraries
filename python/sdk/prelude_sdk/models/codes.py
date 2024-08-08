@@ -76,6 +76,7 @@ class ExitCode(Enum):
     EXPLOIT_PREVENTED = 107
     ENDPOINT_NOT_RELEVANT = 108
     INSUFFICIENT_PRIVILEGES = 109
+    INCORRECTLY_BLOCKED = 110
     PREVENTED_EXECUTION = 126
     STATIC_QUARANTINE = 127
     BLOCKED = 137
@@ -113,6 +114,7 @@ class State(Enum):
                 ExitCode.UNEXPECTED_ERROR,
                 ExitCode.UNKNOWN_ERROR,
                 ExitCode.UNREPORTED,
+                ExitCode.INCORRECTLY_BLOCKED,
             ],
             State.NONE: [ExitCode.MISSING],
             State.NOT_RELEVANT: [
