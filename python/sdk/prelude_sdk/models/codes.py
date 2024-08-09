@@ -109,18 +109,18 @@ class State(Enum):
         return {
             State.ERROR: [
                 ExitCode.FAILED_CLEANUP,
+                ExitCode.INCORRECTLY_BLOCKED,
                 ExitCode.MALFORMED_TEST,
                 ExitCode.TIMED_OUT,
                 ExitCode.UNEXPECTED_ERROR,
                 ExitCode.UNKNOWN_ERROR,
                 ExitCode.UNREPORTED,
-                ExitCode.INCORRECTLY_BLOCKED,
             ],
             State.NONE: [ExitCode.MISSING],
             State.NOT_RELEVANT: [
                 ExitCode.ENDPOINT_NOT_RELEVANT,
-                ExitCode.TEST_NOT_RELEVANT,
                 ExitCode.INSUFFICIENT_PRIVILEGES,
+                ExitCode.TEST_NOT_RELEVANT,
             ],
             State.PROTECTED: [
                 ExitCode.BLOCKED,
