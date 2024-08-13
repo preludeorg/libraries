@@ -24,7 +24,8 @@ crowdstrike = ("crowdstrike",
                    partner_api=os.getenv('CROWDSTRIKE_API'),
                    user=os.getenv('CROWDSTRIKE_USER'),
                    secret=os.getenv('CROWDSTRIKE_SECRET'),
-                   webhook_keys={'url', 'description', 'secret'}
+                   webhook_keys={'url', 'description', 'secret'},
+                   group_id=os.getenv('CROWDSTRIKE_WINDOWS_IOA_GROUP_ID')
                ))
 
 defender = ("defender",
@@ -39,7 +40,8 @@ defender = ("defender",
                 partner_api=os.getenv('DEFENDER_API'),
                 user=os.getenv('DEFENDER_USER'),
                 secret=os.getenv('DEFENDER_SECRET'),
-                webhook_keys={'url', 'description', 'secret', 'headers'}
+                webhook_keys={'url', 'description', 'secret', 'headers'},
+                group_id=None
             ))
 
 sentinel_one = ("sentinel_one",
@@ -54,7 +56,8 @@ sentinel_one = ("sentinel_one",
                     partner_api=os.getenv('S1_API'),
                     user=os.getenv('S1_USER'),
                     secret=os.getenv('S1_SECRET'),
-                    webhook_keys={'url', 'description', 'secret', 'headers'}
+                    webhook_keys={'url', 'description', 'secret', 'headers'},
+                    group_id=None
                 ))
 
 
@@ -74,7 +77,7 @@ def pytest_generate_tests(metafunc):
 
 
 @pytest.mark.order(6)
-@pytest.mark.usefixtures('setup_account', 'setup_test', 'setup_detection')
+@pytest.mark.usefixtures('setup_account', 'setup_test', 'setup_detection', 'setup_threat_hunt')
 class TestPartner:
     scenarios = [crowdstrike, defender, sentinel_one]
 
@@ -85,7 +88,7 @@ class TestPartner:
 
         self.host = 'pardner-host'
 
-    def test_attach(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys):
+    def test_attach(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
         # Create endpoint before attach
         pytest.token = unwrap(self.detect.register_endpoint)(self.detect, host=host, serial_num=host)
         pytest.endpoint_1 = dict(host=host, serial_num=host, edr_id=edr_id, control=control.value, tags=[], dos=None,
@@ -100,12 +103,12 @@ class TestPartner:
         unwrap(self.detect.register_endpoint)(self.detect, host=host, serial_num=host + '2')
         pytest.endpoint_2 = pytest.endpoint_1 | dict(serial_num=host + '2')
 
-    def test_get_account(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys):
+    def test_get_account(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
         res = unwrap(self.iam.get_account)(self.iam)
         expected = dict(api=partner_api, id=control.value)
         assert expected in res['controls']
 
-    def test_list_endpoints(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys):
+    def test_list_endpoints(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
         try:
             res = unwrap(self.detect.list_endpoints)(self.detect)
             assert len(res) >= 2
@@ -119,7 +122,7 @@ class TestPartner:
             # Delete second endpoint
             unwrap(self.detect.delete_endpoint)(self.detect, ident=pytest.endpoint_2['endpoint_id'])
 
-    def test_partner_endpoints(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys):
+    def test_partner_endpoints(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
         res = unwrap(self.partner.endpoints)(self.partner, partner=control, platform=platform, hostname=host)
         expected = {edr_id: {'hostname': host, 'os': os}}
         if policy:
@@ -128,7 +131,7 @@ class TestPartner:
         diffs = check_dict_items(expected, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_activity_logs(self, unwrap, api, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys):
+    def test_activity_logs(self, unwrap, api, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
         res = requests.get(api, headers=dict(token=pytest.token, dos=f'{platform}-x86_64', dat=f'{pytest.test_id}:100',
                                              version='2.1'))
         assert res.status_code in [200, 302]
@@ -154,28 +157,111 @@ class TestPartner:
         diffs = check_dict_items(expected, res[0])
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_generate_webhook(self, unwrap, api, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys):
+    def test_generate_webhook(self, unwrap, api, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
         res = unwrap(self.partner.generate_webhook)(self.partner, partner=control)
         assert webhook_keys == res.keys()
         assert res['url'].startswith(f'{api}/partner/suppress/{control.name.lower()}')
 
-    def test_block(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys):
+    def test_do_threat_hunt(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
+        if control != Control.CROWDSTRIKE:
+            pytest.skip('Threat hunts only supported for CROWDSTRIKE')
+        if not pytest.expected_account['features']['threat_intel']:
+            pytest.skip('THREAT_INTEL feature not enabled')
+
+        res = unwrap(self.detect.do_threat_hunt)(self.detect, threat_hunt_id=pytest.threat_hunt_id)[0]
+        assert {'account_id', 'non_prelude_origin', 'prelude_origin', 'threat_hunt_id'} == set(res.keys())
+        assert res['account_id'] == pytest.expected_account['account_id']
+        assert res['threat_hunt_id'] == pytest.threat_hunt_id
+        pytest.non_prelude_origin = res['non_prelude_origin']
+        pytest.prelude_origin = res['prelude_origin']
+
+    def test_threat_hunt_activity(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
+        if control != Control.CROWDSTRIKE:
+            pytest.skip('Threat hunts only supported for CROWDSTRIKE')
+        if not pytest.expected_account['features']['threat_intel']:
+            pytest.skip('THREAT_INTEL feature not enabled')
+
+        res = unwrap(self.detect.threat_hunt_activity)(self.detect, threat_hunt_id=pytest.threat_hunt_id)[0]
+        expected = dict(
+            non_prelude_origin=pytest.non_prelude_origin,
+            prelude_origin=pytest.prelude_origin,
+            test_id=pytest.test_id,
+        )
+        diffs = check_dict_items(expected, res)
+        assert not diffs, json.dumps(diffs, indent=2)
+
+    def test_block(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
         if control == Control.CROWDSTRIKE and not pytest.expected_account['features']['detections']:
-            pytest.skip("DETECTIONS feature not enabled")
+            pytest.skip('DETECTIONS feature not enabled')
 
         res = unwrap(self.partner.block)(self.partner, partner=control, test_id=pytest.test_id)
         if control == Control.CROWDSTRIKE:
-            assert 1 == len(res)
-            assert pytest.expected_detection['rule']['logsource']['product'] == res[0]['platform']
-            assert 1 == len(res[0]['rules'])
-            assert f'{pytest.expected_test["name"]} ({pytest.detection_id[:8]}) (0)' == res[0]['rules'][0]['name']
-            assert res[0]['rules'][0]['status'] in ['ALREADY_EXISTS', 'CREATED']
+            assert res[0]['group_id'] == group_id
+            assert res[0]['platform'] == pytest.expected_detection['rule']['logsource']['product']
+
+            first_rule = res[0]['rules'][0]
+            assert first_rule['name'] == f'{pytest.expected_test["name"]} ({pytest.detection_id[:8]}) (0)'
+            assert first_rule['status'] == 'CREATED'
+            assert int(first_rule['ioa_id'])
+            pytest.ioa_id = first_rule['ioa_id']
         else:
             assert 5 == len(res)
             assert {'file', 'ioc_id'} == res[0].keys()
             assert res[0]['file'].startswith(pytest.test_id)
 
-    def test_detach(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys):
+    def test_reports(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
+        if control != Control.CROWDSTRIKE:
+            pytest.skip('Reports only supported for CROWDSTRIKE')
+        if not pytest.expected_account['features']['detections']:
+            pytest.skip('DETECTIONS feature not enabled')
+
+        res = unwrap(self.partner.list_reports)(self.partner, partner=control, test_id=pytest.test_id)
+        assert 1 == len(res)
+        expected = dict(
+            blocked=0,
+            detected=0,
+            detection_id=pytest.detection_id,
+            group_id=group_id,
+            monitored=0,
+            platform=pytest.expected_detection['rule']['logsource']['product'],
+            test_id=pytest.test_id
+        )
+        diffs = check_dict_items(expected, res[0])
+        assert not diffs, json.dumps(diffs, indent=2)
+
+    def test_observed_detected(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
+        if control != Control.CROWDSTRIKE:
+            pytest.skip('Observed detected only supported for CROWDSTRIKE')
+        if not pytest.expected_account['features']['observed_detected']:
+            pytest.skip('OBSERVED_DETECTED feature not enabled')
+
+        res = unwrap(self.partner.observed_detected)(self.partner)
+        assert 1 <= len(res)
+        assert {'account_id', 'detected', 'endpoint_ids', 'observed', 'test_id'} == set(res[0].keys())
+        assert res[0]['account_id'] == pytest.expected_account['account_id']
+
+    def test_ioa_stats(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
+        if control != Control.CROWDSTRIKE:
+            pytest.skip('IOA stats only supported for CROWDSTRIKE')
+        if not pytest.expected_account['features']['observed_detected']:
+            pytest.skip('OBSERVED_DETECTED feature not enabled')
+
+        res = unwrap(self.partner.ioa_stats)(self.partner)
+        assert 0 == len(res)
+
+    def test_list_advisories(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
+        if control != Control.CROWDSTRIKE:
+            pytest.skip('List advisories only supported for CROWDSTRIKE')
+        if not pytest.expected_account['features']['threat_intel']:
+            pytest.skip('THREAT_INTEL feature not enabled')
+
+        res = unwrap(self.partner.list_advisories)(self.partner, partner=control)
+        assert 1 <= len(res['advisories'])
+        assert res['advisories'][0]['id']
+        pytest.crowdstrike_advisory_id = res['advisories'][0]['id']
+
+    @pytest.mark.order(-5)
+    def test_detach(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
         try:
             unwrap(self.partner.detach)(self.partner, partner=control)
             res = unwrap(self.iam.get_account)(self.iam)

@@ -4,6 +4,7 @@ import time
 
 from prelude_sdk.controllers.generate_controller import GenerateController
 from prelude_sdk.controllers.iam_controller import IAMController
+from prelude_sdk.models.codes import Control
 
 from testutils import *
 
@@ -27,13 +28,12 @@ class TestGenerate:
             pass
 
         res = unwrap(self.generate.upload_threat_intel)(self.generate, file=self.threat_intel_pdf)
-        pytest.job_id = res['job_id']
-        assert check_if_string_is_uuid(res['job_id'])
+        job_id = res['job_id']
+        assert check_if_string_is_uuid(job_id)
 
-    def test_get_threat_intel(self, unwrap):
         while True:
             time.sleep(5)
-            res = unwrap(self.generate.get_threat_intel)(self.generate, job_id=pytest.job_id)
+            res = unwrap(self.generate.get_threat_intel)(self.generate, job_id=job_id)
             match status := res.get('status'):
                 case 'RUNNING':
                     if res['step'] == 'GENERATE':
@@ -48,4 +48,23 @@ class TestGenerate:
                     assert False, f'threat_gen FAILED: {json.dumps(res)}'
                 case _:
                     assert False, f' Unexpected status: {status}\n Response: {json.dumps(res)}'
-                
+
+    def test_generate_from_partner_advisory(self, unwrap):
+        res = unwrap(self.iam.get_account)(self.iam)
+        partners = [p['id'] for p in res['controls']]
+        if Control.CROWDSTRIKE.value not in partners:
+            pytest.skip('CROWDSTRIKE not attached')
+
+        res = unwrap(self.generate.generate_from_partner_advisory)(self.generate, partner=Control.CROWDSTRIKE, advisory_id=pytest.crowdstrike_advisory_id)
+        job_id = res['job_id']
+        assert check_if_string_is_uuid(job_id)
+
+        while True:
+            time.sleep(5)
+            res = unwrap(self.generate.get_threat_intel)(self.generate, job_id=job_id)
+            match status := res.get('status'):
+                case 'COMPLETE':
+                    for output in res['output']:
+                        assert {'status', 'technique'} < set(output.keys()), json.dumps(output)
+                        assert 'ai_generated' in output or 'existing_test' in output or 'excluded' in output, json.dumps(output)
+                    return

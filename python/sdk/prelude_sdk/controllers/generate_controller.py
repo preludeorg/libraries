@@ -1,8 +1,7 @@
-import requests
-
 from prelude_sdk.controllers.http_controller import HttpController
 
 from prelude_sdk.models.account import verify_credentials
+from prelude_sdk.models.codes import Control
 
 
 class GenerateController(HttpController):
@@ -30,6 +29,19 @@ class GenerateController(HttpController):
             f'{self.account.hq}/generate/threat-intel/{job_id}',
             headers=self.account.headers,
             timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def generate_from_partner_advisory(self, partner: Control, advisory_id: str):
+        params = dict(advisory_id=advisory_id)
+        res = self._session.post(
+            f'{self.account.hq}/generate/partner-advisories/{partner.name}',
+            headers=self.account.headers,
+            json=params,
+            timeout=30
         )
         if res.status_code == 200:
             return res.json()

@@ -24,6 +24,11 @@ class TestDetect:
         self.tags = 'alpha'
         self.updated_tags = 'beta'
 
+    def test_list_techniques(self, unwrap):
+        res = unwrap(self.detect.list_techniques)(self.detect)
+        assert 1 <= len(res)
+        assert {'id', 'name', 'description', 'expected'} == set(res[0].keys())
+
     def test_register_endpoint(self, unwrap):
         res = unwrap(self.detect.register_endpoint)(self.detect, host=self.host, serial_num=self.serial, tags=self.tags)
         assert 32 == len(res)
@@ -139,4 +144,3 @@ class TestDetect:
         res = unwrap(self.detect.list_endpoints)(self.detect)
         ep = [r for r in res if r['serial_num'] == self.serial]
         assert 0 == len(ep), json.dumps(ep, indent=2)
-

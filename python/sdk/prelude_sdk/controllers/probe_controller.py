@@ -1,5 +1,3 @@
-import requests
-
 from prelude_sdk.controllers.http_controller import HttpController
 
 

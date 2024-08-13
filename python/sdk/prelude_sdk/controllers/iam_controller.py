@@ -1,4 +1,3 @@
-import requests
 import datetime
 
 from prelude_sdk.controllers.http_controller import HttpController

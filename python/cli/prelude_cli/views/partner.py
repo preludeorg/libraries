@@ -128,3 +128,13 @@ def observed_detected(controller, test_id, hours):
     with Spinner(description='Getting observed / detected stats'):
         data = controller.observed_detected(test_id=test_id, hours=hours)
     print_json(data=data)
+
+@partner.command('advisories')
+@click.argument('partner', type=click.Choice([Control.CROWDSTRIKE.name], case_sensitive=False))
+@click.pass_obj
+@handle_api_error
+def partner_advisories(controller, partner):
+    """ Get advisories provided by partner """
+    with Spinner(description='Getting partner advisories'):
+        data = controller.list_advisories(partner=Control[partner])
+    print_json(data=data)
