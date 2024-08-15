@@ -18,10 +18,10 @@ function Execute {
         $code = if (Test-Path $File) {$proc.ExitCode} Else {127}
         return $code
     } catch [System.UnauthorizedAccessException] {
-        Write-Host "System.UnauthorizedAccessException - $File"
+        "System.UnauthorizedAccessException - $File" | Out-File -FilePath $stderrTempFile -Append
         return 126
     } catch [System.InvalidOperationException] {
-        Write-Host "System.InvalidOperationException - $File"
+        "System.InvalidOperationException - $File" | Out-File -FilePath $stderrTempFile -Append
         return 127
     } catch {
         return 1
