@@ -9,6 +9,7 @@ from dateutil.parser import parse
 
 from prelude_sdk.controllers.build_controller import BuildController
 from prelude_sdk.controllers.detect_controller import DetectController
+from prelude_sdk.models.codes import Control
 
 import templates
 from testutils import *
@@ -25,13 +26,16 @@ class TestVST:
     def test_create_test(self):
         expected = dict(
             account_id=pytest.account.headers['account'],
-            author=pytest.expected_account['whoami'],
-            id=pytest.test_id,
-            name='test_name',
-            unit='custom',
-            technique=None,
             attachments=[],
-            tombstoned=None
+            author=pytest.expected_account['whoami'],
+            expected=dict(crowdstrike=None),
+            id=pytest.test_id,
+            intel_context=None,
+            name='test_name',
+            supported_platforms=[],
+            technique=None,
+            tombstoned=None,
+            unit='custom',
         )
 
         diffs = check_dict_items(expected, pytest.expected_test)
@@ -51,6 +55,9 @@ class TestVST:
         res = unwrap(self.build.upload)(self.build, test_id=pytest.test_id, filename=f'{pytest.test_id}.go',
                                         data=template.encode("utf-8"))
         pytest.expected_test['attachments'].append(res['filename'])
+        for suffix in ['darwin-arm64', 'darwin-x86_64', 'linux-arm64', 'linux-x86_64', 'windows-x86_64']:
+            pytest.expected_test['attachments'].append(f'{pytest.test_id}_{suffix}')
+        pytest.expected_test['supported_platforms'] = ['darwin', 'linux', 'windows']
 
         expected = dict(
             compile_job_id=res['compile_job_id'],
@@ -61,15 +68,31 @@ class TestVST:
 
         assert res.get('compile_job_id') is not None
         res = wait_for_compile(res['compile_job_id'])
-        per_platform_res = res.pop('results')
+        per_platform_res = res['results']
         assert 'COMPLETE' == res['status']
         assert 5 == len(per_platform_res)
         for platform in per_platform_res:
             assert 'SUCCEEDED' == platform['status']
 
+    def test_compile_code_string(self, unwrap):
+        def wait_for_compile(job_id):
+            timeout = time.time() + 60
+            while time.time() < timeout:
+                time.sleep(5)
+                res = unwrap(self.build.get_compile_status)(self.build, job_id=job_id)
+                if res['status'] != 'RUNNING':
+                    break
+            return res
+
+        res = unwrap(self.build.compile_code_string)(self.build, code='package main\n\nfunc main() {}')
+        assert res['job_id'] is not None
+        res = wait_for_compile(res['job_id'])
+        assert 'COMPLETE' == res['status']
+        assert 5 == len(res['results'])
+        for platform in res['results']:
+            assert 'SUCCEEDED' == platform['status']
+
     def test_get_test(self, unwrap):
-        for suffix in ['darwin-arm64', 'darwin-x86_64', 'linux-arm64', 'linux-x86_64', 'windows-x86_64']:
-            pytest.expected_test['attachments'].append(f'{pytest.test_id}_{suffix}')
         res = unwrap(self.detect.get_test)(self.detect, test_id=pytest.test_id)
 
         diffs = check_dict_items(pytest.expected_test, res)
@@ -83,7 +106,7 @@ class TestVST:
         mine = [r for r in res if r['id'] == pytest.expected_test['id']]
         assert 1 == len(mine)
         del pytest.expected_test['attachments']
-        diffs = check_dict_items(pytest.expected_test, mine[0])
+        diffs = check_dict_items(pytest.expected_test | dict(detection_platforms=[]), mine[0])
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_update_test(self, unwrap):
@@ -105,8 +128,7 @@ class TestVST:
         assert os.path.isfile(filename)
         os.remove(filename)
 
-    @pytest.mark.order(-2)
-    def test_delete_test(self, unwrap):
+    def test_tombstone_test(self, unwrap):
         unwrap(self.build.delete_test)(self.build, test_id=pytest.test_id, purge=False)
         res = unwrap(self.detect.get_test)(self.detect, test_id=pytest.test_id)
         pytest.expected_test['tombstoned'] = res['tombstoned']
@@ -115,6 +137,16 @@ class TestVST:
         assert not diffs, json.dumps(diffs, indent=2)
         assert parse(res['tombstoned']).replace(tzinfo=timezone.utc) <= datetime.now(timezone.utc) + timedelta(minutes=1)
 
+    def test_undelete_test(self, unwrap):
+        unwrap(self.build.undelete_test)(self.build, test_id=pytest.test_id)
+        res = unwrap(self.detect.get_test)(self.detect, test_id=pytest.test_id)
+        pytest.expected_test['tombstoned'] = None
+
+        diffs = check_dict_items(pytest.expected_test, res)
+        assert not diffs, json.dumps(diffs, indent=2)
+
+    @pytest.mark.order(-2)
+    def test_purge_test(self, unwrap):
         unwrap(self.build.delete_test)(self.build, test_id=pytest.test_id, purge=True)
         with pytest.raises(Exception):
             unwrap(self.detect.get_test)(self.detect, test_id=pytest.test_id)
@@ -133,10 +165,10 @@ class TestThreat:
             account_id=pytest.account.headers['account'],
             author=pytest.expected_account['whoami'],
             id=pytest.threat_id,
-            source_id='aa23-061a',
             name='threat_name',
-            source='https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-061a',
             published='2023-11-13',
+            source='https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-061a',
+            source_id='aa23-061a',
             tests=['881f9052-fb52-4daf-9ad2-0a7ad9615baf', 'b74ad239-2ddd-4b1e-b608-8397a43c7c54', pytest.test_id],
             tombstoned=None
         )
@@ -173,8 +205,7 @@ class TestThreat:
         diffs = check_dict_items(pytest.expected_threat, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
-    @pytest.mark.order(-3)
-    def test_delete_threat(self, unwrap):
+    def test_tombstone_threat(self, unwrap):
         unwrap(self.build.delete_threat)(self.build, threat_id=pytest.threat_id, purge=False)
         res = unwrap(self.detect.get_threat)(self.detect, threat_id=pytest.threat_id)
         pytest.expected_threat['tombstoned'] = res['tombstoned']
@@ -183,6 +214,16 @@ class TestThreat:
         assert not diffs, json.dumps(diffs, indent=2)
         assert parse(res['tombstoned']).replace(tzinfo=timezone.utc) <= datetime.now(timezone.utc) + timedelta(minutes=1)
 
+    def test_undelete_threat(self, unwrap):
+        unwrap(self.build.undelete_threat)(self.build, threat_id=pytest.threat_id)
+        res = unwrap(self.detect.get_threat)(self.detect, threat_id=pytest.threat_id)
+        pytest.expected_threat['tombstoned'] = None
+
+        diffs = check_dict_items(pytest.expected_threat, res)
+        assert not diffs, json.dumps
+
+    @pytest.mark.order(-3)
+    def test_purge_threat(self, unwrap):
         unwrap(self.build.delete_threat)(self.build, threat_id=pytest.threat_id, purge=True)
         with pytest.raises(Exception):
             unwrap(self.detect.get_threat)(self.detect, threat_id=pytest.threat_id)
@@ -262,10 +303,11 @@ class TestThreatHunt:
     def test_create_threat_hunt(self, unwrap):
         expected = dict(
             account_id=pytest.account.headers['account'],
-            threat_hunt_id=pytest.threat_hunt_id,
+            control=Control.CROWDSTRIKE.value,
             name='test threat hunt',
             query='test query',
-            test_id=pytest.test_id
+            test_id=pytest.test_id,
+            threat_hunt_id=pytest.threat_hunt_id,
         )
 
         diffs = check_dict_items(expected, pytest.expected_threat_hunt)
@@ -292,9 +334,9 @@ class TestThreatHunt:
             self.build,
             threat_hunt_id=pytest.threat_hunt_id,
             name='updated threat hunt',
-            query='updated query')
+            query='.*')
         assert pytest.expected_threat_hunt['name'] == 'updated threat hunt'
-        assert pytest.expected_threat_hunt['query'] == 'updated query'
+        assert pytest.expected_threat_hunt['query'] == '.*'
 
     @pytest.mark.order(-4)
     def test_delete_threat_hunt(self, unwrap):

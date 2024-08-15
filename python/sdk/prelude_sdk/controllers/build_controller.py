@@ -1,5 +1,3 @@
-import requests
-
 from prelude_sdk.controllers.http_controller import HttpController
 
 from prelude_sdk.models.account import verify_credentials
@@ -88,6 +86,19 @@ class BuildController(HttpController):
             f'{self.account.hq}/build/tests/{test_id}/{filename}',
             data=data,
             headers=h,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def compile_code_string(self, code: str):
+        """ Compile a code string """
+        res = self._session.post(
+            f'{self.account.hq}/build/compile',
+            json=dict(code=code),
+            headers=self.account.headers,
             timeout=10
         )
         if res.status_code == 200:
