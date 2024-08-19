@@ -18,8 +18,10 @@ function Execute {
         $code = if (Test-Path $File) {$proc.ExitCode} Else {127}
         return $code
     } catch [System.UnauthorizedAccessException] {
+        "System.UnauthorizedAccessException - $File" | Out-File -FilePath $stderrTempFile -Append
         return 126
     } catch [System.InvalidOperationException] {
+        "System.InvalidOperationException - $File" | Out-File -FilePath $stderrTempFile -Append
         return 127
     } catch {
         return 1
@@ -43,7 +45,7 @@ function FromEnv { param ([string]$envVar, [string]$default)
 $ca = FromEnv "PRELUDE_CA" "prelude-account-us1-us-east-2.s3.amazonaws.com"
 $dir = FromEnv "PRELUDE_DIR" ".vst"
 $dat = ""
-$version = "2.5"
+$version = "2.6"
 
 Write-Output "Prelude probe: version ${version}"
 
