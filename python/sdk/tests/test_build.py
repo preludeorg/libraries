@@ -28,7 +28,7 @@ class TestVST:
             account_id=pytest.account.headers['account'],
             attachments=[],
             author=pytest.expected_account['whoami'],
-            expected=dict(crowdstrike=None),
+            expected=dict(crowdstrike=1),
             id=pytest.test_id,
             intel_context=None,
             name='test_name',
