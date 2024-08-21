@@ -75,8 +75,8 @@ jobs:
           name: sdk-release-dist
           path: python/sdk/dist/
   pypi-publish-sdk:
-    runs-on: ubuntu-latest
     if: ${{ inputs.do_sdk == true }}
+    runs-on: ubuntu-latest
     needs:
       - release-build-cli
     permissions:
