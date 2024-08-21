@@ -46,6 +46,25 @@ jobs:
         uses: pypa/gh-action-pypi-publish@@release/v1
         with:
           packages-dir: cli-dist
+      - name: Notify Slack
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          payload: |
+            {
+              "text": "Python CLI published (${{ github.triggering_actor }}): ${{ github.ref }} - ${{ job.status }}",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Python CLI published (${{ github.triggering_actor }}): ${{ github.ref }} - ${{ job.status }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.US1_SLACK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
   release-build-sdk:
     if: ${{ inputs.do_sdk == true }}
     runs-on: ubuntu-latest
@@ -100,3 +119,22 @@ jobs:
         uses: pypa/gh-action-pypi-publish@@release/v1
         with:
           packages-dir: sdk-dist
+      - name: Notify Slack
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          payload: |
+            {
+              "text": "Python SDK published (${{ github.triggering_actor }}): ${{ github.ref }} - ${{ job.status }}",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Python SDK published (${{ github.triggering_actor }}): ${{ github.ref }} - ${{ job.status }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.US1_SLACK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
