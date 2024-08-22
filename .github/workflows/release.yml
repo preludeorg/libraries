@@ -43,7 +43,7 @@ jobs:
           name: cli-release-dists
           path: cli-dist/
       - name: Publish cli release distributions to PyPI
-        uses: pypa/gh-action-pypi-publish@@release/v1
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: cli-dist
       - name: Notify Slack
@@ -108,7 +108,7 @@ jobs:
           name: cli-release-dists
           path: cli-dist/
       - name: Publish cli release distributions to PyPI
-        uses: pypa/gh-action-pypi-publish@@release/v1
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: cli-dist
       - name: download cli release dist
@@ -117,7 +117,7 @@ jobs:
           name: cli-release-dists
           path: cli-dist/
       - name: Publish sdl release distributions to PyPI
-        uses: pypa/gh-action-pypi-publish@@release/v1
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: sdk-dist
       - name: Notify Slack
