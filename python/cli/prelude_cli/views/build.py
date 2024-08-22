@@ -3,7 +3,6 @@ import json
 import os
 import re
 import time
-import uuid
 from datetime import datetime, timezone
 from pathlib import Path, PurePath
 
@@ -13,7 +12,7 @@ from rich import print_json
 import prelude_cli.templates as templates
 from prelude_cli.views.shared import handle_api_error, Spinner
 from prelude_sdk.controllers.build_controller import BuildController
-from prelude_sdk.models.codes import Control
+from prelude_sdk.models.codes import EDRResponse
 
 
 UUID = re.compile('[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}')
@@ -70,16 +69,19 @@ def create_test(controller, name, unit, test, technique):
 
 @build.command('update-test')
 @click.argument('test')
+@click.option('-c', '--crowdstrike_expected', help='Crowdstrike expected outcome',
+              type=click.Choice([c.name for c in EDRResponse if c != EDRResponse.INVALID], case_sensitive=False))
 @click.option('-n', '--name', help='test name', default=None, type=str)
 @click.option('-u', '--unit', help='unit identifier', default=None, type=str)
 @click.option('-q', '--technique', help='MITRE ATT&CK code [e.g. T1557]', default=None, type=str)
 @click.pass_obj
 @handle_api_error
-def update_test(controller, test, name, unit, technique):
-    """ Create or update a security test """
+def update_test(controller, test, crowdstrike_expected, name, unit, technique):
+    """ Update a security test """
     with Spinner(description='Updating test'):
         data = controller.update_test(
             test_id=test,
+            crowdstrike_expected=EDRResponse[crowdstrike_expected],
             name=name,
             unit=unit,
             technique=technique
