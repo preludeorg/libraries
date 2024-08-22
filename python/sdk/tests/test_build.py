@@ -9,7 +9,7 @@ from dateutil.parser import parse
 
 from prelude_sdk.controllers.build_controller import BuildController
 from prelude_sdk.controllers.detect_controller import DetectController
-from prelude_sdk.models.codes import Control
+from prelude_sdk.models.codes import Control, EDRResponse
 
 import templates
 from testutils import *
@@ -111,8 +111,10 @@ class TestVST:
 
     def test_update_test(self, unwrap):
         updated_name = 'updated_test'
-        res = unwrap(self.build.update_test)(self.build, test_id=pytest.test_id, name=updated_name, technique='T1234.001')
+        res = unwrap(self.build.update_test)(
+            self.build,test_id=pytest.test_id, name=updated_name, technique='T1234.001', crowdstrike_expected_outcome=EDRResponse.PREVENT)
 
+        pytest.expected_test['expected']['crowdstrike'] = EDRResponse.PREVENT.value
         pytest.expected_test['name'] = updated_name
         pytest.expected_test['technique'] = 'T1234.001'
 
