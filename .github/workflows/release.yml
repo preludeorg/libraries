@@ -120,7 +120,7 @@ jobs:
         with:
           packages-dir: sdk-dist
       - name: Notify Slack
-        if: always()
+        if: ${{ always() }}
         uses: slackapi/slack-github-action@v1.26.0
         with:
           payload: |
