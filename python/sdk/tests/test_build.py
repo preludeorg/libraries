@@ -112,7 +112,7 @@ class TestVST:
     def test_update_test(self, unwrap):
         updated_name = 'updated_test'
         res = unwrap(self.build.update_test)(
-            self.build,test_id=pytest.test_id, name=updated_name, technique='T1234.001', crowdstrike_expected_outcome=EDRResponse.PREVENT)
+            self.build, test_id=pytest.test_id, crowdstrike_expected_outcome=EDRResponse.PREVENT, name=updated_name, technique='T1234.001')
 
         pytest.expected_test['expected']['crowdstrike'] = EDRResponse.PREVENT.value
         pytest.expected_test['name'] = updated_name

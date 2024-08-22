@@ -30,11 +30,11 @@ class BuildController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
-    def update_test(self, test_id, name=None, unit=None, technique=None, crowdstrike_expected_outcome: EDRResponse = None):
+    def update_test(self, test_id, crowdstrike_expected_outcome: EDRResponse = None, name=None, unit=None, technique=None):
         """ Update a test """
         body = dict()
         if crowdstrike_expected_outcome:
-            body[['expected']] = dict(crowdstrike=crowdstrike_expected_outcome.value)
+            body['expected'] = dict(crowdstrike=crowdstrike_expected_outcome.value)
         if name:
             body['name'] = name
         if unit:
