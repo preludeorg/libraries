@@ -241,13 +241,16 @@ class TestPartner:
         assert res[0]['account_id'] == pytest.expected_account['account_id']
 
     def test_ioa_stats(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
-        if control != Control.CROWDSTRIKE:
-            pytest.skip('IOA stats only supported for CROWDSTRIKE')
-        if not pytest.expected_account['features']['observed_detected']:
-            pytest.skip('OBSERVED_DETECTED feature not enabled')
+        try:
+            if control != Control.CROWDSTRIKE:
+                pytest.skip('IOA stats only supported for CROWDSTRIKE')
+            if not pytest.expected_account['features']['observed_detected']:
+                pytest.skip('OBSERVED_DETECTED feature not enabled')
 
-        res = unwrap(self.partner.ioa_stats)(self.partner)
-        assert 0 == len(res)
+            res = unwrap(self.partner.ioa_stats)(self.partner)
+            assert 0 == len(res)
+        finally:
+            unwrap(self.detect.delete_endpoint)(self.detect, ident=pytest.endpoint_1['endpoint_id'])
 
     def test_list_advisories(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
         if control != Control.CROWDSTRIKE:
@@ -262,13 +265,10 @@ class TestPartner:
 
     @pytest.mark.order(-5)
     def test_detach(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
-        try:
-            unwrap(self.partner.detach)(self.partner, partner=control)
-            res = unwrap(self.iam.get_account)(self.iam)
-            for c in res['controls']:
-                assert c['id'] != control.value
-        finally:
-            unwrap(self.detect.delete_endpoint)(self.detect, ident=pytest.endpoint_1['endpoint_id'])
+        unwrap(self.partner.detach)(self.partner, partner=control)
+        res = unwrap(self.iam.get_account)(self.iam)
+        for c in res['controls']:
+            assert c['id'] != control.value
 
 
 @pytest.mark.order(7)
