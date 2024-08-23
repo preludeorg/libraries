@@ -81,7 +81,7 @@ def update_test(controller, test, crowdstrike_expected, name, unit, technique):
     with Spinner(description='Updating test'):
         data = controller.update_test(
             test_id=test,
-            crowdstrike_expected=EDRResponse[crowdstrike_expected],
+            crowdstrike_expected_outcome=EDRResponse[crowdstrike_expected],
             name=name,
             unit=unit,
             technique=technique
