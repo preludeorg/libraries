@@ -345,7 +345,7 @@ def threat_hunt_activity(controller, id, type):
     """ Get threat hunt activity """
     with Spinner(description='Fetching threat hunt activity'):
         if type == 'THREAT_HUNT':
-            data = controller.threat_hunt_activity(id=id)
+            data = controller.threat_hunt_activity(threat_hunt_id=id)
         elif type == 'TEST':
             data = controller.threat_hunt_activity(test_id=id)
         else:

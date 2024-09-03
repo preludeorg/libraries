@@ -168,7 +168,7 @@ class TestPartner:
         if not pytest.expected_account['features']['threat_intel']:
             pytest.skip('THREAT_INTEL feature not enabled')
 
-        res = unwrap(self.detect.do_threat_hunt)(self.detect, threat_hunt_id=pytest.threat_hunt_id)[0]
+        res = unwrap(self.detect.do_threat_hunt)(self.detect, id=pytest.threat_hunt_id)[0]
         assert {'account_id', 'non_prelude_origin', 'prelude_origin', 'threat_hunt_id'} == set(res.keys())
         assert res['account_id'] == pytest.expected_account['account_id']
         assert res['threat_hunt_id'] == pytest.threat_hunt_id

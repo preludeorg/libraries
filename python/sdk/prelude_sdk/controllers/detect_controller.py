@@ -86,9 +86,9 @@ class DetectController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
-    def threat_hunt_activity(self, id=None, test_id=None, threat_id=None):
+    def threat_hunt_activity(self, threat_hunt_id=None, test_id=None, threat_id=None):
         """ Get threat hunt activity """
-        filters = dict(id=id, test_id=test_id, threat_id=threat_id)
+        filters = dict(threat_hunt_id=threat_hunt_id, test_id=test_id, threat_id=threat_id)
         res = self._session.get(
             f'{self.account.hq}/detect/threat_hunt_activity',
             headers=self.account.headers,

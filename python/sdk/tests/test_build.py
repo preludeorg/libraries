@@ -306,17 +306,17 @@ class TestThreatHunt:
         expected = dict(
             account_id=pytest.account.headers['account'],
             control=Control.CROWDSTRIKE.value,
+            id=pytest.threat_hunt_id,
             name='test threat hunt',
             query='test query',
             test_id=pytest.test_id,
-            threat_hunt_id=pytest.threat_hunt_id,
         )
 
         diffs = check_dict_items(expected, pytest.expected_threat_hunt)
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_get_threat_hunt(self, unwrap):
-        res = unwrap(self.detect.get_threat_hunt)(self.detect, threat_hunt_id=pytest.threat_hunt_id)
+        res = unwrap(self.detect.get_threat_hunt)(self.detect, id=pytest.threat_hunt_id)
 
         diffs = check_dict_items(pytest.expected_threat_hunt, res)
         assert not diffs, json.dumps(diffs, indent=2)
@@ -326,7 +326,7 @@ class TestThreatHunt:
         owners = set([r['account_id'] for r in res])
         assert {'prelude', pytest.account.headers['account']} >= owners
 
-        mine = [r for r in res if r['threat_hunt_id'] == pytest.expected_threat_hunt['threat_hunt_id']]
+        mine = [r for r in res if r['id'] == pytest.expected_threat_hunt['id']]
         assert 1 == len(mine)
         diffs = check_dict_items(pytest.expected_threat_hunt, mine[0])
         assert not diffs, json.dumps(diffs, indent=2)
@@ -334,7 +334,7 @@ class TestThreatHunt:
     def test_update_threat_hunt(self, unwrap):
         pytest.expected_threat_hunt = unwrap(self.build.update_threat_hunt)(
             self.build,
-            threat_hunt_id=pytest.threat_hunt_id,
+            id=pytest.threat_hunt_id,
             name='updated threat hunt',
             query='.*')
         assert pytest.expected_threat_hunt['name'] == 'updated threat hunt'
@@ -342,6 +342,6 @@ class TestThreatHunt:
 
     @pytest.mark.order(-4)
     def test_delete_threat_hunt(self, unwrap):
-        unwrap(self.build.delete_threat_hunt)(self.build, threat_hunt_id=pytest.threat_hunt_id)
+        unwrap(self.build.delete_threat_hunt)(self.build, id=pytest.threat_hunt_id)
         with pytest.raises(Exception):
-            unwrap(self.detect.get_threat_hunt)(self.detect, threat_hunt_id=pytest.threat_hunt_id)
+            unwrap(self.detect.get_threat_hunt)(self.detect, id=pytest.threat_hunt_id)

@@ -165,4 +165,4 @@ def setup_threat_hunt(unwrap):
         test_id=pytest.test_id,
         name='test threat hunt',
         query='test query',
-        threat_hunt_id=pytest.threat_hunt_id)
+        id=pytest.threat_hunt_id)
