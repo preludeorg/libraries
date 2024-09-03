@@ -9,6 +9,6 @@
 **/.swiftpm/**
 swift/probe/moonlight
 **/dist
-.vst/*
+**/.vst
 env/
 venv/
