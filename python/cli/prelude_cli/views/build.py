@@ -321,7 +321,7 @@ def create_threat_hunt(controller, name, query, test, id):
     """ Create a threat hunt query """
     with Spinner(description='Creating new threat hunt'):
         t = controller.create_threat_hunt(
-            id=id,
+            threat_hunt_id=id,
             name=name,
             query=query,
             test_id=test,
@@ -340,7 +340,7 @@ def update_threat_hunt(controller, threat_hunt, name, query, test):
     """ Update a threat hunt """
     with Spinner(description='Updating threat hunt'):
         data = controller.update_threat_hunt(
-            id=threat_hunt,
+            threat_hunt_id=threat_hunt,
             name=name,
             query=query,
             test_id=test,
@@ -356,5 +356,5 @@ def update_threat_hunt(controller, threat_hunt, name, query, test):
 def delete_threat_hunt(controller, threat_hunt):
     """ Delete a threat hunt """
     with Spinner(description='Removing threat hunt'):
-        data = controller.delete_threat_hunt(id=threat_hunt)
+        data = controller.delete_threat_hunt(threat_hunt_id=threat_hunt)
     print_json(data=data)

@@ -200,10 +200,10 @@ class DetectController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
-    def get_threat_hunt(self, id):
+    def get_threat_hunt(self, threat_hunt_id):
         """ Get properties of an existing threat hunt """
         res = self._session.get(
-            f'{self.account.hq}/detect/threat_hunts/{id}',
+            f'{self.account.hq}/detect/threat_hunts/{threat_hunt_id}',
             headers=self.account.headers,
             timeout=10
         )
@@ -212,10 +212,10 @@ class DetectController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
-    def do_threat_hunt(self, id):
+    def do_threat_hunt(self, threat_hunt_id):
         """ Run a threat hunt """
         res = self._session.post(
-            f'{self.account.hq}/detect/threat_hunts/{id}',
+            f'{self.account.hq}/detect/threat_hunts/{threat_hunt_id}',
             headers=self.account.headers,
             timeout=10
         )
