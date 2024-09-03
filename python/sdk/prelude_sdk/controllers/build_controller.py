@@ -242,7 +242,7 @@ class BuildController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
-    def create_threat_hunt(self, test_id: str, name: str, query: str, threat_hunt_id: str = None):
+    def create_threat_hunt(self, test_id: str, name: str, query: str, id: str = None):
         """ Create a threat hunt """
         body = dict(
             control=Control.CROWDSTRIKE.name,
@@ -250,8 +250,8 @@ class BuildController(HttpController):
             query=query,
             test_id=test_id,
         )
-        if threat_hunt_id:
-            body['threat_hunt_id'] = threat_hunt_id
+        if id:
+            body['id'] = id
 
         res = self._session.post(
             f'{self.account.hq}/build/threat_hunts',
@@ -264,7 +264,7 @@ class BuildController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
-    def update_threat_hunt(self, threat_hunt_id: str, name: str = None, query: str = None, test_id: str = None):
+    def update_threat_hunt(self, id: str, name: str = None, query: str = None, test_id: str = None):
         """ Update a threat hunt """
         body = dict()
         if name:
@@ -275,7 +275,7 @@ class BuildController(HttpController):
             body['test_id'] = test_id
 
         res = self._session.post(
-            f'{self.account.hq}/build/threat_hunts/{threat_hunt_id}',
+            f'{self.account.hq}/build/threat_hunts/{id}',
             json=body,
             headers=self.account.headers,
             timeout=10
@@ -285,10 +285,10 @@ class BuildController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
-    def delete_threat_hunt(self, threat_hunt_id: str):
+    def delete_threat_hunt(self, id: str):
         """ Delete an existing threat hunt """
         res = self._session.delete(
-            f'{self.account.hq}/build/threat_hunts/{threat_hunt_id}',
+            f'{self.account.hq}/build/threat_hunts/{id}',
             headers=self.account.headers,
             timeout=10
         )

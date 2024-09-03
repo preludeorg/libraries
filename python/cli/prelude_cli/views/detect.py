@@ -150,23 +150,23 @@ def list_threat_hunts(controller, tests):
 
 
 @detect.command('threat-hunt')
-@click.argument('threat_hunt_id')
+@click.argument('id')
 @click.pass_obj
 @handle_api_error
-def get_threat_hunt(controller, threat_hunt_id):
+def get_threat_hunt(controller, id):
     """ List properties for a threat hunt """
     with Spinner(description='Fetching data for threat hunt'):
-        data = controller.get_threat_hunt(threat_hunt_id=threat_hunt_id)
+        data = controller.get_threat_hunt(id=id)
     print_json(data=data)
 
 @detect.command('do-threat-hunt')
-@click.argument('threat_hunt_id')
+@click.argument('id')
 @click.pass_obj
 @handle_api_error
-def do_threat_hunt(controller, threat_hunt_id):
+def do_threat_hunt(controller, id):
     """ Run a threat hunt query """
     with Spinner(description='Running threat hunt'):
-        data = controller.do_threat_hunt(threat_hunt_id=threat_hunt_id)
+        data = controller.do_threat_hunt(id=id)
     print_json(data=data)
 
 
@@ -345,7 +345,7 @@ def threat_hunt_activity(controller, id, type):
     """ Get threat hunt activity """
     with Spinner(description='Fetching threat hunt activity'):
         if type == 'THREAT_HUNT':
-            data = controller.threat_hunt_activity(threat_hunt_id=id)
+            data = controller.threat_hunt_activity(id=id)
         elif type == 'TEST':
             data = controller.threat_hunt_activity(test_id=id)
         else:
