@@ -19,7 +19,7 @@ do
         curl -sf --max-redirs 0 --create-dirs -o "$vst/$uuid" $task
         chmod +x "$vst/$uuid"
         echo "Invoking $uuid"
-        cd "$vst" || exit
+        cd "$vst" || exit 1
         "$vst"/"$uuid" & test_pid=$!
         elapsed_time=0
         while kill -0 $test_pid 2> /dev/null; do
