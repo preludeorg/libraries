@@ -160,7 +160,7 @@ def get_threat_hunt(controller, threat_hunt_id):
     print_json(data=data)
 
 @detect.command('do-threat-hunt')
-@click.argument('id')
+@click.argument('threat_hunt_id')
 @click.pass_obj
 @handle_api_error
 def do_threat_hunt(controller, threat_hunt_id):
