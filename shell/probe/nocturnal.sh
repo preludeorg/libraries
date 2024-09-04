@@ -3,7 +3,7 @@
 ca=${PRELUDE_CA:-prelude-account-us1-us-east-2.s3.amazonaws.com}
 vst=${PRELUDE_DIR:-"$PWD/.vst"}
 
-version='2.6'
+version='2.7'
 
 echo "Prelude probe: version ${version}"
 
@@ -20,7 +20,7 @@ do
         chmod +x "$vst/$uuid"
         echo "Invoking $uuid"
         cd "$vst" || exit 1
-        "$vst"/"$uuid" & test_pid=$!
+        ./"$uuid" & test_pid=$!
         elapsed_time=0
         while kill -0 $test_pid 2> /dev/null; do
           if [ $elapsed_time -ge 45 ]; then
