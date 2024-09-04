@@ -324,7 +324,7 @@ def create_threat_hunt(controller, name, query, test, id):
             name=name,
             query=query,
             test_id=test,
-            threat_hunt_id=id
+            threat_hunt_id=id,
         )
     print_json(data=t)
 
@@ -343,7 +343,7 @@ def update_threat_hunt(controller, threat_hunt, name, query, test):
             name=name,
             query=query,
             test_id=test,
-            threat_hunt_id=threat_hunt
+            threat_hunt_id=threat_hunt,
         )
     print_json(data=data)
 
