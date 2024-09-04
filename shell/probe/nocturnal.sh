@@ -1,10 +1,12 @@
 #!/bin/sh
 
 ca=${PRELUDE_CA:-prelude-account-us1-us-east-2.s3.amazonaws.com}
-vst=${PRELUDE_DIR:-.vst}
-version='2.6'
+vst=${PRELUDE_DIR:-"$PWD/.vst"}
+
+version='2.7'
 
 echo "Prelude probe: version ${version}"
+
 
 while :
 do
@@ -16,11 +18,9 @@ do
         echo "Downloading $uuid"
         curl -sf --max-redirs 0 --create-dirs -o "$vst/$uuid" $task
         chmod +x "$vst/$uuid"
-        CDIR="${PWD}"
-        cd "$vst" &>/dev/null
         echo "Invoking $uuid"
-        $vst/$uuid & test_pid=$!
-        cd "$CDIR" &>/dev/null
+        cd "$vst" || exit 1
+        ./"$uuid" & test_pid=$!
         elapsed_time=0
         while kill -0 $test_pid 2> /dev/null; do
           if [ $elapsed_time -ge 45 ]; then
@@ -43,7 +43,7 @@ do
         exit
     else
         echo "Test cycle done"
-        rm -rf $vst
+        rm -rf "$vst"
         unset dat
         sleep_sec=$(echo "$task" | grep -E '^[0-9]+$')
         sleep ${sleep_sec:-1800}

@@ -2,9 +2,7 @@
 
 dos=$(uname -s)-$(uname -m)
 dir=/opt/preludesecurity
-mkdir -p "${dir}/.vst"
-curl -sL "https://api.preludesecurity.com/download/nocturnal" -H "dos:${dos}" > "${dir}/nocturnal"
+curl -sf --max-redirs 0 --create-dirs -o "${dir}/nocturnal" -H "dos:${dos}" "https://api.preludesecurity.com/download/nocturnal"
 chmod +x "${dir}/nocturnal"
-cd "${dir}/.vst" &>/dev/null
-"${dir}/nocturnal" > "${dir}/detect.log" 2>&1 &
+"${dir}/nocturnal" &
 exec /bin/sh -c "$*"
