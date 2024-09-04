@@ -251,7 +251,7 @@ class BuildController(HttpController):
             test_id=test_id,
         )
         if threat_hunt_id:
-            body['threat_hunt_id'] = threat_hunt_id
+            body['id'] = threat_hunt_id
 
         res = self._session.post(
             f'{self.account.hq}/build/threat_hunts',

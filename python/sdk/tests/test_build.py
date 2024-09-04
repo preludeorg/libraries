@@ -306,10 +306,10 @@ class TestThreatHunt:
         expected = dict(
             account_id=pytest.account.headers['account'],
             control=Control.CROWDSTRIKE.value,
+            id=pytest.threat_hunt_id,
             name='test threat hunt',
             query='test query',
             test_id=pytest.test_id,
-            threat_hunt_id=pytest.threat_hunt_id,
         )
 
         diffs = check_dict_items(expected, pytest.expected_threat_hunt)
@@ -326,7 +326,7 @@ class TestThreatHunt:
         owners = set([r['account_id'] for r in res])
         assert {'prelude', pytest.account.headers['account']} >= owners
 
-        mine = [r for r in res if r['threat_hunt_id'] == pytest.expected_threat_hunt['threat_hunt_id']]
+        mine = [r for r in res if r['id'] == pytest.expected_threat_hunt['id']]
         assert 1 == len(mine)
         diffs = check_dict_items(pytest.expected_threat_hunt, mine[0])
         assert not diffs, json.dumps(diffs, indent=2)
@@ -334,9 +334,9 @@ class TestThreatHunt:
     def test_update_threat_hunt(self, unwrap):
         pytest.expected_threat_hunt = unwrap(self.build.update_threat_hunt)(
             self.build,
-            threat_hunt_id=pytest.threat_hunt_id,
             name='updated threat hunt',
-            query='.*')
+            query='.*',
+            threat_hunt_id=pytest.threat_hunt_id)
         assert pytest.expected_threat_hunt['name'] == 'updated threat hunt'
         assert pytest.expected_threat_hunt['query'] == '.*'
 

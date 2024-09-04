@@ -314,17 +314,17 @@ def delete_detection(controller, detection):
 @click.argument('name')
 @click.option('-q', '--query', help='Threat hunt query', required=True, type=str)
 @click.option('-t', '--test', help='ID of the test this threat hunt query is for', required=True, type=str)
-@click.option('--threat_hunt_id', default=None, type=str)
+@click.option('--id', default=None, type=str)
 @click.pass_obj
 @handle_api_error
-def create_threat_hunt(controller, name, query, test, threat_hunt_id):
+def create_threat_hunt(controller, name, query, test, id):
     """ Create a threat hunt query """
     with Spinner(description='Creating new threat hunt'):
         t = controller.create_threat_hunt(
             name=name,
             query=query,
             test_id=test,
-            threat_hunt_id=threat_hunt_id,
+            threat_hunt_id=id,
         )
     print_json(data=t)
 

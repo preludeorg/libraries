@@ -162,7 +162,7 @@ def setup_threat_hunt(unwrap):
     pytest.threat_hunt_id = str(uuid.uuid4())
     pytest.expected_threat_hunt = unwrap(build.create_threat_hunt)(
         build,
-        test_id=pytest.test_id,
         name='test threat hunt',
         query='test query',
+        test_id=pytest.test_id,
         threat_hunt_id=pytest.threat_hunt_id)
