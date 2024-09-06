@@ -1,4 +1,4 @@
-name: Release Python CLI and SDK
+name: Release Python CLI or SDK
 
 on:
   workflow_dispatch:
