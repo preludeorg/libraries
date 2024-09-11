@@ -142,17 +142,17 @@ class PartnerController(HttpController):
     @verify_credentials
     def list_advisories(self, partner: Control, start: str = None, limit: int = None, offset: int = None):
         """ Get advisory reports provided by a partner """
-        args = dict()
+        params = dict()
         if start:
-            args['start'] = start
+            params['start'] = start
         if limit:
-            args['limit'] = limit
+            params['limit'] = limit
         if offset:
-            args['offset'] = offset
-        arg_str = '&'.join([f'{k}={v}' for k, v in args.items()])
+            params['offset'] = offset
         res = self._session.get(
-            f'{self.account.hq}/partner/advisories/{partner.name}?{arg_str}',
+            f'{self.account.hq}/partner/advisories/{partner.name}',
             headers=self.account.headers,
+            params=params,
             timeout=30
         )
         if res.status_code == 200:
