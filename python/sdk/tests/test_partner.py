@@ -258,9 +258,13 @@ class TestPartner:
         if not pytest.expected_account['features']['threat_intel']:
             pytest.skip('THREAT_INTEL feature not enabled')
 
-        res = unwrap(self.partner.list_advisories)(self.partner, partner=control)
+        res = unwrap(self.partner.list_advisories)(self.partner, partner=control, limit=5, offset=0)
         assert 1 <= len(res['advisories'])
         assert res['advisories'][0]['id']
+        assert {'created', 'description', 'id', 'name', 'tags', 'slug'} == set(res['advisories'][0].keys())
+        assert res['pagination']['limit'] == 5
+        assert res['pagination']['offset'] == 0
+        assert res['pagination']['total'] > 0
         pytest.crowdstrike_advisory_id = res['advisories'][0]['id']
 
     @pytest.mark.order(-5)

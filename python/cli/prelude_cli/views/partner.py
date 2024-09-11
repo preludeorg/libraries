@@ -131,10 +131,13 @@ def observed_detected(controller, test_id, hours):
 
 @partner.command('advisories')
 @click.argument('partner', type=click.Choice([Control.CROWDSTRIKE.name], case_sensitive=False))
+@click.option('-s', '--start', help='start date for advisories')
+@click.option('-o', '--offset', help='API pagination offset', type=int)
+@click.option('-l', '--limit', help='API pagination limit', type=int)
 @click.pass_obj
 @handle_api_error
-def partner_advisories(controller, partner):
+def partner_advisories(controller, partner, start, offset, limit):
     """ Get advisories provided by partner """
     with Spinner(description='Getting partner advisories'):
-        data = controller.list_advisories(partner=Control[partner])
+        data = controller.list_advisories(partner=Control[partner], start=start, offset=offset, limit=limit)
     print_json(data=data)

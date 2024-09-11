@@ -140,11 +140,19 @@ class PartnerController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
-    def list_advisories(self, partner: Control):
+    def list_advisories(self, partner: Control, start: str = None, limit: int = None, offset: int = None):
         """ Get advisory reports provided by a partner """
+        params = dict()
+        if start:
+            params['start'] = start
+        if limit:
+            params['limit'] = limit
+        if offset:
+            params['offset'] = offset
         res = self._session.get(
             f'{self.account.hq}/partner/advisories/{partner.name}',
             headers=self.account.headers,
+            params=params,
             timeout=30
         )
         if res.status_code == 200:
