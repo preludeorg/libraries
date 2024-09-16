@@ -87,13 +87,13 @@ func GetRegion() string {
 
 	resp, err := httpClient.Get("http://169.254.169.254/latest/meta-data/placement/region")
 	if err != nil || resp.StatusCode != http.StatusOK {
-		return "us-east-2"
+		return "us-east-1"
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "us-east-2"
+		return "us-east-1"
 	}
 
 	return string(body)
