@@ -123,7 +123,7 @@ class TestDetect:
 
     def test_describe_activity(self, unwrap, api):
         res = requests.get(api, headers=dict(token=pytest.token, dos=f'darwin-x86_64', dat=f'{pytest.test_id}:100',
-                                             version='2.1'))
+                                             version='2.7'))
         assert res.status_code in [200, 302]
         filters = dict(
             start=datetime.now(timezone.utc) - timedelta(days=1),
