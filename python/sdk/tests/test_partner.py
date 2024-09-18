@@ -132,8 +132,7 @@ class TestPartner:
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_activity_logs(self, unwrap, api, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
-        res = requests.get(api, headers=dict(token=pytest.token, dos=f'{platform}-x86_64', dat=f'{pytest.test_id}:100',
-                                             version='2.1'))
+        res = requests.get(api, headers=dict(token=pytest.token, dos=f'{platform}-x86_64', dat=f'{pytest.test_id}:100', version='2.7'))
         assert res.status_code in [200, 302]
         pytest.endpoint_1['dos'] = f'{platform}-x86_64'
 
@@ -343,8 +342,7 @@ class TestSiems:
 
     def test_save_result(self, unwrap, api):
         try:
-            res = requests.get(api, headers=dict(token=pytest.token, dos=f'linux-x86_64', dat='b74ad239-2ddd-4b1e-b608-8397a43c7c54:101',
-                                                 version='2.1'))
+            res = requests.get(api, headers=dict(token=pytest.token, dos=f'linux-x86_64', dat='b74ad239-2ddd-4b1e-b608-8397a43c7c54:101', version='2.7'))
             assert res.status_code in [200, 302]
         finally:
             unwrap(self.detect.delete_endpoint)(self.detect, ident=pytest.endpoint_id)
