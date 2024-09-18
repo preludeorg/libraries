@@ -2,19 +2,15 @@ name: Deploy (nocturnal / raindrop / vision scripts)
 description: Copy script to s3
 inputs:
   s3_bucket:
-    description: 'Where to push probes'
+    description: Where to push probes
     required: true
   aws_region:
-    description: 'Region to set for aws access'
+    description: Region to set for aws access
     required: true
-  aws_access_key_id:
-    description: 'Access key to use'
-    required: true
-  aws_secret_access_key:
-    description: 'Secret key to use'
-    required: true
+  aws_role:
+    description: AWS Role
   slack_notification:
-    description: 'Where to send the slack payload'
+    description: Where to send the slack payload
 
 runs:
   using: "composite"
@@ -23,8 +19,8 @@ runs:
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: ${{ inputs.aws_region }}
-        aws-access-key-id: ${{ inputs.aws_access_key_id }}
-        aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
+        role-to-assume: ${{ inputs.aws_role }}
+        role-session-name: GitHub_to_AWS_via_FederatedOIDC
 
     - name: Copy files to the s3 with the AWS CLI
       shell: bash
@@ -63,7 +59,8 @@ runs:
 
     - name: Notify Slack
       id: slack
-      uses: slackapi/slack-github-action@v1.26.0
+      if: always()
+      uses: slackapi/slack-github-action@v1
       with:
         payload: |
           {
