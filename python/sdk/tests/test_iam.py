@@ -50,7 +50,6 @@ class TestIAM:
             probe_sleep='600s',
             oidc=dict(),
             features=dict(
-                oidc=False,
                 threat_intel=False,
                 detections=False
             )
