@@ -29,6 +29,5 @@ jobs:
         with:
           s3_bucket: ${{ secrets.BUCKET_NAME }}
           aws_region: ${{ secrets.BUCKET_REGION }}
-          aws_access_key_id: ${{ secrets.US2_S3_DEPLOYMENT_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.US2_S3_DEPLOYMENT_SECRET_ACCESS_KEY  }}
+          aws_role: ${{ secrets.US2_S3_DEPLOYMENT_ROLE }}
           slack_notification: ${{ secrets.US2_SLACK_URL }}
