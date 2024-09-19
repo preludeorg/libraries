@@ -11,6 +11,9 @@ jobs:
 
     name: us2 - shell probes (nocturnal / raindrop / vision scripts) deploy
 
+    permissions:
+      id-token: write
+
     steps:
       - name: Check out code.
         uses: actions/checkout@v4
@@ -29,5 +32,5 @@ jobs:
         with:
           s3_bucket: ${{ secrets.BUCKET_NAME }}
           aws_region: ${{ secrets.BUCKET_REGION }}
-          aws_role: ${{ secrets.US2_S3_DEPLOYMENT_ROLE }}
+          aws_role: ${{ secrets.US2_S3_ACCOUNT_DEPLOYMENT_ROLE }}
           slack_notification: ${{ secrets.US2_SLACK_URL }}
