@@ -32,5 +32,5 @@ jobs:
         with:
           s3_bucket: ${{ secrets.BUCKET_NAME }}
           aws_region: ${{ secrets.BUCKET_REGION }}
-          aws_role: ${{ secrets.EU1_S3_DEPLOYMENT_ROLE }}
+          aws_role: ${{ secrets.EU1_S3_ACCOUNT_DEPLOYMENT_ROLE }}
           slack_notification: ${{ secrets.EU1_SLACK_URL }}
