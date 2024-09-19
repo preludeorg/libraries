@@ -50,6 +50,9 @@ jobs:
           path: dist/
       - name: publish release dist to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+      - name: checkout for tagging
+        if: success()
+        uses: actions/checkout@v4
       - name: tag repo
         if: success()
         run: |
