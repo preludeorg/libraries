@@ -11,6 +11,9 @@ jobs:
 
     name: eu1 - shell probes (nocturnal / raindrop / vision scripts) deploy
 
+    permissions:
+      id-token: write
+
     steps:
       - name: Check out code.
         uses: actions/checkout@v4
