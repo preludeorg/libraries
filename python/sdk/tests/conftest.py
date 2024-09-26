@@ -3,6 +3,7 @@ import uuid
 
 from prelude_sdk.controllers.build_controller import BuildController
 from prelude_sdk.controllers.iam_controller import IAMController
+from prelude_sdk.models.codes import Control
 
 
 @pytest.fixture(scope='session')
@@ -162,6 +163,7 @@ def setup_threat_hunt(unwrap):
     pytest.threat_hunt_id = str(uuid.uuid4())
     pytest.expected_threat_hunt = unwrap(build.create_threat_hunt)(
         build,
+        control=Control.CROWDSTRIKE,
         name='test threat hunt',
         query='test query',
         test_id=pytest.test_id,
