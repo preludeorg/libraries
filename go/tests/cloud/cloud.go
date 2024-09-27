@@ -9,11 +9,9 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/cloudtrail"
+	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"github.com/aws/aws-sdk-go-v2/service/rds"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/cloudtrail"
-	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/smithy-go"
 )
 
@@ -30,46 +28,40 @@ func CheckError(err error) error {
 	return nil
 }
 
-func GetCloudTrailClient() (*cloudtrail.CloudTrail, error) {
+func GetCloudTrailClient() (*cloudtrail.Client, error) {
 	region := GetRegion()
 
-	session, err := session.NewSessionWithOptions(session.Options{
-		Config: aws.Config{
-			Region: aws.String(region),
-		},
-		SharedConfigState: session.SharedConfigEnable,
-	})
+	cfg, err := config.LoadDefaultConfig(context.TODO(),
+		config.WithRegion(region),
+	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create AWS session: %v", err)
+		return nil, fmt.Errorf("failed to load AWS config: %v", err)
 	}
 
-	_, err = session.Config.Credentials.Get()
+	_, err = cfg.Credentials.Retrieve(context.TODO())
 	if err != nil {
-		return nil, fmt.Errorf("failed to get AWS credentials: %v", err)
+		return nil, fmt.Errorf("failed to retrieve AWS credentials: %v", err)
 	}
 
-	return cloudtrail.New(session), nil
+	return cloudtrail.NewFromConfig(cfg), nil
 }
 
-func GetEC2Client() (*ec2.EC2, error) {
+func GetEC2Client() (*ec2.Client, error) {
 	region := GetRegion()
 
-	session, err := session.NewSessionWithOptions(session.Options{
-		Config: aws.Config{
-			Region: aws.String(region),
-		},
-		SharedConfigState: session.SharedConfigEnable,
-	})
+	cfg, err := config.LoadDefaultConfig(context.TODO(),
+		config.WithRegion(region),
+	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create AWS session: %v", err)
+		return nil, fmt.Errorf("failed to load AWS config: %v", err)
 	}
 
-	_, err = session.Config.Credentials.Get()
+	_, err = cfg.Credentials.Retrieve(context.TODO())
 	if err != nil {
-		return nil, fmt.Errorf("failed to get AWS credentials: %v", err)
+		return nil, fmt.Errorf("failed to retrieve AWS credentials: %v", err)
 	}
 
-	return ec2.New(session), nil
+	return ec2.NewFromConfig(cfg), nil
 }
 
 func GetRDSClient() (*rds.Client, error) {
@@ -97,17 +89,4 @@ func GetRegion() string {
 	}
 
 	return string(body)
-}
-
-func GetSession() (*session.Session, error) {
-	session, err := session.NewSessionWithOptions(session.Options{
-		Config: aws.Config{
-			Region: aws.String(GetRegion()),
-		},
-		SharedConfigState: session.SharedConfigEnable,
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to configure session: %v", err)
-	}
-	return session, nil
 }
