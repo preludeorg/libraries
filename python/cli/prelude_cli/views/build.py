@@ -12,7 +12,7 @@ from rich import print_json
 import prelude_cli.templates as templates
 from prelude_cli.views.shared import handle_api_error, Spinner
 from prelude_sdk.controllers.build_controller import BuildController
-from prelude_sdk.models.codes import EDRResponse
+from prelude_sdk.models.codes import Control, EDRResponse
 
 
 UUID = re.compile('[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}')
@@ -312,15 +312,18 @@ def delete_detection(controller, detection):
 
 @build.command('create-threat-hunt')
 @click.argument('name')
+@click.option('-c', '--control', help='', required=True,
+              type=click.Choice([Control.CROWDSTRIKE.name, Control.DEFENDER.name], case_sensitive=False))
 @click.option('-q', '--query', help='Threat hunt query', required=True, type=str)
 @click.option('-t', '--test', help='ID of the test this threat hunt query is for', required=True, type=str)
 @click.option('--id', default=None, type=str)
 @click.pass_obj
 @handle_api_error
-def create_threat_hunt(controller, name, query, test, id):
+def create_threat_hunt(controller, name, control, query, test, id):
     """ Create a threat hunt query """
     with Spinner(description='Creating new threat hunt'):
         t = controller.create_threat_hunt(
+            control=Control[control],
             name=name,
             query=query,
             test_id=test,

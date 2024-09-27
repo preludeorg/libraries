@@ -242,10 +242,10 @@ class BuildController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
-    def create_threat_hunt(self, test_id: str, name: str, query: str, threat_hunt_id: str = None):
+    def create_threat_hunt(self, control: Control, test_id: str, name: str, query: str, threat_hunt_id: str = None):
         """ Create a threat hunt """
         body = dict(
-            control=Control.CROWDSTRIKE.name,
+            control=control.name,
             name=name,
             query=query,
             test_id=test_id,
