@@ -245,7 +245,7 @@ class BuildController(HttpController):
     def create_threat_hunt(self, control: Control, test_id: str, name: str, query: str, threat_hunt_id: str = None):
         """ Create a threat hunt """
         body = dict(
-            control=control.value,
+            control=control.name,
             name=name,
             query=query,
             test_id=test_id,
