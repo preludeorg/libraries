@@ -313,7 +313,7 @@ def delete_detection(controller, detection):
 @build.command('create-threat-hunt')
 @click.argument('name')
 @click.option('-c', '--control', help='', required=True,
-              type=click.Choice([Control.CROWDSTRIKE.name, Control.DEFENDER.name]), case_sensitive=False)
+              type=click.Choice([Control.CROWDSTRIKE.name, Control.DEFENDER.name], case_sensitive=False))
 @click.option('-q', '--query', help='Threat hunt query', required=True, type=str)
 @click.option('-t', '--test', help='ID of the test this threat hunt query is for', required=True, type=str)
 @click.option('--id', default=None, type=str)
@@ -323,7 +323,7 @@ def create_threat_hunt(controller, name, control, query, test, id):
     """ Create a threat hunt query """
     with Spinner(description='Creating new threat hunt'):
         t = controller.create_threat_hunt(
-            partner=Control[control],
+            control=Control[control],
             name=name,
             query=query,
             test_id=test,
