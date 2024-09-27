@@ -12,7 +12,7 @@ from rich import print_json
 import prelude_cli.templates as templates
 from prelude_cli.views.shared import handle_api_error, Spinner
 from prelude_sdk.controllers.build_controller import BuildController
-from prelude_sdk.models.codes import EDRResponse, Control
+from prelude_sdk.models.codes import Control, EDRResponse
 
 
 UUID = re.compile('[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}')
