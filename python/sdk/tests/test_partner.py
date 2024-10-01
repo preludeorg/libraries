@@ -79,8 +79,7 @@ def pytest_generate_tests(metafunc):
 @pytest.mark.order(6)
 @pytest.mark.usefixtures('setup_account', 'setup_test', 'setup_detection', 'setup_threat_hunt')
 class TestPartner:
-    # scenarios = [crowdstrike, defender, sentinel_one]
-    scenarios = [crowdstrike]
+    scenarios = [crowdstrike, defender, sentinel_one]
 
     def setup_class(self):
         self.iam = IAMController(pytest.account)
@@ -163,25 +162,27 @@ class TestPartner:
         assert res['url'].startswith(f'{api}/partner/suppress/{control.name.lower()}')
 
     def test_do_threat_hunt(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
-        if control != Control.CROWDSTRIKE:
-            pytest.skip('Threat hunts only supported for CROWDSTRIKE')
+        if control == Control.SENTINELONE:
+            pytest.skip('Threat hunts not supported for SENTINELONE')
         if not pytest.expected_account['features']['threat_intel']:
             pytest.skip('THREAT_INTEL feature not enabled')
 
-        res = unwrap(self.detect.do_threat_hunt)(self.detect, threat_hunt_id=pytest.threat_hunt_id)
+        threat_hunt_id = pytest.crwd_threat_hunt_id if control == Control.CROWDSTRIKE else pytest.mde_threat_hunt_id
+        res = unwrap(self.detect.do_threat_hunt)(self.detect, threat_hunt_id=threat_hunt_id)
         assert {'account_id', 'non_prelude_origin', 'prelude_origin', 'threat_hunt_id'} == set(res.keys())
         assert res['account_id'] == pytest.expected_account['account_id']
-        assert res['threat_hunt_id'] == pytest.threat_hunt_id
+        assert res['threat_hunt_id'] == threat_hunt_id
         pytest.non_prelude_origin = res['non_prelude_origin']
         pytest.prelude_origin = res['prelude_origin']
 
     def test_threat_hunt_activity(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
-        if control != Control.CROWDSTRIKE:
-            pytest.skip('Threat hunts only supported for CROWDSTRIKE')
+        if control == Control.SENTINELONE:
+            pytest.skip('Threat hunts not supported for SENTINELONE')
         if not pytest.expected_account['features']['threat_intel']:
             pytest.skip('THREAT_INTEL feature not enabled')
 
-        res = unwrap(self.detect.threat_hunt_activity)(self.detect, threat_hunt_id=pytest.threat_hunt_id)
+        threat_hunt_id = pytest.crwd_threat_hunt_id if control == Control.CROWDSTRIKE else pytest.mde_threat_hunt_id
+        res = unwrap(self.detect.threat_hunt_activity)(self.detect, threat_hunt_id=threat_hunt_id)
         expected = dict(
             non_prelude_origin=pytest.non_prelude_origin,
             prelude_origin=pytest.prelude_origin,
@@ -191,27 +192,28 @@ class TestPartner:
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_block(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
-        if control == Control.CROWDSTRIKE and not pytest.expected_account['features']['detections']:
-            pytest.skip('DETECTIONS feature not enabled')
-
-        res = unwrap(self.partner.block)(self.partner, partner=control, test_id=pytest.test_id)
-        if control == Control.CROWDSTRIKE:
-            assert res[0]['group_id'] == group_id
-            assert res[0]['platform'] == pytest.expected_detection['rule']['logsource']['product']
-
-            first_rule = res[0]['rules'][0]
-            assert first_rule['name'] == f'{pytest.expected_test["name"]} ({pytest.detection_id[:8]}) (0)'
-            assert first_rule['status'] == 'CREATED'
-            assert int(first_rule['ioa_id'])
-            pytest.ioa_id = first_rule['ioa_id']
-        else:
+        if control == Control.SENTINELONE:
+            res = unwrap(self.partner.block)(self.partner, partner=control, test_id=pytest.test_id)
             assert 5 == len(res)
             assert {'file', 'ioc_id'} == res[0].keys()
             assert res[0]['file'].startswith(pytest.test_id)
+            return
+        
+        if not pytest.expected_account['features']['detections']:
+            pytest.skip('DETECTIONS feature not enabled')
+        res = unwrap(self.partner.block)(self.partner, partner=control, test_id=pytest.test_id)
+        assert res[0]['group_id'] == group_id
+        assert res[0]['platform'] == pytest.expected_detection['rule']['logsource']['product']
+
+        first_rule = res[0]['rules'][0]
+        expected_name_suffix = '(0)' if control == Control.CROWDSTRIKE else '- windows'
+        assert first_rule['name'] == f'{pytest.expected_test["name"]} ({pytest.detection_id[:8]}) {expected_name_suffix}'
+        assert first_rule['status'] == 'CREATED', json.dumps(first_rule, indent=2)
+        assert first_rule.get('ioa_id') if control == Control.CROWDSTRIKE else first_rule.get('custom_detection_id')
 
     def test_reports(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
         if control != Control.CROWDSTRIKE:
-            pytest.skip('Reports only supported for CROWDSTRIKE')
+            pytest.skip('IOA reports only supported for CROWDSTRIKE')
         if not pytest.expected_account['features']['detections']:
             pytest.skip('DETECTIONS feature not enabled')
 
@@ -230,8 +232,8 @@ class TestPartner:
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_observed_detected(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
-        if control != Control.CROWDSTRIKE:
-            pytest.skip('Observed detected only supported for CROWDSTRIKE')
+        if control == Control.SENTINELONE:
+            pytest.skip('Observed detected not supported for SENTINELONE')
         if not pytest.expected_account['features']['observed_detected']:
             pytest.skip('OBSERVED_DETECTED feature not enabled')
 
