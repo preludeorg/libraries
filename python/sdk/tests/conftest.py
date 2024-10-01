@@ -165,6 +165,6 @@ def setup_threat_hunt(unwrap):
         build,
         control=Control.CROWDSTRIKE,
         name='test threat hunt',
-        query='test query',
+        query='#repo=base_sensor | ImageFileName is not null | ParentBaseFileName is not null',
         test_id=pytest.test_id,
         threat_hunt_id=pytest.threat_hunt_id)

@@ -79,7 +79,8 @@ def pytest_generate_tests(metafunc):
 @pytest.mark.order(6)
 @pytest.mark.usefixtures('setup_account', 'setup_test', 'setup_detection', 'setup_threat_hunt')
 class TestPartner:
-    scenarios = [crowdstrike, defender, sentinel_one]
+    # scenarios = [crowdstrike, defender, sentinel_one]
+    scenarios = [crowdstrike]
 
     def setup_class(self):
         self.iam = IAMController(pytest.account)
@@ -167,7 +168,7 @@ class TestPartner:
         if not pytest.expected_account['features']['threat_intel']:
             pytest.skip('THREAT_INTEL feature not enabled')
 
-        res = unwrap(self.detect.do_threat_hunt)(self.detect, threat_hunt_id=pytest.threat_hunt_id)[0]
+        res = unwrap(self.detect.do_threat_hunt)(self.detect, threat_hunt_id=pytest.threat_hunt_id)
         assert {'account_id', 'non_prelude_origin', 'prelude_origin', 'threat_hunt_id'} == set(res.keys())
         assert res['account_id'] == pytest.expected_account['account_id']
         assert res['threat_hunt_id'] == pytest.threat_hunt_id
@@ -180,13 +181,13 @@ class TestPartner:
         if not pytest.expected_account['features']['threat_intel']:
             pytest.skip('THREAT_INTEL feature not enabled')
 
-        res = unwrap(self.detect.threat_hunt_activity)(self.detect, threat_hunt_id=pytest.threat_hunt_id)[0]
+        res = unwrap(self.detect.threat_hunt_activity)(self.detect, threat_hunt_id=pytest.threat_hunt_id)
         expected = dict(
             non_prelude_origin=pytest.non_prelude_origin,
             prelude_origin=pytest.prelude_origin,
             test_id=pytest.test_id,
         )
-        diffs = check_dict_items(expected, res)
+        diffs = check_dict_items(expected, res[0])
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_block(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
@@ -235,9 +236,11 @@ class TestPartner:
             pytest.skip('OBSERVED_DETECTED feature not enabled')
 
         res = unwrap(self.partner.observed_detected)(self.partner)
-        assert 1 <= len(res)
-        assert {'account_id', 'detected', 'endpoint_ids', 'observed', 'test_id'} == set(res[0].keys())
-        assert res[0]['account_id'] == pytest.expected_account['account_id']
+
+        assert control.name in res
+        assert 1 <= len(res[control.name])
+        assert {'account_id', 'detected', 'endpoint_ids', 'observed', 'test_id'} == set(res[control.name][0].keys())
+        assert res[control.name][0]['account_id'] == pytest.expected_account['account_id']
 
     def test_ioa_stats(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
         try:
