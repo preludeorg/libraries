@@ -376,3 +376,69 @@ class TestSiems:
         res = unwrap(self.iam.get_account)(self.iam)
         for c in res['controls']:
             assert c['id'] != Control.S3.value
+
+@pytest.mark.order(8)
+@pytest.mark.usefixtures('setup_account')
+class TestAssetManagers:
+
+    def setup_class(self):
+        self.iam = IAMController(pytest.account)
+        self.partner = PartnerController(pytest.account)
+
+        self.intune = all([os.getenv('INTUNE_API'), os.getenv('INTUNE_USER'), os.getenv('INTUNE_SECRET')])
+        self.servicenow = all([os.getenv('SERVICENOW_API'), os.getenv('SERVICENOW_SECRET')])
+
+        pytest.expected_asset_managers = []
+
+    def test_attach_intune(self, unwrap):
+        print(os.getenv('INTUNE_API'))
+        api = os.getenv('INTUNE_API')
+        res = unwrap(self.partner.attach)(self.partner, partner=Control.INTUNE, api=api,
+                                          user=os.getenv('INTUNE_USER'), secret=os.getenv('INTUNE_SECRET'))
+        expected = dict(api=api, connected=True)
+        assert expected == res
+
+        pytest.expected_asset_managers.append(dict(api=api, id=Control.INTUNE.value))
+
+    def test_attach_servicenow(self, unwrap):
+        api = os.getenv('SERVICENOW_API')
+        res = unwrap(self.partner.attach)(self.partner, partner=Control.SERVICENOW, api=api,
+                                          user='', secret=os.getenv('SERVICENOW_SECRET'))
+        expected = dict(api=api, connected=True)
+        assert expected == res
+
+        pytest.expected_asset_managers.append(dict(api=api, id=Control.SERVICENOW.value))
+
+    def test_get_account(self, unwrap):
+        res = unwrap(self.iam.get_account)(self.iam)
+        for c in pytest.expected_asset_managers:
+            assert c in res['controls']
+
+    def test_detach_intune(self, unwrap):
+        if not self.intune:
+            pytest.skip('Creds not supplied')
+
+        unwrap(self.partner.detach)(self.partner, partner=Control.INTUNE)
+        res = unwrap(self.iam.get_account)(self.iam)
+        for c in res['controls']:
+            assert c['id'] != Control.INTUNE.value
+
+    def test_detach_servicenow(self, unwrap):
+        if not self.servicenow:
+            pytest.skip('Creds not supplied')
+
+        unwrap(self.partner.detach)(self.partner, partner=Control.SERVICENOW)
+        res = unwrap(self.iam.get_account)(self.iam)
+        for c in res['controls']:
+            assert c['id'] != Control.SERVICENOW.value
+
+@pytest.mark.order(9)
+@pytest.mark.usefixtures('setup_account')
+class TestPolicyEvaluation:
+
+    def setup_class(self):
+        self.partner = PartnerController(pytest.account)
+
+    def test_policy_evaluations(self, unwrap):
+        policies = unwrap(self.partner.get_partner_policy_evaluation)(self.partner)
+        assert {'policies', 'misconfigured', 'missing_edr_count'} == policies.keys()
