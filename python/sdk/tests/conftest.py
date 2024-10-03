@@ -156,15 +156,24 @@ def setup_detection(unwrap):
 def setup_threat_hunt(unwrap):
     if not pytest.expected_account['features']['threat_intel']:
         return
-    if hasattr(pytest, 'expected_threat_hunt'):
+    if hasattr(pytest, 'crwd_threat_hunt_id') and hasattr(pytest, 'mde_threat_hunt_id'):
         return
 
     build = BuildController(pytest.account)
-    pytest.threat_hunt_id = str(uuid.uuid4())
+    pytest.crwd_threat_hunt_id = str(uuid.uuid4())
     pytest.expected_threat_hunt = unwrap(build.create_threat_hunt)(
         build,
         control=Control.CROWDSTRIKE,
-        name='test threat hunt',
-        query='test query',
+        name='test CRWD threat hunt',
+        query='#repo=base_sensor | ImageFileName is not null | ParentBaseFileName is not null',
         test_id=pytest.test_id,
-        threat_hunt_id=pytest.threat_hunt_id)
+        threat_hunt_id=pytest.crwd_threat_hunt_id)
+
+    pytest.mde_threat_hunt_id = str(uuid.uuid4())
+    unwrap(build.create_threat_hunt)(
+        build,
+        control=Control.DEFENDER,
+        name='test MDE threat hunt',
+        query='DeviceProcessEvents | where isnotempty(FileName) and isnotempty(InitiatingProcessFolderPath) and isnotempty(DeviceId) | take 5',
+        test_id=pytest.test_id,
+        threat_hunt_id=pytest.mde_threat_hunt_id)

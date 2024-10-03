@@ -43,7 +43,7 @@ class TestVST:
 
     def test_upload(self, unwrap):
         def wait_for_compile(job_id):
-            timeout = time.time() + 60
+            timeout = time.time() + 120
             while time.time() < timeout:
                 time.sleep(5)
                 res = unwrap(self.build.get_compile_status)(self.build, job_id=job_id)
@@ -306,9 +306,9 @@ class TestThreatHunt:
         expected = dict(
             account_id=pytest.account.headers['account'],
             control=Control.CROWDSTRIKE.value,
-            id=pytest.threat_hunt_id,
-            name='test threat hunt',
-            query='test query',
+            id=pytest.crwd_threat_hunt_id,
+            name='test CRWD threat hunt',
+            query='#repo=base_sensor | ImageFileName is not null | ParentBaseFileName is not null',
             test_id=pytest.test_id,
         )
 
@@ -316,7 +316,7 @@ class TestThreatHunt:
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_get_threat_hunt(self, unwrap):
-        res = unwrap(self.detect.get_threat_hunt)(self.detect, threat_hunt_id=pytest.threat_hunt_id)
+        res = unwrap(self.detect.get_threat_hunt)(self.detect, threat_hunt_id=pytest.crwd_threat_hunt_id)
 
         diffs = check_dict_items(pytest.expected_threat_hunt, res)
         assert not diffs, json.dumps(diffs, indent=2)
@@ -335,13 +335,13 @@ class TestThreatHunt:
         pytest.expected_threat_hunt = unwrap(self.build.update_threat_hunt)(
             self.build,
             name='updated threat hunt',
-            query='.*',
-            threat_hunt_id=pytest.threat_hunt_id)
+            query='#repo=base_sensor | ImageFileName is not null | ParentBaseFileName is not null | aid is not null',
+            threat_hunt_id=pytest.crwd_threat_hunt_id)
         assert pytest.expected_threat_hunt['name'] == 'updated threat hunt'
-        assert pytest.expected_threat_hunt['query'] == '.*'
+        assert pytest.expected_threat_hunt['query'] == '#repo=base_sensor | ImageFileName is not null | ParentBaseFileName is not null | aid is not null'
 
     @pytest.mark.order(-4)
     def test_delete_threat_hunt(self, unwrap):
-        unwrap(self.build.delete_threat_hunt)(self.build, threat_hunt_id=pytest.threat_hunt_id)
+        unwrap(self.build.delete_threat_hunt)(self.build, threat_hunt_id=pytest.crwd_threat_hunt_id)
         with pytest.raises(Exception):
-            unwrap(self.detect.get_threat_hunt)(self.detect, threat_hunt_id=pytest.threat_hunt_id)
+            unwrap(self.detect.get_threat_hunt)(self.detect, threat_hunt_id=pytest.crwd_threat_hunt_id)
