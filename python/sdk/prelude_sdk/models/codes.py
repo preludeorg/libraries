@@ -172,6 +172,13 @@ class Control(Enum, metaclass=MissingItem):
     def _missing_(cls, value):
         return Control.INVALID
 
+class PartnerSyncJobType(Enum, metaclass=MissingItem):
+    INVALID = -1
+    POLICY_EVALUATION = 1
+
+    @classmethod
+    def _missing_(cls, value):
+        return Control.INVALID
 
 class EDRResponse(Enum, metaclass=MissingItem):
     INVALID = -1
