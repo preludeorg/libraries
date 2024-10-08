@@ -11,9 +11,11 @@ def pretty_print(func):
             msg = None
             if isinstance(res, tuple):
                 res, msg = res
-            return print_json(data=dict(status='complete', result=res, message=msg))
+            if not isinstance(res, list):
+                res = [res]
+            return print_json(data=dict(status='complete', results=res, message=msg))
         except Exception as e:
-            return print_json(data=dict(status='error', result=None, message=e.args[0]))
+            return print_json(data=dict(status='error', results=None, message=e.args[0]))
     return handler
 
 
