@@ -13,7 +13,7 @@ def pretty_print(func):
                 res, msg = res
             return print_json(data=dict(status='complete', result=res, message=msg))
         except Exception as e:
-            return print_json(data=dict(status='error', message=e.args[0]))
+            return print_json(data=dict(status='error', result=None, message=e.args[0]))
     return handler
 
 
