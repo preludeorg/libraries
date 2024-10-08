@@ -1,15 +1,19 @@
-import click
-
 from functools import wraps
+from rich import print_json
 from rich.progress import Progress, TextColumn, SpinnerColumn
 
-def handle_api_error(func):
+
+def pretty_print(func):
     @wraps(func)
     def handler(*args, **kwargs):
         try:
-            return func(*args, **kwargs)
+            res = func(*args, **kwargs)
+            msg = None
+            if isinstance(res, tuple):
+                res, msg = res
+            return print_json(data=dict(status='complete', result=res, message=msg))
         except Exception as e:
-            click.secho(e.args[0], fg='red')
+            return print_json(data=dict(status='error', message=e.args[0]))
     return handler
 
 

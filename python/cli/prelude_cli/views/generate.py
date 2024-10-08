@@ -2,9 +2,8 @@ import json
 import os
 
 import click
-from rich import print_json
 
-from prelude_cli.views.shared import handle_api_error, Spinner
+from prelude_cli.views.shared import Spinner, pretty_print
 from prelude_sdk.controllers.generate_controller import GenerateController
 from prelude_sdk.models.codes import Control
 
@@ -15,8 +14,7 @@ def generate(ctx):
     """ Generate tests """
     ctx.obj = GenerateController(account=ctx.obj)
 
-
-def _process_results(result: dict, output_dir: str, job_id: str):
+def _process_results(result: dict, output_dir: str, job_id: str) -> dict:
     if result['status'] == 'COMPLETE':
         for technique in result['output']:
             if technique['status'] == 'SUCCEEDED':
@@ -37,21 +35,20 @@ def _process_results(result: dict, output_dir: str, job_id: str):
                         name=technique['name'],
                         unit='response',
                     ), f, indent=4)
-        print_json(data=dict(
+        return dict(
             output_dir=output_dir,
             successfully_generated=[t['technique'] for t in result['output'] if t['status'] == 'SUCCEEDED'],
             failed=[t['technique'] for t in result['output'] if t['status'] == 'FAILED'],
             job_id=job_id,
-        ))
+        )
     else:
         raise Exception('Failed to generate threat intel: %s (ref: %s)', result['reason'], job_id)
-
 
 @generate.command('threat-intel')
 @click.argument('threat_pdf', type=click.Path(exists=True, file_okay=True, dir_okay=False, readable=True))
 @click.argument('output_dir', type=click.Path(dir_okay=True, file_okay=False, writable=True))
 @click.pass_obj
-@handle_api_error
+@pretty_print
 def generate_threat_intel(controller: GenerateController, threat_pdf: str, output_dir: str):
     with Spinner('Uploading') as spinner:
         job_id = controller.upload_threat_intel(threat_pdf)['job_id']
@@ -61,15 +58,14 @@ def generate_threat_intel(controller: GenerateController, threat_pdf: str, outpu
                 spinner.update(
                     spinner.task_ids[-1],
                     description=f'Generating ({result["completed_tasks"]}/{result["num_tasks"]})')
-    _process_results(result, output_dir, job_id)
-
+    return _process_results(result, output_dir, job_id)
 
 @generate.command('from-advisory')
 @click.argument('partner', type=click.Choice([Control.CROWDSTRIKE.name], case_sensitive=False))
 @click.option('-a', '--advisory_id', required=True, type=str, help='Partner advisory ID')
 @click.option('-o', '--output_dir', required=True, type=click.Path(dir_okay=True, file_okay=False, writable=True))
 @click.pass_obj
-@handle_api_error
+@pretty_print
 def generate_from_partner_advisory(controller: GenerateController, partner: Control, advisory_id: str, output_dir: str):
     with Spinner('Uploading') as spinner:
         job_id = controller.generate_from_partner_advisory(partner=Control[partner], advisory_id=advisory_id)['job_id']
@@ -79,4 +75,4 @@ def generate_from_partner_advisory(controller: GenerateController, partner: Cont
                 spinner.update(
                     spinner.task_ids[-1],
                     description=f'Generating ({result["completed_tasks"]}/{result["num_tasks"]})')
-    _process_results(result, output_dir, job_id)
+    return _process_results(result, output_dir, job_id)
