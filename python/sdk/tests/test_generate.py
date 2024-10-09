@@ -8,7 +8,7 @@ from prelude_sdk.models.codes import Control
 
 from testutils import *
 
-@pytest.mark.order(9)
+@pytest.mark.order(11)
 @pytest.mark.usefixtures('setup_account')
 class TestGenerate:
 
