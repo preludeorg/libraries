@@ -61,8 +61,8 @@ def create_test(controller, name, unit, test, technique):
 
     if not test:
         Path(t['id']).mkdir(parents=True, exist_ok=True)
-        create_template(template='template.go', name=f'{t["id"]}.go')
         create_template(template='README.md', name='README.md')
+        create_template(template='template.go', name=f'{t["id"]}.go')
 
     print_json(data=t)
 
@@ -125,13 +125,14 @@ def upload_attachment(controller, path, test):
             return match.group(0)
         raise FileNotFoundError('You must supply a test ID or include it in the path')
 
-    def upload(p: Path):
+    def upload(p: Path, skip_compile=False):
         with open(p, 'rb') as data:
             with Spinner(description='Uploading to test') as spinner:
                 data = controller.upload(
                     test_id=identifier, 
                     filename=p.name, 
-                    data=data.read()
+                    data=data.read(),
+                    skip_compile=skip_compile
                 )
                 if data.get('compile_job_id'):
                     spinner.update(spinner.task_ids[-1], description='Compiling')
@@ -147,9 +148,10 @@ def upload_attachment(controller, path, test):
     if Path(path).is_file():
         upload(p=Path(path))
     else:
-        for obj in Path(path).rglob('*'):
+        objs = list(Path(path).rglob('*'))
+        for ind, obj in enumerate(objs):
             try:
-                upload(p=Path(obj))
+                upload(p=Path(obj), skip_compile=ind != len(objs) - 1)
             except ValueError as e:
                 click.secho(e.args[0], fg='red')
 
