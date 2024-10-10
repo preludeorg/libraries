@@ -1,5 +1,6 @@
-from prelude_sdk.controllers.http_controller import HttpController
+import urllib
 
+from prelude_sdk.controllers.http_controller import HttpController
 from prelude_sdk.models.account import verify_credentials
 from prelude_sdk.models.codes import Control, EDRResponse
 
@@ -86,7 +87,7 @@ class BuildController(HttpController):
         h = self.account.headers | {'Content-Type': 'application/octet-stream'}
         query_params = ''
         if skip_compile:
-            query_params = '?skip_compile=true'
+            query_params = '?' + urllib.parse.urlencode(dict(skip_compile=True))
         res = self._session.post(
             f'{self.account.hq}/build/tests/{test_id}/{filename}{query_params}',
             data=data,
