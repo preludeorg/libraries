@@ -78,14 +78,17 @@ class BuildController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
-    def upload(self, test_id, filename, data):
+    def upload(self, test_id, filename, data, skip_compile=False):
         """ Upload a test or attachment """
         if len(data) > 1000000:
             raise ValueError(f'File size must be under 1MB ({filename})')
 
         h = self.account.headers | {'Content-Type': 'application/octet-stream'}
+        query_params = ''
+        if skip_compile:
+            query_params = '?skip_compile=true'
         res = self._session.post(
-            f'{self.account.hq}/build/tests/{test_id}/{filename}',
+            f'{self.account.hq}/build/tests/{test_id}/{filename}{query_params}',
             data=data,
             headers=h,
             timeout=10
