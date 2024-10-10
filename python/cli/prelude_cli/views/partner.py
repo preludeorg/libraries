@@ -1,7 +1,6 @@
 import click
-from rich import print_json
 
-from prelude_cli.views.shared import handle_api_error, Spinner
+from prelude_cli.views.shared import Spinner, pretty_print
 from prelude_sdk.controllers.partner_controller import PartnerController
 from prelude_sdk.models.codes import Control
 
@@ -12,7 +11,6 @@ def partner(ctx):
     """ Partner system commands """
     ctx.obj = PartnerController(account=ctx.obj)
 
-
 @partner.command('attach')
 @click.argument('partner',
                 type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False))
@@ -20,39 +18,33 @@ def partner(ctx):
 @click.option('--user', default='', help='user identifier')
 @click.option('--secret', default='', help='secret for OAUTH use cases')
 @click.pass_obj
-@handle_api_error
+@pretty_print
 def attach_partner(controller, partner, api, user, secret):
     """ Attach an EDR to Detect """
     with Spinner(description='Attaching partner'):
-        data = controller.attach(partner=Control[partner], api=api, user=user, secret=secret)
-    print_json(data=data)
-
+        return controller.attach(partner=Control[partner], api=api, user=user, secret=secret)
 
 @partner.command('detach')
 @click.confirmation_option(prompt='Are you sure?')
 @click.argument('partner',
                 type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False))
 @click.pass_obj
-@handle_api_error
+@pretty_print
 def detach_partner(controller, partner):
     """ Detach an existing partner from your account """
     with Spinner(description='Detaching partner'):
-        data = controller.detach(partner=Control[partner])
-    print_json(data=data)
-
+        return controller.detach(partner=Control[partner])
 
 @partner.command('block')
 @click.argument('partner',
                 type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False))
 @click.option('-t', '--test_id', required=True, help='a test to block')
 @click.pass_obj
-@handle_api_error
+@pretty_print
 def partner_block(controller, partner, test_id):
     """ Report to a partner to block a test """
     with Spinner(description='Reporting test to partner'):
-        data = controller.block(partner=Control[partner], test_id=test_id)
-    print_json(data=data)
-
+        return controller.block(partner=Control[partner], test_id=test_id)
 
 @partner.command('endpoints')
 @click.argument('partner',
@@ -62,72 +54,60 @@ def partner_block(controller, partner, test_id):
 @click.option('--offset', default=0, help='API pagination offset', type=int)
 @click.option('--limit', default=100, help='API pagination limit', type=int)
 @click.pass_obj
-@handle_api_error
+@pretty_print
 def partner_endpoints(controller, partner, platform, hostname, offset, limit):
     """ Get a list of endpoints from a partner """
     with Spinner(description='Fetching endpoints from partner'):
-        data = controller.endpoints(partner=Control[partner], platform=platform, hostname=hostname, offset=offset, count=limit)
-    print_json(data=data)
-
+        return controller.endpoints(partner=Control[partner], platform=platform, hostname=hostname, offset=offset, count=limit)
 
 @partner.command('deploy')
 @click.confirmation_option(prompt='Are you sure?')
 @click.argument('partner', type=click.Choice([Control.CROWDSTRIKE.name], case_sensitive=False))
 @click.option('--host_ids', required=True, help='a list of host IDs to deploy to', multiple=True, default=[])
 @click.pass_obj
-@handle_api_error
+@pretty_print
 def partner_deploy(controller, partner, host_ids):
     """ Deploy probes to hosts associated to a partner """
     with Spinner(description='Deploying probes to hosts'):
-        data = controller.deploy(partner=Control[partner], host_ids=host_ids)
-    print_json(data=data)
-
+        return controller.deploy(partner=Control[partner], host_ids=host_ids)
 
 @partner.command('generate-webhook')
 @click.argument('partner', type=click.Choice(['DEFENDER', 'SENTINELONE', 'CROWDSTRIKE'], case_sensitive=False))
 @click.pass_obj
-@handle_api_error
+@pretty_print
 def generate_webhook(controller, partner):
     """ Generate webhook credentials for an EDR system to enable the forwarding of alerts to the Prelude API, facilitating automatic alert suppression """
     with Spinner(description='Generating webhook credentials'):
-        data = controller.generate_webhook(partner=Control[partner])
-    print_json(data=data)
-    print("\nVisit https://docs.preludesecurity.com/docs/alert-management for details on configuring your EDR to forward alerts.\n")
-
+        return controller.generate_webhook(partner=Control[partner])
 
 @partner.command('reports')
 @click.argument('partner', type=click.Choice([Control.CROWDSTRIKE.name], case_sensitive=False))
 @click.option('-t', '--test_id', help='test to get reports for')
 @click.pass_obj
-@handle_api_error
+@pretty_print
 def partner_reports(controller, partner, test_id):
     """ Get reports to a partner for a test """
     with Spinner(description='Getting reports to partner'):
-        data = controller.list_reports(partner=Control[partner], test_id=test_id)
-    print_json(data=data)
-
+        return controller.list_reports(partner=Control[partner], test_id=test_id)
 
 @partner.command('ioa-stats')
 @click.option('-t', '--test_id', help='test to get IOA stats for')
 @click.pass_obj
-@handle_api_error
+@pretty_print
 def ioa_stats(controller, test_id):
     """ Get IOA stats """
     with Spinner(description='Getting IOA stats'):
-        data = controller.ioa_stats(test_id=test_id)
-    print_json(data=data)
-
+        return controller.ioa_stats(test_id=test_id)
 
 @partner.command('observed-detected')
 @click.option('-t', '--test_id', help='test to get observed/detected stats for')
 @click.option('-h', '--hours', help='number of hours to look back', type=int)
 @click.pass_obj
-@handle_api_error
+@pretty_print
 def observed_detected(controller, test_id, hours):
     """ Get observed / detected stats """
     with Spinner(description='Getting observed / detected stats'):
-        data = controller.observed_detected(test_id=test_id, hours=hours)
-    print_json(data=data)
+        return controller.observed_detected(test_id=test_id, hours=hours)
 
 @partner.command('advisories')
 @click.argument('partner', type=click.Choice([Control.CROWDSTRIKE.name], case_sensitive=False))
@@ -135,9 +115,8 @@ def observed_detected(controller, test_id, hours):
 @click.option('-o', '--offset', help='API pagination offset', type=int)
 @click.option('-l', '--limit', help='API pagination limit', type=int)
 @click.pass_obj
-@handle_api_error
+@pretty_print
 def partner_advisories(controller, partner, start, offset, limit):
     """ Get advisories provided by partner """
     with Spinner(description='Getting partner advisories'):
-        data = controller.list_advisories(partner=Control[partner], start=start, offset=offset, limit=limit)
-    print_json(data=data)
+        return controller.list_advisories(partner=Control[partner], start=start, offset=offset, limit=limit)
