@@ -3,7 +3,7 @@ import pytest
 from prelude_sdk.controllers.export_controller import ExportController
 
 
-@pytest.mark.order(12)
+@pytest.mark.order(13)
 @pytest.mark.usefixtures('setup_account')
 class TestPartner:
 

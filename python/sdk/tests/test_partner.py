@@ -74,6 +74,9 @@ def pytest_generate_tests(metafunc):
             else:
                 argvalues.append([x[1] for x in items])
         metafunc.parametrize(argnames, argvalues, ids=idlist, scope="class")
+    if metafunc.cls is TestPolicyEvaluation:
+        idlist = [x[0] for x in metafunc.cls.controls]
+        metafunc.parametrize(['control', 'is_edr'], [[Control[x[0]], x[1]] for x in metafunc.cls.controls], ids=idlist, scope='class')
 
 
 @pytest.mark.order(6)
@@ -391,7 +394,6 @@ class TestAssetManagers:
         pytest.expected_asset_managers = []
 
     def test_attach_intune(self, unwrap):
-        print(os.getenv('INTUNE_API'))
         api = os.getenv('INTUNE_API')
         res = unwrap(self.partner.attach)(self.partner, partner=Control.INTUNE, api=api,
                                           user=os.getenv('INTUNE_USER'), secret=os.getenv('INTUNE_SECRET'))
@@ -434,11 +436,36 @@ class TestAssetManagers:
 
 @pytest.mark.order(9)
 @pytest.mark.usefixtures('setup_account')
-class TestPolicyEvaluation:
+class TestPolicyEvaluationSummary:
 
     def setup_class(self):
         self.partner = PartnerController(pytest.account)
 
-    def test_policy_evaluations(self, unwrap):
-        policies = unwrap(self.partner.get_partner_policy_evaluation)(self.partner)
-        assert {'policies', 'misconfigured', 'missing_edr_count'} == policies.keys()
+    def test_get_policy_evaluation_summary(self, unwrap):
+        summary = unwrap(self.partner.get_policy_evaluation_summary)(self.partner)
+        assert {'controls', 'missing_edr_count', 'total_endpoint_count'} == summary.keys()
+        for control_summary in summary['controls']:
+            assert {'control', 'endpoint_count', 'policy_conflict_count', 'setting_misconfiguration_count'} == control_summary.keys()
+
+@pytest.mark.order(10)
+@pytest.mark.usefixtures('setup_account')
+class TestPolicyEvaluation:
+    controls = [
+        ('crowdstrike', True),
+        ('defender', True),
+        ('sentinelone', True),
+        ('intune', False),
+        ('servicenow', False)
+    ]
+
+    def setup_class(self):
+        self.partner = PartnerController(pytest.account)
+
+    def test_get_policy_evaluation(self, unwrap, control, is_edr):
+        evaluation = unwrap(self.partner.get_policy_evaluation)(self.partner, control)
+        assert {'policies', 'misconfigured', 'total_endpoint_count'} == evaluation.keys()
+        if is_edr:
+            assert len(evaluation['policies']) > 0
+        else:
+            assert len(evaluation['policies']) == 0
+        assert {'no_av_policy_count', 'no_edr_policy_count', 'missing_control_count', 'reduced_functionality_mode_count'} == evaluation['misconfigured'].keys()
