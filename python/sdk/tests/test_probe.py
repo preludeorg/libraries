@@ -10,7 +10,7 @@ from prelude_sdk.controllers.probe_controller import ProbeController
 from prelude_sdk.models.codes import RunCode
 
 
-@pytest.mark.order(10)
+@pytest.mark.order(11)
 @pytest.mark.usefixtures('setup_account', 'setup_test', 'setup_threat')
 class TestProbe:
 
