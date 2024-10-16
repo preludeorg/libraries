@@ -7,10 +7,9 @@ from datetime import datetime, timezone
 from pathlib import Path, PurePath
 
 import click
-from rich import print_json
 
 import prelude_cli.templates as templates
-from prelude_cli.views.shared import handle_api_error, Spinner
+from prelude_cli.views.shared import Spinner, pretty_print
 from prelude_sdk.controllers.build_controller import BuildController
 from prelude_sdk.models.codes import Control, EDRResponse
 
@@ -24,35 +23,34 @@ def build(ctx):
     """ Custom security tests """
     ctx.obj = BuildController(account=ctx.obj)
 
-
 @build.command('create-test')
 @click.argument('name')
 @click.option('-u', '--unit', required=True, help='unit identifier', type=str)
 @click.option('-t', '--test', help='test identifier', default=None, type=str)
 @click.option('-q', '--technique', help='MITRE ATT&CK code [e.g. T1557]', default=None, type=str)
 @click.pass_obj
-@handle_api_error
+@pretty_print
 def create_test(controller, name, unit, test, technique):
-    """ Create or update a security test """
+    """ Create a security test """
     def create_template(template, name):
         template_body = pkg_resources.read_text(templates, template)
-        template_body = template_body.replace('$ID', t['id'])
-        template_body = template_body.replace('$NAME', t['name'])
-        template_body = template_body.replace('$UNIT', t['unit'])
-        template_body = template_body.replace('$TECHNIQUE', t['technique'] or '')
+        template_body = template_body.replace('$ID', res['id'])
+        template_body = template_body.replace('$NAME', res['name'])
+        template_body = template_body.replace('$UNIT', res['unit'])
+        template_body = template_body.replace('$TECHNIQUE', res['technique'] or '')
         template_body = template_body.replace('$TIME', str(datetime.now(timezone.utc)))
         
         with Spinner(description='Applying default template to new test'):
-            controller.upload(test_id=t['id'], filename=name, data=template_body.encode('utf-8'))
-            t['attachments'] += [name]
+            controller.upload(test_id=res['id'], filename=name, data=template_body.encode('utf-8'))
+            res['attachments'] += [name]
 
-        dir = PurePath(t['id'], name)
+        dir = PurePath(res['id'], name)
         
         with open(dir, 'w', encoding='utf8') as code:
             code.write(template_body)
 
     with Spinner(description='Creating new test'):
-        t = controller.create_test(
+        res = controller.create_test(
             name=name,
             unit=unit,
             test_id=test,
@@ -60,12 +58,10 @@ def create_test(controller, name, unit, test, technique):
         )
 
     if not test:
-        Path(t['id']).mkdir(parents=True, exist_ok=True)
+        Path(res['id']).mkdir(parents=True, exist_ok=True)
         create_template(template='README.md', name='README.md')
-        create_template(template='template.go', name=f'{t["id"]}.go')
-
-    print_json(data=t)
-
+        create_template(template='template.go', name=f'{res["id"]}.go')
+    return res
 
 @build.command('update-test')
 @click.argument('test')
@@ -75,48 +71,43 @@ def create_test(controller, name, unit, test, technique):
 @click.option('-u', '--unit', help='unit identifier', default=None, type=str)
 @click.option('-q', '--technique', help='MITRE ATT&CK code [e.g. T1557]', default=None, type=str)
 @click.pass_obj
-@handle_api_error
+@pretty_print
 def update_test(controller, test, crowdstrike_expected, name, unit, technique):
     """ Update a security test """
     with Spinner(description='Updating test'):
-        data = controller.update_test(
+        return controller.update_test(
             test_id=test,
             crowdstrike_expected_outcome=EDRResponse[crowdstrike_expected]if crowdstrike_expected else None,
             name=name,
             unit=unit,
             technique=technique
         )
-    print_json(data=data)
-
 
 @build.command('delete-test')
 @click.argument('test')
 @click.option('-p', '--purge', is_flag=True, help='purge test and associated files')
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
-@handle_api_error
+@pretty_print
 def delete_test(controller, test, purge):
     """ Delete a test """
     with Spinner(description='Removing test'):
-        data = controller.delete_test(test_id=test, purge=purge)
-    print_json(data=data)
+        return controller.delete_test(test_id=test, purge=purge)
 
 @build.command('undelete-test')
 @click.argument('test')
 @click.pass_obj
-@handle_api_error
+@pretty_print
 def undelete_test(controller, test):
     """ Undelete a test """
     with Spinner(description='Restoring test'):
-        data = controller.undelete_test(test_id=test)
-    print_json(data=data)
-
+        return controller.undelete_test(test_id=test)
 
 @build.command('upload')
 @click.argument('path', type=click.Path(exists=True))
 @click.option('-t', '--test', help='test identifier', default=None, type=str)
 @click.pass_obj
-@handle_api_error
+@pretty_print
 def upload_attachment(controller, path, test):
     """ Upload a test attachment from disk """
     def test_id():
@@ -141,8 +132,9 @@ def upload_attachment(controller, path, test):
                     if result['status'] == 'FAILED':
                         result['error'] = 'Failed to compile'
                     data |= result
-            print_json(data=data)
+            res.append(data)
 
+    res = []
     identifier = test or test_id()
     
     if Path(path).is_file():
@@ -153,8 +145,8 @@ def upload_attachment(controller, path, test):
             try:
                 upload(p=Path(obj), skip_compile=ind != len(objs) - 1)
             except ValueError as e:
-                click.secho(e.args[0], fg='red')
-
+                res.append(dict(status='FAILED', reason=e.args[0]))
+    return res
 
 @build.command('create-threat')
 @click.argument('name')
@@ -165,7 +157,7 @@ def upload_attachment(controller, path, test):
 @click.option('-t', '--tests', help='comma-separated list of test IDs', default=None, type=str)
 @click.option('-d', '--directory', help='directory containing tests, detections, and hunt queries generated from threat_intel', default=None, type=click.Path(exists=True, dir_okay=True, file_okay=False))
 @click.pass_obj
-@handle_api_error
+@pretty_print
 def create_threat(controller, name, published, id, source_id, source, tests, directory):
     """ Create a security threat """
     with Spinner(description='Creating new threat'):
@@ -204,14 +196,13 @@ def create_threat(controller, name, published, id, source_id, source, tests, dir
         except FileNotFoundError as e:
             raise Exception(e)
         finally:
-            print_json(data=dict(
+            return dict(
                 threat=threat,
                 created_tests=created_tests,
                 test_uploads=test_uploads,
                 created_detections=created_detections,
                 created_threat_hunt_queries=created_queries
-                ))
-
+                )
 
 @build.command('update-threat')
 @click.argument('threat')
@@ -221,11 +212,11 @@ def create_threat(controller, name, published, id, source_id, source, tests, dir
 @click.option('-p', '--published', help='date the threat was published', default=None, type=str)
 @click.option('-t', '--tests', help='comma-separated list of test IDs', default=None, type=str)
 @click.pass_obj
-@handle_api_error
+@pretty_print
 def update_threat(controller, threat, name,  source_id, source, published, tests):
     """ Create or update a security threat """
     with Spinner(description='Updating threat'):
-        data = controller.update_threat(
+        return controller.update_threat(
             threat_id=threat,
             source_id=source_id,
             name=name,
@@ -233,31 +224,26 @@ def update_threat(controller, threat, name,  source_id, source, published, tests
             published=published,
             tests=tests
         )
-    print_json(data=data)
-
 
 @build.command('delete-threat')
 @click.argument('threat')
 @click.option('-p', '--purge', is_flag=True, help='purge threat')
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
-@handle_api_error
+@pretty_print
 def delete_threat(controller, threat, purge):
     """ Delete a threat """
     with Spinner(description='Removing threat'):
-        data = controller.delete_threat(threat_id=threat, purge=purge)
-    print_json(data=data)
+        return controller.delete_threat(threat_id=threat, purge=purge)
 
 @build.command('undelete-threat')
 @click.argument('threat')
 @click.pass_obj
-@handle_api_error
+@pretty_print
 def undelete_threat(controller, threat):
     """ Undelete a threat """
     with Spinner(description='Restoring threat'):
-        data = controller.undelete_threat(threat_id=threat)
-    print_json(data=data)
-
+        return controller.undelete_threat(threat_id=threat)
 
 @build.command('create-detection')
 @click.argument('sigma_rule_file', type=click.Path(exists=True, dir_okay=False))
@@ -265,20 +251,18 @@ def undelete_threat(controller, threat):
 @click.option('--detection_id', help='detection ID', default=None, type=str)
 @click.option('--rule_id', help='rule ID', default=None, type=str)
 @click.pass_obj
-@handle_api_error
+@pretty_print
 def create_detection(controller, sigma_rule_file, test, detection_id, rule_id):
     """ Create a detection rule """
     with Spinner(description='Creating new detection'):
         with open(sigma_rule_file, 'r') as f:
             rule = f.read()
-        t = controller.create_detection(
+        return controller.create_detection(
             rule=rule,
             test_id=test,
             detection_id=detection_id,
             rule_id=rule_id
         )
-    print_json(data=t)
-
 
 @build.command('update-detection')
 @click.argument('detection')
@@ -286,31 +270,27 @@ def create_detection(controller, sigma_rule_file, test, detection_id, rule_id):
               default=None, type=click.Path(exists=True, dir_okay=False))
 @click.option('-t', '--test', help='ID of the test this detection is for', default=None, type=str)
 @click.pass_obj
-@handle_api_error
+@pretty_print
 def update_detection(controller, detection, sigma_rule_file, test):
     """ Update a detection """
     with Spinner(description='Updating detection'):
         with open(sigma_rule_file, 'r') as f:
             rule = f.read()
-        data = controller.update_detection(
+        return controller.update_detection(
             rule=rule,
             test_id=test,
             detection_id=detection,
         )
-    print_json(data=data)
-
 
 @build.command('delete-detection')
 @click.argument('detection')
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
-@handle_api_error
+@pretty_print
 def delete_detection(controller, detection):
     """ Delete a detection """
     with Spinner(description='Removing detection'):
-        data = controller.delete_detection(detection_id=detection)
-    print_json(data=data)
-
+        return controller.delete_detection(detection_id=detection)
 
 @build.command('create-threat-hunt')
 @click.argument('name')
@@ -320,19 +300,17 @@ def delete_detection(controller, detection):
 @click.option('-t', '--test', help='ID of the test this threat hunt query is for', required=True, type=str)
 @click.option('--id', default=None, type=str)
 @click.pass_obj
-@handle_api_error
+@pretty_print
 def create_threat_hunt(controller, name, control, query, test, id):
     """ Create a threat hunt query """
     with Spinner(description='Creating new threat hunt'):
-        t = controller.create_threat_hunt(
+        return controller.create_threat_hunt(
             control=Control[control],
             name=name,
             query=query,
             test_id=test,
             threat_hunt_id=id,
         )
-    print_json(data=t)
-
 
 @build.command('update-threat-hunt')
 @click.argument('threat_hunt')
@@ -340,26 +318,23 @@ def create_threat_hunt(controller, name, control, query, test, id):
 @click.option('-q', '--query', help='Threat hunt query', type=str)
 @click.option('-t', '--test', help='ID of the test this threat hunt query is for', type=str)
 @click.pass_obj
-@handle_api_error
+@pretty_print
 def update_threat_hunt(controller, threat_hunt, name, query, test):
     """ Update a threat hunt """
     with Spinner(description='Updating threat hunt'):
-        data = controller.update_threat_hunt(
+        return controller.update_threat_hunt(
             name=name,
             query=query,
             test_id=test,
             threat_hunt_id=threat_hunt,
         )
-    print_json(data=data)
-
 
 @build.command('delete-threat-hunt')
 @click.argument('threat_hunt')
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
-@handle_api_error
+@pretty_print
 def delete_threat_hunt(controller, threat_hunt):
     """ Delete a threat hunt """
     with Spinner(description='Removing threat hunt'):
-        data = controller.delete_threat_hunt(threat_hunt_id=threat_hunt)
-    print_json(data=data)
+        return controller.delete_threat_hunt(threat_hunt_id=threat_hunt)
