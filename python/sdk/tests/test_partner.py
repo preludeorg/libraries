@@ -35,8 +35,8 @@ defender = ("defender",
                 control=Control.DEFENDER,
                 os=os.getenv('DEFENDER_OS'),
                 platform=os.getenv('DEFENDER_PLATFORM'),
-                policy=None,
-                policy_name=None,
+                policy='',
+                policy_name='',
                 partner_api=os.getenv('DEFENDER_API'),
                 user=os.getenv('DEFENDER_USER'),
                 secret=os.getenv('DEFENDER_SECRET'),
@@ -105,7 +105,7 @@ class TestPartner:
 
     def test_get_account(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
         res = unwrap(self.iam.get_account)(self.iam)
-        expected = dict(api=partner_api, id=control.value)
+        expected = dict(api=partner_api, id=control.value, username=user)
         assert expected in res['controls']
 
     def test_list_endpoints(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
@@ -124,7 +124,7 @@ class TestPartner:
 
     def test_partner_endpoints(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
         res = unwrap(self.partner.endpoints)(self.partner, partner=control, platform=platform, hostname=host)
-        expected = {edr_id: {'hostname': host, 'os': os}}
+        expected = {edr_id: {'hostname': host.lower(), 'os': os}}
         if policy:
             expected[edr_id]['policy'] = policy
             expected[edr_id]['policy_name'] = policy_name
@@ -157,6 +157,9 @@ class TestPartner:
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_generate_webhook(self, unwrap, api, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
+        if control != Control.SENTINELONE:
+            pytest.skip('Only SENTINELONE webhooks are supported')
+
         res = unwrap(self.partner.generate_webhook)(self.partner, partner=control)
         assert webhook_keys == res.keys()
         assert res['url'].startswith(f'{api}/partner/suppress/{control.name.lower()}')
@@ -315,7 +318,7 @@ class TestSiems:
         expected = dict(api=api, connected=True)
         assert expected == res
 
-        pytest.expected_siems.append(dict(api=api, id=Control.SPLUNK.value))
+        pytest.expected_siems.append(dict(api=api, id=Control.SPLUNK.value, username=''))
 
     def test_attach_vectr(self, unwrap):
         if not self.vectr:
@@ -327,7 +330,7 @@ class TestSiems:
         expected = dict(api=api, connected=True)
         assert expected == res
 
-        pytest.expected_siems.append(dict(api=api, id=Control.VECTR.value))
+        pytest.expected_siems.append(dict(api=api, id=Control.VECTR.value, username=os.getenv('VECTR_USER')))
 
     def test_attach_s3(self, unwrap):
         if not self.s3:
@@ -338,7 +341,7 @@ class TestSiems:
         expected = dict(api=bucket, connected=True)
         assert expected == res
 
-        pytest.expected_siems.append(dict(api=bucket, id=Control.S3.value))
+        pytest.expected_siems.append(dict(api=bucket, id=Control.S3.value, username=''))
 
     def test_get_account(self, unwrap):
         res = unwrap(self.iam.get_account)(self.iam)
