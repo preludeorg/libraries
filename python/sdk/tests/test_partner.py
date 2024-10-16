@@ -397,7 +397,7 @@ class TestAssetManagers:
         api = os.getenv('INTUNE_API')
         res = unwrap(self.partner.attach)(self.partner, partner=Control.INTUNE, api=api,
                                           user=os.getenv('INTUNE_USER'), secret=os.getenv('INTUNE_SECRET'))
-        expected = dict(api=api, connected=True)
+        expected = dict(api=api, connected=True, username=os.getenv('INTUNE_USER'))
         assert expected == res
 
         pytest.expected_asset_managers.append(dict(api=api, id=Control.INTUNE.value))
@@ -406,7 +406,7 @@ class TestAssetManagers:
         api = os.getenv('SERVICENOW_API')
         res = unwrap(self.partner.attach)(self.partner, partner=Control.SERVICENOW, api=api,
                                           user='', secret=os.getenv('SERVICENOW_SECRET'))
-        expected = dict(api=api, connected=True)
+        expected = dict(api=api, connected=True, user='')
         assert expected == res
 
         pytest.expected_asset_managers.append(dict(api=api, id=Control.SERVICENOW.value))
