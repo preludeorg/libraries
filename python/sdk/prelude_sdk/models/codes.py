@@ -167,6 +167,7 @@ class Control(Enum, metaclass=MissingItem):
     S3 = 6
     INTUNE = 7
     SERVICENOW = 8
+    OKTA = 9
 
     @classmethod
     def _missing_(cls, value):
