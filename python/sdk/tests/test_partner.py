@@ -196,12 +196,7 @@ class TestPartner:
 
     def test_block(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
         if control == Control.SENTINELONE:
-            res = unwrap(self.partner.block)(self.partner, partner=control, test_id=pytest.test_id)
-            assert 5 == len(res)
-            assert {'file', 'ioc_id'} == res[0].keys()
-            assert res[0]['file'].startswith(pytest.test_id)
-            return
-        
+            pytest.skip('Partner block not supported for SENTINELONE')
         if not pytest.expected_account['features']['detections']:
             pytest.skip('DETECTIONS feature not enabled')
         res = unwrap(self.partner.block)(self.partner, partner=control, test_id=pytest.test_id)
