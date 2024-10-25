@@ -65,6 +65,24 @@ class PartnerController(HttpController):
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
+    
+    @verify_credentials
+    def endpoints_via_scm(self, partner: Control, filter: str, orderby: str, top: int):
+        """ Get a list of endpoints from a partner with SCM analysis """
+        params = {
+            '$filter': filter,
+            '$orderby': orderby,
+            '$top': top
+        }
+        res = self._session.get(
+            f'{self.account.hq}/partner/endpoints/{partner.name}',
+            headers=self.account.headers,
+            params=params,
+            timeout=30
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
 
     @verify_credentials
     def generate_webhook(self, partner: Control):

@@ -49,16 +49,25 @@ def partner_block(controller, partner, test_id):
 @partner.command('endpoints')
 @click.argument('partner',
                 type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False))
-@click.option('--platform', required=True, help='platform name (e.g. "windows")', type=click.Choice(['windows', 'linux', 'darwin'], case_sensitive=False))
+@click.option('--platform', help='platform name (e.g. "windows")', type=click.Choice(['windows', 'linux', 'darwin'], case_sensitive=False))
 @click.option('--hostname', default='', help='hostname pattern (e.g. "mycompany-c24oi444")')
 @click.option('--offset', default=0, help='API pagination offset', type=int)
 @click.option('--limit', default=100, help='API pagination limit', type=int)
+@click.option('--odata_filter', default='', help='OData filter string')
+@click.option('--odata_orderby', default='', help='OData orderby string')
 @click.pass_obj
 @pretty_print
-def partner_endpoints(controller, partner, platform, hostname, offset, limit):
+def partner_endpoints(controller, partner, platform, hostname, offset, limit, odata_filter, odata_orderby):
     """ Get a list of endpoints from a partner """
+    scm = odata_filter or odata_orderby
+    non_scm = platform or hostname or offset
+    if scm and non_scm:
+        raise click.UsageError('Cannot mix OData and non-OData options')
+
     with Spinner(description='Fetching endpoints from partner'):
-        return controller.endpoints(partner=Control[partner], platform=platform, hostname=hostname, offset=offset, count=limit)
+        if non_scm:
+            return controller.endpoints(partner=Control[partner], platform=platform, hostname=hostname, offset=offset, count=limit)
+        return controller.endpoints_via_scm(partner=Control[partner], filter=odata_filter, orderby=odata_orderby, top=limit)
 
 @partner.command('deploy')
 @click.confirmation_option(prompt='Are you sure?')
