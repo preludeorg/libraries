@@ -350,7 +350,7 @@ class TestSiems:
 
     def test_save_result(self, unwrap, api):
         try:
-            res = requests.get(api, headers=dict(token=pytest.token, dos=f'linux-x86_64', dat='b74ad239-2ddd-4b1e-b608-8397a43c7c54:101', version='2.7'))
+            res = requests.get(api, headers=dict(token=pytest.token, dos=f'windows-x86_64', dat='b74ad239-2ddd-4b1e-b608-8397a43c7c54:101', version='2.7'))
             assert res.status_code in [200, 302]
         finally:
             unwrap(self.detect.delete_endpoint)(self.detect, ident=pytest.endpoint_id)
