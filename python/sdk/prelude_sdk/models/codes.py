@@ -194,6 +194,28 @@ class EDRResponse(Enum, metaclass=MissingItem):
     def _missing_(cls, value):
         return EDRResponse.INVALID
 
+class PartnerEvents(Enum, metaclass=MissingItem):
+    INVALID = -1
+    REDUCED_FUNCTIONALITY_MODE = 1
+    NO_EDR = 2
+    MISSING_EDR_POLICY = 3
+    MISSING_AV_POLICY = 4
+
+    @classmethod
+    def _missing_(cls, value):
+        return PartnerEvents.INVALID
+
+class NotificationTypes(Enum, metaclass=MissingItem):
+    INVALID = -1
+    NEW_REDUCED_FUNCTIONALITY_MODE_ENDPOINTS = 1
+    NEW_NO_EDR_ENDPOINTS = 2
+    NEW_MISSING_EDR_POLICY_ENDPOINTS = 3
+    NEW_MISSING_AV_POLICY_ENDPOINTS = 4
+
+    @classmethod
+    def _missing_(cls, value):
+        return PartnerEvents.INVALID
+
 class AuditEvent(Enum, metaclass=MissingItem):
     INVALID = 0
     ATTACH_PARTNER = 1
