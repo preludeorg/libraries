@@ -5,7 +5,7 @@ from prelude_sdk.controllers.export_controller import ExportController
 
 @pytest.mark.order(13)
 @pytest.mark.usefixtures('setup_account')
-class TestPartner:
+class TestExport:
 
     def setup_class(self):
         self.export = ExportController(pytest.account)
