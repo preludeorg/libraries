@@ -214,7 +214,7 @@ class NotificationTypes(Enum, metaclass=MissingItem):
 
     @classmethod
     def _missing_(cls, value):
-        return PartnerEvents.INVALID
+        return NotificationTypes.INVALID
 
 class AuditEvent(Enum, metaclass=MissingItem):
     INVALID = 0
