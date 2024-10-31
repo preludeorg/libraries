@@ -18,6 +18,8 @@ class TestPolicyEvaluationSummary:
         self.partner = PartnerController(pytest.account)
 
     def test_get_policy_evaluation_summary(self, unwrap):
+        if not pytest.expected_account['features']['policy_evaluator']:
+            pytest.skip('POLICY_EVALUATOR feature not enabled')
         summary = unwrap(self.partner.get_policy_evaluation_summary)(self.partner)
         assert {'endpoint_summary', 'user_summary'} == summary.keys()
         assert {'controls', 'missing_edr_count', 'total_endpoint_count'} == summary['endpoint_summary'].keys()
@@ -42,9 +44,13 @@ class TestPolicyEvaluation:
         self.partner = PartnerController(pytest.account)
 
     def test_update_policy_evaluation(self, unwrap, control, is_edr):
+        if not pytest.expected_account['features']['policy_evaluator']:
+            pytest.skip('POLICY_EVALUATOR feature not enabled')
         unwrap(self.partner.update_policy_evaluation)(self.partner, control)
 
     def test_get_policy_evaluation(self, unwrap, control, is_edr):
+        if not pytest.expected_account['features']['policy_evaluator']:
+            pytest.skip('POLICY_EVALUATOR feature not enabled')
         evaluation = unwrap(self.partner.get_policy_evaluation)(self.partner, control)
         if 'endpoint_evaluation' in evaluation:
             evaluation = evaluation['endpoint_evaluation']

@@ -391,6 +391,8 @@ class TestAssetManagers:
         pytest.expected_asset_managers = []
 
     def test_attach_intune(self, unwrap):
+        if not self.intune:
+            pytest.skip('Creds not supplied')
         api = os.getenv('INTUNE_API')
         res = unwrap(self.partner.attach)(self.partner, partner=Control.INTUNE, api=api,
                                           user=os.getenv('INTUNE_USER'), secret=os.getenv('INTUNE_SECRET'))
@@ -400,6 +402,8 @@ class TestAssetManagers:
         pytest.expected_asset_managers.append(dict(api=api, id=Control.INTUNE.value, username=os.getenv('INTUNE_USER')))
 
     def test_attach_servicenow(self, unwrap):
+        if not self.servicenow:
+            pytest.skip('Creds not supplied')
         api = os.getenv('SERVICENOW_API')
         res = unwrap(self.partner.attach)(self.partner, partner=Control.SERVICENOW, api=api,
                                           user='', secret=os.getenv('SERVICENOW_SECRET'))
