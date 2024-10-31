@@ -176,3 +176,39 @@ class PartnerController(HttpController):
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
+
+    @verify_credentials
+    def get_policy_evaluation_summary(self):
+        """ Get policy evaluation summary for all partners """
+        res = self._session.get(
+            f'{self.account.hq}/partner/policy_evaluation_summary',
+            headers=self.account.headers,
+            timeout=30
+        )
+        if res.status_code == 200:
+            return res.json()
+        return Exception(res.text)
+
+    @verify_credentials
+    def get_policy_evaluation(self, partner: Control):
+        """ Get policy evaluations for given partner """
+        res = self._session.get(
+            f'{self.account.hq}/partner/policy_evaluation/{partner.name}',
+            headers=self.account.headers,
+            timeout=30
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def update_policy_evaluation(self, partner: Control):
+        """ Update policy evaluations for given partner """
+        res = self._session.post(
+            f'{self.account.hq}/partner/policy_evaluation/{partner.name}',
+            headers=self.account.headers,
+            timeout=60
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
