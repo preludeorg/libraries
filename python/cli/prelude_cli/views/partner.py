@@ -120,3 +120,31 @@ def partner_advisories(controller, partner, start, offset, limit):
     """ Get advisories provided by partner """
     with Spinner(description='Getting partner advisories'):
         return controller.list_advisories(partner=Control[partner], start=start, offset=offset, limit=limit)
+
+@partner.command('scm-summary')
+@click.pass_obj
+@pretty_print
+def scm_summary(controller):
+    """ Get policy evaluation summary for all partners """
+    with Spinner(description='Getting policy evaluation summary'):
+        return controller.get_policy_evaluation_summary()
+    
+@partner.command('scm-evaluation')
+@click.argument('partner',
+                type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False), required=False)
+@click.pass_obj
+@pretty_print
+def scm_evaluation(controller, partner):
+    """ Get policy evaluations for given partner """
+    with Spinner(description='Getting policy evaluations'):
+        return controller.get_policy_evaluation(partner=Control[partner])
+
+@partner.command('sync-scm')
+@click.argument('partner',
+                type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False), required=False)
+@click.pass_obj
+@pretty_print
+def sync_scm(controller, partner):
+    """ Update policy evaluations for given partner """
+    with Spinner(description='Updating policy evaluations'):
+        return controller.update_policy_evaluation(partner=Control[partner])
