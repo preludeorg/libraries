@@ -187,7 +187,7 @@ class PartnerController(HttpController):
         )
         if res.status_code == 200:
             return res.json()
-        return Exception(res.text)
+        raise Exception(res.text)
 
     @verify_credentials
     def get_policy_evaluation(self, partner: Control):
