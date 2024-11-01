@@ -169,10 +169,23 @@ class Control(Enum, metaclass=MissingItem):
     INTUNE = 7
     SERVICENOW = 8
     OKTA = 9
+    M365 = 10
 
     @classmethod
     def _missing_(cls, value):
         return Control.INVALID
+
+class ControlCategory(Enum, metaclass=MissingItem):
+    INVALID = -1
+    CLOUD = 1
+    EMAIL = 2
+    IDENTITY = 3
+    NETWORK = 4
+    XDR = 5
+
+    @classmethod
+    def _missing_(cls, value):
+        return ControlCategory.INVALID
 
 class PartnerSyncJobType(Enum, metaclass=MissingItem):
     INVALID = -1
