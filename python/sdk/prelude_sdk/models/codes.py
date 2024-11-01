@@ -173,6 +173,42 @@ class Control(Enum, metaclass=MissingItem):
     def _missing_(cls, value):
         return Control.INVALID
 
+    @property
+    def category(self):
+        for k, v in ControlCategory.mapping().items():
+            if self in v:
+                return k
+        return ControlCategory.NONE
+
+class ControlCategory(Enum, metaclass=MissingItem):
+    INVALID = -1
+    NONE = 0
+    CLOUD = 1
+    EMAIL = 2
+    IDENTITY = 3
+    NETWORK = 4
+    XDR = 5
+
+    @classmethod
+    def _missing_(cls, value):
+        return ControlCategory.INVALID
+
+    @classmethod
+    def mapping(cls):
+        return {
+            ControlCategory.CLOUD: [],
+            ControlCategory.EMAIL: [],
+            ControlCategory.IDENTITY: [
+                Control.OKTA,
+            ],
+            ControlCategory.NETWORK: [],
+            ControlCategory.XDR: [
+                Control.CROWDSTRIKE,
+                Control.DEFENDER,
+                Control.SENTINELONE,
+            ],
+        }
+
 class PartnerSyncJobType(Enum, metaclass=MissingItem):
     INVALID = -1
     POLICY_EVALUATION = 1
