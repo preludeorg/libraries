@@ -175,14 +175,11 @@ class Control(Enum, metaclass=MissingItem):
 
 class ControlCategory(Enum, metaclass=MissingItem):
     INVALID = -1
-    NONE = 0
-    ASSET_MANAGER = 1
-    CLOUD = 2
-    EMAIL = 3
-    IDENTITY = 4
-    NETWORK = 5
-    SIEM = 6
-    XDR = 7
+    CLOUD = 1
+    EMAIL = 2
+    IDENTITY = 3
+    NETWORK = 4
+    XDR = 5
 
     @classmethod
     def _missing_(cls, value):
