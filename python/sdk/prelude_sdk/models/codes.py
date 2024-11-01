@@ -183,11 +183,13 @@ class Control(Enum, metaclass=MissingItem):
 class ControlCategory(Enum, metaclass=MissingItem):
     INVALID = -1
     NONE = 0
-    CLOUD = 1
-    EMAIL = 2
-    IDENTITY = 3
-    NETWORK = 4
-    XDR = 5
+    ASSET_MANAGER = 1
+    CLOUD = 2
+    EMAIL = 3
+    IDENTITY = 4
+    NETWORK = 5
+    SIEM = 6
+    XDR = 7
 
     @classmethod
     def _missing_(cls, value):
@@ -196,12 +198,20 @@ class ControlCategory(Enum, metaclass=MissingItem):
     @classmethod
     def mapping(cls):
         return {
+            ControlCategory.ASSET_MANAGER: [
+                Control.INTUNE,
+                Control.SERVICENOW,
+            ],
             ControlCategory.CLOUD: [],
             ControlCategory.EMAIL: [],
             ControlCategory.IDENTITY: [
                 Control.OKTA,
             ],
             ControlCategory.NETWORK: [],
+            ControlCategory.SIEM: [
+                Control.SPLUNK,
+                Control.VECTR,
+            ],
             ControlCategory.XDR: [
                 Control.CROWDSTRIKE,
                 Control.DEFENDER,
