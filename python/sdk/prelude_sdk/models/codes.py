@@ -53,6 +53,7 @@ class Permission(Enum, metaclass=MissingItem):
     BUILD = 2
     SERVICE = 3
     AUTO = 4
+    SUPPORT = 5
 
     @classmethod
     def _missing_(cls, value):
