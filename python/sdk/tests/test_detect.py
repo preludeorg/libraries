@@ -27,7 +27,7 @@ class TestDetect:
     def test_list_techniques(self, unwrap):
         res = unwrap(self.detect.list_techniques)(self.detect)
         assert 1 <= len(res)
-        assert {'category', 'description', 'expected', 'id', 'name'} == set(res[0].keys())
+        assert {'category', 'description', 'expected', 'id', 'name', 'relevant_categories'} == set(res[0].keys())
 
     def test_register_endpoint(self, unwrap):
         res = unwrap(self.detect.register_endpoint)(self.detect, host=self.host, serial_num=self.serial, tags=self.tags)
