@@ -67,3 +67,6 @@ class TestPolicyEvaluation:
             evaluation = evaluation['user_evaluation']
             assert {'policies', 'misconfigured', 'total_user_count'} == evaluation.keys()
             assert {'missing_mfa_count'} == evaluation['misconfigured'].keys()
+        if 'inbox_evaluation' in evaluation:
+            evaluation = evaluation['inbox_evaluation']
+            assert {'policies, total_inbox_count'} == evaluation.keys()
