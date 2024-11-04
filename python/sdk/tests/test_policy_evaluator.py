@@ -48,7 +48,13 @@ class TestPolicyEvaluation:
     def test_update_policy_evaluation(self, unwrap, control, is_edr):
         if not pytest.expected_account['features']['policy_evaluator']:
             pytest.skip('POLICY_EVALUATOR feature not enabled')
-        unwrap(self.partner.update_policy_evaluation)(self.partner, control)
+        try:
+            unwrap(self.partner.update_policy_evaluation)(self.partner, control)
+        except Exception as e:
+            if 'job is already running' in str(e):
+                pytest.skip('Skipping due to existing job initiated from partner attach')
+            else:
+                raise e
 
     def test_get_policy_evaluation(self, unwrap, control, is_edr):
         if not pytest.expected_account['features']['policy_evaluator']:
