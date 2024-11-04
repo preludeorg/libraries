@@ -172,6 +172,7 @@ class TestThreat:
             source='https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-061a',
             source_id='aa23-061a',
             tests=['881f9052-fb52-4daf-9ad2-0a7ad9615baf', 'b74ad239-2ddd-4b1e-b608-8397a43c7c54', pytest.test_id],
+            techniques=['T1204.002', 'T1234.001', 'T1486'],
             tombstoned=None
         )
 
@@ -203,6 +204,7 @@ class TestThreat:
         pytest.expected_threat['name'] = updated_name
         pytest.expected_threat['source'] = None
         pytest.expected_threat['tests'] = updated_tests
+        pytest.expected_threat['techniques'] = ['T1204.002', 'T1204.002', 'T1486']
 
         diffs = check_dict_items(pytest.expected_threat, res)
         assert not diffs, json.dumps(diffs, indent=2)
