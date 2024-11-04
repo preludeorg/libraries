@@ -1,4 +1,3 @@
-import os
 import pytest
 
 from prelude_sdk.models.codes import Control
