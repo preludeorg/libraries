@@ -122,22 +122,24 @@ def partner_advisories(controller, partner, start, offset, limit):
         return controller.list_advisories(partner=Control[partner], start=start, offset=offset, limit=limit)
 
 @partner.command('scm-summary')
+@click.option('-t', '--techniques', help='comma-separated list of techniques to filter by', type=str, default=None)
 @click.pass_obj
 @pretty_print
-def scm_summary(controller):
+def scm_summary(controller, techniques):
     """ Get policy evaluation summary for all partners """
     with Spinner(description='Getting policy evaluation summary'):
-        return controller.get_policy_evaluation_summary()
+        return controller.get_policy_evaluation_summary(techniques=techniques)
     
 @partner.command('scm-evaluation')
 @click.argument('partner',
                 type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False), required=False)
+@click.option('-t', '--techniques', help='comma-separated list of techniques to filter by', type=str, default=None)
 @click.pass_obj
 @pretty_print
-def scm_evaluation(controller, partner):
+def scm_evaluation(controller, partner, techniques):
     """ Get policy evaluations for given partner """
     with Spinner(description='Getting policy evaluations'):
-        return controller.get_policy_evaluation(partner=Control[partner])
+        return controller.get_policy_evaluation(partner=Control[partner], techniques=techniques)
 
 @partner.command('sync-scm')
 @click.argument('partner',
