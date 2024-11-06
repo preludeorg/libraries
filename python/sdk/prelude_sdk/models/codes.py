@@ -214,6 +214,7 @@ class PartnerEvents(Enum, metaclass=MissingItem):
     NO_EDR = 2
     MISSING_EDR_POLICY = 3
     MISSING_AV_POLICY = 4
+    MISSING_MFA = 5
 
     @classmethod
     def _missing_(cls, value):
@@ -225,6 +226,7 @@ class NotificationTypes(Enum, metaclass=MissingItem):
     NEW_NO_EDR_ENDPOINTS = 2
     NEW_MISSING_EDR_POLICY_ENDPOINTS = 3
     NEW_MISSING_AV_POLICY_ENDPOINTS = 4
+    NEW_MISSING_MFA_USERS = 5
 
     @classmethod
     def _missing_(cls, value):
