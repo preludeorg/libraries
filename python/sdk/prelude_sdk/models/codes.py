@@ -185,6 +185,7 @@ class Control(Enum, metaclass=MissingItem):
 
 class ControlCategory(Enum, metaclass=MissingItem):
     INVALID = -1
+    NONE = 0
     CLOUD = 1
     EMAIL = 2
     IDENTITY = 3
