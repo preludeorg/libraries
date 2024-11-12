@@ -22,15 +22,15 @@ class TestPolicyEvaluationSummary:
             pytest.skip('POLICY_EVALUATOR feature not enabled')
         summary = unwrap(self.partner.get_policy_evaluation_summary)(self.partner)
         assert {'endpoint_summary', 'user_summary', 'inbox_summary'} == summary.keys()
-        assert {'controls', 'missing_edr_count', 'total_endpoint_count'} == summary['endpoint_summary'].keys()
+        assert {'controls', 'control_failure_count', 'missing_edr_count', 'total_endpoint_count'} == summary['endpoint_summary'].keys()
         for control_summary in summary['endpoint_summary']['controls']:
-            assert {'control', 'endpoint_count', 'policy_conflict_count', 'setting_misconfiguration_count'} == control_summary.keys()
-        assert {'controls', 'total_user_count'} == summary['user_summary'].keys()
+            assert {'control', 'control_failure_count', 'endpoint_count', 'policy_conflict_count', 'setting_count', 'setting_misconfiguration_count'} == control_summary.keys()
+        assert {'controls', 'control_failure_count', 'total_user_count'} == summary['user_summary'].keys()
         for control_summary in summary['user_summary']['controls']:
-            assert {'control', 'user_count', 'setting_misconfiguration_count'} == control_summary.keys()
+            assert {'control', 'control_failure_count', 'user_count', 'setting_count', 'setting_misconfiguration_count'} == control_summary.keys()
         assert {'controls', 'total_inbox_count'} == summary['inbox_summary'].keys()
         for control_summary in summary['inbox_summary']['controls']:
-            assert {'control', 'inbox_control', 'setting_misconfiguration_count'} == control_summary.keys()
+            assert {'control', 'inbox_control', 'setting_count', 'setting_misconfiguration_count'} == control_summary.keys()
 
 @pytest.mark.order(10)
 @pytest.mark.usefixtures('setup_account')
