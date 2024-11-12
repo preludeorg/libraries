@@ -1,7 +1,7 @@
 import pytest
 
 from prelude_sdk.models.codes import Control
-from prelude_sdk.controllers.partner_controller import PartnerController
+from prelude_sdk.controllers.scm_controller import ScmController
 
 
 def pytest_generate_tests(metafunc):
@@ -15,12 +15,12 @@ def pytest_generate_tests(metafunc):
 class TestPolicyEvaluationSummary:
 
     def setup_class(self):
-        self.partner = PartnerController(pytest.account)
+        self.scm = ScmController(pytest.account)
 
     def test_get_policy_evaluation_summary(self, unwrap):
         if not pytest.expected_account['features']['policy_evaluator']:
             pytest.skip('POLICY_EVALUATOR feature not enabled')
-        summary = unwrap(self.partner.get_policy_evaluation_summary)(self.partner)
+        summary = unwrap(self.scm.evaluation_summary)(self.scm)
         assert {'endpoint_summary', 'user_summary', 'inbox_summary'} == summary.keys()
         assert {'controls', 'control_failure_count', 'missing_edr_count', 'total_endpoint_count'} == summary['endpoint_summary'].keys()
         for control_summary in summary['endpoint_summary']['controls']:
@@ -43,13 +43,13 @@ class TestPolicyEvaluation:
     ]
 
     def setup_class(self):
-        self.partner = PartnerController(pytest.account)
+        self.scm = ScmController(pytest.account)
 
     def test_update_policy_evaluation(self, unwrap, control, is_edr):
         if not pytest.expected_account['features']['policy_evaluator']:
             pytest.skip('POLICY_EVALUATOR feature not enabled')
         try:
-            unwrap(self.partner.update_policy_evaluation)(self.partner, control)
+            unwrap(self.scm.update_evaluation)(self.scm, control)
         except Exception as e:
             if 'job is already running' in str(e):
                 pytest.skip('Skipping due to existing job initiated from partner attach')
@@ -59,7 +59,7 @@ class TestPolicyEvaluation:
     def test_get_policy_evaluation(self, unwrap, control, is_edr):
         if not pytest.expected_account['features']['policy_evaluator']:
             pytest.skip('POLICY_EVALUATOR feature not enabled')
-        evaluation = unwrap(self.partner.get_policy_evaluation)(self.partner, control)
+        evaluation = unwrap(self.scm.evaluation)(self.scm, control)
         if 'endpoint_evaluation' in evaluation:
             evaluation = evaluation['endpoint_evaluation']
             assert {'policies', 'misconfigured', 'total_endpoint_count'} == evaluation.keys()
@@ -75,3 +75,17 @@ class TestPolicyEvaluation:
         if 'inbox_evaluation' in evaluation:
             evaluation = evaluation['inbox_evaluation']
             assert {'policies, total_inbox_count'} == evaluation.keys()
+
+
+@pytest.mark.order(13)
+@pytest.mark.usefixtures('setup_account')
+class TestExport:
+
+    def setup_class(self):
+        self.scm = ScmController(pytest.account)
+
+    def test_export_missing_edr_endpoints_csv(self, unwrap):
+        if not pytest.expected_account['features']['policy_evaluator']:
+            pytest.skip('POLICY_EVALUATOR feature not enabled')
+        export_url = unwrap(self.scm.export)(self.scm, 'endpoints/?$filter=missing_edr eq true')
+        assert 'url' in export_url
