@@ -19,7 +19,7 @@ class ExportController(HttpController):
             'id': partner.name if partner else None,
         }
         res = self._session.get(
-            f'{self.account.hq}/export/partner/{export_type}',
+            f'{self.account.hq}/export/scm/{export_type}',
             params=params,
             headers=self.account.headers,
             timeout=10

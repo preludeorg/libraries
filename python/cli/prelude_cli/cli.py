@@ -6,6 +6,7 @@ from prelude_cli.views.detect import detect
 from prelude_cli.views.generate import generate
 from prelude_cli.views.iam import iam
 from prelude_cli.views.partner import partner
+from prelude_cli.views.scm import scm
 from prelude_sdk.models.account import Account
 
 
@@ -22,12 +23,13 @@ def cli(ctx, profile):
         click.echo(ctx.get_help())
 
 
-cli.add_command(iam)
+cli.add_command(build)
 cli.add_command(configure)
 cli.add_command(detect)
-cli.add_command(build)
-cli.add_command(partner)
 cli.add_command(generate)
+cli.add_command(iam)
+cli.add_command(partner)
+cli.add_command(scm)
 
 
 if __name__ == '__main__':
