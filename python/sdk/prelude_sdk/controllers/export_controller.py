@@ -25,10 +25,8 @@ class ExportController(HttpController):
             timeout=10
         )
         if res.status_code == 200:
-            x = self._session.get(
+            return self._session.get(
                 res.json()['url'],
                 timeout=10
             ).content
-            print(x)
-            return x
         raise Exception(res.text)
