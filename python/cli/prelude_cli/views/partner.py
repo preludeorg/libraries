@@ -126,17 +126,17 @@ def partner_advisories(controller, partner, start, offset, limit):
 
 
 @partner.command('scm-endpoints')
-@click.argument('partner',
-                type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False), required=False)
+@click.option('--partner',
+              type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False), default=None)
 @click.option('--limit', default=100, help='maximum number of results to return', type=int)
-@click.option('--odata_filter', default='', help='OData filter string')
-@click.option('--odata_orderby', default='', help='OData orderby string')
+@click.option('--odata_filter', help='OData filter string', default=None)
+@click.option('--odata_orderby', help='OData orderby string', default=None)
 @click.pass_obj
 @pretty_print
 def scm_endpoints(controller, partner, limit, odata_filter, odata_orderby):
     """ Get a list of endpoints with SCM data """
     with Spinner(description='Fetching endpoints from partner'):
-        return controller.endpoints_via_scm(partner=Control[partner], filter=odata_filter, orderby=odata_orderby, top=limit)
+        return controller.endpoints_via_scm(partner=Control[partner] if partner else None, filter=odata_filter, orderby=odata_orderby, top=limit)
 
 @partner.command('scm-summary')
 @click.option('-t', '--techniques', help='comma-separated list of techniques to filter by', type=str, default=None)
@@ -149,7 +149,7 @@ def scm_summary(controller, techniques):
     
 @partner.command('scm-evaluation')
 @click.argument('partner',
-                type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False), required=False)
+                type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False))
 @click.option('-t', '--techniques', help='comma-separated list of techniques to filter by', type=str, default=None)
 @click.pass_obj
 @pretty_print
@@ -172,19 +172,20 @@ def sync_scm(controller, partner):
 @click.argument('type', type=click.Choice(['endpoints', 'inboxes', 'users'], case_sensitive=False))
 @click.option('-o', '--output_file', help='csv filename to export to', type=click.Path(writable=True), required=True)
 @click.option('--limit', default=100, help='maximum number of results to return', type=int)
-@click.option('--odata_filter', default='', help='OData filter string')
-@click.option('--odata_orderby', default='', help='OData orderby string')
-@click.option('--partner', type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False))
+@click.option('--odata_filter', help='OData filter string', default=None)
+@click.option('--odata_orderby', help='OData orderby string', default=None)
+@click.option('--partner',
+              type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False), default=None)
 @click.pass_obj
 @pretty_print
 def export_scm(controller, type, output_file, limit, odata_filter, odata_orderby, partner):
     """ Export SCM data """
     with Spinner(description='Exporting SCM data'):
         export = ExportController(account=controller.account)
-        data = export.partner(export_type=type, filter=odata_filter, orderby=odata_orderby, partner=Control[partner], top=limit)
-        with open(output_file, 'w') as f:
+        data = export.partner(export_type=type, filter=odata_filter, orderby=odata_orderby, partner=Control[partner] if partner else None, top=limit)
+        with open(output_file, 'wb') as f:
             f.write(data)
-        return dict(status=True), f'Exported {len(data)} data to {output_file}'
+        return dict(status=True), f'Exported data to {output_file}'
 
 @partner.command('create-scm-threat', hidden=True)
 @click.argument('name')
