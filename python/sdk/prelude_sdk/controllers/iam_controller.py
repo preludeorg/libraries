@@ -2,8 +2,8 @@ import datetime
 
 from prelude_sdk.controllers.http_controller import HttpController
 
-from prelude_sdk.models.codes import AuditEvent, Mode, Permission
 from prelude_sdk.models.account import verify_credentials
+from prelude_sdk.models.codes import AuditEvent, Mode, Permission
 
 
 class IAMController(HttpController):

@@ -13,5 +13,5 @@ class TestExport:
     def test_export_missing_edr_endpoints_csv(self, unwrap):
         if not pytest.expected_account['features']['policy_evaluator']:
             pytest.skip('POLICY_EVALUATOR feature not enabled')
-        export_url = unwrap(self.export.partner)(self.export, 'endpoints/?$filter=missing_edr eq true')
+        export_url = unwrap(self.export.export_scm)(self.export, 'endpoints/?$filter=missing_edr eq true')
         assert 'url' in export_url
