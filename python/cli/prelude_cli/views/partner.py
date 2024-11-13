@@ -1,6 +1,7 @@
 import click
 
 from prelude_cli.views.shared import Spinner, pretty_print
+from prelude_sdk.controllers.export_controller import ExportController
 from prelude_sdk.controllers.partner_controller import PartnerController
 from prelude_sdk.models.codes import Control
 
@@ -121,6 +122,22 @@ def partner_advisories(controller, partner, start, offset, limit):
     with Spinner(description='Getting partner advisories'):
         return controller.list_advisories(partner=Control[partner], start=start, offset=offset, limit=limit)
 
+## --------- SCM Commands --------- ##
+
+
+@partner.command('scm-endpoints')
+@click.argument('partner',
+                type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False), required=False)
+@click.option('--limit', default=100, help='maximum number of results to return', type=int)
+@click.option('--odata_filter', default='', help='OData filter string')
+@click.option('--odata_orderby', default='', help='OData orderby string')
+@click.pass_obj
+@pretty_print
+def scm_endpoints(controller, partner, limit, odata_filter, odata_orderby):
+    """ Get a list of endpoints with SCM data """
+    with Spinner(description='Fetching endpoints from partner'):
+        return controller.endpoints_via_scm(partner=Control[partner], filter=odata_filter, orderby=odata_orderby, top=limit)
+
 @partner.command('scm-summary')
 @click.option('-t', '--techniques', help='comma-separated list of techniques to filter by', type=str, default=None)
 @click.pass_obj
@@ -150,3 +167,51 @@ def sync_scm(controller, partner):
     """ Update policy evaluations for given partner """
     with Spinner(description='Updating policy evaluations'):
         return controller.update_policy_evaluation(partner=Control[partner])
+    
+@partner.command('export-scm')
+@click.argument('type', type=click.Choice(['endpoints', 'inboxes', 'users'], case_sensitive=False))
+@click.option('-o', '--output_file', help='csv filename to export to', type=click.Path(writable=True), required=True)
+@click.option('--limit', default=100, help='maximum number of results to return', type=int)
+@click.option('--odata_filter', default='', help='OData filter string')
+@click.option('--odata_orderby', default='', help='OData orderby string')
+@click.option('--partner', type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False))
+@click.pass_obj
+@pretty_print
+def export_scm(controller, type, output_file, limit, odata_filter, odata_orderby, partner):
+    """ Export SCM data """
+    with Spinner(description='Exporting SCM data'):
+        export = ExportController(account=controller.account)
+        data = export.partner(export_type=type, filter=odata_filter, orderby=odata_orderby, partner=Control[partner], top=limit)
+        with open(output_file, 'w') as f:
+            f.write(data)
+        return dict(status=True), f'Exported {len(data)} data to {output_file}'
+
+@partner.command('create-scm-threat', hidden=True)
+@click.argument('name')
+@click.option('-d', '--description', help='description of the threat', default=None, type=str)
+@click.option('-p', '--published', help='date the threat was published', default=None, type=str)
+@click.option('-q', '--techniques', help='comma-separated list of techniques (MITRE ATT&CK IDs)', default=None, type=str)
+@click.pass_obj
+@pretty_print
+def create_scm_threat(controller, name, description, published, techniques):
+    """ Create an scm threat """
+    with Spinner(description='Creating scm threat'):
+        return controller.create_scm_threat(name=name, description=description, published=published, techniques=techniques)
+
+@partner.command('delete-scm-threat', hidden=True)
+@click.argument('threat')
+@click.confirmation_option(prompt='Are you sure?')
+@click.pass_obj
+@pretty_print
+def delete_scm_threat(controller, threat):
+    """ Delete an scm threat """
+    with Spinner(description='Removing scm threat'):
+        return controller.delete_scm_threat(name=threat)
+
+@partner.command('list-scm-threats', hidden=True)
+@click.pass_obj
+@pretty_print
+def list_scm_threats(controller):
+    """ List all scm threats """
+    with Spinner(description='Fetching scm threats'):
+        return controller.list_scm_threats()

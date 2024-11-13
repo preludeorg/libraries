@@ -2,7 +2,6 @@ from prelude_sdk.controllers.http_controller import HttpController
 
 from prelude_sdk.models.account import verify_credentials
 
-
 class ExportController(HttpController):
 
     def __init__(self, account):
@@ -10,8 +9,8 @@ class ExportController(HttpController):
         self.account = account
 
     @verify_credentials
-    def export_scm(self, export_type: str):
-        """ Download partner data as a CSV """
+    def export_scm(self, export_type: str, filter: str = None, orderby: str = None, partner: Control = None, top: int = None):
+        """ Download scm partner data as a CSV """
         res = self._session.get(
             f'{self.account.hq}/export/scm/{export_type}',
             headers=self.account.headers,

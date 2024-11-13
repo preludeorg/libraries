@@ -196,3 +196,48 @@ class PartnerController(HttpController):
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
+
+    @verify_credentials
+    def create_scm_threat(self, name, description=None, published=None, techniques=None):
+        """ Create an scm threat """
+        body = dict(name=name)
+        if description:
+            body['description'] = description
+        if published:
+            body['published'] = published
+        if techniques:
+            body['techniques'] = techniques
+
+        res = self._session.post(
+            f'{self.account.hq}/scm/threats',
+            json=body,
+            headers=self.account.headers,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def delete_scm_threat(self, name):
+        """ Delete an existing scm threat """
+        res = self._session.delete(
+            f'{self.account.hq}/scm/threats/{name}',
+            headers=self.account.headers,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def list_scm_threats(self):
+        """ List all scm threats """
+        res = self._session.get(
+            f'{self.account.hq}/scm/threats',
+            headers=self.account.headers,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
