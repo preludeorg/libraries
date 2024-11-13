@@ -75,17 +75,3 @@ class TestPolicyEvaluation:
         if 'inbox_evaluation' in evaluation:
             evaluation = evaluation['inbox_evaluation']
             assert {'policies, total_inbox_count'} == evaluation.keys()
-
-
-@pytest.mark.order(13)
-@pytest.mark.usefixtures('setup_account')
-class TestExport:
-
-    def setup_class(self):
-        self.scm = ScmController(pytest.account)
-
-    def test_export_missing_edr_endpoints_csv(self, unwrap):
-        if not pytest.expected_account['features']['policy_evaluator']:
-            pytest.skip('POLICY_EVALUATOR feature not enabled')
-        export_url = unwrap(self.scm.export)(self.scm, 'endpoints/?$filter=missing_edr eq true')
-        assert 'url' in export_url

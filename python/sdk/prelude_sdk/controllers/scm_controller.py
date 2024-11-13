@@ -11,18 +11,6 @@ class ScmController(HttpController):
         self.account = account
 
     @verify_credentials
-    def export(self, export_type: str):
-        """ Download partner data as a CSV """
-        res = self._session.get(
-            f'{self.account.hq}/scm/export/{export_type}',
-            headers=self.account.headers,
-            timeout=10
-        )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
-
-    @verify_credentials
     def endpoints(self, partner: Control, filter: str, orderby: str, top: int):
         """ Get a list of endpoints from a partner with SCM analysis """
         params = {
