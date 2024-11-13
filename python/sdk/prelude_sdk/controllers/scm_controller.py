@@ -1,7 +1,7 @@
 from prelude_sdk.controllers.http_controller import HttpController
 
-from prelude_sdk.models.codes import Control
 from prelude_sdk.models.account import verify_credentials
+from prelude_sdk.models.codes import Control
 
 
 class ScmController(HttpController):
