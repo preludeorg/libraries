@@ -66,7 +66,6 @@ class PartnerController(HttpController):
             return res.json()
         raise Exception(res.text)
 
-
     @verify_credentials
     def generate_webhook(self, partner: Control):
         """ Generate webhook credentials for an EDR system to enable the forwarding of alerts to the Prelude API, facilitating automatic alert suppression """

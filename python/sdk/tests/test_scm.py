@@ -22,15 +22,25 @@ class TestPolicyEvaluationSummary:
             pytest.skip('POLICY_EVALUATOR feature not enabled')
         summary = unwrap(self.scm.evaluation_summary)(self.scm)
         assert {'endpoint_summary', 'user_summary', 'inbox_summary'} == summary.keys()
-        assert {'controls', 'control_failure_count', 'missing_edr_count', 'total_endpoint_count'} == summary['endpoint_summary'].keys()
-        for control_summary in summary['endpoint_summary']['controls']:
-            assert {'control', 'control_failure_count', 'endpoint_count', 'policy_conflict_count', 'setting_count', 'setting_misconfiguration_count'} == control_summary.keys()
-        assert {'controls', 'control_failure_count', 'total_user_count'} == summary['user_summary'].keys()
-        for control_summary in summary['user_summary']['controls']:
-            assert {'control', 'control_failure_count', 'user_count', 'setting_count', 'setting_misconfiguration_count'} == control_summary.keys()
-        assert {'controls', 'total_inbox_count'} == summary['inbox_summary'].keys()
-        for control_summary in summary['inbox_summary']['controls']:
-            assert {'control', 'inbox_control', 'setting_count', 'setting_misconfiguration_count'} == control_summary.keys()
+        assert {'categories', 'endpoint_count'} == summary['endpoint_summary'].keys()
+        if categories := summary['endpoint_summary'].get('categories'):
+            assert {'category', 'controls', 'endpoint_count', 'control_failure_count'} == categories[0].keys()
+            if controls := categories[0].get('controls'):
+                assert {'control', 'control_failure_count', 'endpoint_count', 'policy_conflict_count', 'setting_count',
+                        'setting_misconfiguration_count', 'no_av_policy', 'no_edr_policy',
+                        'reduced_functionality_mode'} == controls[0].keys()
+
+        assert {'categories', 'user_count'} == summary['user_summary'].keys()
+        if categories := summary['user_summary'].get('categories'):
+            assert {'category', 'controls', 'user_count', 'control_failure_count'} == categories[0].keys()
+            if controls := categories[0].get('controls'):
+                assert {'control', 'control_failure_count', 'user_count', 'setting_count', 'setting_misconfiguration_count'} == controls[0].keys()
+
+        assert {'categories', 'inbox_count'} == summary['inbox_summary'].keys()
+        if categories := summary['inbox_summary'].get('categories'):
+            assert {'category', 'controls', 'inbox_count'} == categories[0].keys()
+            if controls := categories[0].get('controls'):
+                assert {'control', 'inbox_count', 'setting_count', 'setting_misconfiguration_count'} == controls[0].keys()
 
 @pytest.mark.order(10)
 @pytest.mark.usefixtures('setup_account')
