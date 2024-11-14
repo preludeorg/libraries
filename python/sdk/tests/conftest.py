@@ -98,6 +98,7 @@ def setup_account(unwrap, manual, pause_for_manual_action, email, api, existing_
     pytest.account.headers['token'] = res['token']
     print(f'[account_id: {res["account_id"]}]', end=' ')
     pytest.expected_account = unwrap(iam.get_account)(iam)
+    pytest.controls = []
 
 
 @pytest.fixture(scope='session')

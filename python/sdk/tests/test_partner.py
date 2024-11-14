@@ -55,7 +55,7 @@ def pytest_generate_tests(metafunc):
     idlist = []
     argvalues = []
     if metafunc.cls is TestPartnerAttach:
-        for scenario in metafunc.cls.scenarioes:
+        for scenario in metafunc.cls.scenarios:
             idlist.append(scenario[0])
             items = scenario[1].items()
             argnames = [x[0] for x in items]
@@ -76,7 +76,7 @@ def pytest_generate_tests(metafunc):
 @pytest.mark.order(6)
 @pytest.mark.usefixtures('setup_account')
 class TestPartnerAttach:
-    scenarioes = [
+    scenarios = [
         (c.name,
          dict(
              control=c,
