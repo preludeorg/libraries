@@ -108,6 +108,15 @@ class TestPartner:
         expected = dict(api=partner_api, id=control.value, username=user)
         assert expected in res['controls']
 
+    def test_partner_endpoints(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
+        res = unwrap(self.partner.endpoints)(self.partner, partner=control, platform=platform, hostname=host)
+        expected = {edr_id: {'hostname': host.lower(), 'os': os}}
+        if policy:
+            expected[edr_id]['policy'] = policy
+            expected[edr_id]['policy_name'] = policy_name
+        diffs = check_dict_items(expected, res)
+        assert not diffs, json.dumps(diffs, indent=2)
+
     def test_list_endpoints(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
         try:
             res = unwrap(self.detect.list_endpoints)(self.detect)
@@ -121,15 +130,6 @@ class TestPartner:
         finally:
             # Delete second endpoint
             unwrap(self.detect.delete_endpoint)(self.detect, ident=pytest.endpoint_2['endpoint_id'])
-
-    def test_partner_endpoints(self, unwrap, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
-        res = unwrap(self.partner.endpoints)(self.partner, partner=control, platform=platform, hostname=host)
-        expected = {edr_id: {'hostname': host.lower(), 'os': os}}
-        if policy:
-            expected[edr_id]['policy'] = policy
-            expected[edr_id]['policy_name'] = policy_name
-        diffs = check_dict_items(expected, res)
-        assert not diffs, json.dumps(diffs, indent=2)
 
     def test_activity_logs(self, unwrap, api, host, edr_id, control, os, platform, policy, policy_name, partner_api, user, secret, webhook_keys, group_id):
         res = requests.get(api, headers=dict(token=pytest.token, dos=f'{platform}-x86_64', dat=f'{pytest.test_id}:100', version='2.7'))
