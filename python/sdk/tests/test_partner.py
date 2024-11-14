@@ -11,7 +11,7 @@ from prelude_sdk.controllers.partner_controller import PartnerController
 
 from testutils import *
 
-crowdstrike = ("crowdstrike",
+crowdstrike = ("CROWDSTRIKE",
                dict(
                    host=os.getenv('CROWDSTRIKE_HOST'),
                    edr_id=os.getenv('CROWDSTRIKE_EDR_ID'),
@@ -24,7 +24,7 @@ crowdstrike = ("crowdstrike",
                    group_id=os.getenv('CROWDSTRIKE_WINDOWS_IOA_GROUP_ID')
                ))
 
-defender = ("defender",
+defender = ("DEFENDER",
             dict(
                 host=os.getenv('DEFENDER_HOST'),
                 edr_id=os.getenv('DEFENDER_EDR_ID'),
@@ -37,7 +37,7 @@ defender = ("defender",
                 group_id=None
             ))
 
-sentinel_one = ("sentinel_one",
+sentinel_one = ("SENTINEL_ONE",
                 dict(
                     host=os.getenv('S1_HOST'),
                     edr_id=os.getenv('S1_EDR_ID'),
@@ -55,7 +55,7 @@ def pytest_generate_tests(metafunc):
     idlist = []
     argvalues = []
     if metafunc.cls is TestPartnerAttach:
-        for scenario in metafunc.cls.scenarioes:
+        for scenario in metafunc.cls.scenarios:
             idlist.append(scenario[0])
             items = scenario[1].items()
             argnames = [x[0] for x in items]
@@ -69,14 +69,17 @@ def pytest_generate_tests(metafunc):
             idlist.append(scenario[0])
             items = scenario[1].items()
             argnames = [x[0] for x in items]
-            argvalues.append([x[1] for x in items])
+            if not os.getenv(f'{scenario[0]}_API'):
+                argvalues.append(pytest.param(*[x[1] for x in items], marks=pytest.mark.skip('Creds not supplied')))
+            else:
+                argvalues.append([x[1] for x in items])
         metafunc.parametrize(argnames, argvalues, ids=idlist, scope="class")
 
 
 @pytest.mark.order(6)
 @pytest.mark.usefixtures('setup_account')
 class TestPartnerAttach:
-    scenarioes = [
+    scenarios = [
         (c.name,
          dict(
              control=c,
@@ -96,7 +99,7 @@ class TestPartnerAttach:
         res = unwrap(self.partner.attach)(self.partner, partner=control, api=partner_api, user=user, secret=secret)
         expected = dict(api=partner_api, connected=True)
         assert expected == res
-    
+
     def test_get_account(self, unwrap, control, partner_api, user, secret):
         res = unwrap(self.iam.get_account)(self.iam)
         expected = dict(api=partner_api, id=control.value, username=user)
