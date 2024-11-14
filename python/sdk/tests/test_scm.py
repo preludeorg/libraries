@@ -1,25 +1,20 @@
 import pytest
 
-from prelude_sdk.models.codes import Control
+from prelude_sdk.controllers.export_controller import ExportController
 from prelude_sdk.controllers.scm_controller import ScmController
+from prelude_sdk.models.codes import Control, ControlCategory
 
 
-def pytest_generate_tests(metafunc):
-    if metafunc.cls is TestPolicyEvaluation:
-        idlist = [x[0] for x in metafunc.cls.controls]
-        metafunc.parametrize(['control', 'is_edr'], [[Control[x[0]], x[1]] for x in metafunc.cls.controls], ids=idlist, scope='class')
-
-
-@pytest.mark.order(9)
+@pytest.mark.order(8)
 @pytest.mark.usefixtures('setup_account')
-class TestPolicyEvaluationSummary:
-
+class TestScmAcrossControls:
     def setup_class(self):
-        self.scm = ScmController(pytest.account)
-
-    def test_get_policy_evaluation_summary(self, unwrap):
         if not pytest.expected_account['features']['policy_evaluator']:
             pytest.skip('POLICY_EVALUATOR feature not enabled')
+        self.export = ExportController(pytest.account)
+        self.scm = ScmController(pytest.account)
+
+    def test_evaluation_summary(self, unwrap):
         summary = unwrap(self.scm.evaluation_summary)(self.scm)
         assert {'endpoint_summary', 'user_summary', 'inbox_summary'} == summary.keys()
         assert {'categories', 'endpoint_count'} == summary['endpoint_summary'].keys()
@@ -42,22 +37,36 @@ class TestPolicyEvaluationSummary:
             if controls := categories[0].get('controls'):
                 assert {'control', 'inbox_count', 'setting_count', 'setting_misconfiguration_count'} == controls[0].keys()
 
-@pytest.mark.order(10)
-@pytest.mark.usefixtures('setup_account')
-class TestPolicyEvaluation:
-    controls = [
-        ('crowdstrike', True),
-        ('defender', True),
-        ('sentinelone', True),
-        ('intune', False),
-    ]
+    def test_technique_summary(self, unwrap):
+        summary = unwrap(self.scm.technique_summary)(self.scm, 'T1078,T1027')
+        assert len(summary) > 0
+        assert {'controls', 'technique'} == summary[0].keys()
+        assert len(summary[0]['controls']) > 0
+        assert {'control', 'setting_count', 'setting_misconfiguration_count'} == summary[0]['controls'][0].keys()
 
-    def setup_class(self):
-        self.scm = ScmController(pytest.account)
-
-    def test_update_policy_evaluation(self, unwrap, control, is_edr):
+    def test_export_missing_edr_endpoints_csv(self, unwrap):
         if not pytest.expected_account['features']['policy_evaluator']:
             pytest.skip('POLICY_EVALUATOR feature not enabled')
+        csv = unwrap(self.export.export_scm)(self.export, 'endpoints/?$filter=missing_edr eq true&$top=1').decode('utf-8')
+        assert len(csv.strip('\r\n').split('\r\n')) == 2
+
+
+@pytest.mark.order(9)
+@pytest.mark.usefixtures('setup_account')
+@pytest.mark.parametrize('control', [c for c in Control if c.category != ControlCategory.NONE])
+class TestScmPerControl:
+    def setup_class(self):
+        if not pytest.expected_account['features']['policy_evaluator']:
+            pytest.skip('POLICY_EVALUATOR feature not enabled')
+        self.scm = ScmController(pytest.account)
+
+    @pytest.fixture(scope='function', autouse=True)
+    def setup_and_teardown(self, control):
+        if control.value not in pytest.controls:
+            pytest.skip(f'{control.name} not attached')
+        yield
+
+    def test_update_evaluation(self, unwrap, control):
         try:
             unwrap(self.scm.update_evaluation)(self.scm, control)
         except Exception as e:
@@ -66,22 +75,24 @@ class TestPolicyEvaluation:
             else:
                 raise e
 
-    def test_get_policy_evaluation(self, unwrap, control, is_edr):
-        if not pytest.expected_account['features']['policy_evaluator']:
-            pytest.skip('POLICY_EVALUATOR feature not enabled')
+    def test_evaluation(self, unwrap, control):
         evaluation = unwrap(self.scm.evaluation)(self.scm, control)
         if 'endpoint_evaluation' in evaluation:
             evaluation = evaluation['endpoint_evaluation']
             assert {'policies', 'misconfigured', 'total_endpoint_count'} == evaluation.keys()
-            if is_edr:
+            if control.category == ControlCategory.XDR:
                 assert len(evaluation['policies']) > 0
             else:
                 assert len(evaluation['policies']) == 0
             assert {'no_av_policy_count', 'no_edr_policy_count', 'missing_control_count', 'reduced_functionality_mode_count'} == evaluation['misconfigured'].keys()
-        if 'user_evaluation' in evaluation:
+        elif 'user_evaluation' in evaluation:
             evaluation = evaluation['user_evaluation']
             assert {'policies', 'misconfigured', 'total_user_count'} == evaluation.keys()
             assert {'missing_mfa_count'} == evaluation['misconfigured'].keys()
-        if 'inbox_evaluation' in evaluation:
+            assert len(evaluation['policies']) > 0
+        elif 'inbox_evaluation' in evaluation:
             evaluation = evaluation['inbox_evaluation']
-            assert {'policies, total_inbox_count'} == evaluation.keys()
+            assert {'policies', 'total_inbox_count'} == evaluation.keys()
+            assert len(evaluation['policies']) > 0
+        else:
+            assert False, 'No evaluation returned'
