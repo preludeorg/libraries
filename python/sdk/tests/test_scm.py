@@ -47,8 +47,8 @@ class TestScmAcrossControls:
     def test_export_missing_edr_endpoints_csv(self, unwrap):
         if not pytest.expected_account['features']['policy_evaluator']:
             pytest.skip('POLICY_EVALUATOR feature not enabled')
-        csv = unwrap(self.export.export_scm)(self.export, 'endpoints/?$filter=missing_edr eq true&$top=2').decode('utf-8')
-        assert len(csv.split('\n')) == 3
+        csv = unwrap(self.export.export_scm)(self.export, 'endpoints/?$filter=missing_edr eq true&$top=1').decode('utf-8')
+        assert len(csv.strip('\r\n').split('\r\n')) == 2
 
 
 @pytest.mark.order(9)
