@@ -120,3 +120,11 @@ def partner_advisories(controller, partner, start, offset, limit):
     """ Get advisories provided by partner """
     with Spinner(description='Getting partner advisories'):
         return controller.list_advisories(partner=Control[partner], start=start, offset=offset, limit=limit)
+
+@partner.command('job-statuses')
+@click.pass_obj
+@pretty_print
+def job_statuses(controller):
+    """ Get statuses of partner sync jobs """
+    with Spinner(description='Getting job statuses'):
+        return controller.job_statuses()
