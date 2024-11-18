@@ -12,3 +12,4 @@ swift/probe/moonlight
 **/.vst
 env/
 venv/
+.vscode/
