@@ -79,7 +79,7 @@ class TestScmPerControl:
         evaluation = unwrap(self.scm.evaluation)(self.scm, control)
         if 'endpoint_evaluation' in evaluation:
             evaluation = evaluation['endpoint_evaluation']
-            assert {'policies', 'misconfigured', 'total_endpoint_count'} == evaluation.keys()
+            assert {'policies'} == evaluation.keys()
             if control.category == ControlCategory.XDR:
                 assert len(evaluation['policies']) > 0
             else:
@@ -87,12 +87,12 @@ class TestScmPerControl:
             assert {'no_av_policy_count', 'no_edr_policy_count', 'missing_control_count', 'reduced_functionality_mode_count'} == evaluation['misconfigured'].keys()
         elif 'user_evaluation' in evaluation:
             evaluation = evaluation['user_evaluation']
-            assert {'policies', 'misconfigured', 'total_user_count'} == evaluation.keys()
+            assert {'policies'} == evaluation.keys()
             assert {'missing_mfa_count'} == evaluation['misconfigured'].keys()
             assert len(evaluation['policies']) > 0
         elif 'inbox_evaluation' in evaluation:
             evaluation = evaluation['inbox_evaluation']
-            assert {'policies', 'total_inbox_count'} == evaluation.keys()
+            assert {'policies'} == evaluation.keys()
             assert len(evaluation['policies']) > 0
         else:
             assert False, 'No evaluation returned'
