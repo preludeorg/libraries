@@ -158,3 +158,15 @@ class PartnerController(HttpController):
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
+
+    @verify_credentials
+    def job_statuses(self):
+        """ Get job statuses """
+        res = self._session.get(
+            f'{self.account.hq}/partner/job_statuses',
+            headers=self.account.headers,
+            timeout=30
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)

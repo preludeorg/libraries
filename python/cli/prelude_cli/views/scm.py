@@ -56,13 +56,14 @@ def evaluation(controller, partner, techniques):
 
 @scm.command('sync')
 @click.argument('partner',
-                type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False), required=False)
+                type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False),
+                required=True)
 @click.pass_obj
 @pretty_print
 def sync(controller, partner):
     """ Update policy evaluation for given partner """
     with Spinner(description='Updating policy evaluation'):
-        return controller.evaluation(partner=Control[partner])
+        return controller.update_evaluation(partner=Control[partner])
     
 @scm.command('export')
 @click.argument('type', type=click.Choice(['endpoints', 'inboxes', 'users'], case_sensitive=False))
