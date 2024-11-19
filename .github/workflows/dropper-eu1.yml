@@ -1,0 +1,27 @@
+name: eu1 - Dropper Deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build_ubuntu:
+
+    runs-on: ubuntu-latest
+    environment: eu1
+
+    name: eu1 - Dropper Deploy
+
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Check out code.
+        uses: actions/checkout@v4
+
+      - id: dropper_composite
+        uses: ./.github/actions/dropper
+        with:
+          s3_bucket: ${{ secrets.BUCKET_NAME }}
+          aws_region: ${{ secrets.BUCKET_REGION }}
+          aws_role: ${{ secrets.EU1_S3_ACCOUNT_DEPLOYMENT_ROLE }}
+          slack_notification: ${{ secrets.EU1_SLACK_URL }}
