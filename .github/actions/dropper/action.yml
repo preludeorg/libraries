@@ -29,13 +29,10 @@ runs:
         DROPPER_FILES=(src/dropper.go src/go.mod dropper_linux_x86_64.go dropper_linux_arm64.go dropper_darwin_x86_64.go dropper_darwin_arm64.go dropper_windows_x86_64.go go.mod)
 
         for f in ${DROPPER_FILES[@]}; do
-          src=$f
-          dst=$f
+          sha256=`openssl sha256 --binary ${f}  | base64`
+          sha1=`openssl sha1 --binary ${f}  | base64`
 
-          sha256=`openssl sha256 --binary ${src}  | base64`
-          sha1=`openssl sha1 --binary ${src}  | base64`
-
-          echo aws s3api put-object --bucket ${{ inputs.s3_bucket }} --key prelude/dropper/${dst}_${a} --body $src --metadata "Checksumsha1=${sha1}" --checksum-sha256 ${sha256}
+          aws s3api put-object --bucket ${{ inputs.s3_bucket }} --key prelude/dropper/${f} --body ./go/tests/dropper/${f} --metadata "Checksumsha1=${sha1}" --checksum-sha256 ${sha256}
         done
 
     - name: Notify Slack
