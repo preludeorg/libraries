@@ -1,0 +1,60 @@
+name: Deploy Dropper
+description: Copy dropper source to s3
+inputs:
+  s3_bucket:
+    description: Where to push probes
+    required: true
+  aws_region:
+    description: Region to set for aws access
+    required: true
+  aws_role:
+    description: AWS Role
+  slack_notification:
+    description: Where to send the slack payload
+
+runs:
+  using: "composite"
+  steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: ${{ inputs.aws_region }}
+        role-to-assume: ${{ inputs.aws_role }}
+        role-session-name: GitHub_to_AWS_via_FederatedOIDC
+
+    - name: Copy files to the s3 with the AWS CLI
+      shell: bash
+      run: |
+
+        DROPPER_FILES=(src/dropper.go src/go.mod dropper_linux_x86_64.go dropper_linux_arm64.go dropper_darwin_x86_64.go dropper_darwin_arm64.go dropper_windows_x86_64.go go.mod)
+
+        for f in ${DROPPER_FILES[@]}; do
+          src="./go/tests/dropper/${f}"
+
+          sha256=`openssl sha256 --binary ${src}  | base64`
+          sha1=`openssl sha1 --binary ${src}  | base64`
+
+          aws s3api put-object --bucket ${{ inputs.s3_bucket }} --key prelude/dropper/${f} --body $src --metadata "Checksumsha1=${sha1}" --checksum-sha256 ${sha256}
+        done
+
+    - name: Notify Slack
+      id: slack
+      if: always()
+      uses: slackapi/slack-github-action@v1
+      with:
+        payload: |
+          {
+            "text": "Dropper Deploy (${{ github.triggering_actor }}): ${{ github.ref }} - ${{ github.action_status }}",
+            "blocks": [
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "Dropper Deploy (${{ github.triggering_actor }}): ${{ github.ref }} ${{ github.action_status }}"
+                }
+              }
+            ]
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ inputs.slack_notification }}
+        SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
