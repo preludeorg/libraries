@@ -3,7 +3,7 @@ import click
 from prelude_cli.views.shared import Spinner, pretty_print
 from prelude_sdk.controllers.export_controller import ExportController
 from prelude_sdk.controllers.scm_controller import ScmController
-from prelude_sdk.models.codes import Control
+from prelude_sdk.models.codes import Control, ControlCategory
 
 
 @click.group()
@@ -14,7 +14,8 @@ def scm(ctx):
 
 @scm.command('endpoints')
 @click.option('--partner',
-              type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False), default=None)
+              type=click.Choice([c.name for c in Control if c.category in [ControlCategory.XDR, ControlCategory.ASSET_MANAGER]], case_sensitive=False),
+              default=None)
 @click.option('--limit', default=100, help='maximum number of results to return', type=int)
 @click.option('--odata_filter', help='OData filter string', default=None)
 @click.option('--odata_orderby', help='OData orderby string', default=None)
@@ -24,6 +25,32 @@ def endpoints(controller, partner, limit, odata_filter, odata_orderby):
     """ List endpoints with SCM data """
     with Spinner(description='Fetching endpoints from partner'):
         return controller.endpoints(partner=Control[partner] if partner else None, filter=odata_filter, orderby=odata_orderby, top=limit)
+
+@scm.command('users')
+@click.option('--partner',
+              type=click.Choice([c.name for c in Control if c.category == ControlCategory.IDENTITY], case_sensitive=False), default=None)
+@click.option('--limit', default=100, help='maximum number of results to return', type=int)
+@click.option('--odata_filter', help='OData filter string', default=None)
+@click.option('--odata_orderby', help='OData orderby string', default=None)
+@click.pass_obj
+@pretty_print
+def endpoints(controller, partner, limit, odata_filter, odata_orderby):
+    """ List users with SCM data """
+    with Spinner(description='Fetching users from partner'):
+        return controller.users(partner=Control[partner] if partner else None, filter=odata_filter, orderby=odata_orderby, top=limit)
+
+@scm.command('inboxes')
+@click.option('--partner',
+              type=click.Choice([c.name for c in Control if c.category == ControlCategory.EMAIL], case_sensitive=False), default=None)
+@click.option('--limit', default=100, help='maximum number of results to return', type=int)
+@click.option('--odata_filter', help='OData filter string', default=None)
+@click.option('--odata_orderby', help='OData orderby string', default=None)
+@click.pass_obj
+@pretty_print
+def endpoints(controller, partner, limit, odata_filter, odata_orderby):
+    """ List inboxes with SCM data """
+    with Spinner(description='Fetching inboxes from partner'):
+        return controller.inboxes(partner=Control[partner] if partner else None, filter=odata_filter, orderby=odata_orderby, top=limit)
 
 @scm.command('technique-summary')
 @click.option('-q', '--techniques', help='comma-separated list of techniques to filter by', type=str, required=True)
@@ -35,24 +62,26 @@ def technique_summary(controller, techniques):
         return controller.technique_summary(techniques=techniques)
 
 @scm.command('evaluation-summary')
+@click.option('--odata_filter', help='OData filter string', default=None)
 @click.option('-q', '--techniques', help='comma-separated list of techniques to filter by', type=str, default=None)
 @click.pass_obj
 @pretty_print
-def evaluation_summary(controller, techniques):
+def evaluation_summary(controller, odata_filter, techniques):
     """ Get policy evaluation summary for all partners """
     with Spinner(description='Getting policy evaluation summary'):
-        return controller.evaluation_summary(techniques=techniques)
+        return controller.evaluation_summary(filter=odata_filter, techniques=techniques)
     
 @scm.command('evaluation')
 @click.argument('partner',
                 type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False))
+@click.option('--odata_filter', help='OData filter string', default=None)
 @click.option('-q', '--techniques', help='comma-separated list of techniques to filter by', type=str, default=None)
 @click.pass_obj
 @pretty_print
-def evaluation(controller, partner, techniques):
+def evaluation(controller, partner, odata_filter, techniques):
     """ Get policy evaluation for given partner """
     with Spinner(description='Getting policy evaluation'):
-        return controller.evaluation(partner=Control[partner], techniques=techniques)
+        return controller.evaluation(partner=Control[partner], filter=odata_filter, techniques=techniques)
 
 @scm.command('sync')
 @click.argument('partner',
