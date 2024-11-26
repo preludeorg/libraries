@@ -196,6 +196,13 @@ class ControlCategory(Enum, metaclass=MissingItem):
     @classmethod
     def _missing_(cls, value):
         return ControlCategory.INVALID
+    
+    @property
+    def entity(self):
+        for k, v in ScmEntity.mapping().items():
+            if self in v:
+                return k
+        return ScmEntity.INVALID
 
     @classmethod
     def mapping(cls):
@@ -217,6 +224,31 @@ class ControlCategory(Enum, metaclass=MissingItem):
                 Control.CROWDSTRIKE,
                 Control.DEFENDER,
                 Control.SENTINELONE,
+            ],
+        }
+
+class ScmEntity(Enum, metaclass=MissingItem):
+    INVALID = -1
+    ENDPOINT = 1
+    USER = 2
+    EMAIL = 3
+
+    @classmethod
+    def _missing_(cls, value):
+        return ScmEntity.INVALID
+
+    @property
+    def mapping(self):
+        return {
+            ScmEntity.ENDPOINT: [
+                ControlCategory.ASSET_MANAGER,
+                ControlCategory.XDR,
+            ],
+            ScmEntity.USER: [
+                ControlCategory.IDENTITY,
+            ],
+            ScmEntity.EMAIL: [
+                ControlCategory.EMAIL,
             ],
         }
 
