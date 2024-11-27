@@ -229,7 +229,15 @@ class PartnerSyncJobType(Enum, metaclass=MissingItem):
 
     @classmethod
     def _missing_(cls, value):
-        return Control.INVALID
+        return PartnerSyncJobType.INVALID
+
+class ExportJobType(Enum, metaclass=MissingItem):
+    INVALID = -1
+    SCM = 1
+
+    @classmethod
+    def _missing_(cls, value):
+        return ExportJobType.INVALID
 
 class EDRResponse(Enum, metaclass=MissingItem):
     INVALID = -1
