@@ -13,9 +13,6 @@ def scm(ctx):
     ctx.obj = ScmController(account=ctx.obj)
 
 @scm.command('endpoints')
-@click.option('--partner',
-              type=click.Choice([c.name for c in Control if c.category in [ControlCategory.XDR, ControlCategory.ASSET_MANAGER]], case_sensitive=False),
-              default=None)
 @click.option('--limit', default=100, help='maximum number of results to return', type=int)
 @click.option('--odata_filter', help='OData filter string', default=None)
 @click.option('--odata_orderby', help='OData orderby string', default=None)
@@ -27,8 +24,6 @@ def endpoints(controller, partner, limit, odata_filter, odata_orderby):
         return controller.endpoints(partner=Control[partner] if partner else None, filter=odata_filter, orderby=odata_orderby, top=limit)
 
 @scm.command('inboxes')
-@click.option('--partner',
-              type=click.Choice([c.name for c in Control if c.category == ControlCategory.EMAIL], case_sensitive=False), default=None)
 @click.option('--limit', default=100, help='maximum number of results to return', type=int)
 @click.option('--odata_filter', help='OData filter string', default=None)
 @click.option('--odata_orderby', help='OData orderby string', default=None)
@@ -40,8 +35,6 @@ def endpoints(controller, partner, limit, odata_filter, odata_orderby):
         return controller.inboxes(partner=Control[partner] if partner else None, filter=odata_filter, orderby=odata_orderby, top=limit)
 
 @scm.command('users')
-@click.option('--partner',
-              type=click.Choice([c.name for c in Control if c.category == ControlCategory.IDENTITY], case_sensitive=False), default=None)
 @click.option('--limit', default=100, help='maximum number of results to return', type=int)
 @click.option('--odata_filter', help='OData filter string', default=None)
 @click.option('--odata_orderby', help='OData orderby string', default=None)
