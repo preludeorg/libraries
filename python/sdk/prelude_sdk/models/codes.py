@@ -220,24 +220,17 @@ class ControlCategory(Enum, metaclass=MissingItem):
             ],
         }
 
-class PartnerSyncJobType(Enum, metaclass=MissingItem):
+class BackgroundJob(Enum, metaclass=MissingItem):
     INVALID = -1
-    POLICY_EVALUATION = 1
+    UPDATE_SCM = 1
     DEPLOY_PROBE = 2
     OBSERVED_DETECTED = 3
     PRELUDE_ENDPOINT_SYNC = 4
+    EXPORT_SCM = 5
 
     @classmethod
     def _missing_(cls, value):
-        return PartnerSyncJobType.INVALID
-
-class ExportJobType(Enum, metaclass=MissingItem):
-    INVALID = -1
-    SCM = 1
-
-    @classmethod
-    def _missing_(cls, value):
-        return ExportJobType.INVALID
+        return BackgroundJob.INVALID
 
 class EDRResponse(Enum, metaclass=MissingItem):
     INVALID = -1
