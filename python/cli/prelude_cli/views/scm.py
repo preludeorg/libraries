@@ -55,14 +55,21 @@ def technique_summary(controller, techniques):
         return controller.technique_summary(techniques=techniques)
 
 @scm.command('evaluation-summary')
-@click.option('--odata_filter', help='OData filter string', default=None)
+@click.option('--endpoint_odata_filter', help='OData filter string for endpoints', default=None)
+@click.option('--inbox_odata_filter', help='OData filter string for inboxes', default=None)
+@click.option('--user_odata_filter', help='OData filter string for users', default=None)
 @click.option('-q', '--techniques', help='comma-separated list of techniques to filter by', type=str, default=None)
 @click.pass_obj
 @pretty_print
-def evaluation_summary(controller, odata_filter, techniques):
+def evaluation_summary(controller, endpoint_odata_filter, inbox_odata_filter, user_odata_filter, techniques):
     """ Get policy evaluation summary for all partners """
     with Spinner(description='Getting policy evaluation summary'):
-        return controller.evaluation_summary(filter=odata_filter, techniques=techniques)
+        return controller.evaluation_summary(
+            endpoint_filter=endpoint_odata_filter,
+            inbox_filter=inbox_odata_filter,
+            user_filter=user_odata_filter,
+            techniques=techniques
+        )
     
 @scm.command('evaluation')
 @click.argument('partner',
