@@ -143,7 +143,7 @@ def upload_attachment(controller, path, test):
     if Path(path).is_file():
         upload(p=Path(path))
     else:
-        objs = list(Path(path).rglob('*'))
+        objs = list(Path(path).glob('*'))
         for ind, obj in enumerate(objs):
             try:
                 upload(p=Path(obj), skip_compile=ind != len(objs) - 1)
