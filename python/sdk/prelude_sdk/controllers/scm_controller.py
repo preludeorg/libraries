@@ -11,7 +11,7 @@ class ScmController(HttpController):
         self.account = account
 
     @verify_credentials
-    def endpoints(self, partner: Control, filter: str, orderby: str, top: int):
+    def endpoints(self, filter: str = None, orderby: str = None, top: int = None):
         """ List endpoints with SCM analysis """
         params = {
             '$filter': filter,
@@ -29,15 +29,15 @@ class ScmController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
-    def users(self, partner: Control, filter: str, orderby: str, top: int):
-        """ List users with SCM analysis """
+    def inboxes(self, filter: str = None, orderby: str = None, top: int = None):
+        """ List inboxes with SCM analysis """
         params = {
             '$filter': filter,
             '$orderby': orderby,
             '$top': top
         }
         res = self._session.get(
-            f'{self.account.hq}/scm/users',
+            f'{self.account.hq}/scm/inboxes',
             headers=self.account.headers,
             params=params,
             timeout=30
@@ -47,15 +47,15 @@ class ScmController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
-    def inboxes(self, partner: Control, filter: str, orderby: str, top: int):
-        """ List inboxes with SCM analysis """
+    def users(self, filter: str = None, orderby: str = None, top: int = None):
+        """ List users with SCM analysis """
         params = {
             '$filter': filter,
             '$orderby': orderby,
             '$top': top
         }
         res = self._session.get(
-            f'{self.account.hq}/scm/inboxes',
+            f'{self.account.hq}/scm/users',
             headers=self.account.headers,
             params=params,
             timeout=30
@@ -78,9 +78,13 @@ class ScmController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
-    def evaluation_summary(self, filter: str, techniques: str | None = None):
+    def evaluation_summary(self, endpoint_filter: str = None, inbox_filter: str = None, user_filter: str = None, techniques: str = None):
         """ Get policy evaluation summary """
-        params = {'$filter': filter}
+        params = dict(
+            endpoint_filter=endpoint_filter,
+            inbox_filter=inbox_filter,
+            user_filter=user_filter,
+        )
         if techniques:
             params['techniques'] = techniques
         res = self._session.get(
@@ -94,7 +98,7 @@ class ScmController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
-    def evaluation(self, partner: Control, filter: str, techniques: str | None = None):
+    def evaluation(self, partner: Control, filter: str = None, techniques: str = None):
         """ Get policy evaluations for given partner """
         params = {'$filter': filter}
         if techniques:
