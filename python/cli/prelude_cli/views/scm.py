@@ -18,10 +18,10 @@ def scm(ctx):
 @click.option('--odata_orderby', help='OData orderby string', default=None)
 @click.pass_obj
 @pretty_print
-def endpoints(controller, partner, limit, odata_filter, odata_orderby):
+def endpoints(controller, limit, odata_filter, odata_orderby):
     """ List endpoints with SCM data """
     with Spinner(description='Fetching endpoints from partner'):
-        return controller.endpoints(partner=Control[partner] if partner else None, filter=odata_filter, orderby=odata_orderby, top=limit)
+        return controller.endpoints(filter=odata_filter, orderby=odata_orderby, top=limit)
 
 @scm.command('inboxes')
 @click.option('--limit', default=100, help='maximum number of results to return', type=int)
@@ -29,10 +29,10 @@ def endpoints(controller, partner, limit, odata_filter, odata_orderby):
 @click.option('--odata_orderby', help='OData orderby string', default=None)
 @click.pass_obj
 @pretty_print
-def endpoints(controller, partner, limit, odata_filter, odata_orderby):
+def endpoints(controller, limit, odata_filter, odata_orderby):
     """ List inboxes with SCM data """
     with Spinner(description='Fetching inboxes from partner'):
-        return controller.inboxes(partner=Control[partner] if partner else None, filter=odata_filter, orderby=odata_orderby, top=limit)
+        return controller.inboxes(filter=odata_filter, orderby=odata_orderby, top=limit)
 
 @scm.command('users')
 @click.option('--limit', default=100, help='maximum number of results to return', type=int)
@@ -40,10 +40,10 @@ def endpoints(controller, partner, limit, odata_filter, odata_orderby):
 @click.option('--odata_orderby', help='OData orderby string', default=None)
 @click.pass_obj
 @pretty_print
-def endpoints(controller, partner, limit, odata_filter, odata_orderby):
+def endpoints(controller, limit, odata_filter, odata_orderby):
     """ List users with SCM data """
     with Spinner(description='Fetching users from partner'):
-        return controller.users(partner=Control[partner] if partner else None, filter=odata_filter, orderby=odata_orderby, top=limit)
+        return controller.users(filter=odata_filter, orderby=odata_orderby, top=limit)
 
 @scm.command('technique-summary')
 @click.option('-q', '--techniques', help='comma-separated list of techniques to filter by', type=str, required=True)
