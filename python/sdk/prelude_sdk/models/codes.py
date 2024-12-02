@@ -220,7 +220,7 @@ class ControlCategory(Enum, metaclass=MissingItem):
             ],
         }
 
-class BackgroundJob(Enum, metaclass=MissingItem):
+class BackgroundJobTypes(Enum, metaclass=MissingItem):
     INVALID = -1
     UPDATE_SCM = 1
     DEPLOY_PROBE = 2
@@ -230,7 +230,7 @@ class BackgroundJob(Enum, metaclass=MissingItem):
 
     @classmethod
     def _missing_(cls, value):
-        return BackgroundJob.INVALID
+        return BackgroundJobTypes.INVALID
 
 class EDRResponse(Enum, metaclass=MissingItem):
     INVALID = -1
