@@ -3,7 +3,7 @@ import click
 from prelude_cli.views.shared import Spinner, pretty_print
 from prelude_sdk.controllers.export_controller import ExportController
 from prelude_sdk.controllers.scm_controller import ScmController
-from prelude_sdk.models.codes import Control, ControlCategory
+from prelude_sdk.models.codes import Control
 
 
 @click.group()
