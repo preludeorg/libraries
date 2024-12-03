@@ -117,6 +117,9 @@ def upload_attachment(controller, path, test):
         raise FileNotFoundError('You must supply a test ID or include it in the path')
 
     def upload(p: Path, skip_compile=False):
+        if not p.is_file():
+            return
+
         with open(p, 'rb') as data:
             with Spinner(description='Uploading to test') as spinner:
                 data = controller.upload(
@@ -140,7 +143,7 @@ def upload_attachment(controller, path, test):
     if Path(path).is_file():
         upload(p=Path(path))
     else:
-        objs = list(Path(path).rglob('*'))
+        objs = list(Path(path).glob('*'))
         for ind, obj in enumerate(objs):
             try:
                 upload(p=Path(obj), skip_compile=ind != len(objs) - 1)
