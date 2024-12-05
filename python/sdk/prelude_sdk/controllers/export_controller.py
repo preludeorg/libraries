@@ -18,15 +18,12 @@ class ExportController(HttpController):
             '$top': top,
             'id': partner.name if partner else None,
         }
-        res = self._session.get(
+        res = self._session.post(
             f'{self.account.hq}/export/scm/{export_type}',
             params=params,
             headers=self.account.headers,
             timeout=10
         )
         if res.status_code == 200:
-            return self._session.get(
-                res.json()['url'],
-                timeout=10
-            ).content
+            return res.json()
         raise Exception(res.text)

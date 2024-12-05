@@ -1,5 +1,7 @@
 import pytest
+import requests
 
+from prelude_sdk.controllers.detect_controller import DetectController
 from prelude_sdk.controllers.export_controller import ExportController
 from prelude_sdk.controllers.scm_controller import ScmController
 from prelude_sdk.models.codes import Control, ControlCategory
@@ -11,6 +13,7 @@ class TestScmAcrossControls:
     def setup_class(self):
         if not pytest.expected_account['features']['policy_evaluator']:
             pytest.skip('POLICY_EVALUATOR feature not enabled')
+        self.detect = DetectController(pytest.account)
         self.export = ExportController(pytest.account)
         self.scm = ScmController(pytest.account)
 
@@ -19,7 +22,7 @@ class TestScmAcrossControls:
         assert {'endpoint_summary', 'user_summary', 'inbox_summary'} == summary.keys()
         assert {'categories', 'endpoint_count'} == summary['endpoint_summary'].keys()
         if categories := summary['endpoint_summary'].get('categories'):
-            assert {'category', 'controls', 'endpoint_count', 'control_failure_count'} == categories[0].keys()
+            assert {'category', 'controls', 'endpoint_count', 'control_failure_count', 'missing_asset_manager_count', 'missing_edr_count'} == categories[0].keys()
             if controls := categories[0].get('controls'):
                 assert {'control', 'control_failure_count', 'endpoint_count', 'policy_conflict_count', 'setting_count',
                         'setting_misconfiguration_count', 'no_av_policy', 'no_edr_policy',
@@ -47,7 +50,14 @@ class TestScmAcrossControls:
     def test_export_missing_edr_endpoints_csv(self, unwrap):
         if not pytest.expected_account['features']['policy_evaluator']:
             pytest.skip('POLICY_EVALUATOR feature not enabled')
-        csv = unwrap(self.export.export_scm)(self.export, 'endpoints/?$filter=missing_edr eq true&$top=1').decode('utf-8')
+        job_id = unwrap(self.export.export_scm)(self.export, 'endpoints/?$filter=missing_edr eq true&$top=1')['job_id']
+        while (result := unwrap(self.detect.get_background_job)(self.detect, job_id))['end_time'] is None:
+            pass
+        assert result['successful']
+        csv = requests.get(
+                result['results']['url'],
+                timeout=10
+            ).content.decode('utf-8')
         assert len(csv.strip('\r\n').split('\r\n')) == 2
 
 
@@ -82,18 +92,18 @@ class TestScmPerControl:
             assert {'policies'} == evaluation.keys()
             if control.category == ControlCategory.XDR:
                 assert len(evaluation['policies']) > 0
-                assert {'id', 'name', 'platform', 'score', 'settings', 'conflict_count', 'endpoint_count', 'success_count'} == evaluation['policies'][0].keys()
+                assert {'id', 'name', 'platform', 'settings', 'conflict_count', 'endpoint_count', 'success_count'} == evaluation['policies'][0].keys()
             else:
                 assert len(evaluation['policies']) == 0
         elif 'user_evaluation' in evaluation:
             evaluation = evaluation['user_evaluation']
             assert {'policies'} == evaluation.keys()
             assert len(evaluation['policies']) > 0
-            assert {'id', 'name', 'noncompliant_hostnames', 'score', 'settings', 'user_count'} == evaluation['policies'][0].keys()
+            assert {'id', 'name', 'noncompliant_hostnames', 'settings', 'user_count'} == evaluation['policies'][0].keys()
         elif 'inbox_evaluation' in evaluation:
             evaluation = evaluation['inbox_evaluation']
             assert {'policies'} == evaluation.keys()
             assert len(evaluation['policies']) > 0
-            assert {'id', 'name', 'score', 'settings', 'inbox_count'} == evaluation['policies'][0].keys()
+            assert {'id', 'name', 'settings', 'inbox_count'} == evaluation['policies'][0].keys()
         else:
             assert False, 'No evaluation returned'
