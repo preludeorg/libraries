@@ -1,5 +1,6 @@
 import click
 import requests
+from time import sleep
 
 from prelude_cli.views.shared import Spinner, pretty_print
 from prelude_sdk.controllers.detect_controller import DetectController
@@ -97,6 +98,7 @@ def sync(controller, partner):
         job_id = controller.update_evaluation(partner=Control[partner])['job_id']
         detect = DetectController(account=controller.account)
         while (result := detect.get_background_job(job_id))['end_time'] is None:
+            sleep(3)
             pass
         return result
     
@@ -117,6 +119,7 @@ def export(controller, type, output_file, limit, odata_filter, odata_orderby, pa
         export = ExportController(account=controller.account)
         job_id = export.export_scm(export_type=type, filter=odata_filter, orderby=odata_orderby, partner=Control[partner] if partner else None, top=limit)['job_id']
         while (result := detect.get_background_job(job_id))['end_time'] is None:
+            sleep(3)
             pass
         if result['successful']:
             data = requests.get(result['results']['url'], timeout=10).content
