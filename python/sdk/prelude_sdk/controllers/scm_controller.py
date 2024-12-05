@@ -203,7 +203,7 @@ class ScmController(HttpController):
         raise Exception(res.text)
     
     @verify_credentials
-    def put_policy_exceptions(self, partner: Control, policy_id, setting_names, expires = None):
+    def put_policy_exceptions(self, partner: Control, expires, policy_id, setting_names):
         """ Put policy exceptions """
         body = dict(
             control=partner.name,
