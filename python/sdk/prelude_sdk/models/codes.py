@@ -171,6 +171,7 @@ class Control(Enum, metaclass=MissingItem):
     OKTA = 9
     M365 = 10
     ENTRA = 11
+    JAMF = 12
 
     @classmethod
     def _missing_(cls, value):
