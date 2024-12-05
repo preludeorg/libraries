@@ -1,6 +1,9 @@
 import click
+import requests
+from time import sleep
 
 from prelude_cli.views.shared import Spinner, pretty_print
+from prelude_sdk.controllers.detect_controller import DetectController
 from prelude_sdk.controllers.export_controller import ExportController
 from prelude_sdk.controllers.scm_controller import ScmController
 from prelude_sdk.models.codes import Control
@@ -92,7 +95,12 @@ def evaluation(controller, partner, odata_filter, techniques):
 def sync(controller, partner):
     """ Update policy evaluation for given partner """
     with Spinner(description='Updating policy evaluation'):
-        return controller.update_evaluation(partner=Control[partner])
+        job_id = controller.update_evaluation(partner=Control[partner])['job_id']
+        detect = DetectController(account=controller.account)
+        while (result := detect.get_background_job(job_id))['end_time'] is None:
+            sleep(3)
+            pass
+        return result
     
 @scm.command('export')
 @click.argument('type', type=click.Choice(['endpoints', 'inboxes', 'users'], case_sensitive=False))
@@ -107,11 +115,17 @@ def sync(controller, partner):
 def export(controller, type, output_file, limit, odata_filter, odata_orderby, partner):
     """ Export SCM data """
     with Spinner(description='Exporting SCM data'):
+        detect = DetectController(account=controller.account)
         export = ExportController(account=controller.account)
-        data = export.export_scm(export_type=type, filter=odata_filter, orderby=odata_orderby, partner=Control[partner] if partner else None, top=limit)
-        with open(output_file, 'wb') as f:
-            f.write(data)
-        return dict(status=True), f'Exported data to {output_file}'
+        job_id = export.export_scm(export_type=type, filter=odata_filter, orderby=odata_orderby, partner=Control[partner] if partner else None, top=limit)['job_id']
+        while (result := detect.get_background_job(job_id))['end_time'] is None:
+            sleep(3)
+            pass
+        if result['successful']:
+            data = requests.get(result['results']['url'], timeout=10).content
+            with open(output_file, 'wb') as f:
+                f.write(data)
+        return result, f'Exported data to {output_file}'
 
 @scm.command('create-scm-threat', hidden=True)
 @click.argument('name')

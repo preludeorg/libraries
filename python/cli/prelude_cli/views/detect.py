@@ -9,7 +9,7 @@ from pathlib import Path, PurePath
 from prelude_cli.views.shared import Spinner, pretty_print
 from prelude_sdk.controllers.detect_controller import DetectController
 from prelude_sdk.controllers.iam_controller import IAMController
-from prelude_sdk.models.codes import RunCode, Control
+from prelude_sdk.models.codes import BackgroundJobTypes, Control, RunCode
 
 
 @click.group()
@@ -305,3 +305,19 @@ def threat_hunt_activity(controller, id, type):
             return controller.threat_hunt_activity(test_id=id)
         else:
             return controller.threat_hunt_activity(threat_id=id)
+
+@detect.command('background-jobs')
+@click.option('-t', '--job_type', help='filter by job type',
+              type=click.Choice([t.name for t in BackgroundJobTypes if t != BackgroundJobTypes.INVALID], case_sensitive=False))
+@click.option('-l', '--limit', help='limit the number of jobs returned (per job type)', type=int)
+@click.pass_obj
+@pretty_print
+def background_jobs(controller, job_type, limit):
+    """ List background jobs """
+    with Spinner(description='Fetching background jobs'):
+        result = controller.list_background_jobs()
+        if job_type:
+            result = {job_type: result[job_type]}
+        if limit:
+            result = {k: v[:limit] for k, v in result.items()}
+        return result
