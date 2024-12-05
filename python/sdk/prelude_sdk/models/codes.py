@@ -204,6 +204,7 @@ class ControlCategory(Enum, metaclass=MissingItem):
             ControlCategory.ASSET_MANAGER: [
                 Control.INTUNE,
                 Control.SERVICENOW,
+                Control.JAMF
             ],
             ControlCategory.CLOUD: [],
             ControlCategory.EMAIL: [
