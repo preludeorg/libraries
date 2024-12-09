@@ -156,3 +156,20 @@ def list_scm_threats(controller):
     """ List all scm threats """
     with Spinner(description='Fetching scm threats'):
         return controller.list_scm_threats()
+
+@scm.command('threat-intel')
+@click.argument('threat_pdf', type=click.Path(exists=True, file_okay=True, dir_okay=False, readable=True))
+@click.pass_obj
+@pretty_print
+def parse_threat_intel(controller, threat_pdf):
+    with Spinner('Parsing PDF') as spinner:
+        return controller.parse_threat_intel(threat_pdf)
+
+@scm.command('from-advisory')
+@click.argument('partner', type=click.Choice([Control.CROWDSTRIKE.name], case_sensitive=False))
+@click.option('-a', '--advisory_id', required=True, type=str, help='Partner advisory ID')
+@click.pass_obj
+@pretty_print
+def parse_from_partner_advisory(controller, partner, advisory_id):
+    with Spinner('Uploading') as spinner:
+        return controller.parse_from_partner_advisory(partner=Control[partner], advisory_id=advisory_id)

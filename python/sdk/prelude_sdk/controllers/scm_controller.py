@@ -266,3 +266,30 @@ class ScmController(HttpController):
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
+
+    @verify_credentials
+    def parse_threat_intel(self, file: str):
+        with open(file, 'rb') as f:
+            body = f.read()
+        res = self._session.post(
+            f'{self.account.hq}/scm/threat-intel',
+            data=body,
+            headers=self.account.headers | {'Content-Type': 'application/pdf'},
+            timeout=30
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def parse_from_partner_advisory(self, partner: Control, advisory_id: str):
+        params = dict(advisory_id=advisory_id)
+        res = self._session.post(
+            f'{self.account.hq}/scm/partner-advisories/{partner.name}',
+            headers=self.account.headers,
+            json=params,
+            timeout=30
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
