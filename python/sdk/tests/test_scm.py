@@ -2,7 +2,6 @@ import pytest
 import requests
 import time
 
-from prelude_sdk.controllers.detect_controller import DetectController
 from prelude_sdk.controllers.export_controller import ExportController
 from prelude_sdk.controllers.jobs_controller import JobsController
 from prelude_sdk.controllers.scm_controller import ScmController
@@ -15,8 +14,8 @@ class TestScmAcrossControls:
     def setup_class(self):
         if not pytest.expected_account['features']['policy_evaluator']:
             pytest.skip('POLICY_EVALUATOR feature not enabled')
-        self.detect = DetectController(pytest.account)
         self.export = ExportController(pytest.account)
+        self.jobs = JobsController(pytest.account)
         self.scm = ScmController(pytest.account)
 
     def test_evaluation_summary(self, unwrap):
@@ -59,8 +58,8 @@ class TestScmAcrossControls:
         if not pytest.expected_account['features']['policy_evaluator']:
             pytest.skip('POLICY_EVALUATOR feature not enabled')
         job_id = unwrap(self.export.export_scm)(self.export, 'endpoints/?$filter=missing_edr eq true&$top=1')['job_id']
-        while (result := unwrap(self.detect.get_background_job)(self.detect, job_id))['end_time'] is None:
-            pass
+        while (result := unwrap(self.jobs.job_status)(self.jobs, job_id))['end_time'] is None:
+            time.sleep(3)
         assert result['successful']
         csv = requests.get(
                 result['results']['url'],
@@ -88,10 +87,9 @@ class TestScmPerControl:
     def test_update_evaluation(self, unwrap, control):
         try:
             job_id = unwrap(self.scm.update_evaluation)(self.scm, control)['job_id']
-            status = unwrap(self.jobs.job_status)(self.jobs, job_id)
-            while not status['end_time']:
-                time.sleep(5)
-                status = unwrap(self.jobs.job_status)(self.jobs, job_id)
+            while (result := unwrap(self.jobs.job_status)(self.jobs, job_id))['end_time'] is None:
+                time.sleep(3)
+            assert result['successful']
         except Exception as e:
             if 'job is already running' in str(e):
                 pytest.skip('Skipping due to existing job initiated from partner attach')

@@ -268,27 +268,3 @@ class DetectController(HttpController):
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
-
-    @verify_credentials
-    def get_background_job(self, job_id: str):
-        """ Get the status of a background job """
-        res = self._session.get(
-            f'{self.account.hq}/jobs/statuses/{job_id}',
-            headers=self.account.headers,
-            timeout=10
-        )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
-
-    @verify_credentials
-    def list_background_jobs(self):
-        """ List all background jobs """
-        res = self._session.get(
-            f'{self.account.hq}/jobs/statuses',
-            headers=self.account.headers,
-            timeout=10
-        )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
