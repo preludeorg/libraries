@@ -1,8 +1,10 @@
 import pytest
 import requests
+import time
 
 from prelude_sdk.controllers.detect_controller import DetectController
 from prelude_sdk.controllers.export_controller import ExportController
+from prelude_sdk.controllers.jobs_controller import JobsController
 from prelude_sdk.controllers.scm_controller import ScmController
 from prelude_sdk.models.codes import Control, ControlCategory
 
@@ -75,6 +77,7 @@ class TestScmPerControl:
         if not pytest.expected_account['features']['policy_evaluator']:
             pytest.skip('POLICY_EVALUATOR feature not enabled')
         self.scm = ScmController(pytest.account)
+        self.jobs = JobsController(pytest.account)
 
     @pytest.fixture(scope='function', autouse=True)
     def setup_and_teardown(self, control):
@@ -84,7 +87,11 @@ class TestScmPerControl:
 
     def test_update_evaluation(self, unwrap, control):
         try:
-            unwrap(self.scm.update_evaluation)(self.scm, control)
+            job_id = unwrap(self.scm.update_evaluation)(self.scm, control)['job_id']
+            status = unwrap(self.jobs.job_status)(self.jobs, job_id)
+            while not status['end_time']:
+                time.sleep(5)
+                status = unwrap(self.jobs.job_status)(self.jobs, job_id)
         except Exception as e:
             if 'job is already running' in str(e):
                 pytest.skip('Skipping due to existing job initiated from partner attach')

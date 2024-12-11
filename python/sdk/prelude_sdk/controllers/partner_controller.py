@@ -1,7 +1,6 @@
 from datetime import datetime, timezone
 
 from prelude_sdk.controllers.http_controller import HttpController
-
 from prelude_sdk.models.account import verify_credentials
 from prelude_sdk.models.codes import Control
 
@@ -153,18 +152,6 @@ class PartnerController(HttpController):
             f'{self.account.hq}/partner/advisories/{partner.name}',
             headers=self.account.headers,
             params=params,
-            timeout=30
-        )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
-
-    @verify_credentials
-    def job_statuses(self):
-        """ Get job statuses """
-        res = self._session.get(
-            f'{self.account.hq}/partner/job_statuses',
-            headers=self.account.headers,
             timeout=30
         )
         if res.status_code == 200:

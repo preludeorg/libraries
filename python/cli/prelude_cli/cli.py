@@ -5,6 +5,7 @@ from prelude_cli.views.configure import configure
 from prelude_cli.views.detect import detect
 from prelude_cli.views.generate import generate
 from prelude_cli.views.iam import iam
+from prelude_cli.views.jobs import jobs
 from prelude_cli.views.partner import partner
 from prelude_cli.views.scm import scm
 from prelude_sdk.models.account import Account
@@ -28,6 +29,7 @@ cli.add_command(configure)
 cli.add_command(detect)
 cli.add_command(generate)
 cli.add_command(iam)
+cli.add_command(jobs)
 cli.add_command(partner)
 cli.add_command(scm)
 
