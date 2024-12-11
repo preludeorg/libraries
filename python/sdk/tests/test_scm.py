@@ -22,23 +22,29 @@ class TestScmAcrossControls:
         assert {'endpoint_summary', 'user_summary', 'inbox_summary'} == summary.keys()
         assert {'categories', 'endpoint_count'} == summary['endpoint_summary'].keys()
         if categories := summary['endpoint_summary'].get('categories'):
-            assert {'category', 'controls', 'endpoint_count', 'control_failure_count', 'missing_asset_manager_count', 'missing_edr_count'} == categories[0].keys()
+            assert {'category', 'controls', 'endpoint_count', 'excepted'} == categories[0].keys()
+            assert {'control_failure_count', 'missing_asset_manager_count', 'missing_edr_count'} == categories[0]['excepted'].keys()
             if controls := categories[0].get('controls'):
-                assert {'control', 'control_failure_count', 'endpoint_count', 'policy_conflict_count', 'setting_count',
-                        'setting_misconfiguration_count', 'no_av_policy', 'no_edr_policy',
-                        'reduced_functionality_mode'} == controls[0].keys()
+                assert {'control', 'control_failure_count', 'endpoint_count', 'no_av_policy', 'no_edr_policy',
+                        'policy_conflict_count', 'reduced_functionality_mode', 'setting_count',
+                        'excepted'} == controls[0].keys()
+                if excepted := controls[0]['excepted']:
+                    assert {'control_failure_count', 'no_av_policy', 'no_edr_policy', 'reduced_functionality_mode', 'setting_misconfiguration_count'} == excepted.keys()
 
         assert {'categories', 'user_count'} == summary['user_summary'].keys()
         if categories := summary['user_summary'].get('categories'):
-            assert {'category', 'controls', 'user_count', 'control_failure_count'} == categories[0].keys()
+            assert {'category', 'controls', 'user_count', 'excepted'} == categories[0].keys()
+            assert {'control_failure_count'} == categories[0]['excepted'].keys()
             if controls := categories[0].get('controls'):
-                assert {'control', 'control_failure_count', 'user_count', 'setting_count', 'setting_misconfiguration_count'} == controls[0].keys()
+                assert {'control', 'control_failure_count', 'user_count', 'setting_count', 'excepted'} == controls[0].keys()
+                assert {'control_failure_count', 'setting_misconfiguration_count'} == controls[0]['excepted'].keys()
 
         assert {'categories', 'inbox_count'} == summary['inbox_summary'].keys()
         if categories := summary['inbox_summary'].get('categories'):
             assert {'category', 'controls', 'inbox_count'} == categories[0].keys()
             if controls := categories[0].get('controls'):
-                assert {'control', 'inbox_count', 'setting_count', 'setting_misconfiguration_count'} == controls[0].keys()
+                assert {'control', 'inbox_count', 'setting_count', 'excepted'} == controls[0].keys()
+                assert {'setting_misconfiguration_count'} == controls[0]['excepted'].keys()
 
     def test_technique_summary(self, unwrap):
         summary = unwrap(self.scm.technique_summary)(self.scm, 'T1078,T1027')
