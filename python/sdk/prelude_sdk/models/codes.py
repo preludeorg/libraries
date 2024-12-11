@@ -184,6 +184,13 @@ class Control(Enum, metaclass=MissingItem):
                 return k
         return ControlCategory.NONE
 
+    @property
+    def category(self):
+        for k, v in SCMCategory.control_mapping().items():
+            if self in v:
+                return k
+        return SCMCategory.NONE
+
 class ControlCategory(Enum, metaclass=MissingItem):
     INVALID = -1
     NONE = 0
@@ -222,6 +229,48 @@ class ControlCategory(Enum, metaclass=MissingItem):
             ],
         }
 
+class SCMCategory(Enum, metaclass=MissingItem):
+    INVALID = -1
+    NONE = 0
+    ENDPOINT = 1
+    INBOX = 2
+    USER = 3
+
+    @classmethod
+    def _missing_(cls, value):
+        return SCMCategory.INVALID
+
+    @classmethod
+    def control_mapping(cls):
+        return {
+            SCMCategory.ENDPOINT: [
+                Control.INTUNE,
+                Control.SERVICENOW,
+                Control.JAMF,
+                Control.CROWDSTRIKE,
+                Control.DEFENDER,
+                Control.SENTINELONE,
+            ],
+            SCMCategory.USER: [
+                Control.ENTRA,
+                Control.OKTA,
+            ],
+            SCMCategory.INBOX: [
+                Control.M365,
+            ]
+        }
+    
+    @classmethod
+    def category_mapping(cls):
+        return {
+            SCMCategory.ENDPOINT: [
+                ControlCategory.ASSET_MANAGER,
+                ControlCategory.XDR
+            ],
+            SCMCategory.USER: [ControlCategory.IDENTITY],
+            SCMCategory.INBOX: [ControlCategory.EMAIL]
+        }
+
 class BackgroundJobTypes(Enum, metaclass=MissingItem):
     INVALID = -1
     UPDATE_SCM = 1
@@ -257,7 +306,7 @@ class PartnerEvents(Enum, metaclass=MissingItem):
     def _missing_(cls, value):
         return PartnerEvents.INVALID
 
-class NotificationTypes(Enum, metaclass=MissingItem):
+class AlertTypes(Enum, metaclass=MissingItem):
     INVALID = -1
     NEW_REDUCED_FUNCTIONALITY_MODE_ENDPOINTS = 1
     NEW_NO_EDR_ENDPOINTS = 2
@@ -268,7 +317,17 @@ class NotificationTypes(Enum, metaclass=MissingItem):
 
     @classmethod
     def _missing_(cls, value):
-        return NotificationTypes.INVALID
+        return AlertTypes.INVALID
+
+class NotificationFrequencyTypes(Enum, metaclass=MissingItem):
+    INVALID = -1
+    DAILY = 1
+    WEEKLY = 2
+    MONTHLY = 3
+
+    @classmethod
+    def _missing_(cls, value):
+        return NotificationFrequencyTypes.INVALID
 
 class AuditEvent(Enum, metaclass=MissingItem):
     INVALID = 0
