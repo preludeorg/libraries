@@ -178,14 +178,14 @@ class Control(Enum, metaclass=MissingItem):
         return Control.INVALID
 
     @property
-    def category(self):
+    def control_category(self):
         for k, v in ControlCategory.mapping().items():
             if self in v:
                 return k
         return ControlCategory.NONE
 
     @property
-    def category(self):
+    def scm_category(self):
         for k, v in SCMCategory.control_mapping().items():
             if self in v:
                 return k
