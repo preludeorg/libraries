@@ -319,16 +319,6 @@ class AlertTypes(Enum, metaclass=MissingItem):
     def _missing_(cls, value):
         return AlertTypes.INVALID
 
-class NotificationFrequencyTypes(Enum, metaclass=MissingItem):
-    INVALID = -1
-    DAILY = 1
-    WEEKLY = 2
-    MONTHLY = 3
-
-    @classmethod
-    def _missing_(cls, value):
-        return NotificationFrequencyTypes.INVALID
-
 class AuditEvent(Enum, metaclass=MissingItem):
     INVALID = 0
     ATTACH_PARTNER = 1
