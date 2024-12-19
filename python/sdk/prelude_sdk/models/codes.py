@@ -244,12 +244,12 @@ class SCMCategory(Enum, metaclass=MissingItem):
     def control_mapping(cls):
         return {
             SCMCategory.ENDPOINT: [
-                Control.INTUNE,
-                Control.SERVICENOW,
-                Control.JAMF,
                 Control.CROWDSTRIKE,
                 Control.DEFENDER,
+                Control.INTUNE,
+                Control.JAMF,
                 Control.SENTINELONE,
+                Control.SERVICENOW,
             ],
             SCMCategory.USER: [
                 Control.ENTRA,
