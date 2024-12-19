@@ -70,7 +70,7 @@ class TestScmAcrossControls:
 
 @pytest.mark.order(9)
 @pytest.mark.usefixtures('setup_account')
-@pytest.mark.parametrize('control', [c for c in Control if c.category != ControlCategory.NONE])
+@pytest.mark.parametrize('control', [c for c in Control if c.control_category != ControlCategory.NONE])
 class TestScmPerControl:
     def setup_class(self):
         if not pytest.expected_account['features']['policy_evaluator']:
