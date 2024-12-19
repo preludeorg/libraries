@@ -77,25 +77,27 @@ def evaluation_summary(controller, endpoint_odata_filter, inbox_odata_filter, us
 @scm.command('evaluation')
 @click.argument('partner',
                 type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False))
+@click.option('--instance_id', required=True, help='instance ID of the partner')
 @click.option('--odata_filter', help='OData filter string', default=None)
 @click.option('-q', '--techniques', help='comma-separated list of techniques to filter by', type=str, default=None)
 @click.pass_obj
 @pretty_print
-def evaluation(controller, partner, odata_filter, techniques):
+def evaluation(controller, partner, instance_id, odata_filter, techniques):
     """ Get policy evaluation for given partner """
     with Spinner(description='Getting policy evaluation'):
-        return controller.evaluation(partner=Control[partner], filter=odata_filter, techniques=techniques)
+        return controller.evaluation(partner=Control[partner], instance_id=instance_id, filter=odata_filter, techniques=techniques)
 
 @scm.command('sync')
 @click.argument('partner',
                 type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False),
                 required=True)
+@click.option('--instance_id', required=True, help='instance ID of the partner')
 @click.pass_obj
 @pretty_print
-def sync(controller, partner):
+def sync(controller, partner, instance_id):
     """ Update policy evaluation for given partner """
     with Spinner(description='Updating policy evaluation'):
-        job_id = controller.update_evaluation(partner=Control[partner])['job_id']
+        job_id = controller.update_evaluation(partner=Control[partner], instance_id=instance_id)['job_id']
         jobs = JobsController(account=controller.account)
         while (result := jobs.job_status(job_id))['end_time'] is None:
             sleep(3)
@@ -107,16 +109,14 @@ def sync(controller, partner):
 @click.option('--limit', default=100, help='maximum number of results to return', type=int)
 @click.option('--odata_filter', help='OData filter string', default=None)
 @click.option('--odata_orderby', help='OData orderby string', default=None)
-@click.option('--partner',
-              type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False), default=None)
 @click.pass_obj
 @pretty_print
-def export(controller, type, output_file, limit, odata_filter, odata_orderby, partner):
+def export(controller, type, output_file, limit, odata_filter, odata_orderby):
     """ Export SCM data """
     with Spinner(description='Exporting SCM data'):
         export = ExportController(account=controller.account)
         jobs = JobsController(account=controller.account)
-        job_id = export.export_scm(export_type=type, filter=odata_filter, orderby=odata_orderby, partner=Control[partner] if partner else None, top=limit)['job_id']
+        job_id = export.export_scm(export_type=type, filter=odata_filter, orderby=odata_orderby, top=limit)['job_id']
         while (result := jobs.job_status(job_id))['end_time'] is None:
             sleep(3)
         if result['successful']:

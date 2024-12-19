@@ -10,13 +10,12 @@ class ExportController(HttpController):
         self.account = account
 
     @verify_credentials
-    def export_scm(self, export_type: str, filter: str = None, orderby: str = None, partner: Control = None, top: int = None):
+    def export_scm(self, export_type: str, filter: str = None, orderby: str = None, top: int = None):
         """ Download partner data as a CSV """
         params = {
             '$filter': filter,
             '$orderby': orderby,
             '$top': top,
-            'id': partner.name if partner else None,
         }
         res = self._session.post(
             f'{self.account.hq}/export/scm/{export_type}',
