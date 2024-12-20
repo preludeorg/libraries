@@ -96,20 +96,21 @@ class TestPartnerAttach:
         res = unwrap(self.partner.attach)(self.partner, partner=control, api=partner_api, user=user, secret=secret)
         expected = dict(api=partner_api, connected=True)
         assert expected == res
-    
+ 
     def test_get_account(self, unwrap, control, partner_api, user, secret):
         res = unwrap(self.iam.get_account)(self.iam)
-        expected = dict(api=partner_api, id=control.value, username=user)
+        [r.pop('created') for r in res['controls']]
+        pytest.controls = {c['id']: c['instance_id'] for c in res['controls']}
+        expected = dict(api=partner_api, id=control.value, instance_id=pytest.controls[control.value], name='', username=user)
         assert expected in res['controls']
-        pytest.controls = [c['id'] for c in res['controls']]
 
     @pytest.mark.order(-5)
     def test_detach(self, unwrap, control, partner_api, user, secret):
-        unwrap(self.partner.detach)(self.partner, partner=control)
+        unwrap(self.partner.detach)(self.partner, partner=control, instance_id=pytest.controls[control.value])
         res = unwrap(self.iam.get_account)(self.iam)
         for c in res['controls']:
             assert c['id'] != control.value
-        pytest.controls.remove(control.value)
+        pytest.controls.pop(control.value, None)
 
 
 @pytest.mark.order(7)
