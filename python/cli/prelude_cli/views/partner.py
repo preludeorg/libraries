@@ -14,26 +14,29 @@ def partner(ctx):
 @partner.command('attach')
 @click.argument('partner',
                 type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False))
-@click.option('--api', required=True, help='API endpoint of the partner')
-@click.option('--user', default='', help='user identifier')
-@click.option('--secret', default='', help='secret for OAUTH use cases')
+@click.option('--instance_id', help='instance ID of the partner')
+@click.option('--name', help='Friendly name of the partner instance')
+@click.option('--api', help='API endpoint of the partner')
+@click.option('--user', help='user identifier')
+@click.option('--secret', help='secret for OAUTH use cases')
 @click.pass_obj
 @pretty_print
-def attach_partner(controller, partner, api, user, secret):
+def attach_partner(controller, partner, instance_id, name, api, user, secret):
     """ Attach an EDR to Detect """
     with Spinner(description='Attaching partner'):
-        return controller.attach(partner=Control[partner], api=api, user=user, secret=secret)
+        return controller.attach(partner=Control[partner], api=api, user=user, secret=secret, name=name, instance_id=instance_id)
 
 @partner.command('detach')
 @click.confirmation_option(prompt='Are you sure?')
 @click.argument('partner',
                 type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False))
+@click.option('--instance_id', help='instance ID of the partner')
 @click.pass_obj
 @pretty_print
-def detach_partner(controller, partner):
+def detach_partner(controller, partner, instance_id):
     """ Detach an existing partner from your account """
     with Spinner(description='Detaching partner'):
-        return controller.detach(partner=Control[partner])
+        return controller.detach(partner=Control[partner], instance_id=instance_id)
 
 @partner.command('block')
 @click.argument('partner',
