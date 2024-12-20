@@ -30,7 +30,7 @@ def attach_partner(controller, partner, instance_id, name, api, user, secret):
 @click.confirmation_option(prompt='Are you sure?')
 @click.argument('partner',
                 type=click.Choice([c.name for c in Control if c != Control.INVALID], case_sensitive=False))
-@click.option('--instance_id', help='instance ID of the partner')
+@click.option('--instance_id', required=True, help='instance ID of the partner')
 @click.pass_obj
 @pretty_print
 def detach_partner(controller, partner, instance_id):
