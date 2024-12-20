@@ -36,11 +36,10 @@ class PartnerController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
-    def detach(self, partner: Control, instance_id: str | None = None):
+    def detach(self, partner: Control, instance_id: str):
         """ Detach a partner from your Detect account """
-        extra = f'/{instance_id}' if instance_id else ''
         res = self._session.delete(
-            f'{self.account.hq}/partner/{partner.name}{extra}',
+            f'{self.account.hq}/partner/{partner.name}/{instance_id}',
             headers=self.account.headers,
             timeout=10
         )
