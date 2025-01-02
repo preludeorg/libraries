@@ -99,13 +99,13 @@ class ScmController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
-    def evaluation(self, partner: Control, filter: str = None, techniques: str = None):
+    def evaluation(self, partner: Control, instance_id: str, filter: str = None, techniques: str = None):
         """ Get policy evaluations for given partner """
         params = {'$filter': filter}
         if techniques:
             params['techniques'] = techniques
         res = self._session.get(
-            f'{self.account.hq}/scm/evaluations/{partner.name}',
+            f'{self.account.hq}/scm/evaluations/{partner.name}/{instance_id}',
             params=params,
             headers=self.account.headers,
             timeout=30
@@ -115,10 +115,10 @@ class ScmController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
-    def update_evaluation(self, partner: Control):
+    def update_evaluation(self, partner: Control, instance_id: str):
         """ Update policy evaluations for given partner """
         res = self._session.post(
-            f'{self.account.hq}/scm/evaluations/{partner.name}',
+            f'{self.account.hq}/scm/evaluations/{partner.name}/{instance_id}',
             headers=self.account.headers,
             timeout=60
         )
@@ -204,11 +204,12 @@ class ScmController(HttpController):
         raise Exception(res.text)
     
     @verify_credentials
-    def put_policy_exceptions(self, partner: Control, expires, policy_id, setting_names):
+    def put_policy_exceptions(self, partner: Control, expires, instance_id: str, policy_id, setting_names):
         """ Put policy exceptions """
         body = dict(
             control=partner.name,
             expires=expires,
+            instance_id=instance_id,
             policy_id=policy_id,
             setting_names=setting_names
         )

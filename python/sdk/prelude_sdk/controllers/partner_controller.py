@@ -12,11 +12,20 @@ class PartnerController(HttpController):
         self.account = account
 
     @verify_credentials
-    def attach(self, partner: Control, api: str, user: str, secret: str):
+    def attach(self, partner: Control, api: str, user: str, secret: str, name: str | None = None, instance_id: str | None = None):
         """ Attach a partner to your account """
-        params = dict(api=api, user=user, secret=secret)
+        params = dict()
+        if name:
+            params['name'] = name
+        if api:
+            params['api'] = api
+        if user:
+            params['user'] = user
+        if secret:
+            params['secret'] = secret
+        extra = f'/{instance_id}' if instance_id else ''
         res = self._session.post(
-            f'{self.account.hq}/partner/{partner.name}',
+            f'{self.account.hq}/partner/{partner.name}{extra}',
             headers=self.account.headers,
             json=params,
             timeout=10
@@ -26,10 +35,10 @@ class PartnerController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
-    def detach(self, partner: Control):
+    def detach(self, partner: Control, instance_id: str):
         """ Detach a partner from your Detect account """
         res = self._session.delete(
-            f'{self.account.hq}/partner/{partner.name}',
+            f'{self.account.hq}/partner/{partner.name}/{instance_id}',
             headers=self.account.headers,
             timeout=10
         )
