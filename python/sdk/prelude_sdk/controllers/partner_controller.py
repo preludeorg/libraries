@@ -17,16 +17,15 @@ class PartnerController(HttpController):
         params = dict()
         if name:
             params['name'] = name
-        if instance_id:
-            params['instance_id'] = instance_id
         if api:
             params['api'] = api
         if user:
             params['user'] = user
         if secret:
             params['secret'] = secret
+        extra = f'/{instance_id}' if instance_id else ''
         res = self._session.post(
-            f'{self.account.hq}/partner/{partner.name}',
+            f'{self.account.hq}/partner/{partner.name}{extra}',
             headers=self.account.headers,
             json=params,
             timeout=10
