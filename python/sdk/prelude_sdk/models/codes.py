@@ -301,7 +301,7 @@ class PartnerEvents(Enum, metaclass=MissingItem):
     MISSING_AV_POLICY = 4
     MISSING_MFA = 5
     NO_ASSET_MANAGER = 6
-    POLICY_SETTING_FAILURE = 7
+    POLICY = 7
 
     @classmethod
     def _missing_(cls, value):
@@ -316,6 +316,7 @@ class AlertTypes(Enum, metaclass=MissingItem):
     NEW_MISSING_MFA_USERS = 5
     NEW_NO_ASSET_MANAGER_ENDPOINTS = 6
     NEW_POLICY_SETTING_FAILURE = 7
+    NEW_POLICY_SETTING_PASS = 8
 
     @classmethod
     def _missing_(cls, value):
