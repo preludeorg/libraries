@@ -314,7 +314,7 @@ class PartnerEvents(Enum, metaclass=MissingItem):
                 ControlCategory.XDR
             ],
             PartnerEvents.NO_EDR: [
-                ControlCategory.ASSET_MANAGER,
+                ControlCategory.XDR,
             ],
             PartnerEvents.MISSING_EDR_POLICY: [
                 ControlCategory.XDR
@@ -326,10 +326,9 @@ class PartnerEvents(Enum, metaclass=MissingItem):
                 ControlCategory.IDENTITY
             ],
             PartnerEvents.NO_ASSET_MANAGER: [
-                ControlCategory.XDR
+                ControlCategory.ASSET_MANAGER
             ],
             PartnerEvents.MISCONFIGURED_POLICY_SETTING: [
-                ControlCategory.ASSET_MANAGER,
                 ControlCategory.XDR,
                 ControlCategory.EMAIL,
                 ControlCategory.IDENTITY
