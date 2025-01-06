@@ -301,11 +301,40 @@ class PartnerEvents(Enum, metaclass=MissingItem):
     MISSING_AV_POLICY = 4
     MISSING_MFA = 5
     NO_ASSET_MANAGER = 6
-    POLICY = 7
+    MISCONFIGURED_POLICY_SETTING = 7
 
     @classmethod
     def _missing_(cls, value):
         return PartnerEvents.INVALID
+
+    @classmethod
+    def control_category_mapping(cls):
+        return {
+            PartnerEvents.REDUCED_FUNCTIONALITY_MODE: [
+                ControlCategory.XDR
+            ],
+            PartnerEvents.NO_EDR: [
+                ControlCategory.ASSET_MANAGER,
+            ],
+            PartnerEvents.MISSING_EDR_POLICY: [
+                ControlCategory.XDR
+            ],
+            PartnerEvents.MISSING_AV_POLICY: [
+                ControlCategory.XDR
+            ],
+            PartnerEvents.MISSING_MFA: [
+                ControlCategory.IDENTITY
+            ],
+            PartnerEvents.NO_ASSET_MANAGER: [
+                ControlCategory.XDR
+            ],
+            PartnerEvents.MISCONFIGURED_POLICY_SETTING: [
+                ControlCategory.ASSET_MANAGER,
+                ControlCategory.XDR,
+                ControlCategory.EMAIL,
+                ControlCategory.IDENTITY
+            ],
+        }
 
 class AlertTypes(Enum, metaclass=MissingItem):
     INVALID = -1
