@@ -5,7 +5,7 @@ import time
 from prelude_sdk.controllers.export_controller import ExportController
 from prelude_sdk.controllers.jobs_controller import JobsController
 from prelude_sdk.controllers.scm_controller import ScmController
-from prelude_sdk.models.codes import Control, ControlCategory
+from prelude_sdk.models.codes import Control, ControlCategory, SCMCategory
 
 
 @pytest.mark.order(8)
@@ -57,7 +57,7 @@ class TestScmAcrossControls:
     def test_export_endpoints_csv(self, unwrap):
         if not pytest.expected_account['features']['policy_evaluator']:
             pytest.skip('POLICY_EVALUATOR feature not enabled')
-        job_id = unwrap(self.export.export_scm)(self.export, 'endpoints', filter="contains(normalized_hostname, 'spencer')", top=1)['job_id']
+        job_id = unwrap(self.export.export_scm)(self.export, SCMCategory.ENDPOINT, filter="contains(normalized_hostname, 'spencer')", top=1)['job_id']
         while (result := unwrap(self.jobs.job_status)(self.jobs, job_id))['end_time'] is None:
             time.sleep(3)
         assert result['successful'], result
@@ -105,7 +105,7 @@ class TestScmPerControl:
         if 'endpoint_evaluation' in evaluation:
             evaluation = evaluation['endpoint_evaluation']
             assert {'policies'} == evaluation.keys()
-            if control.category == ControlCategory.XDR:
+            if control.control_category == ControlCategory.XDR:
                 assert len(evaluation['policies']) > 0
                 assert {'id', 'name', 'platform', 'settings', 'conflict_count', 'endpoint_count', 'success_count'} == evaluation['policies'][0].keys()
             else:
