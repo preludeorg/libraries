@@ -6,7 +6,7 @@ from prelude_cli.views.shared import Spinner, pretty_print
 from prelude_sdk.controllers.export_controller import ExportController
 from prelude_sdk.controllers.jobs_controller import JobsController
 from prelude_sdk.controllers.scm_controller import ScmController
-from prelude_sdk.models.codes import Control
+from prelude_sdk.models.codes import Control, SCMCategory
 
 
 @click.group()
@@ -104,7 +104,7 @@ def sync(controller, partner, instance_id):
         return result
     
 @scm.command('export')
-@click.argument('type', type=click.Choice(['endpoints', 'inboxes', 'users'], case_sensitive=False))
+@click.argument('type', type=click.Choice([c.name for c in SCMCategory if c.value > 0], case_sensitive=False))
 @click.option('-o', '--output_file', help='csv filename to export to', type=click.Path(writable=True), required=True)
 @click.option('--limit', default=100, help='maximum number of results to return', type=int)
 @click.option('--odata_filter', help='OData filter string', default=None)
@@ -116,7 +116,7 @@ def export(controller, type, output_file, limit, odata_filter, odata_orderby):
     with Spinner(description='Exporting SCM data'):
         export = ExportController(account=controller.account)
         jobs = JobsController(account=controller.account)
-        job_id = export.export_scm(export_type=type, filter=odata_filter, orderby=odata_orderby, top=limit)['job_id']
+        job_id = export.export_scm(export_type=SCMCategory[type], filter=odata_filter, orderby=odata_orderby, top=limit)['job_id']
         while (result := jobs.job_status(job_id))['end_time'] is None:
             sleep(3)
         if result['successful']:
