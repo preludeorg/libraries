@@ -382,3 +382,34 @@ class AuditEvent(Enum, metaclass=MissingItem):
     @classmethod
     def _missing_(cls, value):
         return AuditEvent.INVALID
+
+
+class PolicyType(Enum, metaclass=MissingItem):
+    INVALID = 0
+    EDR = 1
+    AV = 2
+    IDENTITY = 3
+    EMAIL_ANTIPHISH = 4
+    EMAIL_OUTBOUND = 5
+    EMAIL_CONTENT = 6
+    EMAIL_MALWARE = 7
+    EMAIL_ATTACHMENT = 8
+    EMAIL_LINKS = 9
+    EMAIL_DKIM = 10
+    DEVICE_COMPLIANCE = 11
+
+    @classmethod
+    def _missing_(cls, value):
+        return PolicyType.INVALID
+
+
+class PolicyPlatform(Enum, metaclass=MissingItem):
+    INVALID = 0
+    WINDOWS = 1
+    DARWIN = 2
+    LINUX = 3
+    ALL = 4
+
+    @classmethod
+    def _missing_(cls, value):
+        return PolicyPlatform.INVALID
