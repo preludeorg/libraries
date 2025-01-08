@@ -403,7 +403,7 @@ class PolicyType(Enum, metaclass=MissingItem):
         return PolicyType.INVALID
 
 
-class PolicyPlatform(Enum, metaclass=MissingItem):
+class Platform(Enum, metaclass=MissingItem):
     INVALID = 0
     WINDOWS = 1
     DARWIN = 2
@@ -412,4 +412,4 @@ class PolicyPlatform(Enum, metaclass=MissingItem):
 
     @classmethod
     def _missing_(cls, value):
-        return PolicyPlatform.INVALID
+        return Platform.INVALID
