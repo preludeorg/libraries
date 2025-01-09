@@ -296,7 +296,7 @@ class ScmController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
-    def list_scm_notifications(self):
+    def list_notifications(self):
         res = self._session.get(
             f'{self.account.hq}/scm/notifications',
             headers=self.account.headers,
@@ -307,7 +307,7 @@ class ScmController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
-    def delete_scm_notification(self, notification_id: str):
+    def delete_notification(self, notification_id: str):
         res = self._session.delete(
             f'{self.account.hq}/scm/notifications/{notification_id}',
             headers=self.account.headers,
@@ -318,7 +318,7 @@ class ScmController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
-    def upsert_scm_notification(
+    def upsert_notification(
         self,
         control_category: ControlCategory,
         event: PartnerEvents,

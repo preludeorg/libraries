@@ -172,23 +172,23 @@ def parse_from_partner_advisory(controller, partner, advisory_id):
     with Spinner('Uploading'):
         return controller.parse_from_partner_advisory(partner=Control[partner], advisory_id=advisory_id)
 
-@scm.command('list-scm-notifications')
+@scm.command('list-notifications')
 @click.pass_obj
 @pretty_print
-def list_scm_notifications(controller):
+def list_notifications(controller):
     with Spinner('Fetching notifications'):
-        return controller.list_scm_notifications()
+        return controller.list_notifications()
 
-@scm.command('delete-scm-notification')
+@scm.command('delete-notification')
 @click.argument('notification_id', type=str)
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
 @pretty_print
-def delete_scm_notification(controller, notification_id):
+def delete_notification(controller, notification_id):
     with Spinner('Deleting notification'):
-        return controller.delete_scm_notification(notification_id)
+        return controller.delete_notification(notification_id)
 
-@scm.command('upsert-scm-notification')
+@scm.command('upsert-notification')
 @click.argument('control_category', type=click.Choice([c.name for c in ControlCategory], case_sensitive=False))
 @click.option('-e', '--emails', help='comma-separated list of emails to notify', default=None, type=str)
 @click.option('-v', '--event', help='event to trigger notification for', type=click.Choice([e.name for e in PartnerEvents], case_sensitive=False), required=True)
@@ -201,10 +201,10 @@ def delete_scm_notification(controller, notification_id):
 @click.option('-t', '--title', help='notification title', default='SCM Notification', type=str)
 @click.pass_obj
 @pretty_print
-def upsert_scm_notification(controller, control_category, emails, event, filter, id, message, run_code, scheduled_hour, slack_urls, title):
+def upsert_notification(controller, control_category, emails, event, filter, id, message, run_code, scheduled_hour, slack_urls, title):
     """ Upsert an SCM notification """
     with Spinner('Upserting notification'):
-        return controller.upsert_scm_notification(
+        return controller.upsert_notification(
             control_category=ControlCategory[control_category],
             emails=emails.split(',') if emails else None,
             event=PartnerEvents[event],
