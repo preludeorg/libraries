@@ -18,29 +18,33 @@ class TestScmAcrossControls:
         self.export = ExportController(pytest.account)
         self.jobs = JobsController(pytest.account)
         self.scm = ScmController(pytest.account)
+        self.notification_id = str(uuid.uuid4())
 
-    def test_notifications(self, unwrap):
-        notification_id = str(uuid.uuid4())
+    def test_create_notification(self, unwrap):
         unwrap(self.scm.upsert_scm_notification)(
-            self.scm, ControlCategory.XDR, PartnerEvents.NO_EDR, RunCode.DAILY, 0, ['test@email.com'], id=notification_id
+            self.scm, ControlCategory.XDR, PartnerEvents.NO_EDR, RunCode.DAILY, 0, ['test@email.com'], id=self.notification_id
         )
         notifications = unwrap(self.scm.list_scm_notifications)(self.scm)
         for notification in notifications:
-            if notification['id'] == notification_id:
+            if notification['id'] == self.notification_id:
                 assert notification['scheduled_hour'] == 0
                 assert notification['event'] == PartnerEvents.NO_EDR.value
+
+    def test_update_notification(self, unwrap):
         unwrap(self.scm.upsert_scm_notification)(
-            self.scm, ControlCategory.XDR, PartnerEvents.REDUCED_FUNCTIONALITY_MODE, RunCode.DAILY, 1, ['test@email.com'], id=notification_id
+            self.scm, ControlCategory.XDR, PartnerEvents.REDUCED_FUNCTIONALITY_MODE, RunCode.DAILY, 1, ['test@email.com'], id=self.notification_id
         )
         notifications = unwrap(self.scm.list_scm_notifications)(self.scm)
         for notification in notifications:
-            if notification['id'] == notification_id:
+            if notification['id'] == self.notification_id:
                 assert notification['scheduled_hour'] == 1
                 assert notification['event'] == PartnerEvents.REDUCED_FUNCTIONALITY_MODE.value
-        unwrap(self.scm.delete_scm_notification)(self.scm, notification_id)
+
+    def test_delete_notification(self, unwrap):
+        unwrap(self.scm.delete_scm_notification)(self.scm, self.notification_id)
         notifications = unwrap(self.scm.list_scm_notifications)(self.scm)
         for notification in notifications:
-            assert notification['id'] != notification_id
+            assert notification['id'] != self.notification_id
 
     def test_evaluation_summary(self, unwrap):
         summary = unwrap(self.scm.evaluation_summary)(self.scm)
