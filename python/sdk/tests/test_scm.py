@@ -1,11 +1,12 @@
 import pytest
 import requests
 import time
+import uuid
 
 from prelude_sdk.controllers.export_controller import ExportController
 from prelude_sdk.controllers.jobs_controller import JobsController
 from prelude_sdk.controllers.scm_controller import ScmController
-from prelude_sdk.models.codes import Control, ControlCategory, SCMCategory
+from prelude_sdk.models.codes import Control, ControlCategory, PartnerEvents, RunCode, SCMCategory
 
 
 @pytest.mark.order(8)
@@ -17,6 +18,33 @@ class TestScmAcrossControls:
         self.export = ExportController(pytest.account)
         self.jobs = JobsController(pytest.account)
         self.scm = ScmController(pytest.account)
+        self.notification_id = str(uuid.uuid4())
+
+    def test_create_notification(self, unwrap):
+        unwrap(self.scm.upsert_notification)(
+            self.scm, ControlCategory.XDR, PartnerEvents.NO_EDR, RunCode.DAILY, 0, ['test@email.com'], id=self.notification_id
+        )
+        notifications = unwrap(self.scm.list_notifications)(self.scm)
+        for notification in notifications:
+            if notification['id'] == self.notification_id:
+                assert notification['scheduled_hour'] == 0
+                assert notification['event'] == PartnerEvents.NO_EDR.value
+
+    def test_update_notification(self, unwrap):
+        unwrap(self.scm.upsert_notification)(
+            self.scm, ControlCategory.XDR, PartnerEvents.REDUCED_FUNCTIONALITY_MODE, RunCode.DAILY, 1, ['test@email.com'], id=self.notification_id
+        )
+        notifications = unwrap(self.scm.list_notifications)(self.scm)
+        for notification in notifications:
+            if notification['id'] == self.notification_id:
+                assert notification['scheduled_hour'] == 1
+                assert notification['event'] == PartnerEvents.REDUCED_FUNCTIONALITY_MODE.value
+
+    def test_delete_notification(self, unwrap):
+        unwrap(self.scm.delete_notification)(self.scm, self.notification_id)
+        notifications = unwrap(self.scm.list_notifications)(self.scm)
+        for notification in notifications:
+            assert notification['id'] != self.notification_id
 
     def test_evaluation_summary(self, unwrap):
         summary = unwrap(self.scm.evaluation_summary)(self.scm)

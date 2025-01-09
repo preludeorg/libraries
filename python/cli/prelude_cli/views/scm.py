@@ -6,7 +6,7 @@ from prelude_cli.views.shared import Spinner, pretty_print
 from prelude_sdk.controllers.export_controller import ExportController
 from prelude_sdk.controllers.jobs_controller import JobsController
 from prelude_sdk.controllers.scm_controller import ScmController
-from prelude_sdk.models.codes import Control, SCMCategory
+from prelude_sdk.models.codes import Control, ControlCategory, PartnerEvents, RunCode, SCMCategory
 
 
 @click.group()
@@ -160,7 +160,7 @@ def list_scm_threats(controller):
 @click.pass_obj
 @pretty_print
 def parse_threat_intel(controller, threat_pdf):
-    with Spinner('Parsing PDF') as spinner:
+    with Spinner('Parsing PDF'):
         return controller.parse_threat_intel(threat_pdf)
 
 @scm.command('from-advisory')
@@ -169,5 +169,50 @@ def parse_threat_intel(controller, threat_pdf):
 @click.pass_obj
 @pretty_print
 def parse_from_partner_advisory(controller, partner, advisory_id):
-    with Spinner('Uploading') as spinner:
+    with Spinner('Uploading'):
         return controller.parse_from_partner_advisory(partner=Control[partner], advisory_id=advisory_id)
+
+@scm.command('list-notifications')
+@click.pass_obj
+@pretty_print
+def list_notifications(controller):
+    with Spinner('Fetching notifications'):
+        return controller.list_notifications()
+
+@scm.command('delete-notification')
+@click.argument('notification_id', type=str)
+@click.confirmation_option(prompt='Are you sure?')
+@click.pass_obj
+@pretty_print
+def delete_notification(controller, notification_id):
+    with Spinner('Deleting notification'):
+        return controller.delete_notification(notification_id)
+
+@scm.command('upsert-notification')
+@click.argument('control_category', type=click.Choice([c.name for c in ControlCategory], case_sensitive=False))
+@click.option('-e', '--emails', help='comma-separated list of emails to notify', default=None, type=str)
+@click.option('-v', '--event', help='event to trigger notification for', type=click.Choice([e.name for e in PartnerEvents], case_sensitive=False), required=True)
+@click.option('-f', '--filter', help='OData filter string', default=None, type=str)
+@click.option('-i', '--id', help='ID of the notification to update', default=None, type=str)
+@click.option('-m', '--message', help='notification message', default='', type=str)
+@click.option('-r', '--run_code', help='notification frequency', type=click.Choice([r.name for r in RunCode], case_sensitive=False), required=True)
+@click.option('-s', '--scheduled_hour', help='scheduled hour to receive notifications', type=int, required=True)
+@click.option('-u', '--slack_urls', help='comma-separated list of Slack Webhook URLs to notify', default=None, type=str)
+@click.option('-t', '--title', help='notification title', default='SCM Notification', type=str)
+@click.pass_obj
+@pretty_print
+def upsert_notification(controller, control_category, emails, event, filter, id, message, run_code, scheduled_hour, slack_urls, title):
+    """ Upsert an SCM notification """
+    with Spinner('Upserting notification'):
+        return controller.upsert_notification(
+            control_category=ControlCategory[control_category],
+            emails=emails.split(',') if emails else None,
+            event=PartnerEvents[event],
+            filter=filter,
+            id=id,
+            message=message,
+            run_code=RunCode[run_code],
+            scheduled_hour=scheduled_hour,
+            slack_urls=slack_urls.split(',') if slack_urls else None,
+            title=title
+        )

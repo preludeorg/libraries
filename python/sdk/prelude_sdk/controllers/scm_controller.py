@@ -1,7 +1,7 @@
 from prelude_sdk.controllers.http_controller import HttpController
 
 from prelude_sdk.models.account import verify_credentials
-from prelude_sdk.models.codes import Control, ControlCategory
+from prelude_sdk.models.codes import Control, ControlCategory, PartnerEvents, RunCode
 
 
 class ScmController(HttpController):
@@ -290,6 +290,73 @@ class ScmController(HttpController):
             headers=self.account.headers,
             json=params,
             timeout=30
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def list_notifications(self):
+        res = self._session.get(
+            f'{self.account.hq}/scm/notifications',
+            headers=self.account.headers,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def delete_notification(self, notification_id: str):
+        res = self._session.delete(
+            f'{self.account.hq}/scm/notifications/{notification_id}',
+            headers=self.account.headers,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def upsert_notification(
+        self,
+        control_category: ControlCategory,
+        event: PartnerEvents,
+        run_code: RunCode,
+        scheduled_hour: int,
+        emails: list[str] = None,
+        filter: str = None,
+        id: str = None,
+        message: str = '',
+        slack_urls: list[str] = None,
+        title: str = 'SCM Notification',
+    ):
+        body = dict(
+            control_category=control_category.name,
+            event=event.name,
+            run_code=run_code.name,
+            scheduled_hour=scheduled_hour,
+        )
+        if id:
+            body['id'] = id
+        if filter:
+            body['filter'] = filter
+        if emails:
+            body['email'] = dict(
+                emails=emails,
+                message=message,
+                subject=title
+            )
+        if slack_urls:
+            body['slack'] = dict(
+                hook_urls=slack_urls,
+                message=message
+            )
+        res = self._session.put(
+            f'{self.account.hq}/scm/notifications',
+            json=body,
+            headers=self.account.headers,
+            timeout=10
         )
         if res.status_code == 200:
             return res.json()
