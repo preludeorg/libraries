@@ -172,6 +172,9 @@ class Control(Enum, metaclass=MissingItem):
     M365 = 10
     ENTRA = 11
     JAMF = 12
+    CROWDSTRIKE_IDENTITY = 13
+    GMAIL = 14
+    GOOGLE_IDENTITY = 15
 
     @classmethod
     def _missing_(cls, value):
@@ -215,10 +218,13 @@ class ControlCategory(Enum, metaclass=MissingItem):
             ],
             ControlCategory.CLOUD: [],
             ControlCategory.EMAIL: [
+                Control.GMAIL,
                 Control.M365,
             ],
             ControlCategory.IDENTITY: [
+                Control.CROWDSTRIKE_IDENTITY,
                 Control.ENTRA,
+                Control.GOOGLE_IDENTITY,
                 Control.OKTA,
             ],
             ControlCategory.NETWORK: [],
@@ -252,10 +258,13 @@ class SCMCategory(Enum, metaclass=MissingItem):
                 Control.SERVICENOW,
             ],
             SCMCategory.USER: [
+                Control.CROWDSTRIKE_IDENTITY,
                 Control.ENTRA,
+                Control.GOOGLE_IDENTITY,
                 Control.OKTA,
             ],
             SCMCategory.INBOX: [
+                Control.GMAIL,
                 Control.M365,
             ]
         }
