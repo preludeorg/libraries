@@ -224,13 +224,21 @@ class ScmController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
-    def create_scm_threat(self, name, description=None, published=None, techniques=None):
+    def create_scm_threat(self, name, description=None, id=None, generated=None, published=None, source=None, source_id=None, techniques=None):
         """ Create an scm threat """
         body = dict(name=name)
         if description:
             body['description'] = description
+        if id:
+            body['id'] = id
+        if generated:
+            body['generated'] = generated
         if published:
             body['published'] = published
+        if source:
+            body['source'] = source
+        if source_id:
+            body['source_id'] = source_id
         if techniques:
             body['techniques'] = techniques
 
