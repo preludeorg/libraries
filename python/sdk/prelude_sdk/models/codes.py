@@ -397,7 +397,7 @@ class PolicyType(Enum, metaclass=MissingItem):
     INVALID = 0
     EDR = 1
     AV = 2
-    IDENTITY = 3
+    IDENTITY_PASSWORD = 3
     EMAIL_ANTIPHISH = 4
     EMAIL_OUTBOUND = 5
     EMAIL_CONTENT = 6
@@ -406,6 +406,7 @@ class PolicyType(Enum, metaclass=MissingItem):
     EMAIL_LINKS = 9
     EMAIL_DKIM = 10
     DEVICE_COMPLIANCE = 11
+    IDENTITY_MFA = 12
 
     @classmethod
     def _missing_(cls, value):
