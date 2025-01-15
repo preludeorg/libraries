@@ -224,13 +224,21 @@ class ScmController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
-    def create_scm_threat(self, name, description=None, published=None, techniques=None):
+    def create_threat(self, name, description=None, id=None, generated=None, published=None, source=None, source_id=None, techniques=None):
         """ Create an scm threat """
         body = dict(name=name)
         if description:
             body['description'] = description
+        if id:
+            body['id'] = id
+        if generated:
+            body['generated'] = generated
         if published:
             body['published'] = published
+        if source:
+            body['source'] = source
+        if source_id:
+            body['source_id'] = source_id
         if techniques:
             body['techniques'] = techniques
 
@@ -245,10 +253,10 @@ class ScmController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
-    def delete_scm_threat(self, name):
+    def delete_threat(self, id):
         """ Delete an existing scm threat """
         res = self._session.delete(
-            f'{self.account.hq}/scm/threats/{name}',
+            f'{self.account.hq}/scm/threats/{id}',
             headers=self.account.headers,
             timeout=10
         )
@@ -257,7 +265,19 @@ class ScmController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
-    def list_scm_threats(self):
+    def get_threat(self, id):
+        """ Get specific scm threat """
+        res = self._session.get(
+            f'{self.account.hq}/scm/threats/{id}',
+            headers=self.account.headers,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def list_threats(self):
         """ List all scm threats """
         res = self._session.get(
             f'{self.account.hq}/scm/threats',

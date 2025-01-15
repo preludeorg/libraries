@@ -125,35 +125,48 @@ def export(controller, type, output_file, limit, odata_filter, odata_orderby):
                 f.write(data)
         return result, f'Exported data to {output_file}'
 
-@scm.command('create-scm-threat', hidden=True)
+@scm.command('create-threat')
 @click.argument('name')
 @click.option('-d', '--description', help='description of the threat', default=None, type=str)
+@click.option('--id', help='uuid for threat', default=None, type=str)
+@click.option('-g', '--generated', help='was the threat AI generated', default=False, type=bool)
 @click.option('-p', '--published', help='date the threat was published', default=None, type=str)
+@click.option('-s', '--source', help='source of threat (ex. www.cisa.gov)', default=None, type=str)
+@click.option('-i', '--source_id', help='ID of the threat, per the source (ex. aa23-075a)', default=None, type=str)
 @click.option('-q', '--techniques', help='comma-separated list of techniques (MITRE ATT&CK IDs)', default=None, type=str)
 @click.pass_obj
 @pretty_print
-def create_scm_threat(controller, name, description, published, techniques):
+def create_threat(controller, name, description, id, generated, published, source, source_id, techniques):
     """ Create an scm threat """
     with Spinner(description='Creating scm threat'):
-        return controller.create_scm_threat(name=name, description=description, published=published, techniques=techniques)
+        return controller.create_threat(name=name, description=description, id=id, generated=generated, published=published, source=source, source_id=source_id, techniques=techniques)
 
-@scm.command('delete-scm-threat', hidden=True)
-@click.argument('threat')
+@scm.command('delete-threat')
+@click.argument('threat_id')
 @click.confirmation_option(prompt='Are you sure?')
 @click.pass_obj
 @pretty_print
-def delete_scm_threat(controller, threat):
+def delete_threat(controller, threat_id):
     """ Delete an scm threat """
     with Spinner(description='Removing scm threat'):
-        return controller.delete_scm_threat(name=threat)
+        return controller.delete_threat(id=threat_id)
 
-@scm.command('list-scm-threats', hidden=True)
+@scm.command('threats')
 @click.pass_obj
 @pretty_print
-def list_scm_threats(controller):
+def list_threats(controller):
     """ List all scm threats """
     with Spinner(description='Fetching scm threats'):
-        return controller.list_scm_threats()
+        return controller.list_threats()
+
+@scm.command('threat')
+@click.argument('threat_id')
+@click.pass_obj
+@pretty_print
+def get_threat(controller, threat_id):
+    """ Get specific scm threat """
+    with Spinner(description='Fetching scm threat'):
+        return controller.get_threat(id=threat_id)
 
 @scm.command('threat-intel')
 @click.argument('threat_pdf', type=click.Path(exists=True, file_okay=True, dir_okay=False, readable=True))
