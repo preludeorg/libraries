@@ -20,6 +20,8 @@ from testutils import *
 class TestVST:
 
     def setup_class(self):
+        if not pytest.expected_account['features']['detect']:
+            pytest.skip('DETECT feature not enabled')
         self.build = BuildController(pytest.account)
         self.detect = DetectController(pytest.account)
 

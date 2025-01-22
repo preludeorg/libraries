@@ -16,6 +16,8 @@ from prelude_sdk.models.codes import RunCode
 class TestDetect:
 
     def setup_class(self):
+        if not pytest.expected_account['features']['detect']:
+            pytest.skip('DETECT feature not enabled')
         self.iam = IAMController(pytest.account)
         self.detect = DetectController(pytest.account)
 

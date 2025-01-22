@@ -51,8 +51,9 @@ class TestIAM:
             oidc=dict(),
             features=dict(
                 threat_intel=False,
-                detections=False,
-                policy_evaluator=False,
+                detect=False,
+                detections=True,
+                policy_evaluator=True,
             )
         )
         pytest.expected_account['users'][0]['expires'] = created['users'][0]['expires']
