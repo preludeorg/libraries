@@ -349,6 +349,7 @@ class ScmController(HttpController):
         id: str = None,
         message: str = '',
         slack_urls: list[str] = None,
+        suppress_empty: bool = True,
         title: str = 'SCM Notification',
     ):
         body = dict(
@@ -356,6 +357,7 @@ class ScmController(HttpController):
             event=event.name,
             run_code=run_code.name,
             scheduled_hour=scheduled_hour,
+            suppress_empty=suppress_empty
         )
         if id:
             body['id'] = id
