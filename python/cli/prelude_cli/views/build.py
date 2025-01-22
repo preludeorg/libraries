@@ -26,11 +26,12 @@ def build(ctx):
 @build.command('create-test')
 @click.argument('name')
 @click.option('-u', '--unit', required=True, help='unit identifier', type=str)
+@click.option('-s', '--source-test-id', help='source test to copy', default=None, type=str)
 @click.option('-t', '--test', help='test identifier', default=None, type=str)
 @click.option('-q', '--technique', help='MITRE ATT&CK code [e.g. T1557]', default=None, type=str)
 @click.pass_obj
 @pretty_print
-def create_test(controller, name, unit, test, technique):
+def create_test(controller, name, unit, source_test_id, test, technique):
     """ Create a security test """
     def create_template(template, name):
         template_body = pkg_resources.read_text(templates, template)
@@ -53,11 +54,12 @@ def create_test(controller, name, unit, test, technique):
         res = controller.create_test(
             name=name,
             unit=unit,
+            source_test_id=source_test_id,
             test_id=test,
-            technique=technique
+            technique=technique,
         )
 
-    if not test:
+    if not test and not source_test_id:
         Path(res['id']).mkdir(parents=True, exist_ok=True)
         create_template(template='README.md', name='README.md')
         create_template(template='template.go', name=f'{res["id"]}.go')

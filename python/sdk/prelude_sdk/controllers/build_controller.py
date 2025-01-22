@@ -12,13 +12,15 @@ class BuildController(HttpController):
         self.account = account
 
     @verify_credentials
-    def create_test(self, name, unit, technique=None, test_id=None):
+    def create_test(self, name, unit, technique=None, source_test_id=None, test_id=None):
         """ Create or update a test """
         body = dict(name=name, unit=unit)
         if technique:
             body['technique'] = technique
         if test_id:
             body['id'] = test_id
+        if source_test_id:
+            body['source_test_id'] = source_test_id
 
         res = self._session.post(
             f'{self.account.hq}/build/tests',
