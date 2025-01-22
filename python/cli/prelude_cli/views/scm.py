@@ -209,12 +209,13 @@ def delete_notification(controller, notification_id):
 @click.option('-i', '--id', help='ID of the notification to update', default=None, type=str)
 @click.option('-m', '--message', help='notification message', default='', type=str)
 @click.option('-r', '--run_code', help='notification frequency', type=click.Choice([r.name for r in RunCode], case_sensitive=False), required=True)
-@click.option('-s', '--scheduled_hour', help='scheduled hour to receive notifications', type=int, required=True)
+@click.option('-s', '--scheduled_hour', help='scheduled UTC hour to receive notifications', type=int, required=True)
 @click.option('-u', '--slack_urls', help='comma-separated list of Slack Webhook URLs to notify', default=None, type=str)
+@click.option('-p', '--suppress_empty', help='suppress notifications with no results', default=True, type=bool)
 @click.option('-t', '--title', help='notification title', default='SCM Notification', type=str)
 @click.pass_obj
 @pretty_print
-def upsert_notification(controller, control_category, emails, event, filter, id, message, run_code, scheduled_hour, slack_urls, title):
+def upsert_notification(controller, control_category, emails, event, filter, id, message, run_code, scheduled_hour, slack_urls, suppress_empty, title):
     """ Upsert an SCM notification """
     with Spinner('Upserting notification'):
         return controller.upsert_notification(
@@ -227,5 +228,6 @@ def upsert_notification(controller, control_category, emails, event, filter, id,
             run_code=RunCode[run_code],
             scheduled_hour=scheduled_hour,
             slack_urls=slack_urls.split(',') if slack_urls else None,
+            suppress_empty=suppress_empty,
             title=title
         )
