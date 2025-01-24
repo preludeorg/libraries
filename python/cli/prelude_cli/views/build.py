@@ -24,7 +24,7 @@ def build(ctx):
     ctx.obj = BuildController(account=ctx.obj)
 
 @build.command('create-test')
-@click.argument('name')
+@click.argument('name', default="")
 @click.option('-u', '--unit', required=True, help='unit identifier', type=str)
 @click.option('-s', '--source-test-id', help='source test to copy', default=None, type=str)
 @click.option('-t', '--test', help='test identifier', default=None, type=str)
