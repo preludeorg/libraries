@@ -69,6 +69,9 @@ class TestDetect:
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_schedule_threat(self, unwrap):
+        if not pytest.expected_account['features']['detect']:
+            pytest.skip('DETECT feature not enabled')
+
         queue_length = len(pytest.expected_account['queue'])
 
         res = unwrap(self.detect.schedule)(self.detect, [dict(threat_id=pytest.threat_id, run_code=RunCode.DAILY.name)])
@@ -87,6 +90,9 @@ class TestDetect:
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_unschedule_threat(self, unwrap):
+        if not pytest.expected_account['features']['detect']:
+            pytest.skip('DETECT feature not enabled')
+
         queue_length = len(pytest.expected_account['queue'])
 
         unwrap(self.detect.unschedule)(self.detect, [dict(threat_id=pytest.threat_id)])
@@ -95,6 +101,9 @@ class TestDetect:
         assert queue_length - 1 == len(queue), json.dumps(queue, indent=2)
 
     def test_schedule_test(self, unwrap):
+        if not pytest.expected_account['features']['detect']:
+            pytest.skip('DETECT feature not enabled')
+
         queue_length = len(pytest.expected_account['queue'])
 
         res = unwrap(self.detect.schedule)(self.detect, [dict(test_id=pytest.test_id, run_code=RunCode.DEBUG.name, tags=self.updated_tags)])
@@ -114,6 +123,9 @@ class TestDetect:
         assert not diffs, json.dumps(diffs, indent=2)
 
     def test_unschedule_test(self, unwrap):
+        if not pytest.expected_account['features']['detect']:
+            pytest.skip('DETECT feature not enabled')
+
         queue_length = len(pytest.expected_account['queue'])
 
         unwrap(self.detect.unschedule)(self.detect, [dict(test_id=pytest.test_id, tags=self.updated_tags)])

@@ -30,6 +30,9 @@ class TestProbe:
         pytest.endpoint_id = ep[0]['endpoint_id']
 
     def test_schedule(self, unwrap):
+        if not pytest.expected_account['features']['detect']:
+            pytest.skip('DETECT feature not enabled')
+
         queue_len = len(pytest.expected_account['queue'])
         unwrap(self.detect.schedule)(
             self.detect,
@@ -61,6 +64,9 @@ class TestProbe:
         os.chmod(pytest.probe_file, 0o755)
 
     def test_describe_activity(self, unwrap):
+        if not pytest.expected_account['features']['detect']:
+            pytest.skip('DETECT feature not enabled')
+
         try:
             with pytest.raises(subprocess.TimeoutExpired):
                 subprocess.run([pytest.probe_file], capture_output=True, env={'PRELUDE_TOKEN': pytest.token}, timeout=120)
@@ -79,6 +85,9 @@ class TestProbe:
             os.remove(pytest.probe_file)
 
     def test_unschedule(self, unwrap):
+        if not pytest.expected_account['features']['detect']:
+            pytest.skip('DETECT feature not enabled')
+
         queue_len = len(pytest.expected_account['queue'])
         unwrap(self.detect.unschedule)(
             self.detect,

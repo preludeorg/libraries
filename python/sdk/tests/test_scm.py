@@ -15,6 +15,8 @@ class TestScmAcrossControls:
     def setup_class(self):
         if not pytest.expected_account['features']['policy_evaluator']:
             pytest.skip('POLICY_EVALUATOR feature not enabled')
+        if not pytest.controls:
+            pytest.skip('Partners not attached')
         self.export = ExportController(pytest.account)
         self.jobs = JobsController(pytest.account)
         self.scm = ScmController(pytest.account)
@@ -83,8 +85,6 @@ class TestScmAcrossControls:
         assert {'control', 'instance_id', 'setting_count', 'setting_misconfiguration_count'} == summary[0]['instances'][0].keys()
 
     def test_export_endpoints_csv(self, unwrap):
-        if not pytest.expected_account['features']['policy_evaluator']:
-            pytest.skip('POLICY_EVALUATOR feature not enabled')
         job_id = unwrap(self.export.export_scm)(self.export, SCMCategory.ENDPOINT, filter="contains(normalized_hostname, 'spencer')", top=1)['job_id']
         while (result := unwrap(self.jobs.job_status)(self.jobs, job_id))['end_time'] is None:
             time.sleep(3)
