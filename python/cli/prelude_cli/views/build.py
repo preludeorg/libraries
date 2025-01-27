@@ -23,10 +23,21 @@ def build(ctx):
     """ Custom security tests """
     ctx.obj = BuildController(account=ctx.obj)
 
+@build.command('clone-test')
+@click.argument('source-test-id')
+@click.pass_obj
+@pretty_print
+def clone_test(controller, source_test_id):
+    """ Clone a security test """
+
+    with Spinner(description='Creating new test'):
+        return controller.create_test(
+            source_test_id=source_test_id,
+        )
+
 @build.command('create-test')
-@click.argument('name', default="")
+@click.argument('name')
 @click.option('-u', '--unit', required=True, help='unit identifier', type=str)
-@click.option('-s', '--source-test-id', help='source test to copy', default=None, type=str)
 @click.option('-t', '--test', help='test identifier', default=None, type=str)
 @click.option('-q', '--technique', help='MITRE ATT&CK code [e.g. T1557]', default=None, type=str)
 @click.pass_obj

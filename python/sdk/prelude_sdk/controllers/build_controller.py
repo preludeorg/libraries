@@ -12,8 +12,8 @@ class BuildController(HttpController):
         self.account = account
 
     @verify_credentials
-    def create_test(self, name, unit, technique=None, source_test_id=None, test_id=None):
-        """ Create or update a test """
+    def create_test(self, name=None, unit=None, technique=None, source_test_id=None, test_id=None):
+        """ Clone, create, or update a test """
         body = dict(name=name, unit=unit)
         if technique:
             body['technique'] = technique
