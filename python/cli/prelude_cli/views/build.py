@@ -66,7 +66,7 @@ def create_test(controller, name, unit, test, technique):
             name=name,
             unit=unit,
             test_id=test,
-            technique=technique,
+            technique=technique
         )
 
     if not test:
