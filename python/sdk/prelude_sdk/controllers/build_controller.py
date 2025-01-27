@@ -12,15 +12,26 @@ class BuildController(HttpController):
         self.account = account
 
     @verify_credentials
-    def create_test(self, name=None, unit=None, technique=None, source_test_id=None, test_id=None):
-        """ Clone, create, or update a test """
+    def clone_test(self, source_test_id):
+        """ Clone a test """
+        res = self._session.post(
+            f'{self.account.hq}/build/tests',
+            json=dict(source_test_id=source_test_id),
+            headers=self.account.headers,
+            timeout=10
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def create_test(self, name, unit, technique=None, test_id=None):
+        """ Create or update a test """
         body = dict(name=name, unit=unit)
         if technique:
             body['technique'] = technique
         if test_id:
             body['id'] = test_id
-        if source_test_id:
-            body['source_test_id'] = source_test_id
 
         res = self._session.post(
             f'{self.account.hq}/build/tests',
