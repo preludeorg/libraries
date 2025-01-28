@@ -35,6 +35,7 @@ def clone_test(controller, source_test_id):
             source_test_id=source_test_id,
         )
 
+
 @build.command('create-test')
 @click.argument('name')
 @click.option('-u', '--unit', required=True, help='unit identifier', type=str)
@@ -105,6 +106,29 @@ def delete_test(controller, test, purge):
     """ Delete a test """
     with Spinner(description='Removing test'):
         return controller.delete_test(test_id=test, purge=purge)
+
+@build.command('compile-code-file')
+@click.argument('path', type=click.Path(exists=True))
+@click.option('-s','--source-test-id', help='Include source test attachments')
+@click.pass_obj
+@pretty_print
+def compile_code_file(controller, path, source_test_id):
+    """ Test compile a go file, with test attachments if needed. """
+
+    with Spinner(description='Compiling code test') as spinner:
+      with open(path, 'rb') as data:
+        data = controller.compile_code_string(
+            code=data.read(),
+            source_test_id=source_test_id,
+        )
+        if compile_job_id := data.get('job_id'):
+          spinner.update(spinner.task_ids[-1], description='Compiling')
+          while (result := controller.get_compile_status(compile_job_id)) and result['status'] == 'RUNNING':
+              time.sleep(2)
+          if result['status'] == 'FAILED':
+              result['error'] = 'Failed to compile'
+          data |= result
+    return result 
 
 @build.command('undelete-test')
 @click.argument('test')
