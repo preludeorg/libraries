@@ -13,18 +13,25 @@ def pretty_print(func):
                 res, msg = res
             if not isinstance(res, list):
                 res = [res]
-            return print_json(data=dict(status='complete', results=res, message=msg))
+            return print_json(data=dict(status="complete", results=res, message=msg))
         except Exception as e:
-            return print_json(data=dict(status='error', results=None, message=" ".join(str(arg) for arg in e.args)))
+            return print_json(
+                data=dict(
+                    status="error",
+                    results=None,
+                    message=" ".join(str(arg) for arg in e.args),
+                )
+            )
+
     return handler
 
 
-class Spinner(Progress): 
-    def __init__(self, description='Loading'): 
+class Spinner(Progress):
+    def __init__(self, description="Loading"):
         super().__init__(
-            SpinnerColumn(style='green', spinner_name='line'),
-            TextColumn('[green]{task.description}...'),
-            transient=True, 
-            refresh_per_second=10
+            SpinnerColumn(style="green", spinner_name="line"),
+            TextColumn("[green]{task.description}..."),
+            transient=True,
+            refresh_per_second=10,
         )
         self.add_task(description)
