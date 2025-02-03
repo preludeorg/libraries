@@ -120,9 +120,9 @@ class BuildController(HttpController):
 
     @verify_credentials
     def compile_code_string(self, code: str, source_test_id: str = None):
-        """ Compile a code string """
+        """Compile a code string"""
         res = self._session.post(
-            f'{self.account.hq}/build/compile',
+            f"{self.account.hq}/build/compile",
             json=dict(code=code, source_test_id=source_test_id),
             headers=self.account.headers,
             timeout=10,

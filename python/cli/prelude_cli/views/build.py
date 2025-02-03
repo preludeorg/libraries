@@ -124,6 +124,7 @@ def delete_test(controller, test, purge):
     with Spinner(description="Removing test"):
         return controller.delete_test(test_id=test, purge=purge)
 
+
 @build.command("compile-code-file")
 @click.argument("path", type=click.Path(exists=True))
 @click.option("-s", "--source-test-id", help="Include source test attachments")
@@ -148,6 +149,7 @@ def compile_code_file(controller, path, source_test_id):
                     result["error"] = "Failed to compile"
                 data |= result
     return data
+
 
 @build.command("undelete-test")
 @click.argument("test")
