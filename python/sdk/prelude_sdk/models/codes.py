@@ -87,7 +87,7 @@ class ExitCode(Enum):
     def _missing_(cls, value):
         if value and not isinstance(value, int):
             return cls(int(value))
-        logging.warning('Unknown ExitCode: %s', str(value))
+        logging.warning("Unknown ExitCode: %s", str(value))
         return ExitCode.MISSING
 
     @property
@@ -141,18 +141,18 @@ class State(Enum):
 
 
 class DOS(Enum):
-    none = 'none'
-    arm64 = 'arm64'
-    x86_64 = 'x86_64'
-    aarch64 = 'arm64'
-    amd64 = 'x86_64'
-    x86 = 'x86_64'
+    none = "none"
+    arm64 = "arm64"
+    x86_64 = "x86_64"
+    aarch64 = "arm64"
+    amd64 = "x86_64"
+    x86 = "x86_64"
 
     @classmethod
     def normalize(cls, dos: str):
         try:
-            arch = dos.split('-', 1)[-1]
-            return dos[:-len(arch)].lower() + cls[arch.lower()].value
+            arch = dos.split("-", 1)[-1]
+            return dos[: -len(arch)].lower() + cls[arch.lower()].value
         except (KeyError, IndexError, AttributeError):
             return cls.none.value
 
@@ -194,6 +194,7 @@ class Control(Enum, metaclass=MissingItem):
                 return k
         return SCMCategory.NONE
 
+
 class ControlCategory(Enum, metaclass=MissingItem):
     INVALID = -1
     NONE = 0
@@ -214,7 +215,7 @@ class ControlCategory(Enum, metaclass=MissingItem):
             ControlCategory.ASSET_MANAGER: [
                 Control.INTUNE,
                 Control.SERVICENOW,
-                Control.JAMF
+                Control.JAMF,
             ],
             ControlCategory.CLOUD: [],
             ControlCategory.EMAIL: [
@@ -234,6 +235,7 @@ class ControlCategory(Enum, metaclass=MissingItem):
                 Control.SENTINELONE,
             ],
         }
+
 
 class SCMCategory(Enum, metaclass=MissingItem):
     INVALID = -1
@@ -266,19 +268,17 @@ class SCMCategory(Enum, metaclass=MissingItem):
             SCMCategory.INBOX: [
                 Control.GMAIL,
                 Control.M365,
-            ]
+            ],
         }
-    
+
     @classmethod
     def category_mapping(cls):
         return {
-            SCMCategory.ENDPOINT: [
-                ControlCategory.ASSET_MANAGER,
-                ControlCategory.XDR
-            ],
+            SCMCategory.ENDPOINT: [ControlCategory.ASSET_MANAGER, ControlCategory.XDR],
             SCMCategory.USER: [ControlCategory.IDENTITY],
-            SCMCategory.INBOX: [ControlCategory.EMAIL]
+            SCMCategory.INBOX: [ControlCategory.EMAIL],
         }
+
 
 class BackgroundJobTypes(Enum, metaclass=MissingItem):
     INVALID = -1
@@ -292,6 +292,7 @@ class BackgroundJobTypes(Enum, metaclass=MissingItem):
     def _missing_(cls, value):
         return BackgroundJobTypes.INVALID
 
+
 class EDRResponse(Enum, metaclass=MissingItem):
     INVALID = -1
     OBSERVE = 1
@@ -301,6 +302,7 @@ class EDRResponse(Enum, metaclass=MissingItem):
     @classmethod
     def _missing_(cls, value):
         return EDRResponse.INVALID
+
 
 class PartnerEvents(Enum, metaclass=MissingItem):
     INVALID = -1
@@ -319,30 +321,21 @@ class PartnerEvents(Enum, metaclass=MissingItem):
     @classmethod
     def control_category_mapping(cls):
         return {
-            PartnerEvents.REDUCED_FUNCTIONALITY_MODE: [
-                ControlCategory.XDR
-            ],
+            PartnerEvents.REDUCED_FUNCTIONALITY_MODE: [ControlCategory.XDR],
             PartnerEvents.NO_EDR: [
                 ControlCategory.XDR,
             ],
-            PartnerEvents.MISSING_EDR_POLICY: [
-                ControlCategory.XDR
-            ],
-            PartnerEvents.MISSING_AV_POLICY: [
-                ControlCategory.XDR
-            ],
-            PartnerEvents.MISSING_MFA: [
-                ControlCategory.IDENTITY
-            ],
-            PartnerEvents.NO_ASSET_MANAGER: [
-                ControlCategory.ASSET_MANAGER
-            ],
+            PartnerEvents.MISSING_EDR_POLICY: [ControlCategory.XDR],
+            PartnerEvents.MISSING_AV_POLICY: [ControlCategory.XDR],
+            PartnerEvents.MISSING_MFA: [ControlCategory.IDENTITY],
+            PartnerEvents.NO_ASSET_MANAGER: [ControlCategory.ASSET_MANAGER],
             PartnerEvents.MISCONFIGURED_POLICY_SETTING: [
                 ControlCategory.XDR,
                 ControlCategory.EMAIL,
-                ControlCategory.IDENTITY
+                ControlCategory.IDENTITY,
             ],
         }
+
 
 class AlertTypes(Enum, metaclass=MissingItem):
     INVALID = -1
@@ -358,6 +351,7 @@ class AlertTypes(Enum, metaclass=MissingItem):
     @classmethod
     def _missing_(cls, value):
         return AlertTypes.INVALID
+
 
 class AuditEvent(Enum, metaclass=MissingItem):
     INVALID = 0

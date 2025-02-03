@@ -8,11 +8,9 @@ class ProbeController(HttpController):
         self.account = account
 
     def download(self, name: str, dos: str):
-        """ Download a probe executable """
+        """Download a probe executable"""
         res = self._session.get(
-            f'{self.account.hq}/download/{name}',
-            headers=dict(dos=dos),
-            timeout=10
+            f"{self.account.hq}/download/{name}", headers=dict(dos=dos), timeout=10
         )
         if not res.status_code == 200:
             raise Exception(res.text)
