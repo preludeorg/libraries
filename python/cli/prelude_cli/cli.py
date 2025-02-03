@@ -14,10 +14,17 @@ from prelude_sdk.models.account import Account
 def complete_profile(ctx, param, incomplete):
     return [x for x in Account().read_keychain_config() if x.startswith(incomplete)]
 
+
 @click.group(invoke_without_command=True)
 @click.version_option()
 @click.pass_context
-@click.option('--profile', default='default', help='The prelude keychain profile to use', show_default=True, shell_complete=complete_profile)
+@click.option(
+    "--profile",
+    default="default",
+    help="The prelude keychain profile to use",
+    show_default=True,
+    shell_complete=complete_profile,
+)
 def cli(ctx, profile):
     ctx.obj = Account(profile=profile)
     if ctx.invoked_subcommand is None:
@@ -34,5 +41,5 @@ cli.add_command(partner)
 cli.add_command(scm)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cli()
