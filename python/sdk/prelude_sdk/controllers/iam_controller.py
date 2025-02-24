@@ -261,3 +261,17 @@ class IAMController(HttpController):
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
+
+    def refresh_token(self, refresh_token, username):
+        """Exchange a refresh token for new id/access tokens"""
+        res = self._session.post(
+            f"{self.account.hq}/iam/token",
+            headers=self.account.headers,
+            json=dict(
+                refresh_token=refresh_token, username=username, auth_flow="refresh"
+            ),
+            timeout=10,
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
