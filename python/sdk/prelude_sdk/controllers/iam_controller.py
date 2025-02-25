@@ -262,13 +262,15 @@ class IAMController(HttpController):
             return res.json()
         raise Exception(res.text)
 
-    def refresh_token(self, refresh_token, username):
+    def refresh_token(self, refresh_token):
         """Exchange a refresh token for new id/access tokens"""
         res = self._session.post(
             f"{self.account.hq}/iam/token",
             headers=self.account.headers,
             json=dict(
-                refresh_token=refresh_token, username=username, auth_flow="refresh"
+                refresh_token=refresh_token,
+                username=self.account.handle,
+                auth_flow="refresh",
             ),
             timeout=10,
         )
