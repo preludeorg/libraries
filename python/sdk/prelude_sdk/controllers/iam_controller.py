@@ -1,14 +1,13 @@
 import datetime
 
 from prelude_sdk.controllers.http_controller import HttpController
-
-from prelude_sdk.models.account import verify_credentials
+from prelude_sdk.models.account import Account, verify_credentials
 from prelude_sdk.models.codes import AuditEvent, Mode, Permission
 
 
 class IAMController(HttpController):
 
-    def __init__(self, account):
+    def __init__(self, account: Account):
         super().__init__()
         self.account = account
 
@@ -256,22 +255,6 @@ class IAMController(HttpController):
             f"{self.account.hq}/iam/terms",
             headers=self.account.headers,
             json=dict(name=name, version=version),
-            timeout=10,
-        )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
-
-    def refresh_token(self, refresh_token):
-        """Exchange a refresh token for new id/access tokens"""
-        res = self._session.post(
-            f"{self.account.hq}/iam/token",
-            headers=self.account.headers,
-            json=dict(
-                refresh_token=refresh_token,
-                username=self.account.handle,
-                auth_flow="refresh",
-            ),
             timeout=10,
         )
         if res.status_code == 200:
