@@ -74,7 +74,7 @@ class Account:
 
     @staticmethod
     def from_keychain(profile: str = "default"):
-        return Account(**Keychain().get_profile(profile), profile=profile)
+        return Account(**dict(Keychain().get_profile(profile).items()), profile=profile)
 
     @staticmethod
     def from_params(
@@ -104,13 +104,17 @@ class Account:
         self._verify_profile()
         res = requests.post(
             f"{self.hq}/iam/token",
-            headers=self.headers,
-            json=dict(username=self.handle, password=password, auth_flow="password"),
+            json=dict(
+                account=self.account,
+                auth_flow="password",
+                handle=self.handle,
+                password=password,
+            ),
             timeout=10,
         )
-        if res.ok:
-            self._save_new_token(res.json())
-        raise Exception("Error logging in using password: %s" % res.text)
+        if not res.ok:
+            raise Exception("Error logging in using password: %s" % res.text)
+        self._save_new_token(res.json())
 
     def refresh_tokens(self):
         self._verify_profile()
@@ -119,25 +123,27 @@ class Account:
             raise Exception("No refresh token found, please login first to continue")
         res = requests.post(
             f"{self.hq}/iam/token",
-            headers=self.headers,
             json=dict(
-                refresh_token=refresh_token, username=self.handle, auth_flow="refresh"
+                account=self.account,
+                auth_flow="refresh",
+                handle=self.handle,
+                refresh_token=refresh_token,
             ),
             timeout=10,
         )
-        if res.ok:
-            self._save_new_token(res.json())
-        raise Exception("Error refreshing token: %s" % res.text)
+        if not res.ok:
+            raise Exception("Error refreshing token: %s" % res.text)
+        self._save_new_token(existing_tokens | res.json())
 
     def get_access_token(self):
         tokens = self._read_tokens().get(self.handle, {}).get(self.hq, {})
-        if "access_token" not in tokens:
+        if "id_token" not in tokens:
             raise Exception("Please login to continue")
-        if datetime.fromtimestamp(tokens["expires"]) < datetime.now(timezone.utc):
+        if float(tokens["expires"]) < datetime.now(timezone.utc).timestamp():
             raise Exception(
                 "Access token expired, please either login or refresh token to continue"
             )
-        return tokens["access_token"]
+        return tokens["id_token"]
 
 
 def verify_credentials(func):
