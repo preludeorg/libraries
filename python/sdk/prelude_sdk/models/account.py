@@ -104,6 +104,7 @@ class Account:
         self._verify_profile()
         res = requests.post(
             f"{self.hq}/iam/token",
+            headers=self.headers,
             json=dict(username=self.handle, password=password, auth_flow="password"),
             timeout=10,
         )
@@ -129,7 +130,7 @@ class Account:
         raise Exception("Error refreshing token: %s" % res.text)
 
     def get_access_token(self):
-        tokens = self.read_tokens().get(self.handle, {}).get(self.hq, {})
+        tokens = self._read_tokens().get(self.handle, {}).get(self.hq, {})
         if "access_token" not in tokens:
             raise Exception("Please login to continue")
         if datetime.fromtimestamp(tokens["expires"]) < datetime.now(timezone.utc):
