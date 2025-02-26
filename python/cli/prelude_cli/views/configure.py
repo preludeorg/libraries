@@ -14,6 +14,6 @@ def configure(account):
     account_id = click.prompt("Enter your account ID")
     handle = click.prompt("Enter your user handle (email)")
     account.keychain.configure_keychain(
-        account_id=account_id, handle=handle, hq=hq, profile=profile
+        account=account_id, handle=handle, hq=hq, profile=profile
     )
     click.secho("Credentials saved", fg="green")

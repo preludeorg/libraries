@@ -27,13 +27,13 @@ class Keychain:
 
     def configure_keychain(
         self,
-        account_id,
+        account,
         handle,
         hq="https://api.preludesecurity.com",
         profile="default",
     ):
         cfg = self.read_keychain()
-        cfg[profile] = {"account": account_id, "handle": handle, "hq": hq}
+        cfg[profile] = {"account": account, "handle": handle, "hq": hq}
         with open(self.keychain_location, "w") as f:
             cfg.write(f)
 
@@ -53,19 +53,24 @@ class Account:
 
     def __init__(
         self,
-        account_id: str,
+        account: str,
         handle: str,
         hq: str,
         token_location=os.path.join(Path.home(), ".prelude", "tokens.json"),
         profile: str | None = None,
     ):
-        self.account_id = account_id
+        self.account = account
         self.handle = handle
-        self.headers = dict(account=account_id, _product="py-sdk")
+        self.headers = dict(account=account, _product="py-sdk")
         self.hq = hq
         self.keychain = Keychain()
         self.profile = profile
         self.token_location = token_location
+        if not os.path.exists(self.token_location):
+            head, _ = os.path.split(Path(self.token_location))
+            Path(head).mkdir(parents=True, exist_ok=True)
+            with open(self.token_location, "x") as f:
+                json.dump({}, f)
 
     @staticmethod
     def from_keychain(profile: str = "default"):
@@ -73,9 +78,9 @@ class Account:
 
     @staticmethod
     def from_params(
-        account_id: str, handle: str, hq: str = "https://api.preludesecurity.com"
+        account: str, handle: str, hq: str = "https://api.preludesecurity.com"
     ):
-        return Account(account_id, handle, hq)
+        return Account(account, handle, hq)
 
     def _read_tokens(self):
         with open(self.token_location, "r") as f:
@@ -89,7 +94,14 @@ class Account:
         with open(self.token_location, "w") as f:
             json.dump(existing_tokens, f)
 
+    def _verify_profile(self):
+        if self.profile and not any([self.handle, self.account]):
+            raise Exception(
+                "Please configure your %s profile to continue" % self.profile
+            )
+
     def password_login(self, password):
+        self._verify_profile()
         res = requests.post(
             f"{self.hq}/iam/token",
             json=dict(username=self.handle, password=password, auth_flow="password"),
@@ -100,6 +112,7 @@ class Account:
         raise Exception("Error logging in using password: %s" % res.text)
 
     def refresh_tokens(self):
+        self._verify_profile()
         existing_tokens = self._read_tokens().get(self.handle, {}).get(self.hq, {})
         if not (refresh_token := existing_tokens.get("refresh_token")):
             raise Exception("No refresh token found, please login first to continue")

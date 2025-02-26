@@ -10,7 +10,7 @@ def auth(ctx):
     pass
 
 
-@auth.command("password")
+@auth.command("login")
 @click.option("-p", "--password", required=True, type=str)
 @click.pass_obj
 def login(account, password):
