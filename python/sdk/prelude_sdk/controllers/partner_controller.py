@@ -90,18 +90,6 @@ class PartnerController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
-    def generate_webhook(self, partner: Control):
-        """Generate webhook credentials for an EDR system to enable the forwarding of alerts to the Prelude API, facilitating automatic alert suppression"""
-        res = self._session.get(
-            f"{self.account.hq}/partner/suppress/{partner.name}",
-            headers=self.account.headers,
-            timeout=30,
-        )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
-
-    @verify_credentials
     def deploy(self, partner: Control, host_ids: list):
         """Deploy probes on all specified partner endpoints"""
         params = dict(host_ids=host_ids)

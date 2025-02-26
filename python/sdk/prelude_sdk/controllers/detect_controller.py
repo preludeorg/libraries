@@ -269,3 +269,16 @@ class DetectController(HttpController):
         if res.status_code == 200:
             return res.json()
         raise Exception(res.text)
+
+    @verify_credentials
+    def accept_terms(self, name, version):
+        """Accept terms and conditions"""
+        res = self._session.post(
+            f"{self.account.hq}/detect/terms",
+            headers=self.account.headers,
+            json=dict(name=name, version=version),
+            timeout=10,
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
