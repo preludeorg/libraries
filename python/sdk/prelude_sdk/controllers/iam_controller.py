@@ -20,13 +20,15 @@ class IAMController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
-    def reset_password(self, email: str, account_id: str = None):
+    def reset_password(self, email: str):
         """Reset a user's password"""
-        data = dict(
-            account_id=account_id or self.account.headers["account"], handle=email
-        )
+        body = dict(handle=email)
+
         res = self._session.post(
-            f"{self.account.hq}/iam/user/admin_reset", json=data, timeout=10
+            f"{self.account.hq}/iam/user/admin_reset",
+            headers=self.account.headers,
+            json=body,
+            timeout=10,
         )
         if res.status_code == 200:
             return res.json()
@@ -68,9 +70,9 @@ class IAMController(HttpController):
         self,
         client_id: str,
         client_secret: str,
-        email_attr: str,
         issuer: str,
-        oidc_config_url: str,
+        oidc_url: str,
+        email_attr: str = "email",
     ):
         """Attach OIDC to an account"""
         body = dict(
@@ -78,7 +80,7 @@ class IAMController(HttpController):
             client_secret=client_secret,
             email_attr=email_attr,
             issuer=issuer,
-            oidc_url=oidc_config_url,
+            oidc_url=oidc_url,
         )
 
         res = self._session.post(
@@ -108,8 +110,8 @@ class IAMController(HttpController):
         self,
         permission: Permission,
         email: str,
-        name: str = None,
-        oidc: bool = False,
+        oidc: str | None,
+        name: str | None = None,
     ):
         """Invite a new user to the account"""
         body = dict(permission=permission.name, handle=email, oidc=oidc)
@@ -129,9 +131,11 @@ class IAMController(HttpController):
     @verify_credentials
     def create_service_user(self, handle):
         """Create a service user"""
+        body = dict(handle=handle)
+
         res = self._session.post(
             f"{self.account.hq}/iam/account/service_user",
-            json=dict(handle=handle),
+            json=body,
             headers=self.account.headers,
             timeout=10,
         )
@@ -142,11 +146,10 @@ class IAMController(HttpController):
     @verify_credentials
     def update_user(
         self,
-        email: str,
         name: str = None,
     ):
         """Update properties on a user"""
-        body = dict(handle=email)
+        body = dict()
         if name is not None:
             body["name"] = name
 
@@ -164,10 +167,11 @@ class IAMController(HttpController):
     def update_account_user(
         self,
         email: str,
+        oidc: str | None,
         permission: Permission = None,
     ):
         """Update properties on an account user"""
-        body = dict(handle=email)
+        body = dict(handle=email, oidc=oidc)
         if permission is not None:
             body["permission"] = permission.name
 
@@ -194,11 +198,13 @@ class IAMController(HttpController):
         raise Exception(res.text)
 
     @verify_credentials
-    def remove_user(self, handle):
+    def remove_user(self, email: str, oidc: str | None):
         """Remove user from the account"""
+        params = dict(handle=email, oidc=oidc)
+
         res = self._session.delete(
             f"{self.account.hq}/iam/account/user",
-            json=dict(handle=handle),
+            params=params,
             headers=self.account.headers,
             timeout=10,
         )
@@ -225,6 +231,21 @@ class IAMController(HttpController):
             headers=self.account.headers,
             params=params,
             timeout=30,
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def get_oidc_name(self, slug: str):
+        """Get OIDC provider name from organization slug"""
+        params = dict(slug=slug)
+
+        res = self._session.get(
+            f"{self.account.hq}/iam/account/oidc",
+            headers=self.account.headers,
+            params=params,
+            timeout=10,
         )
         if res.status_code == 200:
             return res.json()

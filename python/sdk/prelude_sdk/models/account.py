@@ -104,8 +104,8 @@ class Account:
         self._verify_profile()
         res = requests.post(
             f"{self.hq}/iam/token",
+            headers=self.headers,
             json=dict(
-                account=self.account,
                 auth_flow="password",
                 handle=self.handle,
                 password=password,
@@ -123,8 +123,8 @@ class Account:
             raise Exception("No refresh token found, please login first to continue")
         res = requests.post(
             f"{self.hq}/iam/token",
+            headers=self.headers,
             json=dict(
-                account=self.account,
                 auth_flow="refresh",
                 handle=self.handle,
                 refresh_token=refresh_token,
@@ -135,13 +135,13 @@ class Account:
             raise Exception("Error refreshing token: %s" % res.text)
         self._save_new_token(existing_tokens | res.json())
 
-    def get_access_token(self):
+    def get_token(self):
         tokens = self._read_tokens().get(self.handle, {}).get(self.hq, {})
         if "id_token" not in tokens:
             raise Exception("Please login to continue")
         if float(tokens["expires"]) < datetime.now(timezone.utc).timestamp():
             raise Exception(
-                "Access token expired, please either login or refresh token to continue"
+                "Token expired, please either login or refresh token to continue"
             )
         return tokens["id_token"]
 
@@ -150,7 +150,7 @@ def verify_credentials(func):
     @wraps(verify_credentials)
     def handler(*args, **kwargs):
         args[0].account.headers = args[0].account.headers | dict(
-            authorization=f"Bearer {args[0].account.get_access_token()}"
+            authorization=f"Bearer {args[0].account.get_token()}"
         )
         return func(*args, **kwargs)
 
