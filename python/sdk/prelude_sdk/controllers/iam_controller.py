@@ -1,5 +1,4 @@
 import datetime
-import logging
 
 from prelude_sdk.controllers.http_controller import HttpController
 
@@ -15,6 +14,7 @@ class IAMController(HttpController):
 
     def migrate(self):
         cfg = self.account.read_keychain_config()
+        errors = []
         for section in cfg.sections():
             res = self._session.get(
                 f"{cfg.get(section, 'hq')}/iam/account",
@@ -28,8 +28,10 @@ class IAMController(HttpController):
             if res.status_code == 200:
                 cfg[section]["handle"] = res.json()["whoami"]
             else:
-                logging.warning(f"Failed to migrate {section}: {res.text}")
+                errors.append(f"Failed to migrate {section}: {res.text}")
         self.account.write_keychain_config(cfg)
+        if errors:
+            raise Exception(", ".join(errors))
         return dict(status=True)
 
     @verify_credentials
