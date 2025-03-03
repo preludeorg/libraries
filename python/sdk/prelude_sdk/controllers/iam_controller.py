@@ -30,7 +30,7 @@ class IAMController(HttpController):
             else:
                 logging.warning(f"Failed to migrate {section}: {res.text}")
         self.account.write_keychain_config(cfg)
-        return [], "Succesfully migrated keychain"
+        return dict(status=True)
 
     @verify_credentials
     def new_account(
