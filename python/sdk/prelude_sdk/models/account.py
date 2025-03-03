@@ -50,11 +50,16 @@ class Account:
         self.keychain_location = keychain_location
 
     def configure(
-        self, account_id, token, hq="https://api.preludesecurity.com", profile="default"
+        self,
+        account_id,
+        token,
+        handle,
+        hq="https://api.preludesecurity.com",
+        profile="default",
     ):
         cfg = self._merge_configs(
             self.read_keychain_config(hq, profile),
-            self.generate_config(account_id, token, hq, profile),
+            self.generate_config(account_id, token, hq, handle, profile),
         )
         self.write_keychain_config(cfg=cfg)
 
@@ -75,9 +80,14 @@ class Account:
             cfg.write(f)
 
     @staticmethod
-    def generate_config(account_id, token, hq, profile):
+    def generate_config(account_id, token, hq, handle, profile):
         cfg = configparser.ConfigParser()
-        cfg[profile] = {"hq": hq, "account": account_id, "token": token}
+        cfg[profile] = {
+            "hq": hq,
+            "account": account_id,
+            "token": token,
+            "handle": handle,
+        }
         return cfg
 
     @staticmethod

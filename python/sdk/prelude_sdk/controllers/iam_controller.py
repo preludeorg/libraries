@@ -12,6 +12,28 @@ class IAMController(HttpController):
         super().__init__()
         self.account = account
 
+    def migrate(self):
+        cfg = self.account.read_keychain_config()
+        errors = []
+        for section in cfg.sections():
+            res = self._session.get(
+                f"{cfg.get(section, 'hq')}/iam/account",
+                headers=dict(
+                    account=cfg.get(section, "account"),
+                    token=cfg.get(section, "token"),
+                    _product="py-sdk",
+                ),
+                timeout=10,
+            )
+            if res.status_code == 200:
+                cfg[section]["handle"] = res.json()["whoami"]
+            else:
+                errors.append(f"Failed to migrate {section}: {res.text}")
+        self.account.write_keychain_config(cfg)
+        if errors:
+            raise Exception(", ".join(errors))
+        return dict(status=True)
+
     @verify_credentials
     def new_account(
         self, user_email: str, company: str, user_name: str = None, slug: str = None
