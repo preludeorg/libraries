@@ -14,7 +14,7 @@ class DetectController(HttpController):
             body["tags"] = tags
         account, token = reg_string.split("/")
 
-        res = self.post(
+        res = self._session.post(
             f"{self.account.hq}/detect/endpoint",
             headers=dict(account=account, token=token, _product="py-sdk"),
             json=body,

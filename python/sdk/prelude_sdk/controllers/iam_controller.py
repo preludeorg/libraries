@@ -220,19 +220,19 @@ class IAMController(HttpController):
         )
         return res.json()
 
-    @verify_credentials
-    def sign_up(self, company, email, name):
-        """Create a new user and account"""
+    def sign_up(self, company, email, name, profile=None):
+        """(NOT AVAIABLE IN PRODUCTION) Create a new user and account"""
         body = dict(company=company, email=email, name=name)
 
-        res = self.post(
+        res = self._session.post(
             f"{self.account.hq}/iam/new_user_and_account",
             headers=self.account.headers,
             json=body,
             timeout=20,
         )
         data = res.json()
-        self.account.keychain.configure_keychain(
-            data["account_id"], data["user_id"], self.account.hq, company
-        )
+        if profile:
+            self.account.keychain.configure_keychain(
+                data["account_id"], data["user_id"], self.account.hq, profile
+            )
         return data
