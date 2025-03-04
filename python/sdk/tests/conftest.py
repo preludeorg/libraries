@@ -42,7 +42,7 @@ def pytest_addoption(parser):
     )
     parser.addoption(
         "--email",
-        default="test14@auto-accept.developer.preludesecurity.com",
+        default="test@auto-accept.developer.preludesecurity.com",
         action="store",
         help="Email address to use for testing",
     )
@@ -146,6 +146,10 @@ def setup_account(unwrap, email, api, existing_account, password):
     print(f'[account_id: {res["account_id"]}]', end=" ")
     pytest.expected_account = unwrap(iam.get_account)(iam)
     pytest.controls = dict()
+
+    service_user = unwrap(iam.create_service_user)(iam, "pysdktests")
+    pytest.service_user_handle = "pysdktests"
+    pytest.service_user_token = service_user["token"]
 
 
 @pytest.fixture(scope="session")

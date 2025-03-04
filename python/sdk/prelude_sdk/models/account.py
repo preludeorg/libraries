@@ -174,8 +174,7 @@ class _Account:
         )
         if not res.ok:
             raise Exception(
-                "Error refreshing token: %s. Please reauthenticate to obtain a new refresh token."
-                % res.text
+                "Error refreshing token. Please reauthenticate to obtain a new refresh token."
             )
         self._save_new_token(existing_tokens | res.json())
 
