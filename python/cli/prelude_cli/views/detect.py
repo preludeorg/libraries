@@ -24,7 +24,13 @@ def detect(ctx):
 @click.option(
     "-s", "--serial_num", help="serial number of this machine", type=str, required=True
 )
-@click.option("-r", "--reg_string", help="registration string", type=str, required=True)
+@click.option(
+    "-r",
+    "--reg_string",
+    help="registration string, in the format of <account_id>/<service_user_token>",
+    type=str,
+    required=True,
+)
 @click.option(
     "-t",
     "--tags",

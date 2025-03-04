@@ -169,7 +169,7 @@ def invite_user(controller, permission, name, oidc, email):
 @click.argument("email")
 @click.pass_obj
 @pretty_print
-def invite_user(controller, email):
+def create_service_user(controller, email):
     """Create a new service user in your account"""
     with Spinner(description="Creating new service user"):
         data = controller.create_service_user(email=email)
