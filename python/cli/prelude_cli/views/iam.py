@@ -1,8 +1,6 @@
 import click
 
-import requests
-
-from prelude_sdk.models.codes import AuditEvent, Mode, Permission
+from prelude_sdk.models.codes import Mode, Permission
 from prelude_cli.views.shared import Spinner, pretty_print
 from prelude_sdk.controllers.iam_controller import IAMController
 
@@ -23,10 +21,10 @@ def describe_account(controller):
         return controller.get_account()
 
 
-@iam.command("list-accounts")
+@iam.command("accounts")
 @click.pass_obj
 @pretty_print
-def describe_account(controller):
+def list_accounts(controller):
     """List all accounts for your user"""
     with Spinner(description="Fetching all accounts for your user"):
         return controller.list_accounts()
@@ -39,10 +37,11 @@ def describe_account(controller):
 def admin_reset_password(controller, email):
     """Reset a user's password as admin"""
     with Spinner(description="Resetting user's password as admin"):
-        return controller.admin_reset_password(email=email)
+        data = controller.admin_reset_password(email=email)
+    return data, f"Have {email} check their email to reset their password"
 
 
-@iam.command("purge")
+@iam.command("purge-account")
 @click.confirmation_option(prompt="Are you sure?")
 @click.pass_obj
 @pretty_print

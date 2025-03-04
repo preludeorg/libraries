@@ -11,7 +11,7 @@ def auth(ctx):
 
 
 @auth.command("login")
-@click.option("-p", "--password", required=True, type=str)
+@click.option("-p", "--password", prompt=True, hide_input=True, required=True)
 @click.pass_obj
 @pretty_print
 def login(account, password):
