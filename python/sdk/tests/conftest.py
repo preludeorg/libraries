@@ -1,6 +1,8 @@
 import pytest
 import uuid
 
+import requests
+
 from prelude_sdk.controllers.build_controller import BuildController
 from prelude_sdk.controllers.iam_controller import IAMController
 from prelude_sdk.models.codes import Control
@@ -40,7 +42,7 @@ def pytest_addoption(parser):
     )
     parser.addoption(
         "--email",
-        default="test@auto-accept.developer.preludesecurity.com",
+        default="test13@auto-accept.developer.preludesecurity.com",
         action="store",
         help="Email address to use for testing",
     )
@@ -48,9 +50,9 @@ def pytest_addoption(parser):
         "--account_id", action="store", help="Account ID to use for testing"
     )
     parser.addoption(
-        "--token",
+        "--password",
         action="store",
-        help="Token to use for testing. Only used in conjunction with --account_id",
+        help="User password to use for testing. Only used in conjunction with --email",
     )
 
 
@@ -64,25 +66,51 @@ def email(pytestconfig):
     return pytestconfig.getoption("email")
 
 
-class Account:
-    def __init__(self, account_id="", token="", hq=""):
-        self.hq = hq
-        self.profile = "test"
-        self.headers = dict(account=account_id, token=token, _product="py-sdk")
-
-    def read_keychain_config(self):
-        return {self.profile: dict()}
-
-    def write_keychain_config(self, cfg):
+class Keychain:
+    def configure_keychain(self, *args, **kwargs):
         pass
+
+
+class Account:
+    def __init__(self, handle, hq, account=""):
+        self.account = account
+        self.handle = handle
+        self.hq = hq
+        self.headers = dict(account=account, _product="py-sdk")
+        self.token = ""
+        self.keychain = Keychain()
+
+    def password_login(self, password, new_password=None):
+        body = dict(
+            auth_flow="password_change" if new_password else "password",
+            handle=self.handle,
+            password=password,
+        )
+        if new_password:
+            body["new_password"] = new_password
+
+        res = requests.post(
+            f"{self.hq}/iam/token",
+            headers=self.headers,
+            json=body,
+            timeout=10,
+        )
+        if not res.ok:
+            raise Exception("Error logging in using password: %s" % res.text)
+        self.token = res.json()["token"]
 
 
 @pytest.fixture(scope="session")
 def existing_account(pytestconfig):
     if (account_id := pytestconfig.getoption("account_id")) and (
-        token := pytestconfig.getoption("token")
+        password := pytestconfig.getoption("password")
     ):
-        return dict(account_id=account_id, token=token)
+        return dict(account_id=account_id, password=password)
+
+
+@pytest.fixture(scope="session")
+def password(pytestconfig):
+    return pytestconfig.getoption("password")
 
 
 @pytest.fixture(scope="session")
@@ -93,30 +121,30 @@ def manual(pytestconfig):
 
 
 @pytest.fixture(scope="session")
-def setup_account(
-    unwrap, manual, pause_for_manual_action, email, api, existing_account
-):
+def setup_account(unwrap, email, api, existing_account, password):
     if hasattr(pytest, "expected_account"):
         return
 
-    pytest.account = Account(hq=api)
+    pytest.account = Account(handle=email, hq=api)
     iam = IAMController(pytest.account)
     if existing_account:
+        pytest.account.account = existing_account["account_id"]
         pytest.account.headers["account"] = existing_account["account_id"]
-        pytest.account.headers["token"] = existing_account["token"]
-        print(f'[account_id: {existing_account["account_id"]}]', end=" ")
+        pytest.account.password_login(existing_account["password"])
+        pytest.account.headers["authorization"] = f"Bearer {pytest.account.token}"
+        print(f"[account_id: {existing_account['account_id']}]", end=" ")
         pytest.expected_account = unwrap(iam.get_account)(iam)
         return
 
-    res = unwrap(iam.new_account)(
-        iam, company="pysdk-tests", user_email=email, user_name="Bob"
+    res = unwrap(iam.new_user_and_account)(
+        iam, company="pysdk-tests", email=email, name="Bob"
     )
-    if manual:
-        with pause_for_manual_action:
-            input("Press ENTER to continue testing after verifying the account...\n")
 
+    password = "pysdktests"
     pytest.account.headers["account"] = res["account_id"]
-    pytest.account.headers["token"] = res["token"]
+    pytest.account.password_login(res["temp_password"], password)
+    pytest.account.account = res["account_id"]
+    pytest.account.headers["authorization"] = f"Bearer {pytest.account.token}"
     print(f'[account_id: {res["account_id"]}]', end=" ")
     pytest.expected_account = unwrap(iam.get_account)(iam)
     pytest.controls = dict()

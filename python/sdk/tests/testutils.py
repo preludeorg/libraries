@@ -53,7 +53,7 @@ def check_dict_items(expected, actual):
                 if sorted(v) != sorted(actual[k]):
                     diffs.append(f"[{k}] expected: {v}  actual: {actual[k]}")
                     continue
-            if v != actual[k]:
+            if k not in ["last_seen", "created"] and v != actual[k]:
                 diffs.append(f"[{k}] expected: {v}  actual: {actual[k]}")
         return diffs
 

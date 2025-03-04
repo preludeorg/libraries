@@ -1,5 +1,4 @@
 from prelude_sdk.controllers.http_controller import HttpController
-
 from prelude_sdk.models.account import verify_credentials
 
 
@@ -9,16 +8,16 @@ class DetectController(HttpController):
         super().__init__()
         self.account = account
 
-    @verify_credentials
-    def register_endpoint(self, host, serial_num, tags=None):
+    def register_endpoint(self, host, serial_num, reg_string, tags=None):
         """Register (or re-register) an endpoint to your account"""
         body = dict(id=f"{host}:{serial_num}")
         if tags:
             body["tags"] = tags
+        account, token = reg_string.split("/")
 
         res = self._session.post(
             f"{self.account.hq}/detect/endpoint",
-            headers=self.account.headers,
+            headers=dict(account=account, token=token, _product="py-sdk"),
             json=body,
             timeout=10,
         )
@@ -265,6 +264,19 @@ class DetectController(HttpController):
             f"{self.account.hq}/detect/queue",
             headers=self.account.headers,
             json=dict(items=items),
+            timeout=10,
+        )
+        if res.status_code == 200:
+            return res.json()
+        raise Exception(res.text)
+
+    @verify_credentials
+    def accept_terms(self, name, version):
+        """Accept terms and conditions"""
+        res = self._session.post(
+            f"{self.account.hq}/detect/terms",
+            headers=self.account.headers,
+            json=dict(name=name, version=version),
             timeout=10,
         )
         if res.status_code == 200:

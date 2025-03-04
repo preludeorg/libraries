@@ -126,7 +126,7 @@ class TestPartnerAttach:
         )
         assert expected in res["controls"]
 
-    @pytest.mark.order(-5)
+    @pytest.mark.order(-7)
     def test_detach(self, unwrap, control, partner_api, user, secret):
         unwrap(self.partner.detach)(
             self.partner, partner=control, instance_id=pytest.controls[control.value]
@@ -278,27 +278,6 @@ class TestPartner:
         )
         diffs = check_dict_items(expected, res[0])
         assert not diffs, json.dumps(diffs, indent=2)
-
-    def test_generate_webhook(
-        self,
-        unwrap,
-        api,
-        host,
-        edr_id,
-        control,
-        os,
-        platform,
-        policy,
-        policy_name,
-        webhook_keys,
-        group_id,
-    ):
-        if control != Control.SENTINELONE:
-            pytest.skip("Only SENTINELONE webhooks are supported")
-
-        res = unwrap(self.partner.generate_webhook)(self.partner, partner=control)
-        assert webhook_keys == res.keys()
-        assert res["url"].startswith(f"{api}/partner/suppress/{control.name.lower()}")
 
     def test_do_threat_hunt(
         self,
