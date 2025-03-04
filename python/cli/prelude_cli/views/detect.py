@@ -24,6 +24,7 @@ def detect(ctx):
 @click.option(
     "-s", "--serial_num", help="serial number of this machine", type=str, required=True
 )
+@click.option("-r", "--reg_string", help="registration string", type=str, required=True)
 @click.option(
     "-t",
     "--tags",
@@ -33,11 +34,11 @@ def detect(ctx):
 )
 @click.pass_obj
 @pretty_print
-def register_endpoint(controller, host, serial_num, tags):
+def register_endpoint(controller, host, serial_num, reg_string, tags):
     """Register a new endpoint"""
     with Spinner(description="Registering endpoint"):
         token = controller.register_endpoint(
-            host=host, serial_num=serial_num, tags=tags
+            host=host, serial_num=serial_num, reg_string=reg_string, tags=tags
         )
     return dict(token=token)
 
@@ -418,3 +419,14 @@ def threat_hunt_activity(controller, id, type):
             return controller.threat_hunt_activity(test_id=id)
         else:
             return controller.threat_hunt_activity(threat_id=id)
+
+
+@detect.command("accept-terms", hidden=True)
+@click.argument("name", type=str, required=True)
+@click.option("-v", "--version", type=int, required=True)
+@click.pass_obj
+@pretty_print
+def accept_terms(controller, name, version):
+    """Accept terms and conditions"""
+    with Spinner(description="Accepting terms and conditions"):
+        return controller.accept_terms(name=name, version=version)
