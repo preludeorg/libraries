@@ -45,7 +45,7 @@ def admin_reset_password(controller, email):
 @click.confirmation_option(prompt="Are you sure?")
 @click.pass_obj
 @pretty_print
-def purge(controller):
+def purge_account(controller):
     """Delete your account"""
     with Spinner(description="Purging account from existence"):
         return controller.purge_account()
@@ -146,7 +146,11 @@ def get_oidc_name(controller, slug):
     "-n", "--name", help="name of user", default=None, show_default=False, type=str
 )
 @click.option(
-    "-o", "--oidc", help="OIDC app name", default=None, show_default=False, type=str
+    "-o",
+    "--oidc",
+    help="OIDC app name, or 'none' to login via a password",
+    required=True,
+    type=str,
 )
 @click.argument("email")
 @click.pass_obj
@@ -156,7 +160,7 @@ def invite_user(controller, permission, name, oidc, email):
     with Spinner(description="Inviting new user"):
         data = controller.invite_user(
             email=email,
-            oidc=oidc,
+            oidc="" if oidc.lower() == "none" else oidc,
             permission=Permission[permission],
             name=name,
         )
@@ -201,7 +205,11 @@ def update_user(controller, name):
     show_default=True,
 )
 @click.option(
-    "-o", "--oidc", help="OIDC app name", default=None, show_default=False, type=str
+    "-o",
+    "--oidc",
+    help="OIDC app name, or 'none' for non-OIDC users",
+    required=True,
+    type=str,
 )
 @click.argument("email")
 @click.pass_obj
@@ -210,29 +218,37 @@ def update_account_user(controller, permission, oidc, email):
     """Update a user in your account"""
     with Spinner(description="Updating account user"):
         return controller.update_account_user(
-            email=email, oidc=oidc, permission=permission
+            email=email,
+            oidc="" if oidc.lower() == "none" else oidc,
+            permission=permission,
         )
 
 
 @iam.command("remove-user")
 @click.confirmation_option(prompt="Are you sure?")
 @click.option(
-    "-o", "--oidc", help="OIDC app name", default=None, show_default=False, type=str
+    "-o",
+    "--oidc",
+    help="OIDC app name, or 'none' for non-OIDC users",
+    required=True,
+    type=str,
 )
 @click.argument("email")
 @click.pass_obj
 @pretty_print
-def delete_user(controller, oidc, email):
+def remove_user(controller, oidc, email):
     """Remove a user from your account"""
     with Spinner(description="Removing user"):
-        return controller.remove_user(email=email, oidc=oidc)
+        return controller.remove_user(
+            email=email, oidc="" if oidc.lower() == "none" else oidc
+        )
 
 
 @iam.command("purge-user")
 @click.confirmation_option(prompt="Are you sure?")
 @click.pass_obj
 @pretty_print
-def delete_user(controller):
+def purge_user(controller):
     """Remove your user from all accounts and purge user data"""
     with Spinner(description="Purging user"):
         return controller.purge_user()
@@ -257,9 +273,12 @@ def logs(controller, days, limit):
 @click.argument("email", type=str, required=True)
 @click.option("-c", "--company", type=str, required=True)
 @click.option("-n", "--name", type=str, required=True)
+@click.option("-p", "--profile", type=str, default=None)
 @click.pass_obj
 @pretty_print
-def sign_up(controller, email, company, name):
-    """Create a new user and account"""
+def sign_up(controller, email, company, name, profile):
+    """(NOT AVAIABLE IN PRODUCTION) Create a new user and account"""
     with Spinner(description="Creating new user and account"):
-        return controller.sign_up(email=email, company=company, name=name)
+        return controller.sign_up(
+            email=email, company=company, name=name, profile=profile
+        )
