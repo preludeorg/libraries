@@ -27,7 +27,7 @@ class TestIAM:
 
     def test_create_service_user(self, unwrap):
         service_user = unwrap(self.iam.create_service_user)(
-            self.iam, email=self.service_user
+            self.iam, name=self.service_user
         )
         assert self.service_user == service_user["handle"]
         assert check_if_string_is_uuid(service_user["token"])
@@ -39,9 +39,7 @@ class TestIAM:
                 handle=self.service_user,
                 permission=Permission.SERVICE.value,
                 name="",
-                subscriptions=[],
                 oidc="",
-                terms={},
             )
         )
 
@@ -99,7 +97,7 @@ class TestIAM:
         unwrap(self.iam.admin_reset_password)(self.iam, email=email)
         with pause_for_manual_action:
             password = input("Enter your changed password:\n")
-        pytest.account.password_login(pytest.account.handle, password)
+        pytest.account.password_login(password)
         res = unwrap(self.iam.get_account)(self.iam)
         assert pytest.expected_account["whoami"]["handle"] == res["whoami"]["handle"]
 
@@ -108,16 +106,10 @@ class TestIAM:
             pytest.skip("Not manual mode")
 
         unwrap(self.iam.update_account_user)(
-            self.iam, email=self.invited_user, oidc="", permission=Permission.ADMIN
+            self.iam, email=pytest.account.handle, oidc="", permission=Permission.ADMIN
         )
 
         res = unwrap(self.iam.get_account)(self.iam)
-
-        for user in pytest.expected_account["users"]:
-            if user["handle"] == self.invited_user:
-                user["permission"] = Permission.ADMIN.value
-                break
-
         diffs = check_dict_items(pytest.expected_account, res)
         assert not diffs, json.dumps(diffs, indent=2)
 

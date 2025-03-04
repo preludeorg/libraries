@@ -1,11 +1,10 @@
 import configparser
 import json
 import os
-from datetime import datetime, timezone
 from functools import wraps
 from pathlib import Path
 
-from prelude_sdk.controllers.http_controller import HttpController
+import requests
 
 
 class Keychain:
@@ -88,7 +87,7 @@ class Account:
         )
 
 
-class _Account(HttpController):
+class _Account:
 
     def __init__(
         self,
@@ -144,7 +143,7 @@ class _Account(HttpController):
 
     def password_login(self, password):
         self._verify()
-        res = self._session.post(
+        res = requests.post(
             f"{self.hq}/iam/token",
             headers=self.headers,
             json=dict(
@@ -163,7 +162,7 @@ class _Account(HttpController):
         existing_tokens = self._read_tokens().get(self.handle, {}).get(self.hq, {})
         if not (refresh_token := existing_tokens.get("refresh_token")):
             raise Exception("No refresh token found, please login first to continue")
-        res = self._session.post(
+        res = requests.post(
             f"{self.hq}/iam/token",
             headers=self.headers,
             json=dict(
@@ -187,18 +186,16 @@ class _Account(HttpController):
         tokens = self._read_tokens().get(self.handle, {}).get(self.hq, {})
         if "token" not in tokens:
             raise Exception("Please login to continue")
-        if float(tokens["expires"]) < datetime.now(timezone.utc).timestamp():
-            self.refresh_tokens()
-            return self.get_token()
         return tokens["token"]
+
+    def update_auth_header(self):
+        self.headers |= dict(authorization=f"Bearer {self.get_token()}")
 
 
 def verify_credentials(func):
     @wraps(verify_credentials)
     def handler(*args, **kwargs):
-        args[0].account.headers = args[0].account.headers | dict(
-            authorization=f"Bearer {args[0].account.get_token()}"
-        )
+        args[0].account.update_auth_header()
         return func(*args, **kwargs)
 
     handler.__wrapped__ = func
