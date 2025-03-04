@@ -4,6 +4,8 @@ from functools import wraps
 from os.path import exists
 from pathlib import Path
 
+import requests
+
 
 def verify_credentials(func):
     @wraps(verify_credentials)
@@ -18,6 +20,7 @@ def verify_credentials(func):
                 account=cfg.get(args[0].account.profile, "account"),
                 token=cfg.get(args[0].account.profile, "token"),
                 _product="py-sdk",
+                _product_version="2.5.25",
             )
             return func(*args, **kwargs)
         except FileNotFoundError:
@@ -73,6 +76,26 @@ class Account:
             self.configure("", "", hq, profile)
         cfg = configparser.ConfigParser()
         cfg.read(self.keychain_location)
+
+        changed = False
+        for section in cfg.sections():
+            if cfg.get(section, "handle", fallback=None):
+                continue
+            res = requests.get(
+                f"{cfg.get(section, 'hq')}/iam/account",
+                headers=dict(
+                    account=cfg.get(section, "account"),
+                    token=cfg.get(section, "token"),
+                    _product="py-sdk",
+                ),
+                timeout=10,
+            )
+            if res.status_code == 200:
+                changed = True
+                cfg[section]["handle"] = res.json()["whoami"]
+        if changed:
+            self.write_keychain_config(cfg)
+
         return cfg
 
     def write_keychain_config(self, cfg):
