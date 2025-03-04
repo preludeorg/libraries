@@ -20,6 +20,7 @@ def verify_credentials(func):
                 account=cfg.get(args[0].account.profile, "account"),
                 token=cfg.get(args[0].account.profile, "token"),
                 _product="py-sdk",
+                _product_version="2.5.25",
             )
             return func(*args, **kwargs)
         except FileNotFoundError:
