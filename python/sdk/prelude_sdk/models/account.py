@@ -80,7 +80,6 @@ class Account:
         for section in cfg.sections():
             if cfg.get(section, "handle", fallback=None):
                 continue
-            changed = True
             res = requests.get(
                 f"{cfg.get(section, 'hq')}/iam/account",
                 headers=dict(
@@ -91,6 +90,7 @@ class Account:
                 timeout=10,
             )
             if res.status_code == 200:
+                changed = True
                 cfg[section]["handle"] = res.json()["whoami"]
         if changed:
             self.write_keychain_config(cfg)
