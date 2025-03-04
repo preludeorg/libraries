@@ -1,5 +1,4 @@
 from prelude_sdk.controllers.http_controller import HttpController
-
 from prelude_sdk.models.account import verify_credentials
 from prelude_sdk.models.codes import SCMCategory
 
@@ -7,8 +6,7 @@ from prelude_sdk.models.codes import SCMCategory
 class ExportController(HttpController):
 
     def __init__(self, account):
-        super().__init__()
-        self.account = account
+        super().__init__(account)
 
     @verify_credentials
     def export_scm(
@@ -24,12 +22,10 @@ class ExportController(HttpController):
             "$orderby": orderby,
             "$top": top,
         }
-        res = self._session.post(
+        res = self.post(
             f"{self.account.hq}/export/scm/{export_type.name}",
             params=params,
             headers=self.account.headers,
             timeout=10,
         )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        return res.json()
