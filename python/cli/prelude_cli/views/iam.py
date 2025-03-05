@@ -164,7 +164,7 @@ def invite_user(controller, permission, name, oidc, email):
             permission=Permission[permission],
             name=name,
         )
-    msg = "New user must check their email to verify their account"
+    msg = "New non-oidc users must check their email to get their temporary password"
     return data, msg
 
 
@@ -183,7 +183,7 @@ def create_service_user(controller, handle):
 @click.pass_obj
 @pretty_print
 def delete_service_user(controller, handle):
-    """Delete a service user from your account"""
+    """Delete a service user from all accounts"""
     with Spinner(description="Deleting service user"):
         return controller.delete_service_user(handle=handle)
 
@@ -230,7 +230,7 @@ def update_account_user(controller, permission, oidc, email):
         return controller.update_account_user(
             email=email,
             oidc="" if oidc.lower() == "none" else oidc,
-            permission=permission,
+            permission=Permission[permission],
         )
 
 
@@ -280,13 +280,13 @@ def logs(controller, days, limit):
 
 
 @iam.command("sign-up", hidden=True)
-@click.argument("email", type=str, required=True)
 @click.option("-c", "--company", type=str, required=True)
 @click.option("-n", "--name", type=str, required=True)
 @click.option("-p", "--profile", type=str, default=None)
+@click.argument("email", type=str, required=True)
 @click.pass_obj
 @pretty_print
-def sign_up(controller, email, company, name, profile):
+def sign_up(controller, company, name, profile, email):
     """(NOT AVAIABLE IN PRODUCTION) Create a new user and account"""
     with Spinner(description="Creating new user and account"):
         return controller.sign_up(

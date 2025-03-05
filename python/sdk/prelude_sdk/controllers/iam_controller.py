@@ -106,7 +106,7 @@ class IAMController(HttpController):
             body["name"] = name
 
         res = self.post(
-            url=f"{self.account.hq}/iam/user",
+            url=f"{self.account.hq}/iam/account/user",
             json=body,
             headers=self.account.headers,
             timeout=10,
