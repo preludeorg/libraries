@@ -169,13 +169,23 @@ def invite_user(controller, permission, name, oidc, email):
 
 
 @iam.command("create-service-user")
-@click.argument("name")
+@click.argument("handle")
 @click.pass_obj
 @pretty_print
-def create_service_user(controller, name):
+def create_service_user(controller, handle):
     """Create a new service user in your account"""
     with Spinner(description="Creating new service user"):
-        return controller.create_service_user(name=name)
+        return controller.create_service_user(handle=handle)
+
+
+@iam.command("delete-service-user")
+@click.argument("handle")
+@click.pass_obj
+@pretty_print
+def delete_service_user(controller, handle):
+    """Delete a service user from your account"""
+    with Spinner(description="Deleting service user"):
+        return controller.delete_service_user(handle=handle)
 
 
 @iam.command("update-user")

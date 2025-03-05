@@ -114,11 +114,24 @@ class IAMController(HttpController):
         return res.json()
 
     @verify_credentials
-    def create_service_user(self, name: str):
+    def create_service_user(self, handle: str):
         """Create a service user"""
-        body = dict(handle=name)
+        body = dict(handle=handle)
 
         res = self.post(
+            f"{self.account.hq}/iam/account/service_user",
+            json=body,
+            headers=self.account.headers,
+            timeout=10,
+        )
+        return res.json()
+
+    @verify_credentials
+    def delete_service_user(self, handle: str):
+        """Delete service user"""
+        body = dict(handle=handle)
+
+        res = self.delete(
             f"{self.account.hq}/iam/account/service_user",
             json=body,
             headers=self.account.headers,

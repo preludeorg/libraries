@@ -25,9 +25,9 @@ class TestIAM:
         res = unwrap(self.iam.list_accounts)(self.iam)
         assert pytest.expected_account["account_id"] in [a["account_id"] for a in res]
 
-    def test_create_service_user(self, unwrap):
+    def test_service_user(self, unwrap):
         service_user = unwrap(self.iam.create_service_user)(
-            self.iam, name=self.service_user
+            self.iam, handle=self.service_user
         )
         assert self.service_user == service_user["handle"]
         assert check_if_string_is_uuid(service_user["token"])
@@ -46,8 +46,7 @@ class TestIAM:
         diffs = check_dict_items(pytest.expected_account, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_remove_user(self, unwrap):
-        unwrap(self.iam.remove_user)(self.iam, email=self.service_user, oidc="")
+        unwrap(self.iam.delete_service_user)(self.iam, handle=self.service_user)
 
         for i, user in enumerate(pytest.expected_account["token_users"]):
             if user["handle"] == self.service_user:
@@ -114,9 +113,9 @@ class TestIAM:
         assert not diffs, json.dumps(diffs, indent=2)
 
     @pytest.mark.order(-3)
-    def test_purge_service_user(self, unwrap):
-        unwrap(self.iam.remove_user)(
-            self.iam, email=pytest.service_user_handle, oidc=""
+    def test_delete_service_user(self, unwrap):
+        unwrap(self.iam.delete_service_user)(
+            self.iam, handle=pytest.service_user_handle
         )
 
     @pytest.mark.order(-2)

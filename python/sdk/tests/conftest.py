@@ -147,7 +147,7 @@ def setup_account(unwrap, email, api, existing_account, password):
     pytest.expected_account = unwrap(iam.get_account)(iam)
     pytest.controls = dict()
 
-    service_user = unwrap(iam.create_service_user)(iam, "pysdktests")
+    service_user = unwrap(iam.create_service_user)(iam, handle="pysdktests")
     pytest.service_user_handle = "pysdktests"
     pytest.service_user_token = service_user["token"]
 
