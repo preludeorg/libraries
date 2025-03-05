@@ -59,10 +59,12 @@ class Account:
         profile_items = dict(keychain.get_profile(profile).items())
         if "handle" not in profile_items:
             raise ValueError("Please make sure you are using an up-to-date profile")
-        if "token" in profile_items:
-            del profile_items["token"]
-            keychain.configure_keychain(**profile_items, profile=profile)
-        return _Account(**profile_items, profile=profile)
+        return _Account(
+            account=profile_items["account"],
+            handle=profile_items["handle"],
+            hq=profile_items["hq"],
+            profile=profile,
+        )
 
     @staticmethod
     def from_params(
