@@ -5,7 +5,7 @@ import subprocess
 from datetime import datetime, timedelta, timezone
 
 from prelude_sdk.controllers.detect_controller import DetectController
-from prelude_sdk.controllers.iam_controller import IAMController
+from prelude_sdk.controllers.iam_controller import IAMAccountController
 from prelude_sdk.controllers.probe_controller import ProbeController
 from prelude_sdk.models.codes import RunCode
 
@@ -15,7 +15,7 @@ from prelude_sdk.models.codes import RunCode
 class TestProbe:
 
     def setup_class(self):
-        self.iam = IAMController(pytest.account)
+        self.iam = IAMAccountController(pytest.account)
         self.detect = DetectController(pytest.account)
         self.probe = ProbeController(pytest.account)
 

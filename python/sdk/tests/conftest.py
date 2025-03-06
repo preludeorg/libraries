@@ -4,7 +4,7 @@ import uuid
 import requests
 
 from prelude_sdk.controllers.build_controller import BuildController
-from prelude_sdk.controllers.iam_controller import IAMController
+from prelude_sdk.controllers.iam_controller import IAMAccountController
 from prelude_sdk.models.codes import Control, Permission
 
 
@@ -42,7 +42,7 @@ def pytest_addoption(parser):
     )
     parser.addoption(
         "--email",
-        default="test@auto-accept.developer.preludesecurity.com",
+        default=f"test-{str(uuid.uuid4())[:12]}@auto-accept.developer.preludesecurity.com",
         action="store",
         help="Email address to use for testing",
     )
@@ -105,6 +105,10 @@ def existing_account(pytestconfig):
     if (account_id := pytestconfig.getoption("account_id")) and (
         password := pytestconfig.getoption("password")
     ):
+        if not pytestconfig.getoption("email"):
+            raise Exception(
+                "Must provide email address when using --account_id and --password"
+            )
         return dict(account_id=account_id, password=password)
 
 
@@ -121,7 +125,7 @@ def setup_account(unwrap, email, api, existing_account):
         return
 
     pytest.account = Account(handle=email, hq=api)
-    iam = IAMController(pytest.account)
+    iam = IAMAccountController(pytest.account)
     if existing_account:
         pytest.account.account = existing_account["account_id"]
         pytest.account.headers["account"] = existing_account["account_id"]

@@ -51,6 +51,20 @@ class Keychain:
             )
 
 
+def exchange_token(
+    account: str, handle: str, hq: str, auth_flow: str, auth_params: dict
+):
+    res = requests.post(
+        f"{hq}/iam/token",
+        headers=dict(account=account, _product="py-sdk"),
+        json=dict(auth_flow=auth_flow, handle=handle, **auth_params),
+        timeout=10,
+    )
+    if not res.ok:
+        raise Exception("Error logging in using password: %s" % res.text)
+    return res.json()
+
+
 class Account:
 
     @staticmethod
@@ -67,12 +81,6 @@ class Account:
             hq=profile_items["hq"],
             profile=profile,
         )
-
-    @staticmethod
-    def from_params(
-        account: str, handle: str, hq: str = "https://api.us1.preludesecurity.com"
-    ):
-        return _Account(account, handle, hq, keychain_location=None)
 
     @staticmethod
     def from_refresh_token(
@@ -155,19 +163,9 @@ class _Account:
 
     def password_login(self, password):
         self._verify()
-        res = requests.post(
-            f"{self.hq}/iam/token",
-            headers=self.headers,
-            json=dict(
-                auth_flow="password",
-                handle=self.handle,
-                password=password,
-            ),
-            timeout=10,
+        tokens = exchange_token(
+            self.account, self.handle, self.hq, "password", dict(password=password)
         )
-        if not res.ok:
-            raise Exception("Error logging in using password: %s" % res.text)
-        tokens = res.json()
         if self.token_location:
             self._save_new_token(tokens)
         return tokens
@@ -182,23 +180,15 @@ class _Account:
                 )
         elif not refresh_token:
             raise ValueError("Please provide a refresh token to continue")
-        res = requests.post(
-            f"{self.hq}/iam/token",
-            headers=self.headers,
-            json=dict(
-                auth_flow="refresh",
-                handle=self.handle,
-                refresh_token=refresh_token,
-            ),
-            timeout=10,
+        tokens = exchange_token(
+            self.account,
+            self.handle,
+            self.hq,
+            "refresh",
+            dict(refresh_token=refresh_token),
         )
-        if not res.ok:
-            raise Exception(
-                "Error refreshing token. Please reauthenticate to obtain a new refresh token."
-            )
-        tokens = res.json()
         if self.token_location:
-            self._save_new_token(existing_tokens | res.json())
+            self._save_new_token(existing_tokens | tokens)
         return tokens
 
     def get_token(self):

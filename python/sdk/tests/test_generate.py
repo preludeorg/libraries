@@ -2,8 +2,9 @@ import os
 import pytest
 import time
 
+from prelude_sdk.controllers.detect_controller import DetectController
 from prelude_sdk.controllers.generate_controller import GenerateController
-from prelude_sdk.controllers.iam_controller import IAMController
+from prelude_sdk.controllers.iam_controller import IAMAccountController
 from prelude_sdk.models.codes import Control
 
 from testutils import *
@@ -17,7 +18,8 @@ class TestGenerate:
         if not pytest.expected_account["features"]["threat_intel"]:
             pytest.skip("THREAT_INTEL feature not enabled")
 
-        self.iam = IAMController(pytest.account)
+        self.iam = IAMAccountController(pytest.account)
+        self.detect = DetectController(pytest.account)
         self.generate = GenerateController(pytest.account)
 
         self.threat_intel_pdf = (
@@ -26,8 +28,8 @@ class TestGenerate:
 
     def test_upload_threat_intel(self, unwrap):
         try:
-            unwrap(self.iam.accept_terms)(
-                self.iam, name="threat_intel", version="1.0.0"
+            unwrap(self.detect.accept_terms)(
+                self.detect, name="threat_intel", version="1.0.0"
             )
         except Exception as e:
             pass

@@ -1,15 +1,18 @@
 import click
 
-from prelude_sdk.models.codes import Mode, Permission
 from prelude_cli.views.shared import Spinner, pretty_print
-from prelude_sdk.controllers.iam_controller import IAMController
+from prelude_sdk.controllers.iam_controller import (
+    IAMAccountController,
+    IAMUserController,
+)
+from prelude_sdk.models.codes import AuditEvent, Mode, Permission
 
 
 @click.group()
 @click.pass_context
 def iam(ctx):
     """Prelude account management"""
-    ctx.obj = IAMController(account=ctx.obj)
+    ctx.obj = IAMAccountController(account=ctx.obj)
 
 
 @iam.command("account")
@@ -19,26 +22,6 @@ def describe_account(controller):
     """Get account details"""
     with Spinner(description="Fetching account details"):
         return controller.get_account()
-
-
-@iam.command("accounts")
-@click.pass_obj
-@pretty_print
-def list_accounts(controller):
-    """List all accounts for your user"""
-    with Spinner(description="Fetching all accounts for your user"):
-        return controller.list_accounts()
-
-
-@iam.command("admin-reset-password")
-@click.argument("email")
-@click.pass_obj
-@pretty_print
-def admin_reset_password(controller, email):
-    """Reset a user's password as admin"""
-    with Spinner(description="Resetting user's password as admin"):
-        data = controller.admin_reset_password(email=email)
-    return data, f"Have {email} check their email to reset their password"
 
 
 @iam.command("purge-account")
@@ -178,16 +161,6 @@ def delete_service_user(controller, handle):
         return controller.delete_service_user(handle=handle)
 
 
-@iam.command("update-user")
-@click.option("-n", "--name", help="name of user", type=str)
-@click.pass_obj
-@pretty_print
-def update_user(controller, name):
-    """Update your user information"""
-    with Spinner(description="Updating user"):
-        return controller.update_user(name=name)
-
-
 @iam.command("update-account-user")
 @click.option(
     "-p",
@@ -244,16 +217,6 @@ def remove_user(controller, oidc, email):
         )
 
 
-@iam.command("purge-user")
-@click.confirmation_option(prompt="Are you sure?")
-@click.pass_obj
-@pretty_print
-def purge_user(controller):
-    """Remove your user from all accounts and purge user data"""
-    with Spinner(description="Purging user"):
-        return controller.purge_user()
-
-
 @iam.command("logs")
 @click.option(
     "-d", "--days", help="days back to search from today", default=7, type=int
@@ -269,6 +232,34 @@ def logs(controller, days, limit):
         return controller.audit_logs(days=days, limit=limit)
 
 
+@iam.command("subscribe")
+@click.argument(
+    "event",
+    type=click.Choice(
+        [e.name for e in AuditEvent if e != AuditEvent.INVALID], case_sensitive=False
+    ),
+)
+@click.pass_obj
+@pretty_print
+def subscribe(controller, event):
+    """Subscribe to email notifications for an event"""
+    with Spinner(description="Subscribing"):
+        return controller.subscribe(event=AuditEvent[event])
+
+
+@iam.command("unsubscribe")
+@click.argument(
+    "event",
+    type=click.Choice(
+        [e.name for e in AuditEvent if e != AuditEvent.INVALID], case_sensitive=False
+    ),
+)
+def unsubscribe(controller, event):
+    """Unsubscribe to email notifications for an event"""
+    with Spinner(description="Unsubscribing"):
+        return controller.unsubscribe(event=AuditEvent[event])
+
+
 @iam.command("sign-up", hidden=True)
 @click.option("-c", "--company", type=str, required=True)
 @click.option("-n", "--name", type=str, required=True)
@@ -282,3 +273,53 @@ def sign_up(controller, company, name, profile, email):
         return controller.sign_up(
             email=email, company=company, name=name, profile=profile
         )
+
+
+@click.group()
+@click.pass_context
+def user(ctx):
+    """Prelude user management"""
+    ctx.obj = IAMUserController(account=ctx.obj.account)
+
+
+@user.command("accounts")
+@click.pass_obj
+@pretty_print
+def list_accounts(controller):
+    """List all accounts for your user"""
+    with Spinner(description="Fetching all accounts for your user"):
+        return controller.list_accounts()
+
+
+@user.command("admin-reset-password")
+@click.argument("email")
+@click.pass_obj
+@pretty_print
+def admin_reset_password(controller, email):
+    """Reset a user's password as admin"""
+    with Spinner(description="Resetting user's password as admin"):
+        data = controller.admin_reset_password(email=email)
+    return data, f"Have {email} check their email to reset their password"
+
+
+@user.command("purge-user")
+@click.confirmation_option(prompt="Are you sure?")
+@click.pass_obj
+@pretty_print
+def purge_user(controller):
+    """Remove your user from all accounts and purge user data"""
+    with Spinner(description="Purging user"):
+        return controller.purge_user()
+
+
+@user.command("update-user")
+@click.option("-n", "--name", help="name of user", type=str)
+@click.pass_obj
+@pretty_print
+def update_user(controller, name):
+    """Update your user information"""
+    with Spinner(description="Updating user"):
+        return controller.update_user(name=name)
+
+
+iam.add_command(user)

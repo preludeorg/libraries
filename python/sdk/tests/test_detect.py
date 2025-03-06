@@ -7,7 +7,7 @@ from dateutil.parser import parse
 from testutils import *
 
 from prelude_sdk.controllers.detect_controller import DetectController
-from prelude_sdk.controllers.iam_controller import IAMController
+from prelude_sdk.controllers.iam_controller import IAMAccountController
 from prelude_sdk.models.codes import RunCode
 
 
@@ -16,7 +16,7 @@ from prelude_sdk.models.codes import RunCode
 class TestDetect:
 
     def setup_class(self):
-        self.iam = IAMController(pytest.account)
+        self.iam = IAMAccountController(pytest.account)
         self.detect = DetectController(pytest.account)
 
         self.host = "test_host"

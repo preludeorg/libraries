@@ -1,9 +1,9 @@
 from prelude_sdk.controllers.http_controller import HttpController
 from prelude_sdk.models.account import verify_credentials
-from prelude_sdk.models.codes import Mode, Permission
+from prelude_sdk.models.codes import AuditEvent, Mode, Permission
 
 
-class IAMController(HttpController):
+class IAMAccountController(HttpController):
 
     def __init__(self, account):
         super().__init__(account)
@@ -13,19 +13,6 @@ class IAMController(HttpController):
         """Get account properties"""
         res = self.get(
             f"{self.account.hq}/iam/account", headers=self.account.headers, timeout=10
-        )
-        return res.json()
-
-    @verify_credentials
-    def admin_reset_password(self, email: str):
-        """Reset a user's password as admin"""
-        body = dict(handle=email)
-
-        res = self.post(
-            f"{self.account.hq}/iam/user/admin_reset",
-            headers=self.account.headers,
-            json=body,
-            timeout=10,
         )
         return res.json()
 
@@ -140,24 +127,6 @@ class IAMController(HttpController):
         return res.json()
 
     @verify_credentials
-    def update_user(
-        self,
-        name: str = None,
-    ):
-        """Update properties on a user"""
-        body = dict()
-        if name is not None:
-            body["name"] = name
-
-        res = self.put(
-            f"{self.account.hq}/iam/user",
-            json=body,
-            headers=self.account.headers,
-            timeout=10,
-        )
-        return res.json()
-
-    @verify_credentials
     def update_account_user(
         self,
         email: str,
@@ -191,24 +160,6 @@ class IAMController(HttpController):
         return res.json()
 
     @verify_credentials
-    def purge_user(self):
-        """Delete your user"""
-        res = self.delete(
-            f"{self.account.hq}/iam/user", headers=self.account.headers, timeout=10
-        )
-        return res.json()
-
-    @verify_credentials
-    def list_accounts(self):
-        """List all accounts for your user"""
-        res = self.get(
-            f"{self.account.hq}/iam/user/account",
-            headers=self.account.headers,
-            timeout=10,
-        )
-        return res.json()
-
-    @verify_credentials
     def audit_logs(self, days: int = 7, limit: int = 1000):
         """Get audit logs from the last X days"""
         params = dict(days=days, limit=limit)
@@ -217,6 +168,26 @@ class IAMController(HttpController):
             headers=self.account.headers,
             params=params,
             timeout=30,
+        )
+        return res.json()
+
+    @verify_credentials
+    def subscribe(self, event: AuditEvent):
+        """Subscribe to email notifications for an event"""
+        res = self.post(
+            f"{self.account.hq}/iam/subscribe/{event.name}",
+            headers=self.account.headers,
+            timeout=10,
+        )
+        return res.json()
+
+    @verify_credentials
+    def unsubscribe(self, event: AuditEvent):
+        """Unsubscribe to email notifications for an event"""
+        res = self.delete(
+            f"{self.account.hq}/iam/subscribe/{event.name}",
+            headers=self.account.headers,
+            timeout=10,
         )
         return res.json()
 
@@ -236,3 +207,58 @@ class IAMController(HttpController):
                 data["account_id"], data["user_id"], self.account.hq, profile
             )
         return data
+
+
+class IAMUserController(HttpController):
+
+    def __init__(self, account):
+        super().__init__(account)
+
+    @verify_credentials
+    def list_accounts(self):
+        """List all accounts for your user"""
+        res = self.get(
+            f"{self.account.hq}/iam/user/account",
+            headers=self.account.headers,
+            timeout=10,
+        )
+        return res.json()
+
+    @verify_credentials
+    def admin_reset_password(self, email: str):
+        """Reset a user's password as admin"""
+        body = dict(handle=email)
+
+        res = self.post(
+            f"{self.account.hq}/iam/user/admin_reset",
+            headers=self.account.headers,
+            json=body,
+            timeout=10,
+        )
+        return res.json()
+
+    @verify_credentials
+    def purge_user(self):
+        """Delete your user"""
+        res = self.delete(
+            f"{self.account.hq}/iam/user", headers=self.account.headers, timeout=10
+        )
+        return res.json()
+
+    @verify_credentials
+    def update_user(
+        self,
+        name: str = None,
+    ):
+        """Update properties on a user"""
+        body = dict()
+        if name is not None:
+            body["name"] = name
+
+        res = self.put(
+            f"{self.account.hq}/iam/user",
+            json=body,
+            headers=self.account.headers,
+            timeout=10,
+        )
+        return res.json()

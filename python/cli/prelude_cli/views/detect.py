@@ -8,7 +8,7 @@ from pathlib import Path, PurePath
 
 from prelude_cli.views.shared import Spinner, pretty_print
 from prelude_sdk.controllers.detect_controller import DetectController
-from prelude_sdk.controllers.iam_controller import IAMController
+from prelude_sdk.controllers.iam_controller import IAMAccountController
 from prelude_sdk.models.codes import Control, RunCode
 
 
@@ -277,7 +277,7 @@ def delete_endpoint(controller, endpoint_id):
 def queue(controller):
     """List all tests in your active queue"""
     with Spinner(description="Fetching active tests from queue"):
-        iam = IAMController(account=controller.account)
+        iam = IAMAccountController(account=controller.account)
         return iam.get_account().get("queue")
 
 
@@ -429,7 +429,7 @@ def threat_hunt_activity(controller, id, type):
 
 @detect.command("accept-terms", hidden=True)
 @click.argument("name", type=str, required=True)
-@click.option("-v", "--version", type=int, required=True)
+@click.option("-v", "--version", type=str, required=True)
 @click.pass_obj
 @pretty_print
 def accept_terms(controller, name, version):

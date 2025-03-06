@@ -5,7 +5,7 @@ import requests
 
 from datetime import datetime, timedelta, timezone
 from prelude_sdk.models.codes import Control
-from prelude_sdk.controllers.iam_controller import IAMController
+from prelude_sdk.controllers.iam_controller import IAMAccountController
 from prelude_sdk.controllers.detect_controller import DetectController
 from prelude_sdk.controllers.partner_controller import PartnerController
 
@@ -102,7 +102,7 @@ class TestPartnerAttach:
     ]
 
     def setup_class(self):
-        self.iam = IAMController(pytest.account)
+        self.iam = IAMAccountController(pytest.account)
         self.detect = DetectController(pytest.account)
         self.partner = PartnerController(pytest.account)
 
@@ -145,7 +145,6 @@ class TestPartner:
     scenarios = [crowdstrike, defender, sentinel_one]
 
     def setup_class(self):
-        self.iam = IAMController(pytest.account)
         self.detect = DetectController(pytest.account)
         self.partner = PartnerController(pytest.account)
 
