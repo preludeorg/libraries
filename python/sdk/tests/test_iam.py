@@ -2,7 +2,7 @@ import json
 import pytest
 
 from prelude_sdk.controllers.iam_controller import IAMController
-from prelude_sdk.models.codes import Mode, Permission
+from prelude_sdk.models.codes import Permission
 
 from testutils import *
 
@@ -27,29 +27,34 @@ class TestIAM:
 
     def test_service_user(self, unwrap):
         service_user = unwrap(self.iam.create_service_user)(
-            self.iam, handle=self.service_user
+            self.iam, name=self.service_user
         )
-        assert self.service_user == service_user["handle"]
+        assert self.service_user == service_user["name"]
         assert check_if_string_is_uuid(service_user["token"])
 
         res = unwrap(self.iam.get_account)(self.iam)
 
-        pytest.expected_account["token_users"].append(
-            dict(
-                handle=self.service_user,
-                permission=Permission.SERVICE.value,
-                name="",
-                oidc="",
+        for user in res["token_users"]:
+            if user["handle"] != service_user["handle"]:
+                continue
+            pytest.expected_account["token_users"].append(
+                dict(
+                    created=user["created"],
+                    handle=service_user["handle"],
+                    last_seen=user["last_seen"],
+                    name=self.service_user,
+                    oidc="",
+                    permission=Permission.SERVICE.value,
+                )
             )
-        )
 
         diffs = check_dict_items(pytest.expected_account, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
-        unwrap(self.iam.delete_service_user)(self.iam, handle=self.service_user)
+        unwrap(self.iam.delete_service_user)(self.iam, handle=service_user["handle"])
 
         for i, user in enumerate(pytest.expected_account["token_users"]):
-            if user["handle"] == self.service_user:
+            if user["handle"] == service_user["handle"]:
                 del pytest.expected_account["token_users"][i]
                 break
 
@@ -100,15 +105,21 @@ class TestIAM:
         res = unwrap(self.iam.get_account)(self.iam)
         assert pytest.expected_account["whoami"]["handle"] == res["whoami"]["handle"]
 
-    def test_update_account_user(self, unwrap, manual):
-        if not manual:
-            pytest.skip("Not manual mode")
-
+    def test_update_account_user(self, unwrap):
         unwrap(self.iam.update_account_user)(
-            self.iam, email=pytest.account.handle, oidc="", permission=Permission.ADMIN
+            self.iam,
+            email=pytest.second_user_account.handle,
+            oidc="",
+            permission=Permission.ADMIN,
         )
 
         res = unwrap(self.iam.get_account)(self.iam)
+
+        for user in pytest.expected_account["users"]:
+            if user["handle"] == pytest.second_user_account.handle:
+                user["permission"] = Permission.ADMIN.value
+                break
+
         diffs = check_dict_items(pytest.expected_account, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
@@ -132,4 +143,6 @@ class TestIAM:
             pytest.skip("Pre-existing account")
 
         iam = IAMController(pytest.account)
+        unwrap(iam.purge_user)(iam)
+        iam = IAMController(pytest.second_user_account)
         unwrap(iam.purge_user)(iam)

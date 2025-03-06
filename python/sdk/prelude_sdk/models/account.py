@@ -58,7 +58,9 @@ class Account:
         keychain = Keychain()
         profile_items = dict(keychain.get_profile(profile).items())
         if "handle" not in profile_items:
-            raise ValueError("Please make sure you are using an up-to-date profile")
+            raise ValueError(
+                "Please make sure you are using an up-to-date profile with the following fields: account, handle, hq"
+            )
         return _Account(
             account=profile_items["account"],
             handle=profile_items["handle"],
@@ -73,18 +75,28 @@ class Account:
         return _Account(account, handle, hq, keychain_location=None)
 
     @staticmethod
-    def from_token(
+    def from_refresh_token(
         account: str,
         handle: str,
-        token: str,
+        refresh_token: str,
         hq: str = "https://api.us1.preludesecurity.com",
     ):
+        res = requests.post(
+            f"{hq}/iam/token",
+            headers=dict(account=account, _product="py-sdk"),
+            json=dict(
+                auth_flow="refresh",
+                handle=handle,
+                refresh_token=refresh_token,
+            ),
+            timeout=10,
+        )
         return _Account(
             account,
             handle,
             hq,
             keychain_location=None,
-            token=token,
+            token=res["token"],
             token_location=None,
         )
 
@@ -105,7 +117,7 @@ class _Account:
             Path.home(), ".prelude", "tokens.json"
         ),
     ):
-        if not any([token, token_location]):
+        if token is None and token_location is None:
             raise ValueError("Please provide either an ID token or a token location")
 
         super().__init__()
@@ -136,8 +148,6 @@ class _Account:
             json.dump(existing_tokens, f)
 
     def _verify(self):
-        if not self.token_location:
-            raise ValueError("Please provide a token location to continue")
         if self.profile and not any([self.handle, self.account]):
             raise ValueError(
                 "Please configure your %s profile to continue" % self.profile
@@ -157,13 +167,21 @@ class _Account:
         )
         if not res.ok:
             raise Exception("Error logging in using password: %s" % res.text)
-        self._save_new_token(res.json())
+        tokens = res.json()
+        if self.token_location:
+            self._save_new_token(tokens)
+        return tokens
 
-    def refresh_tokens(self):
+    def refresh_tokens(self, refresh_token=None):
         self._verify()
-        existing_tokens = self._read_tokens().get(self.handle, {}).get(self.hq, {})
-        if not (refresh_token := existing_tokens.get("refresh_token")):
-            raise Exception("No refresh token found, please login first to continue")
+        if self.token_location:
+            existing_tokens = self._read_tokens().get(self.handle, {}).get(self.hq, {})
+            if not (refresh_token := existing_tokens.get("refresh_token")):
+                raise Exception(
+                    "No refresh token found, please login first to continue"
+                )
+        elif not refresh_token:
+            raise ValueError("Please provide a refresh token to continue")
         res = requests.post(
             f"{self.hq}/iam/token",
             headers=self.headers,
@@ -178,7 +196,10 @@ class _Account:
             raise Exception(
                 "Error refreshing token. Please reauthenticate to obtain a new refresh token."
             )
-        self._save_new_token(existing_tokens | res.json())
+        tokens = res.json()
+        if self.token_location:
+            self._save_new_token(existing_tokens | res.json())
+        return tokens
 
     def get_token(self):
         if self.token:

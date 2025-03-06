@@ -114,9 +114,9 @@ class IAMController(HttpController):
         return res.json()
 
     @verify_credentials
-    def create_service_user(self, handle: str):
+    def create_service_user(self, name: str):
         """Create a service user"""
-        body = dict(handle=handle)
+        body = dict(name=name)
 
         res = self.post(
             f"{self.account.hq}/iam/account/service_user",
@@ -217,19 +217,6 @@ class IAMController(HttpController):
             headers=self.account.headers,
             params=params,
             timeout=30,
-        )
-        return res.json()
-
-    @verify_credentials
-    def get_oidc_name(self, slug: str):
-        """Get OIDC provider name from organization slug"""
-        params = dict(slug=slug)
-
-        res = self.get(
-            f"{self.account.hq}/iam/account/oidc",
-            headers=self.account.headers,
-            params=params,
-            timeout=10,
         )
         return res.json()
 

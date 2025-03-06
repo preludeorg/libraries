@@ -22,42 +22,42 @@ class HttpController(object):
         self._session.mount("http://", HTTPAdapter(max_retries=retry))
         self._session.mount("https://", HTTPAdapter(max_retries=retry))
 
-    def get(self, url, **kwargs):
+    def get(self, url, retry=False, **kwargs):
         res = self._session.get(url, **kwargs)
         if res.status_code == 200:
             return res
-        if res.status_code == 401:
+        if res.status_code == 401 and not retry and self.account.token_location:
             self.account.refresh_tokens()
             self.account.update_auth_header()
-            return self.get(url, **kwargs)
+            return self.get(url, retry=True, **kwargs)
         raise Exception(res.text)
 
-    def post(self, url, **kwargs):
+    def post(self, url, retry=False, **kwargs):
         res = self._session.post(url, **kwargs)
         if res.status_code == 200:
             return res
-        if res.status_code == 401:
+        if res.status_code == 401 and not retry and self.account.token_location:
             self.account.refresh_tokens()
             self.account.update_auth_header()
-            return self.post(url, **kwargs)
+            return self.post(url, retry=True, **kwargs)
         raise Exception(res.text)
 
-    def delete(self, url, **kwargs):
+    def delete(self, url, retry=False, **kwargs):
         res = self._session.delete(url, **kwargs)
         if res.status_code == 200:
             return res
-        if res.status_code == 401:
+        if res.status_code == 401 and not retry and self.account.token_location:
             self.account.refresh_tokens()
             self.account.update_auth_header()
-            return self.delete(url, **kwargs)
+            return self.delete(url, retry=True, **kwargs)
         raise Exception(res.text)
 
-    def put(self, url, **kwargs):
+    def put(self, url, retry=False, **kwargs):
         res = self._session.put(url, **kwargs)
         if res.status_code == 200:
             return res
-        if res.status_code == 401:
+        if res.status_code == 401 and not retry and self.account.token_location:
             self.account.refresh_tokens()
             self.account.update_auth_header()
-            return self.put(url, **kwargs)
+            return self.put(url, retry=True, **kwargs)
         raise Exception(res.text)

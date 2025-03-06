@@ -17,8 +17,7 @@ def auth(ctx):
 def login(account, password):
     """Login using your password"""
     with Spinner(description="Logging in and saving tokens"):
-        account.password_login(password)
-    return [], "Login successful"
+        return account.password_login(password), "Login successful"
 
 
 @auth.command("refresh")
@@ -27,5 +26,4 @@ def login(account, password):
 def refresh(account):
     """Refresh your tokens"""
     with Spinner(description="Refreshing tokens"):
-        account.refresh_tokens()
-    return [], "New access tokens saved"
+        return account.refresh_tokens(), "New access tokens saved"

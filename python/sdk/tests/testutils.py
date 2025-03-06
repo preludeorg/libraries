@@ -45,6 +45,8 @@ def check_dict_items(expected, actual):
             if isinstance(v, list):
                 if v and isinstance(v[0], dict):
                     for i in range(len(v)):
+                        print(len(actual[k]))
+                        print(actual[k])
                         if i < len(actual[k]):
                             diffs.extend(_check_ordered_dict_items(v[i], actual[k][i]))
                         else:
@@ -53,7 +55,7 @@ def check_dict_items(expected, actual):
                 if sorted(v) != sorted(actual[k]):
                     diffs.append(f"[{k}] expected: {v}  actual: {actual[k]}")
                     continue
-            if k not in ["last_seen", "created"] and v != actual[k]:
+            if v != actual[k]:
                 diffs.append(f"[{k}] expected: {v}  actual: {actual[k]}")
         return diffs
 

@@ -5,7 +5,7 @@ import requests
 
 from prelude_sdk.controllers.build_controller import BuildController
 from prelude_sdk.controllers.iam_controller import IAMController
-from prelude_sdk.models.codes import Control
+from prelude_sdk.models.codes import Control, Permission
 
 
 @pytest.fixture(scope="session")
@@ -133,23 +133,38 @@ def setup_account(unwrap, email, api, existing_account, password):
         pytest.account.password_login(existing_account["password"])
         pytest.account.headers["authorization"] = f"Bearer {pytest.account.token}"
         print(f"[account_id: {existing_account['account_id']}]", end=" ")
-        pytest.expected_account = unwrap(iam.get_account)(iam)
-        return
+    else:
+        res = iam.sign_up(company="pysdk-tests", email=email, name="Bob")
+        password = "pysdktests"
+        pytest.account.headers["account"] = res["account_id"]
+        pytest.account.password_login(res["temp_password"], password)
+        pytest.account.account = res["account_id"]
+        pytest.account.headers["authorization"] = f"Bearer {pytest.account.token}"
+        print(f'[account_id: {res["account_id"]}]', end=" ")
 
-    res = unwrap(iam.sign_up)(iam, company="pysdk-tests", email=email, name="Bob")
-
-    password = "pysdktests"
-    pytest.account.headers["account"] = res["account_id"]
-    pytest.account.password_login(res["temp_password"], password)
-    pytest.account.account = res["account_id"]
-    pytest.account.headers["authorization"] = f"Bearer {pytest.account.token}"
-    print(f'[account_id: {res["account_id"]}]', end=" ")
-    pytest.expected_account = unwrap(iam.get_account)(iam)
     pytest.controls = dict()
 
-    service_user = unwrap(iam.create_service_user)(iam, handle="pysdktests")
-    pytest.service_user_handle = "pysdktests"
+    service_user = unwrap(iam.create_service_user)(iam, name="pysdktests")
+    pytest.service_user_handle = service_user["handle"]
     pytest.service_user_token = service_user["token"]
+
+    second_email = "second@auto-accept.developer.preludesecurity.com"
+    invited_user = unwrap(iam.invite_user)(
+        iam,
+        email=second_email,
+        oidc=None,
+        permission=Permission.EXECUTIVE,
+        name="second",
+    )
+    pytest.second_user_account = Account(
+        handle=second_email, hq=api, account=pytest.account.account
+    )
+    pytest.second_user_account.password_login(invited_user["temp_password"], password)
+    pytest.second_user_account.headers["authorization"] = (
+        f"Bearer {pytest.second_user_account.token}"
+    )
+
+    pytest.expected_account = unwrap(iam.get_account)(iam)
 
 
 @pytest.fixture(scope="session")

@@ -116,16 +116,6 @@ def detach_oidc(controller):
         return controller.detach_oidc()
 
 
-@iam.command("oidc-name")
-@click.argument("slug")
-@click.pass_obj
-@pretty_print
-def get_oidc_name(controller, slug):
-    """Get OIDC provider name from organization slug"""
-    with Spinner(description="Fetching OIDC provider name"):
-        return controller.get_oidc_name(slug=slug)
-
-
 @iam.command("invite-user")
 @click.option(
     "-p",
@@ -169,13 +159,13 @@ def invite_user(controller, permission, name, oidc, email):
 
 
 @iam.command("create-service-user")
-@click.argument("handle")
+@click.argument("name")
 @click.pass_obj
 @pretty_print
-def create_service_user(controller, handle):
+def create_service_user(controller, name):
     """Create a new service user in your account"""
     with Spinner(description="Creating new service user"):
-        return controller.create_service_user(handle=handle)
+        return controller.create_service_user(name=name)
 
 
 @iam.command("delete-service-user")
