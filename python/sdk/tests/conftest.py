@@ -109,11 +109,6 @@ def existing_account(pytestconfig):
 
 
 @pytest.fixture(scope="session")
-def password(pytestconfig):
-    return pytestconfig.getoption("password")
-
-
-@pytest.fixture(scope="session")
 def manual(pytestconfig):
     return not pytestconfig.getoption("email").endswith(
         "@auto-accept.developer.preludesecurity.com"
@@ -121,7 +116,7 @@ def manual(pytestconfig):
 
 
 @pytest.fixture(scope="session")
-def setup_account(unwrap, email, api, existing_account, password):
+def setup_account(unwrap, email, api, existing_account):
     if hasattr(pytest, "expected_account"):
         return
 
@@ -159,6 +154,7 @@ def setup_account(unwrap, email, api, existing_account, password):
     pytest.second_user_account = Account(
         handle=second_email, hq=api, account=pytest.account.account
     )
+    password = "pysdktests"
     pytest.second_user_account.password_login(invited_user["temp_password"], password)
     pytest.second_user_account.headers["authorization"] = (
         f"Bearer {pytest.second_user_account.token}"

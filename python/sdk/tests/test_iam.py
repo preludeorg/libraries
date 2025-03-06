@@ -139,10 +139,9 @@ class TestIAM:
 
     @pytest.mark.order(-1)
     def test_purge_user(self, unwrap, existing_account):
-        if existing_account:
-            pytest.skip("Pre-existing account")
-
-        iam = IAMController(pytest.account)
-        unwrap(iam.purge_user)(iam)
         iam = IAMController(pytest.second_user_account)
         unwrap(iam.purge_user)(iam)
+
+        if not existing_account:
+            iam = IAMController(pytest.account)
+            unwrap(iam.purge_user)(iam)
