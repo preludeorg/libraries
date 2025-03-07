@@ -83,28 +83,26 @@ class Account:
         )
 
     @staticmethod
-    def from_refresh_token(
+    def from_token(
         account: str,
         handle: str,
-        refresh_token: str,
+        token: str | None = None,
+        refresh_token: str | None = None,
         hq: str = "https://api.us1.preludesecurity.com",
     ):
-        res = requests.post(
-            f"{hq}/iam/token",
-            headers=dict(account=account, _product="py-sdk"),
-            json=dict(
-                auth_flow="refresh",
-                handle=handle,
-                refresh_token=refresh_token,
-            ),
-            timeout=10,
-        )
+        if not any([token, refresh_token]):
+            raise ValueError("Please provide either an ID token or a refresh token")
+        if refresh_token:
+            res = exchange_token(
+                account, handle, hq, "refresh", dict(refresh_token=refresh_token)
+            )
+            token = res["token"]
         return _Account(
             account,
             handle,
             hq,
             keychain_location=None,
-            token=res["token"],
+            token=token,
             token_location=None,
         )
 
