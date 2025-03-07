@@ -45,8 +45,6 @@ def check_dict_items(expected, actual):
             if isinstance(v, list):
                 if v and isinstance(v[0], dict):
                     for i in range(len(v)):
-                        print(len(actual[k]))
-                        print(actual[k])
                         if i < len(actual[k]):
                             diffs.extend(_check_ordered_dict_items(v[i], actual[k][i]))
                         else:
