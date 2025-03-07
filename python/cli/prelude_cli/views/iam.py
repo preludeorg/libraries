@@ -166,15 +166,13 @@ def invite_user(controller, permission, name, oidc, email):
 
 
 @iam.command("create-service-user")
-@click.argument("email")
+@click.argument("name")
 @click.pass_obj
 @pretty_print
-def create_service_user(controller, email):
+def create_service_user(controller, name):
     """Create a new service user in your account"""
     with Spinner(description="Creating new service user"):
-        data = controller.create_service_user(email=email)
-    msg = "New user must check their email to verify their account"
-    return data, msg
+        return controller.create_service_user(name=name)
 
 
 @iam.command("update-user")
@@ -256,13 +254,13 @@ def logs(controller, days, limit):
         return controller.audit_logs(days=days, limit=limit)
 
 
-@iam.command("new-user-and-account", hidden=True)
+@iam.command("sign-up", hidden=True)
 @click.argument("email", type=str, required=True)
 @click.option("-c", "--company", type=str, required=True)
 @click.option("-n", "--name", type=str, required=True)
 @click.pass_obj
 @pretty_print
-def new_user_and_account(controller, email, company, name):
+def sign_up(controller, email, company, name):
     """Create a new user and account"""
     with Spinner(description="Creating new user and account"):
-        return controller.new_user_and_account(email=email, company=company, name=name)
+        return controller.sign_up(email=email, company=company, name=name)

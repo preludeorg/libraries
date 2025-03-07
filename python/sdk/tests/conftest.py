@@ -42,7 +42,7 @@ def pytest_addoption(parser):
     )
     parser.addoption(
         "--email",
-        default="test13@auto-accept.developer.preludesecurity.com",
+        default="test14@auto-accept.developer.preludesecurity.com",
         action="store",
         help="Email address to use for testing",
     )
@@ -136,9 +136,7 @@ def setup_account(unwrap, email, api, existing_account, password):
         pytest.expected_account = unwrap(iam.get_account)(iam)
         return
 
-    res = unwrap(iam.new_user_and_account)(
-        iam, company="pysdk-tests", email=email, name="Bob"
-    )
+    res = unwrap(iam.sign_up)(iam, company="pysdk-tests", email=email, name="Bob")
 
     password = "pysdktests"
     pytest.account.headers["account"] = res["account_id"]
