@@ -210,11 +210,14 @@ class TestDetect:
         ep = [r for r in res if r["serial_num"] == self.serial]
         assert 0 == len(ep), json.dumps(ep, indent=2)
 
-    def test_accept_terms(self, unwrap):
+    def test_accept_terms(self, unwrap, existing_account):
+        if existing_account:
+            pytest.skip("Pre-existing account")
+
         for user in pytest.expected_account["users"]:
             if user["handle"] == pytest.expected_account["whoami"]:
                 if user["terms"].get("threat_intel", {}).get("1.0.0"):
-                    with pytest.raises(Exception) as e:
+                    with pytest.raises(Exception):
                         unwrap(self.detect.accept_terms)(
                             self.detect, name="threat_intel", version="1.0.0"
                         )
