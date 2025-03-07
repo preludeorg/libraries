@@ -154,6 +154,8 @@ class _Account:
             json.dump(existing_tokens, f)
 
     def _verify(self):
+        if not self.token_location:
+            raise ValueError("Please provide a token location to continue")
         if self.profile and not any([self.handle, self.account]):
             raise ValueError(
                 "Please configure your %s profile to continue" % self.profile
@@ -164,20 +166,14 @@ class _Account:
         tokens = exchange_token(
             self.account, self.handle, self.hq, "password", dict(password=password)
         )
-        if self.token_location:
-            self._save_new_token(tokens)
+        self._save_new_token(tokens)
         return tokens
 
-    def refresh_tokens(self, refresh_token=None):
+    def refresh_tokens(self):
         self._verify()
-        if self.token_location:
-            existing_tokens = self._read_tokens().get(self.handle, {}).get(self.hq, {})
-            if not (refresh_token := existing_tokens.get("refresh_token")):
-                raise Exception(
-                    "No refresh token found, please login first to continue"
-                )
-        elif not refresh_token:
-            raise ValueError("Please provide a refresh token to continue")
+        existing_tokens = self._read_tokens().get(self.handle, {}).get(self.hq, {})
+        if not (refresh_token := existing_tokens.get("refresh_token")):
+            raise Exception("No refresh token found, please login first to continue")
         tokens = exchange_token(
             self.account,
             self.handle,
@@ -185,8 +181,8 @@ class _Account:
             "refresh",
             dict(refresh_token=refresh_token),
         )
-        if self.token_location:
-            self._save_new_token(existing_tokens | tokens)
+        tokens = existing_tokens | tokens
+        self._save_new_token(tokens)
         return tokens
 
     def get_token(self):
