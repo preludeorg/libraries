@@ -254,6 +254,8 @@ def subscribe(controller, event):
         [e.name for e in AuditEvent if e != AuditEvent.INVALID], case_sensitive=False
     ),
 )
+@click.pass_obj
+@pretty_print
 def unsubscribe(controller, event):
     """Unsubscribe to email notifications for an event"""
     with Spinner(description="Unsubscribing"):

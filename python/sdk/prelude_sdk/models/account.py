@@ -39,11 +39,11 @@ class Keychain:
         with open(self.keychain_location, "w") as f:
             cfg.write(f)
 
-    def get_profile(self, profile="default"):
+    def get_profile(self, profile="default") -> dict:
         try:
             cfg = self.read_keychain()
             profile = next(s for s in cfg.sections() if s == profile)
-            return cfg[profile]
+            return dict(cfg[profile].items())
         except StopIteration:
             raise Exception(
                 "Could not find profile %s for account in %s"
@@ -54,6 +54,11 @@ class Keychain:
 def exchange_token(
     account: str, handle: str, hq: str, auth_flow: str, auth_params: dict
 ):
+    """
+    Two token exchange auth flows:
+    1) Password auth: auth_flow = "password", auth_params = {"password": "your_password"}
+    2) Refresh token auth: auth_flow = "refresh", auth_params = {"refresh_token": "your_refresh_token"}
+    """
     res = requests.post(
         f"{hq}/iam/token",
         headers=dict(account=account, _product="py-sdk"),
@@ -69,8 +74,11 @@ class Account:
 
     @staticmethod
     def from_keychain(profile: str = "default"):
+        """
+        Create an account object from a pre-configured profile in your keychain file
+        """
         keychain = Keychain()
-        profile_items = dict(keychain.get_profile(profile).items())
+        profile_items = keychain.get_profile(profile)
         if "handle" not in profile_items:
             raise ValueError(
                 "Please make sure you are using an up-to-date profile with the following fields: account, handle, hq"
@@ -90,6 +98,9 @@ class Account:
         refresh_token: str | None = None,
         hq: str = "https://api.us1.preludesecurity.com",
     ):
+        """
+        Create an account object from an ID token or a refresh token
+        """
         if not any([token, refresh_token]):
             raise ValueError("Please provide either an ID token or a refresh token")
         if refresh_token:
