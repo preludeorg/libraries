@@ -113,6 +113,12 @@ class TestIAM:
         diffs = check_dict_items(pytest.expected_account, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
+    @pytest.mark.order(-3)
+    def test_purge_service_user(self, unwrap):
+        unwrap(self.iam.remove_user)(
+            self.iam, email=pytest.service_user_handle, oidc=""
+        )
+
     @pytest.mark.order(-2)
     def test_purge_account(self, unwrap, existing_account):
         if existing_account:

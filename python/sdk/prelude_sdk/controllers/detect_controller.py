@@ -235,7 +235,7 @@ class DetectController(HttpController):
     def accept_terms(self, name, version):
         """Accept terms and conditions"""
         res = self.post(
-            f"{self.account.hq}/detect/terms",
+            f"{self.account.hq}/iam/terms",
             headers=self.account.headers,
             json=dict(name=name, version=version),
             timeout=10,

@@ -23,8 +23,10 @@ class TestProbe:
         self.serial = "abc-123"
 
     def test_create_endpoint(self, unwrap):
-        pytest.token = unwrap(self.detect.register_endpoint)(
-            self.detect, host=self.host, serial_num=self.serial
+        pytest.token = self.detect.register_endpoint(
+            host=self.host,
+            serial_num=self.serial,
+            reg_string=f"{pytest.expected_account['account_id']}/{pytest.service_user_token}",
         )
 
         res = unwrap(self.detect.list_endpoints)(self.detect)

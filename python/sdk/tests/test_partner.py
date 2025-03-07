@@ -126,7 +126,7 @@ class TestPartnerAttach:
         )
         assert expected in res["controls"]
 
-    @pytest.mark.order(-7)
+    @pytest.mark.order(-8)
     def test_detach(self, unwrap, control, partner_api, user, secret):
         unwrap(self.partner.detach)(
             self.partner, partner=control, instance_id=pytest.controls[control.value]
@@ -170,8 +170,10 @@ class TestPartner:
         webhook_keys,
         group_id,
     ):
-        pytest.token = unwrap(self.detect.register_endpoint)(
-            self.detect, host=host, serial_num=host
+        pytest.token = self.detect.register_endpoint(
+            host=host,
+            serial_num=host,
+            reg_string=f"{pytest.expected_account['account_id']}/{pytest.service_user_token}",
         )
         pytest.endpoint = dict(
             host=host,

@@ -36,9 +36,12 @@ class TestDetect:
             "relevant_categories",
         } == set(res[0].keys())
 
-    def test_register_endpoint(self, unwrap):
-        res = unwrap(self.detect.register_endpoint)(
-            self.detect, host=self.host, serial_num=self.serial, tags=self.tags
+    def test_register_endpoint(self):
+        res = self.detect.register_endpoint(
+            host=self.host,
+            serial_num=self.serial,
+            reg_string=f"{pytest.expected_account['account_id']}/{pytest.service_user_token}",
+            tags=self.tags,
         )
         assert 32 == len(res)
 
