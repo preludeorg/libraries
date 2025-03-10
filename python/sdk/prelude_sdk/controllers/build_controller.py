@@ -8,21 +8,18 @@ from prelude_sdk.models.codes import Control, EDRResponse
 class BuildController(HttpController):
 
     def __init__(self, account):
-        super().__init__()
-        self.account = account
+        super().__init__(account)
 
     @verify_credentials
     def clone_test(self, source_test_id):
         """Clone a test"""
-        res = self._session.post(
+        res = self.post(
             f"{self.account.hq}/build/tests",
             json=dict(source_test_id=source_test_id),
             headers=self.account.headers,
             timeout=10,
         )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        return res.json()
 
     @verify_credentials
     def create_test(self, name, unit, technique=None, test_id=None):
@@ -33,15 +30,13 @@ class BuildController(HttpController):
         if test_id:
             body["id"] = test_id
 
-        res = self._session.post(
+        res = self.post(
             f"{self.account.hq}/build/tests",
             json=body,
             headers=self.account.headers,
             timeout=10,
         )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        return res.json()
 
     @verify_credentials
     def update_test(
@@ -63,40 +58,34 @@ class BuildController(HttpController):
         if technique is not None:
             body["technique"] = technique
 
-        res = self._session.post(
+        res = self.post(
             f"{self.account.hq}/build/tests/{test_id}",
             json=body,
             headers=self.account.headers,
             timeout=10,
         )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        return res.json()
 
     @verify_credentials
     def delete_test(self, test_id, purge):
         """Delete an existing test"""
-        res = self._session.delete(
+        res = self.delete(
             f"{self.account.hq}/build/tests/{test_id}",
             json=dict(purge=purge),
             headers=self.account.headers,
             timeout=10,
         )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        return res.json()
 
     @verify_credentials
     def undelete_test(self, test_id):
         """Undelete a tombstoned test"""
-        res = self._session.post(
+        res = self.post(
             f"{self.account.hq}/build/tests/{test_id}/undelete",
             headers=self.account.headers,
             timeout=10,
         )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        return res.json()
 
     @verify_credentials
     def upload(self, test_id, filename, data, skip_compile=False):
@@ -108,39 +97,33 @@ class BuildController(HttpController):
         query_params = ""
         if skip_compile:
             query_params = "?" + urllib.parse.urlencode(dict(skip_compile=True))
-        res = self._session.post(
+        res = self.post(
             f"{self.account.hq}/build/tests/{test_id}/{filename}{query_params}",
             data=data,
             headers=h,
             timeout=10,
         )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        return res.json()
 
     @verify_credentials
     def compile_code_string(self, code: str, source_test_id: str = None):
         """Compile a code string"""
-        res = self._session.post(
+        res = self.post(
             f"{self.account.hq}/build/compile",
             json=dict(code=code, source_test_id=source_test_id),
             headers=self.account.headers,
             timeout=10,
         )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        return res.json()
 
     @verify_credentials
     def get_compile_status(self, job_id):
-        res = self._session.get(
+        res = self.get(
             f"{self.account.hq}/build/compile/{job_id}",
             headers=self.account.headers,
             timeout=10,
         )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        return res.json()
 
     @verify_credentials
     def create_threat(
@@ -157,15 +140,13 @@ class BuildController(HttpController):
         if tests:
             body["tests"] = tests
 
-        res = self._session.post(
+        res = self.post(
             f"{self.account.hq}/build/threats",
             json=body,
             headers=self.account.headers,
             timeout=10,
         )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        return res.json()
 
     @verify_credentials
     def update_threat(
@@ -190,40 +171,34 @@ class BuildController(HttpController):
         if tests is not None:
             body["tests"] = tests
 
-        res = self._session.post(
+        res = self.post(
             f"{self.account.hq}/build/threats/{threat_id}",
             json=body,
             headers=self.account.headers,
             timeout=10,
         )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        return res.json()
 
     @verify_credentials
     def delete_threat(self, threat_id, purge):
         """Delete an existing threat"""
-        res = self._session.delete(
+        res = self.delete(
             f"{self.account.hq}/build/threats/{threat_id}",
             json=dict(purge=purge),
             headers=self.account.headers,
             timeout=10,
         )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        return res.json()
 
     @verify_credentials
     def undelete_threat(self, threat_id):
         """Undelete a tombstoned threat"""
-        res = self._session.post(
+        res = self.post(
             f"{self.account.hq}/build/threats/{threat_id}/undelete",
             headers=self.account.headers,
             timeout=10,
         )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        return res.json()
 
     @verify_credentials
     def create_detection(
@@ -236,15 +211,13 @@ class BuildController(HttpController):
         if rule_id:
             body["rule_id"] = rule_id
 
-        res = self._session.post(
+        res = self.post(
             f"{self.account.hq}/build/detections",
             json=body,
             headers=self.account.headers,
             timeout=10,
         )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        return res.json()
 
     @verify_credentials
     def update_detection(self, detection_id: str, rule=None, test_id=None):
@@ -255,27 +228,23 @@ class BuildController(HttpController):
         if test_id:
             body["test_id"] = test_id
 
-        res = self._session.post(
+        res = self.post(
             f"{self.account.hq}/build/detections/{detection_id}",
             json=body,
             headers=self.account.headers,
             timeout=10,
         )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        return res.json()
 
     @verify_credentials
     def delete_detection(self, detection_id: str):
         """Delete an existing detection"""
-        res = self._session.delete(
+        res = self.delete(
             f"{self.account.hq}/build/detections/{detection_id}",
             headers=self.account.headers,
             timeout=10,
         )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        return res.json()
 
     @verify_credentials
     def create_threat_hunt(
@@ -296,15 +265,13 @@ class BuildController(HttpController):
         if threat_hunt_id:
             body["id"] = threat_hunt_id
 
-        res = self._session.post(
+        res = self.post(
             f"{self.account.hq}/build/threat_hunts",
             json=body,
             headers=self.account.headers,
             timeout=10,
         )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        return res.json()
 
     @verify_credentials
     def update_threat_hunt(
@@ -323,24 +290,20 @@ class BuildController(HttpController):
         if test_id:
             body["test_id"] = test_id
 
-        res = self._session.post(
+        res = self.post(
             f"{self.account.hq}/build/threat_hunts/{threat_hunt_id}",
             json=body,
             headers=self.account.headers,
             timeout=10,
         )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        return res.json()
 
     @verify_credentials
     def delete_threat_hunt(self, threat_hunt_id: str):
         """Delete an existing threat hunt"""
-        res = self._session.delete(
+        res = self.delete(
             f"{self.account.hq}/build/threat_hunts/{threat_hunt_id}",
             headers=self.account.headers,
             timeout=10,
         )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        return res.json()

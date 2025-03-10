@@ -7,7 +7,7 @@ from dateutil.parser import parse
 from testutils import *
 
 from prelude_sdk.controllers.detect_controller import DetectController
-from prelude_sdk.controllers.iam_controller import IAMController
+from prelude_sdk.controllers.iam_controller import IAMAccountController
 from prelude_sdk.models.codes import RunCode
 
 
@@ -16,7 +16,7 @@ from prelude_sdk.models.codes import RunCode
 class TestDetect:
 
     def setup_class(self):
-        self.iam = IAMController(pytest.account)
+        self.iam = IAMAccountController(pytest.account)
         self.detect = DetectController(pytest.account)
 
         self.host = "test_host"
@@ -36,9 +36,12 @@ class TestDetect:
             "relevant_categories",
         } == set(res[0].keys())
 
-    def test_register_endpoint(self, unwrap):
-        res = unwrap(self.detect.register_endpoint)(
-            self.detect, host=self.host, serial_num=self.serial, tags=self.tags
+    def test_register_endpoint(self):
+        res = self.detect.register_endpoint(
+            host=self.host,
+            serial_num=self.serial,
+            reg_string=f"{pytest.expected_account['account_id']}/{pytest.service_user_token}",
+            tags=self.tags,
         )
         assert 32 == len(res)
 
@@ -206,3 +209,31 @@ class TestDetect:
         res = unwrap(self.detect.list_endpoints)(self.detect)
         ep = [r for r in res if r["serial_num"] == self.serial]
         assert 0 == len(ep), json.dumps(ep, indent=2)
+
+    def test_accept_terms(self, unwrap, existing_account):
+        if existing_account:
+            pytest.skip("Pre-existing account")
+
+        for user in pytest.expected_account["users"]:
+            if user["handle"] == pytest.expected_account["whoami"]:
+                if user["terms"].get("threat_intel", {}).get("1.0.0"):
+                    with pytest.raises(Exception):
+                        unwrap(self.detect.accept_terms)(
+                            self.detect, name="threat_intel", version="1.0.0"
+                        )
+                    return
+
+        unwrap(self.detect.accept_terms)(
+            self.detect, name="threat_intel", version="1.0.0"
+        )
+        res = unwrap(self.iam.get_account)(self.iam)
+
+        for user in res["users"]:
+            if user["handle"] == pytest.expected_account["whoami"]:
+                assert user["terms"].get("threat_intel", {}).get("1.0.0"), json.dumps(
+                    user, indent=2
+                )
+                assert parse(user["terms"]["threat_intel"]["1.0.0"]) <= datetime.now(
+                    timezone.utc
+                )
+                break

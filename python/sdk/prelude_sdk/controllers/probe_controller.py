@@ -4,14 +4,11 @@ from prelude_sdk.controllers.http_controller import HttpController
 class ProbeController(HttpController):
 
     def __init__(self, account):
-        super().__init__()
-        self.account = account
+        super().__init__(account)
 
     def download(self, name: str, dos: str):
         """Download a probe executable"""
-        res = self._session.get(
+        res = self.get(
             f"{self.account.hq}/download/{name}", headers=dict(dos=dos), timeout=10
         )
-        if not res.status_code == 200:
-            raise Exception(res.text)
         return res.text
