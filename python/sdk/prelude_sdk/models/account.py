@@ -65,6 +65,8 @@ def exchange_token(
         json=dict(auth_flow=auth_flow, handle=handle, **auth_params),
         timeout=10,
     )
+    if res.status_code == 401:
+        raise Exception("Error logging in using password: Unauthorized")
     if not res.ok:
         raise Exception("Error logging in using password: %s" % res.text)
     return res.json()
