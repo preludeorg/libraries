@@ -134,7 +134,7 @@ def setup_account(unwrap, email, api, existing_account):
         print(f"[account_id: {existing_account['account_id']}]", end=" ")
     else:
         res = iam.sign_up(company="pysdk-tests", email=email, name="Bob")
-        password = "pysdktests"
+        password = "PySdkTests123!"
         pytest.account.headers["account"] = res["account_id"]
         pytest.account.password_login(res["temp_password"], password)
         pytest.account.account = res["account_id"]
@@ -147,7 +147,7 @@ def setup_account(unwrap, email, api, existing_account):
     pytest.service_user_handle = service_user["handle"]
     pytest.service_user_token = service_user["token"]
 
-    second_email = "second@auto-accept.developer.preludesecurity.com"
+    second_email = f"second-{str(uuid.uuid4())[:12]}@auto-accept.developer.preludesecurity.com"
     invited_user = unwrap(iam.invite_user)(
         iam,
         email=second_email,
@@ -158,7 +158,7 @@ def setup_account(unwrap, email, api, existing_account):
     pytest.second_user_account = Account(
         handle=second_email, hq=api, account=pytest.account.account
     )
-    password = "pysdktests"
+    password = "PySdkTests123!"
     pytest.second_user_account.password_login(invited_user["temp_password"], password)
     pytest.second_user_account.headers["authorization"] = (
         f"Bearer {pytest.second_user_account.token}"
