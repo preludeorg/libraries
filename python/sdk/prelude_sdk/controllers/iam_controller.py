@@ -160,6 +160,19 @@ class IAMAccountController(HttpController):
         return res.json()
 
     @verify_credentials
+    def admin_reset_password(self, email: str):
+        """Reset a user's password as admin"""
+        body = dict(handle=email)
+
+        res = self.post(
+            f"{self.account.hq}/iam/user/admin_reset",
+            headers=self.account.headers,
+            json=body,
+            timeout=10,
+        )
+        return res.json()
+
+    @verify_credentials
     def audit_logs(self, days: int = 7, limit: int = 1000):
         """Get audit logs from the last X days"""
         params = dict(days=days, limit=limit)
@@ -220,19 +233,6 @@ class IAMUserController(HttpController):
         res = self.get(
             f"{self.account.hq}/iam/user/account",
             headers=self.account.headers,
-            timeout=10,
-        )
-        return res.json()
-
-    @verify_credentials
-    def admin_reset_password(self, email: str):
-        """Reset a user's password as admin"""
-        body = dict(handle=email)
-
-        res = self.post(
-            f"{self.account.hq}/iam/user/admin_reset",
-            headers=self.account.headers,
-            json=body,
             timeout=10,
         )
         return res.json()
