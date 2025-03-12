@@ -18,21 +18,6 @@ def unwrap():
     yield unwrapper
 
 
-@pytest.fixture(scope="session")
-def pause_for_manual_action(pytestconfig):
-    class suspend:
-        def __init__(self):
-            self.capture = pytestconfig.pluginmanager.getplugin("capturemanager")
-
-        def __enter__(self):
-            self.capture.suspend_global_capture(in_=True)
-
-        def __exit__(self, _1, _2, _3):
-            self.capture.resume_global_capture()
-
-    yield suspend()
-
-
 def pytest_addoption(parser):
     parser.addoption(
         "--api",
@@ -113,13 +98,6 @@ def existing_account(pytestconfig):
 
 
 @pytest.fixture(scope="session")
-def manual(pytestconfig):
-    return not pytestconfig.getoption("email").endswith(
-        "@auto-accept.developer.preludesecurity.com"
-    )
-
-
-@pytest.fixture(scope="session")
 def setup_account(unwrap, email, api, existing_account):
     if hasattr(pytest, "expected_account"):
         return
@@ -147,7 +125,9 @@ def setup_account(unwrap, email, api, existing_account):
     pytest.service_user_handle = service_user["handle"]
     pytest.service_user_token = service_user["token"]
 
-    second_email = f"second-{str(uuid.uuid4())[:12]}@auto-accept.developer.preludesecurity.com"
+    second_email = (
+        f"second-{str(uuid.uuid4())[:12]}@auto-accept.developer.preludesecurity.com"
+    )
     invited_user = unwrap(iam.invite_user)(
         iam,
         email=second_email,

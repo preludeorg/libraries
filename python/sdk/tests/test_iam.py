@@ -102,17 +102,6 @@ class TestIAM:
         diffs = check_dict_items(expected, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_admin_reset_password(self, unwrap, manual, pause_for_manual_action, email):
-        if not manual:
-            pytest.skip("Not manual mode")
-
-        unwrap(self.iam_user.admin_reset_password)(self.iam_user, email=email)
-        with pause_for_manual_action:
-            password = input("Enter your changed password:\n")
-        pytest.account.password_login(password)
-        res = unwrap(self.iam_account.get_account)(self.iam_account)
-        assert pytest.expected_account["whoami"]["handle"] == res["whoami"]["handle"]
-
     def test_update_account_user(self, unwrap):
         unwrap(self.iam_account.update_account_user)(
             self.iam_account,

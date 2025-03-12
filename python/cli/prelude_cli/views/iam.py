@@ -197,17 +197,6 @@ def update_account_user(controller, permission, oidc, email):
         )
 
 
-@iam.command("admin-reset-password")
-@click.argument("email")
-@click.pass_obj
-@pretty_print
-def admin_reset_password(controller, email):
-    """Reset a user's password as admin"""
-    with Spinner(description="Resetting user's password as admin"):
-        data = controller.admin_reset_password(email=email)
-    return data, f"Have {email} check their email to reset their password"
-
-
 @iam.command("remove-user")
 @click.confirmation_option(prompt="Are you sure?")
 @click.option(
