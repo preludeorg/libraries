@@ -18,6 +18,21 @@ def unwrap():
     yield unwrapper
 
 
+@pytest.fixture(scope="session")
+def pause_for_manual_action(pytestconfig):
+    class suspend:
+        def __init__(self):
+            self.capture = pytestconfig.pluginmanager.getplugin("capturemanager")
+
+        def __enter__(self):
+            self.capture.suspend_global_capture(in_=True)
+
+        def __exit__(self, _1, _2, _3):
+            self.capture.resume_global_capture()
+
+    yield suspend()
+
+
 def pytest_addoption(parser):
     parser.addoption(
         "--api",
@@ -83,6 +98,13 @@ class Account:
         if not res.ok:
             raise Exception("Error logging in using password: %s" % res.text)
         self.token = res.json()["token"]
+
+
+@pytest.fixture(scope="session")
+def manual(pytestconfig):
+    return not pytestconfig.getoption("email").endswith(
+        "@auto-accept.developer.preludesecurity.com"
+    )
 
 
 @pytest.fixture(scope="session")
