@@ -27,7 +27,7 @@ class TestVST:
         expected = dict(
             account_id=pytest.account.headers["account"],
             attachments=[],
-            author=pytest.expected_account["whoami"],
+            author=pytest.expected_account["whoami"]["handle"],
             expected=dict(crowdstrike=1),
             id=pytest.test_id,
             intel_context=None,
@@ -170,7 +170,7 @@ class TestVST:
         diffs = check_dict_items(pytest.expected_test, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
-    @pytest.mark.order(-2)
+    @pytest.mark.order(-4)
     def test_purge_test(self, unwrap):
         unwrap(self.build.delete_test)(self.build, test_id=pytest.test_id, purge=True)
         with pytest.raises(Exception):
@@ -188,7 +188,7 @@ class TestThreat:
     def test_create_threat(self):
         expected = dict(
             account_id=pytest.account.headers["account"],
-            author=pytest.expected_account["whoami"],
+            author=pytest.expected_account["whoami"]["handle"],
             id=pytest.threat_id,
             name="threat_name",
             published="2023-11-13",
@@ -266,7 +266,7 @@ class TestThreat:
         diffs = check_dict_items(pytest.expected_threat, res)
         assert not diffs, json.dumps
 
-    @pytest.mark.order(-3)
+    @pytest.mark.order(-5)
     def test_purge_threat(self, unwrap):
         unwrap(self.build.delete_threat)(
             self.build, threat_id=pytest.threat_id, purge=True
@@ -337,7 +337,7 @@ class TestDetection:
         diffs = check_dict_items(pytest.expected_detection, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
-    @pytest.mark.order(-4)
+    @pytest.mark.order(-6)
     def test_delete_detection(self, unwrap):
         unwrap(self.build.delete_detection)(
             self.build, detection_id=pytest.detection_id
@@ -403,7 +403,7 @@ class TestThreatHunt:
             == "#repo=base_sensor | ImageFileName is not null | ParentBaseFileName is not null | aid is not null"
         )
 
-    @pytest.mark.order(-4)
+    @pytest.mark.order(-7)
     def test_delete_threat_hunt(self, unwrap):
         unwrap(self.build.delete_threat_hunt)(
             self.build, threat_hunt_id=pytest.crwd_threat_hunt_id

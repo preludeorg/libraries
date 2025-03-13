@@ -1,121 +1,221 @@
 import configparser
+import json
 import os
 from functools import wraps
-from os.path import exists
 from pathlib import Path
 
 import requests
 
 
-def verify_credentials(func):
-    @wraps(verify_credentials)
-    def handler(*args, **kwargs):
+class Keychain:
+
+    def __init__(
+        self,
+        keychain_location: str | None = os.path.join(
+            Path.home(), ".prelude", "keychain.ini"
+        ),
+    ):
+        self.keychain_location = keychain_location
+        if self.keychain_location and not os.path.exists(self.keychain_location):
+            head, _ = os.path.split(Path(self.keychain_location))
+            Path(head).mkdir(parents=True, exist_ok=True)
+            open(self.keychain_location, "x").close()
+            self.configure_keychain("", "")
+
+    def read_keychain(self):
+        cfg = configparser.ConfigParser()
+        cfg.read(self.keychain_location)
+        return cfg
+
+    def configure_keychain(
+        self,
+        account,
+        handle,
+        hq="https://api.us1.preludesecurity.com",
+        profile="default",
+    ):
+        cfg = self.read_keychain()
+        cfg[profile] = {"account": account, "handle": handle, "hq": hq}
+        with open(self.keychain_location, "w") as f:
+            cfg.write(f)
+
+    def get_profile(self, profile="default") -> dict:
         try:
-            cfg = args[0].account.read_keychain_config()
-            args[0].account.profile = next(
-                s for s in cfg.sections() if s == args[0].account.profile
-            )
-            args[0].account.hq = cfg.get(args[0].account.profile, "hq")
-            args[0].account.headers = dict(
-                account=cfg.get(args[0].account.profile, "account"),
-                token=cfg.get(args[0].account.profile, "token"),
-                _product="py-sdk",
-                _product_version="2.5.25",
-            )
-            return func(*args, **kwargs)
-        except FileNotFoundError:
-            raise Exception(
-                "Please create a %s file" % args[0].account.keychain_location
-            )
-        except KeyError as e:
-            raise Exception("Property not found, %s" % e)
+            cfg = self.read_keychain()
+            profile = next(s for s in cfg.sections() if s == profile)
+            return dict(cfg[profile].items())
         except StopIteration:
             raise Exception(
-                'Could not find "%s" profile in %s'
-                % (args[0].account.profile, args[0].account.keychain_location)
+                "Could not find profile %s for account in %s"
+                % (profile, self.keychain_location)
             )
 
-    handler.__wrapped__ = func
-    return handler
+
+def exchange_token(
+    account: str, handle: str, hq: str, auth_flow: str, auth_params: dict
+):
+    """
+    Two token exchange auth flows:
+    1) Password auth: auth_flow = "password", auth_params = {"password": "your_password"}
+    2) Refresh token auth: auth_flow = "refresh", auth_params = {"refresh_token": "your_refresh_token"}
+    """
+    res = requests.post(
+        f"{hq}/iam/token",
+        headers=dict(account=account, _product="py-sdk"),
+        json=dict(auth_flow=auth_flow, handle=handle, **auth_params),
+        timeout=10,
+    )
+    if res.status_code == 401:
+        raise Exception("Error logging in using password: Unauthorized")
+    if not res.ok:
+        raise Exception("Error logging in using password: %s" % res.text)
+    return res.json()
 
 
 class Account:
 
+    @staticmethod
+    def from_keychain(profile: str = "default"):
+        """
+        Create an account object from a pre-configured profile in your keychain file
+        """
+        keychain = Keychain()
+        profile_items = keychain.get_profile(profile)
+        if "handle" not in profile_items:
+            raise ValueError(
+                "Please make sure you are using an up-to-date profile with the following fields: account, handle, hq"
+            )
+        return _Account(
+            account=profile_items["account"],
+            handle=profile_items["handle"],
+            hq=profile_items["hq"],
+            profile=profile,
+        )
+
+    @staticmethod
+    def from_token(
+        account: str,
+        handle: str,
+        token: str | None = None,
+        refresh_token: str | None = None,
+        hq: str = "https://api.us1.preludesecurity.com",
+    ):
+        """
+        Create an account object from an ID token or a refresh token
+        """
+        if not any([token, refresh_token]):
+            raise ValueError("Please provide either an ID token or a refresh token")
+        if refresh_token:
+            res = exchange_token(
+                account, handle, hq, "refresh", dict(refresh_token=refresh_token)
+            )
+            token = res["token"]
+        return _Account(
+            account,
+            handle,
+            hq,
+            keychain_location=None,
+            token=token,
+            token_location=None,
+        )
+
+
+class _Account:
+
     def __init__(
         self,
-        profile="default",
-        hq="https://api.preludesecurity.com",
-        keychain_location=os.path.join(Path.home(), ".prelude", "keychain.ini"),
+        account: str,
+        handle: str,
+        hq: str,
+        profile: str | None = None,
+        token: str | None = None,
+        keychain_location: str | None = os.path.join(
+            Path.home(), ".prelude", "keychain.ini"
+        ),
+        token_location: str | None = os.path.join(
+            Path.home(), ".prelude", "tokens.json"
+        ),
     ):
-        self.profile = profile
+        if token is None and token_location is None:
+            raise ValueError("Please provide either an ID token or a token location")
+
+        super().__init__()
+        self.account = account
+        self.handle = handle
+        self.headers = dict(account=account, _product="py-sdk")
         self.hq = hq
-        self.headers = dict()
-        self.keychain_location = keychain_location
-
-    def configure(
-        self,
-        account_id,
-        token,
-        handle,
-        hq="https://api.preludesecurity.com",
-        profile="default",
-    ):
-        cfg = self._merge_configs(
-            self.read_keychain_config(hq, profile),
-            self.generate_config(account_id, token, hq, handle, profile),
-        )
-        self.write_keychain_config(cfg=cfg)
-
-    def read_keychain_config(
-        self, hq="https://api.preludesecurity.com", profile="default"
-    ):
-        if not exists(self.keychain_location):
-            head, _ = os.path.split(Path(self.keychain_location))
+        self.keychain = Keychain(keychain_location)
+        self.profile = profile
+        self.token = token
+        self.token_location = token_location
+        if self.token_location and not os.path.exists(self.token_location):
+            head, _ = os.path.split(Path(self.token_location))
             Path(head).mkdir(parents=True, exist_ok=True)
-            open(self.keychain_location, "x").close()
-            self.configure("", "", hq, profile)
-        cfg = configparser.ConfigParser()
-        cfg.read(self.keychain_location)
+            with open(self.token_location, "x") as f:
+                json.dump({}, f)
 
-        changed = False
-        for section in cfg.sections():
-            if cfg.get(section, "handle", fallback=None):
-                continue
-            res = requests.get(
-                f"{cfg.get(section, 'hq')}/iam/account",
-                headers=dict(
-                    account=cfg.get(section, "account"),
-                    token=cfg.get(section, "token"),
-                    _product="py-sdk",
-                ),
-                timeout=10,
+    def _read_tokens(self):
+        with open(self.token_location, "r") as f:
+            return json.load(f)
+
+    def _save_new_token(self, new_tokens):
+        existing_tokens = self._read_tokens()
+        if self.handle not in existing_tokens:
+            existing_tokens[self.handle] = dict()
+        existing_tokens[self.handle][self.hq] = new_tokens
+        with open(self.token_location, "w") as f:
+            json.dump(existing_tokens, f)
+
+    def _verify(self):
+        if not self.token_location:
+            raise ValueError("Please provide a token location to continue")
+        if self.profile and not any([self.handle, self.account]):
+            raise ValueError(
+                "Please configure your %s profile to continue" % self.profile
             )
-            if res.status_code == 200:
-                changed = True
-                cfg[section]["handle"] = res.json()["whoami"]
-        if changed:
-            self.write_keychain_config(cfg)
 
-        return cfg
+    def password_login(self, password):
+        self._verify()
+        tokens = exchange_token(
+            self.account, self.handle, self.hq, "password", dict(password=password)
+        )
+        self._save_new_token(tokens)
+        return tokens
 
-    def write_keychain_config(self, cfg):
-        with open(self.keychain_location, "w") as f:
-            cfg.write(f)
+    def refresh_tokens(self):
+        self._verify()
+        existing_tokens = self._read_tokens().get(self.handle, {}).get(self.hq, {})
+        if not (refresh_token := existing_tokens.get("refresh_token")):
+            raise Exception("No refresh token found, please login first to continue")
+        tokens = exchange_token(
+            self.account,
+            self.handle,
+            self.hq,
+            "refresh",
+            dict(refresh_token=refresh_token),
+        )
+        tokens = existing_tokens | tokens
+        self._save_new_token(tokens)
+        return tokens
 
-    @staticmethod
-    def generate_config(account_id, token, hq, handle, profile):
-        cfg = configparser.ConfigParser()
-        cfg[profile] = {
-            "hq": hq,
-            "account": account_id,
-            "token": token,
-            "handle": handle,
-        }
-        return cfg
+    def get_token(self):
+        if self.token:
+            return self.token
 
-    @staticmethod
-    def _merge_configs(cfg_from, cfg_to):
-        for section in cfg_from.sections():
-            if section not in cfg_to:
-                cfg_to[section] = {k: cfg_from[section][k] for k in cfg_from[section]}
-        return cfg_to
+        tokens = self._read_tokens().get(self.handle, {}).get(self.hq, {})
+        if "token" not in tokens:
+            raise Exception("Please login to continue")
+        return tokens["token"]
+
+    def update_auth_header(self):
+        self.headers |= dict(authorization=f"Bearer {self.get_token()}")
+
+
+def verify_credentials(func):
+    @wraps(verify_credentials)
+    def handler(*args, **kwargs):
+        args[0].account.update_auth_header()
+        return func(*args, **kwargs)
+
+    handler.__wrapped__ = func
+    return handler

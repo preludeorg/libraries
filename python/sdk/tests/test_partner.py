@@ -5,7 +5,7 @@ import requests
 
 from datetime import datetime, timedelta, timezone
 from prelude_sdk.models.codes import Control
-from prelude_sdk.controllers.iam_controller import IAMController
+from prelude_sdk.controllers.iam_controller import IAMAccountController
 from prelude_sdk.controllers.detect_controller import DetectController
 from prelude_sdk.controllers.partner_controller import PartnerController
 
@@ -102,7 +102,7 @@ class TestPartnerAttach:
     ]
 
     def setup_class(self):
-        self.iam = IAMController(pytest.account)
+        self.iam = IAMAccountController(pytest.account)
         self.detect = DetectController(pytest.account)
         self.partner = PartnerController(pytest.account)
 
@@ -126,7 +126,7 @@ class TestPartnerAttach:
         )
         assert expected in res["controls"]
 
-    @pytest.mark.order(-5)
+    @pytest.mark.order(-8)
     def test_detach(self, unwrap, control, partner_api, user, secret):
         unwrap(self.partner.detach)(
             self.partner, partner=control, instance_id=pytest.controls[control.value]
@@ -145,7 +145,6 @@ class TestPartner:
     scenarios = [crowdstrike, defender, sentinel_one]
 
     def setup_class(self):
-        self.iam = IAMController(pytest.account)
         self.detect = DetectController(pytest.account)
         self.partner = PartnerController(pytest.account)
 
@@ -170,8 +169,10 @@ class TestPartner:
         webhook_keys,
         group_id,
     ):
-        pytest.token = unwrap(self.detect.register_endpoint)(
-            self.detect, host=host, serial_num=host
+        pytest.token = self.detect.register_endpoint(
+            host=host,
+            serial_num=host,
+            reg_string=f"{pytest.expected_account['account_id']}/{pytest.service_user_token}",
         )
         pytest.endpoint = dict(
             host=host,
@@ -278,27 +279,6 @@ class TestPartner:
         )
         diffs = check_dict_items(expected, res[0])
         assert not diffs, json.dumps(diffs, indent=2)
-
-    def test_generate_webhook(
-        self,
-        unwrap,
-        api,
-        host,
-        edr_id,
-        control,
-        os,
-        platform,
-        policy,
-        policy_name,
-        webhook_keys,
-        group_id,
-    ):
-        if control != Control.SENTINELONE:
-            pytest.skip("Only SENTINELONE webhooks are supported")
-
-        res = unwrap(self.partner.generate_webhook)(self.partner, partner=control)
-        assert webhook_keys == res.keys()
-        assert res["url"].startswith(f"{api}/partner/suppress/{control.name.lower()}")
 
     def test_do_threat_hunt(
         self,

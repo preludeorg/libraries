@@ -1,52 +1,28 @@
-import datetime
-
 from prelude_sdk.controllers.http_controller import HttpController
-
 from prelude_sdk.models.account import verify_credentials
 from prelude_sdk.models.codes import AuditEvent, Mode, Permission
 
 
-class IAMController(HttpController):
+class IAMAccountController(HttpController):
 
     def __init__(self, account):
-        super().__init__()
-        self.account = account
+        super().__init__(account)
 
     @verify_credentials
-    def new_account(
-        self, user_email: str, company: str, user_name: str = None, slug: str = None
-    ):
-        body = dict(handle=user_email, company=company)
-        if user_name:
-            body["user_name"] = user_name
-        if slug:
-            body["slug"] = slug
-
-        res = self._session.post(
-            url=f"{self.account.hq}/iam/account",
-            json=body,
-            headers=self.account.headers,
-            timeout=10,
+    def get_account(self):
+        """Get account properties"""
+        res = self.get(
+            f"{self.account.hq}/iam/account", headers=self.account.headers, timeout=10
         )
-        if res.status_code != 200:
-            raise Exception(res.text)
-
-        cfg = self.account.read_keychain_config()
-        res_json = res.json()
-        cfg[self.account.profile]["account"] = res_json["account_id"]
-        cfg[self.account.profile]["token"] = res_json["token"]
-        self.account.write_keychain_config(cfg)
-        return res_json
+        return res.json()
 
     @verify_credentials
     def purge_account(self):
         """Delete an account and all things in it"""
-        res = self._session.delete(
+        res = self.delete(
             f"{self.account.hq}/iam/account", headers=self.account.headers, timeout=10
         )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        return res.json()
 
     @verify_credentials
     def update_account(self, mode: Mode = None, company: str = None, slug: str = None):
@@ -59,205 +35,217 @@ class IAMController(HttpController):
         if slug is not None:
             body["slug"] = slug
 
-        res = self._session.put(
+        res = self.put(
             f"{self.account.hq}/iam/account",
             headers=self.account.headers,
             json=body,
             timeout=10,
         )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        return res.json()
 
     @verify_credentials
     def attach_oidc(
-        self, issuer: str, client_id: str, client_secret: str, oidc_config_url: str
+        self,
+        client_id: str,
+        client_secret: str,
+        issuer: str,
+        oidc_url: str,
+        email_attr: str = "email",
     ):
         """Attach OIDC to an account"""
         body = dict(
-            issuer=issuer,
             client_id=client_id,
             client_secret=client_secret,
-            oidc_config_url=oidc_config_url,
+            email_attr=email_attr,
+            issuer=issuer,
+            oidc_url=oidc_url,
         )
 
-        res = self._session.post(
+        res = self.post(
             f"{self.account.hq}/iam/account/oidc",
             headers=self.account.headers,
             json=body,
             timeout=10,
         )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        return res.json()
 
     @verify_credentials
     def detach_oidc(self):
         """Detach OIDC to an account"""
-        res = self._session.delete(
+        res = self.delete(
             f"{self.account.hq}/iam/account/oidc",
             headers=self.account.headers,
             timeout=10,
         )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        return res.json()
 
     @verify_credentials
-    def get_account(self):
-        """Get account properties"""
-        res = self._session.get(
-            f"{self.account.hq}/iam/account", headers=self.account.headers, timeout=10
-        )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
-
-    @verify_credentials
-    def create_user(
+    def invite_user(
         self,
-        permission: Permission,
         email: str,
-        expires: datetime = None,
-        name: str = None,
-        oidc: bool = False,
+        oidc: str | None,
+        permission: Permission,
+        name: str | None = None,
     ):
-        """Create a new user inside an account"""
+        """Invite a new user to the account"""
         body = dict(permission=permission.name, handle=email, oidc=oidc)
         if name:
             body["name"] = name
-        if expires:
-            body["expires"] = expires.isoformat()
 
-        res = self._session.post(
-            url=f"{self.account.hq}/iam/user",
+        res = self.post(
+            url=f"{self.account.hq}/iam/account/user",
             json=body,
             headers=self.account.headers,
             timeout=10,
         )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        return res.json()
 
     @verify_credentials
-    def update_user(
+    def create_service_user(self, name: str):
+        """Create a service user"""
+        body = dict(name=name)
+
+        res = self.post(
+            f"{self.account.hq}/iam/account/service_user",
+            json=body,
+            headers=self.account.headers,
+            timeout=10,
+        )
+        return res.json()
+
+    @verify_credentials
+    def delete_service_user(self, handle: str):
+        """Delete service user"""
+        body = dict(handle=handle)
+
+        res = self.delete(
+            f"{self.account.hq}/iam/account/service_user",
+            json=body,
+            headers=self.account.headers,
+            timeout=10,
+        )
+        return res.json()
+
+    @verify_credentials
+    def update_account_user(
         self,
         email: str,
+        oidc: str | None,
         permission: Permission = None,
-        expires: datetime = None,
-        name: str = None,
-        oidc: bool = False,
     ):
-        """Update properties on a user"""
-        body = dict(handle=email)
+        """Update properties on an account user"""
+        body = dict(handle=email, oidc=oidc)
         if permission is not None:
             body["permission"] = permission.name
-        if expires:
-            body["expires"] = expires.isoformat()
-        if name is not None:
-            body["name"] = name
-        if oidc is not None:
-            body["oidc"] = oidc
 
-        res = self._session.put(
-            f"{self.account.hq}/iam/user",
+        res = self.put(
+            f"{self.account.hq}/iam/account/user",
             json=body,
             headers=self.account.headers,
             timeout=10,
         )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        return res.json()
 
     @verify_credentials
-    def delete_user(self, handle):
-        """Delete a user from an account"""
-        res = self._session.delete(
-            f"{self.account.hq}/iam/user",
-            json=dict(handle=handle),
+    def remove_user(self, email: str, oidc: str | None):
+        """Remove user from the account"""
+        params = dict(handle=email, oidc=oidc)
+
+        res = self.delete(
+            f"{self.account.hq}/iam/account/user",
+            params=params,
             headers=self.account.headers,
             timeout=10,
         )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
-
-    @verify_credentials
-    def reset_password(self, email: str, account_id: str = None):
-        """Reset a user's password"""
-        data = dict(
-            account_id=account_id or self.account.headers["account"], handle=email
-        )
-        res = self._session.post(
-            f"{self.account.hq}/iam/user/reset", json=data, timeout=10
-        )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
-
-    @verify_credentials
-    def verify_user(self, token: str):
-        """Verify a user"""
-        params = dict(token=token, request_credentials="true")
-        res = self._session.get(
-            f"{self.account.hq}/iam/user", params=params, timeout=10
-        )
-        if res.status_code == 200:
-            cfg = self.account.read_keychain_config()
-            res_json = res.json()
-            cfg[self.account.profile]["account"] = res_json["account"]
-            cfg[self.account.profile]["token"] = res_json["token"]
-            self.account.write_keychain_config(cfg)
-            return res_json
-        raise Exception(res.text)
+        return res.json()
 
     @verify_credentials
     def audit_logs(self, days: int = 7, limit: int = 1000):
         """Get audit logs from the last X days"""
         params = dict(days=days, limit=limit)
-        res = self._session.get(
+        res = self.get(
             f"{self.account.hq}/iam/audit",
             headers=self.account.headers,
             params=params,
             timeout=30,
         )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        return res.json()
 
     @verify_credentials
     def subscribe(self, event: AuditEvent):
         """Subscribe to email notifications for an event"""
-        res = self._session.post(
+        res = self.post(
             f"{self.account.hq}/iam/subscribe/{event.name}",
             headers=self.account.headers,
             timeout=10,
         )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        return res.json()
 
     @verify_credentials
     def unsubscribe(self, event: AuditEvent):
         """Unsubscribe to email notifications for an event"""
-        res = self._session.delete(
+        res = self.delete(
             f"{self.account.hq}/iam/subscribe/{event.name}",
             headers=self.account.headers,
             timeout=10,
         )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        return res.json()
+
+    def sign_up(self, company, email, name, profile=None):
+        """(NOT AVAIABLE IN PRODUCTION) Create a new user and account"""
+        body = dict(company=company, email=email, name=name)
+
+        res = self._session.post(
+            f"{self.account.hq}/iam/new_user_and_account",
+            headers=self.account.headers,
+            json=body,
+            timeout=20,
+        )
+        data = res.json()
+        if profile:
+            self.account.keychain.configure_keychain(
+                data["account_id"], data["user_id"], self.account.hq, profile
+            )
+        return data
+
+
+class IAMUserController(HttpController):
+
+    def __init__(self, account):
+        super().__init__(account)
 
     @verify_credentials
-    def accept_terms(self, name, version):
-        """Accept terms and conditions"""
-        res = self._session.post(
-            f"{self.account.hq}/iam/terms",
+    def list_accounts(self):
+        """List all accounts for your user"""
+        res = self.get(
+            f"{self.account.hq}/iam/user/account",
             headers=self.account.headers,
-            json=dict(name=name, version=version),
             timeout=10,
         )
-        if res.status_code == 200:
-            return res.json()
-        raise Exception(res.text)
+        return res.json()
+
+    @verify_credentials
+    def purge_user(self):
+        """Delete your user"""
+        res = self.delete(
+            f"{self.account.hq}/iam/user", headers=self.account.headers, timeout=10
+        )
+        return res.json()
+
+    @verify_credentials
+    def update_user(
+        self,
+        name: str = None,
+    ):
+        """Update properties on a user"""
+        body = dict()
+        if name is not None:
+            body["name"] = name
+
+        res = self.put(
+            f"{self.account.hq}/iam/user",
+            json=body,
+            headers=self.account.headers,
+            timeout=10,
+        )
+        return res.json()

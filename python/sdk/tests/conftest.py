@@ -1,9 +1,11 @@
 import pytest
 import uuid
 
+import requests
+
 from prelude_sdk.controllers.build_controller import BuildController
-from prelude_sdk.controllers.iam_controller import IAMController
-from prelude_sdk.models.codes import Control
+from prelude_sdk.controllers.iam_controller import IAMAccountController
+from prelude_sdk.models.codes import Control, Permission
 
 
 @pytest.fixture(scope="session")
@@ -16,21 +18,6 @@ def unwrap():
     yield unwrapper
 
 
-@pytest.fixture(scope="session")
-def pause_for_manual_action(pytestconfig):
-    class suspend:
-        def __init__(self):
-            self.capture = pytestconfig.pluginmanager.getplugin("capturemanager")
-
-        def __enter__(self):
-            self.capture.suspend_global_capture(in_=True)
-
-        def __exit__(self, _1, _2, _3):
-            self.capture.resume_global_capture()
-
-    yield suspend()
-
-
 def pytest_addoption(parser):
     parser.addoption(
         "--api",
@@ -40,7 +27,7 @@ def pytest_addoption(parser):
     )
     parser.addoption(
         "--email",
-        default="test@auto-accept.developer.preludesecurity.com",
+        default=f"test-{str(uuid.uuid4())[:12]}@auto-accept.developer.preludesecurity.com",
         action="store",
         help="Email address to use for testing",
     )
@@ -48,9 +35,9 @@ def pytest_addoption(parser):
         "--account_id", action="store", help="Account ID to use for testing"
     )
     parser.addoption(
-        "--token",
+        "--password",
         action="store",
-        help="Token to use for testing. Only used in conjunction with --account_id",
+        help="User password to use for testing. Only used in conjunction with --email",
     )
 
 
@@ -64,62 +51,100 @@ def email(pytestconfig):
     return pytestconfig.getoption("email")
 
 
-class Account:
-    def __init__(self, account_id="", token="", hq=""):
-        self.hq = hq
-        self.profile = "test"
-        self.headers = dict(account=account_id, token=token, _product="py-sdk")
-
-    def read_keychain_config(self):
-        return {self.profile: dict()}
-
-    def write_keychain_config(self, cfg):
+class Keychain:
+    def configure_keychain(self, *args, **kwargs):
         pass
+
+
+class Account:
+    def __init__(self, handle, hq, account=""):
+        self.account = account
+        self.handle = handle
+        self.hq = hq
+        self.headers = dict(account=account, _product="py-sdk")
+        self.token = ""
+        self.keychain = Keychain()
+
+    def password_login(self, password, new_password=None):
+        body = dict(
+            auth_flow="password_change" if new_password else "password",
+            handle=self.handle,
+            password=password,
+        )
+        if new_password:
+            body["new_password"] = new_password
+
+        res = requests.post(
+            f"{self.hq}/iam/token",
+            headers=self.headers,
+            json=body,
+            timeout=10,
+        )
+        if not res.ok:
+            raise Exception("Error logging in using password: %s" % res.text)
+        self.token = res.json()["token"]
 
 
 @pytest.fixture(scope="session")
 def existing_account(pytestconfig):
     if (account_id := pytestconfig.getoption("account_id")) and (
-        token := pytestconfig.getoption("token")
+        password := pytestconfig.getoption("password")
     ):
-        return dict(account_id=account_id, token=token)
+        if not pytestconfig.getoption("email"):
+            raise Exception(
+                "Must provide email address when using --account_id and --password"
+            )
+        return dict(account_id=account_id, password=password)
 
 
 @pytest.fixture(scope="session")
-def manual(pytestconfig):
-    return not pytestconfig.getoption("email").endswith(
-        "@auto-accept.developer.preludesecurity.com"
-    )
-
-
-@pytest.fixture(scope="session")
-def setup_account(
-    unwrap, manual, pause_for_manual_action, email, api, existing_account
-):
+def setup_account(unwrap, email, api, existing_account):
     if hasattr(pytest, "expected_account"):
         return
 
-    pytest.account = Account(hq=api)
-    iam = IAMController(pytest.account)
+    pytest.account = Account(handle=email, hq=api)
+    iam = IAMAccountController(pytest.account)
     if existing_account:
+        pytest.account.account = existing_account["account_id"]
         pytest.account.headers["account"] = existing_account["account_id"]
-        pytest.account.headers["token"] = existing_account["token"]
-        print(f'[account_id: {existing_account["account_id"]}]', end=" ")
-        pytest.expected_account = unwrap(iam.get_account)(iam)
-        return
+        pytest.account.password_login(existing_account["password"])
+        pytest.account.headers["authorization"] = f"Bearer {pytest.account.token}"
+        print(f"[account_id: {existing_account['account_id']}]", end=" ")
+    else:
+        res = iam.sign_up(company="pysdk-tests", email=email, name="Bob")
+        password = "PySdkTests123!"
+        pytest.account.headers["account"] = res["account_id"]
+        pytest.account.password_login(res["temp_password"], password)
+        pytest.account.account = res["account_id"]
+        pytest.account.headers["authorization"] = f"Bearer {pytest.account.token}"
+        print(f'[account_id: {res["account_id"]}]', end=" ")
 
-    res = unwrap(iam.new_account)(
-        iam, company="pysdk-tests", user_email=email, user_name="Bob"
-    )
-    if manual:
-        with pause_for_manual_action:
-            input("Press ENTER to continue testing after verifying the account...\n")
-
-    pytest.account.headers["account"] = res["account_id"]
-    pytest.account.headers["token"] = res["token"]
-    print(f'[account_id: {res["account_id"]}]', end=" ")
-    pytest.expected_account = unwrap(iam.get_account)(iam)
     pytest.controls = dict()
+
+    service_user = unwrap(iam.create_service_user)(iam, name="pysdktests")
+    pytest.service_user_handle = service_user["handle"]
+    pytest.service_user_token = service_user["token"]
+
+    second_email = (
+        f"second-{str(uuid.uuid4())[:12]}@auto-accept.developer.preludesecurity.com"
+    )
+    invited_user = unwrap(iam.invite_user)(
+        iam,
+        email=second_email,
+        oidc=None,
+        permission=Permission.EXECUTIVE,
+        name="second",
+    )
+    pytest.second_user_account = Account(
+        handle=second_email, hq=api, account=pytest.account.account
+    )
+    password = "PySdkTests123!"
+    pytest.second_user_account.password_login(invited_user["temp_password"], password)
+    pytest.second_user_account.headers["authorization"] = (
+        f"Bearer {pytest.second_user_account.token}"
+    )
+
+    pytest.expected_account = unwrap(iam.get_account)(iam)
 
 
 @pytest.fixture(scope="session")

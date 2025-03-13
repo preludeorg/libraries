@@ -8,7 +8,7 @@ from pathlib import Path, PurePath
 
 from prelude_cli.views.shared import Spinner, pretty_print
 from prelude_sdk.controllers.detect_controller import DetectController
-from prelude_sdk.controllers.iam_controller import IAMController
+from prelude_sdk.controllers.iam_controller import IAMAccountController
 from prelude_sdk.models.codes import Control, RunCode
 
 
@@ -25,6 +25,13 @@ def detect(ctx):
     "-s", "--serial_num", help="serial number of this machine", type=str, required=True
 )
 @click.option(
+    "-r",
+    "--reg_string",
+    help="registration string, in the format of <account_id>/<service_user_token>",
+    type=str,
+    required=True,
+)
+@click.option(
     "-t",
     "--tags",
     help="a comma-separated list of tags for this endpoint",
@@ -33,11 +40,11 @@ def detect(ctx):
 )
 @click.pass_obj
 @pretty_print
-def register_endpoint(controller, host, serial_num, tags):
+def register_endpoint(controller, host, serial_num, reg_string, tags):
     """Register a new endpoint"""
     with Spinner(description="Registering endpoint"):
         token = controller.register_endpoint(
-            host=host, serial_num=serial_num, tags=tags
+            host=host, serial_num=serial_num, reg_string=reg_string, tags=tags
         )
     return dict(token=token)
 
@@ -270,7 +277,7 @@ def delete_endpoint(controller, endpoint_id):
 def queue(controller):
     """List all tests in your active queue"""
     with Spinner(description="Fetching active tests from queue"):
-        iam = IAMController(account=controller.account)
+        iam = IAMAccountController(account=controller.account)
         return iam.get_account().get("queue")
 
 
@@ -418,3 +425,14 @@ def threat_hunt_activity(controller, id, type):
             return controller.threat_hunt_activity(test_id=id)
         else:
             return controller.threat_hunt_activity(threat_id=id)
+
+
+@detect.command("accept-terms", hidden=True)
+@click.argument("name", type=str, required=True)
+@click.option("-v", "--version", type=str, required=True)
+@click.pass_obj
+@pretty_print
+def accept_terms(controller, name, version):
+    """Accept terms and conditions"""
+    with Spinner(description="Accepting terms and conditions"):
+        return controller.accept_terms(name=name, version=version)
