@@ -249,3 +249,29 @@ class IAMUserController(HttpController):
             timeout=10,
         )
         return res.json()
+
+    def forgot_password(self, email: str):
+        """Send a forgot password email"""
+        body = dict(handle=email)
+
+        res = self.post(
+            f"{self.account.hq}/iam/user/forgot_password",
+            json=body,
+            headers=self.account.headers,
+            timeout=10,
+        )
+        return res.json()
+
+    def change_password(self, email: str, confirmation_code: str, new_password: str):
+        """Change a password using confirmation code"""
+        body = dict(
+            handle=email, confirmation_code=confirmation_code, password=new_password
+        )
+
+        res = self.post(
+            f"{self.account.hq}/iam/user/change_password",
+            json=body,
+            headers=self.account.headers,
+            timeout=10,
+        )
+        return res.json()

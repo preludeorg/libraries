@@ -313,4 +313,27 @@ def update_user(controller, name):
         return controller.update_user(name=name)
 
 
+@user.command("forgot-password")
+@click.argument("email")
+@pretty_print
+def forgot_password(controller, email):
+    """Send a password reset email"""
+    with Spinner(description="Sending password reset email"):
+        return (
+            controller.forgot_password(email=email),
+            "Please check your email for a confirmation code",
+        )
+
+
+@user.command("change-password")
+@click.option("-c", "--code", help="confirmation code", required=True)
+@click.option("-p", "--password", help="new password", required=True)
+@click.argument("email")
+@pretty_print
+def change_password(controller, code, password, email):
+    """Change your password using a confirmation code"""
+    with Spinner(description="Changing password"):
+        return controller.change_password(email=email, code=code, password=password)
+
+
 iam.add_command(user)
