@@ -158,7 +158,7 @@ class _Account:
         with open(self.token_location, "r") as f:
             return json.load(f)
 
-    def _save_new_token(self, new_tokens):
+    def save_new_token(self, new_tokens):
         existing_tokens = self._read_tokens()
         if self.handle not in existing_tokens:
             existing_tokens[self.handle] = dict()
@@ -179,7 +179,7 @@ class _Account:
         tokens = exchange_token(
             self.account, self.handle, self.hq, "password", dict(password=password)
         )
-        self._save_new_token(tokens)
+        self.save_new_token(tokens)
         return tokens
 
     def refresh_tokens(self):
@@ -195,7 +195,7 @@ class _Account:
             dict(refresh_token=refresh_token),
         )
         tokens = existing_tokens | tokens
-        self._save_new_token(tokens)
+        self.save_new_token(tokens)
         return tokens
 
     def get_token(self):
