@@ -64,7 +64,8 @@ def exchange_token(
     Two token exchange auth flows:
     1) Password auth: auth_flow = "password", auth_params = {"password": "your_password"}
     2) Refresh token auth: auth_flow = "refresh", auth_params = {"refresh_token": "your_refresh_token"}
-    3) Exchange an OIDC authorization code for tokens: auth_flow = "oauth_code", auth_params = {"code": "your_authorization_code", "from_cli": True}
+    3) Exchange an OIDC authorization code for tokens:
+       auth_flow = "oauth_code", auth_params = {"code": "your_authorization_code", "verifier": "your_verifier", "source": "cli"}
     """
     res = requests.post(
         f"{hq}/iam/token",
@@ -213,14 +214,16 @@ class _Account:
         self.save_new_token(tokens)
         return tokens
 
-    def exchange_authorization_code(self, authorization_code: str):
+    def exchange_authorization_code(
+        self, authorization_code: str, verifier: str, source: str = "cli"
+    ):
         self._verify()
         tokens = exchange_token(
             self.account,
             self.handle,
             self.hq,
             "oauth_code",
-            dict(code=authorization_code, from_cli=True),
+            dict(code=authorization_code, verifier=verifier, source=source),
         )
         existing_tokens = self._read_tokens().get(self.handle, {}).get(self.hq, {})
         tokens = existing_tokens | tokens

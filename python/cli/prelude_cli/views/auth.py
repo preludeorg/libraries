@@ -36,10 +36,12 @@ def login(account, password):
         account.oidc,
         account.slug,
     )
-    authorization_code = click.prompt(
+    code = click.prompt(
         f"Please open the following URL in your browser and authenticate:\n\n{url}\n\nEnter the authorization code here"
     )
-    tokens = account.exchange_authorization_code(authorization_code)
+    authorization_code, verifier = code.split("/")
+    with Spinner(description="Logging in and saving tokens"):
+        tokens = account.exchange_authorization_code(authorization_code, verifier, source="cli")
     return tokens, "Login with SSO successful"
 
 
