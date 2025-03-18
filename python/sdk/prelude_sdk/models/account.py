@@ -64,6 +64,7 @@ def exchange_token(
     Two token exchange auth flows:
     1) Password auth: auth_flow = "password", auth_params = {"password": "your_password"}
     2) Refresh token auth: auth_flow = "refresh", auth_params = {"refresh_token": "your_refresh_token"}
+    3) Exchange an OIDC authorization code for tokens: auth_flow = "oauth_code", auth_params = {"code": "your_authorization_code", "from_cli": True}
     """
     res = requests.post(
         f"{hq}/iam/token",
@@ -72,9 +73,9 @@ def exchange_token(
         timeout=10,
     )
     if res.status_code == 401:
-        raise Exception("Error logging in using password: Unauthorized")
+        raise Exception("Error logging in: Unauthorized")
     if not res.ok:
-        raise Exception("Error logging in using password: %s" % res.text)
+        raise Exception("Error logging in: %s" % res.text)
     return res.json()
 
 
@@ -219,7 +220,7 @@ class _Account:
             self.handle,
             self.hq,
             "oauth_code",
-            dict(code=authorization_code, cli_client=True),
+            dict(code=authorization_code, from_cli=True),
         )
         existing_tokens = self._read_tokens().get(self.handle, {}).get(self.hq, {})
         tokens = existing_tokens | tokens
