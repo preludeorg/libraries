@@ -32,10 +32,16 @@ class Keychain:
         account,
         handle,
         hq="https://api.us1.preludesecurity.com",
+        oidc=None,
         profile="default",
+        slug=None,
     ):
         cfg = self.read_keychain()
         cfg[profile] = {"account": account, "handle": handle, "hq": hq}
+        if oidc:
+            cfg[profile]["oidc"] = oidc
+        if slug:
+            cfg[profile]["slug"] = slug
         with open(self.keychain_location, "w") as f:
             cfg.write(f)
 
@@ -89,7 +95,9 @@ class Account:
             account=profile_items["account"],
             handle=profile_items["handle"],
             hq=profile_items["hq"],
+            oidc=profile_items.get("oidc"),
             profile=profile,
+            slug=profile_items.get("slug"),
         )
 
     @staticmethod
@@ -115,6 +123,8 @@ class Account:
             handle,
             hq,
             keychain_location=None,
+            oidc=None,
+            slug=None,
             token=token,
             token_location=None,
         )
@@ -127,7 +137,9 @@ class _Account:
         account: str,
         handle: str,
         hq: str,
+        oidc: str | None = None,
         profile: str | None = None,
+        slug: str | None = None,
         token: str | None = None,
         keychain_location: str | None = os.path.join(
             Path.home(), ".prelude", "keychain.ini"
@@ -145,7 +157,9 @@ class _Account:
         self.headers = dict(account=account, _product="py-sdk")
         self.hq = hq
         self.keychain = Keychain(keychain_location)
+        self.oidc = oidc
         self.profile = profile
+        self.slug = slug
         self.token = token
         self.token_location = token_location
         if self.token_location and not os.path.exists(self.token_location):
@@ -194,6 +208,20 @@ class _Account:
             "refresh",
             dict(refresh_token=refresh_token),
         )
+        tokens = existing_tokens | tokens
+        self.save_new_token(tokens)
+        return tokens
+
+    def exchange_authorization_code(self, authorization_code: str):
+        self._verify()
+        tokens = exchange_token(
+            self.account,
+            self.handle,
+            self.hq,
+            "oauth_code",
+            dict(code=authorization_code, cli_client=True),
+        )
+        existing_tokens = self._read_tokens().get(self.handle, {}).get(self.hq, {})
         tokens = existing_tokens | tokens
         self.save_new_token(tokens)
         return tokens

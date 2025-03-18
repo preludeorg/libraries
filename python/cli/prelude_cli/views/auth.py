@@ -1,12 +1,7 @@
 import click
 
 from prelude_cli.views.shared import Spinner, pretty_print
-from prelude_cli.views.sso import (
-    authorize_with_flask,
-    exchange_for_tokens,
-    get_auth_url,
-    OIDC_REDIRECT_URI,
-)
+from prelude_sdk.controllers.iam_controller import IAMAccountController
 
 
 @click.group()
@@ -20,31 +15,32 @@ def auth(ctx):
 @click.option(
     "-p", "--password", type=str, help="password for login. Ignored if SSO is used"
 )
-@click.option("--sso", is_flag=True, default=False, help="use SSO for login")
-@click.option(
-    "--local_server",
-    is_flag=True,
-    default=False,
-    help="use local Flask server to catch SSO callback automatically",
-)
 @click.pass_obj
 @pretty_print
-def login(account, password, sso, local_server):
+def login(account, password):
     """Login using password or SSO"""
-    if not sso:
+    if not account.oidc:
         password = password or click.prompt("Password", type=str, hide_input=True)
         with Spinner(description="Logging in and saving tokens"):
             return account.password_login(password), "Login with password successful"
-    if local_server:
-        with Spinner(description="Launching browser for authentication..."):
-            tokens = authorize_with_flask()
-    else:
-        auth_url = get_auth_url(OIDC_REDIRECT_URI)
-        authorization_code = click.prompt(
-            f"Please open:\n{auth_url}\nin your browser and authenticate. Enter the authorization code you received"
-        )
-        tokens = exchange_for_tokens(authorization_code, OIDC_REDIRECT_URI)
-    account.save_new_token(tokens)
+
+    def _signin_url(platform_url, handle, provider, slug):
+        url = f"{platform_url}/cli-auth?handle={handle}&provider={provider}"
+        if provider == "custom":
+            slug = slug or click.prompt("Please enter your account slug")
+            url += f"&slug={slug}"
+        return url
+
+    url = _signin_url(
+        account.hq.replace("api", "platform"),
+        account.handle,
+        account.oidc,
+        account.slug,
+    )
+    authorization_code = click.prompt(
+        f"Please open the following URL in your browser and authenticate:\n\n{url}\n\nEnter the authorization code here"
+    )
+    tokens = account.exchange_authorization_code(authorization_code)
     return tokens, "Login with SSO successful"
 
 
