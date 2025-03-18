@@ -1,7 +1,6 @@
 import click
 
 from prelude_cli.views.shared import Spinner, pretty_print
-from prelude_sdk.controllers.iam_controller import IAMAccountController
 
 
 @click.group()
