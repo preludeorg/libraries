@@ -32,10 +32,16 @@ class Keychain:
         account,
         handle,
         hq="https://api.us1.preludesecurity.com",
+        oidc=None,
         profile="default",
+        slug=None,
     ):
         cfg = self.read_keychain()
         cfg[profile] = {"account": account, "handle": handle, "hq": hq}
+        if oidc:
+            cfg[profile]["oidc"] = oidc
+        if slug:
+            cfg[profile]["slug"] = slug
         with open(self.keychain_location, "w") as f:
             cfg.write(f)
 
@@ -58,6 +64,8 @@ def exchange_token(
     Two token exchange auth flows:
     1) Password auth: auth_flow = "password", auth_params = {"password": "your_password"}
     2) Refresh token auth: auth_flow = "refresh", auth_params = {"refresh_token": "your_refresh_token"}
+    3) Exchange an OIDC authorization code for tokens:
+       auth_flow = "oauth_code", auth_params = {"code": "your_authorization_code", "verifier": "your_verifier", "source": "cli"}
     """
     res = requests.post(
         f"{hq}/iam/token",
@@ -66,9 +74,9 @@ def exchange_token(
         timeout=10,
     )
     if res.status_code == 401:
-        raise Exception("Error logging in using password: Unauthorized")
+        raise Exception("Error logging in: Unauthorized")
     if not res.ok:
-        raise Exception("Error logging in using password: %s" % res.text)
+        raise Exception("Error logging in: %s" % res.text)
     return res.json()
 
 
@@ -89,7 +97,9 @@ class Account:
             account=profile_items["account"],
             handle=profile_items["handle"],
             hq=profile_items["hq"],
+            oidc=profile_items.get("oidc"),
             profile=profile,
+            slug=profile_items.get("slug"),
         )
 
     @staticmethod
@@ -115,6 +125,8 @@ class Account:
             handle,
             hq,
             keychain_location=None,
+            oidc=None,
+            slug=None,
             token=token,
             token_location=None,
         )
@@ -127,7 +139,9 @@ class _Account:
         account: str,
         handle: str,
         hq: str,
+        oidc: str | None = None,
         profile: str | None = None,
+        slug: str | None = None,
         token: str | None = None,
         keychain_location: str | None = os.path.join(
             Path.home(), ".prelude", "keychain.ini"
@@ -145,7 +159,9 @@ class _Account:
         self.headers = dict(account=account, _product="py-sdk")
         self.hq = hq
         self.keychain = Keychain(keychain_location)
+        self.oidc = oidc
         self.profile = profile
+        self.slug = slug
         self.token = token
         self.token_location = token_location
         if self.token_location and not os.path.exists(self.token_location):
@@ -154,15 +170,19 @@ class _Account:
             with open(self.token_location, "x") as f:
                 json.dump({}, f)
 
+    @property
+    def token_key(self):
+        return f"{self.handle}/{self.oidc}" if self.oidc else self.handle
+
     def _read_tokens(self):
         with open(self.token_location, "r") as f:
             return json.load(f)
 
-    def _save_new_token(self, new_tokens):
+    def save_new_token(self, new_tokens):
         existing_tokens = self._read_tokens()
-        if self.handle not in existing_tokens:
-            existing_tokens[self.handle] = dict()
-        existing_tokens[self.handle][self.hq] = new_tokens
+        if self.token_key not in existing_tokens:
+            existing_tokens[self.token_key] = dict()
+        existing_tokens[self.token_key][self.hq] = new_tokens
         with open(self.token_location, "w") as f:
             json.dump(existing_tokens, f)
 
@@ -179,12 +199,12 @@ class _Account:
         tokens = exchange_token(
             self.account, self.handle, self.hq, "password", dict(password=password)
         )
-        self._save_new_token(tokens)
+        self.save_new_token(tokens)
         return tokens
 
     def refresh_tokens(self):
         self._verify()
-        existing_tokens = self._read_tokens().get(self.handle, {}).get(self.hq, {})
+        existing_tokens = self._read_tokens().get(self.token_key, {}).get(self.hq, {})
         if not (refresh_token := existing_tokens.get("refresh_token")):
             raise Exception("No refresh token found, please login first to continue")
         tokens = exchange_token(
@@ -195,14 +215,30 @@ class _Account:
             dict(refresh_token=refresh_token),
         )
         tokens = existing_tokens | tokens
-        self._save_new_token(tokens)
+        self.save_new_token(tokens)
+        return tokens
+
+    def exchange_authorization_code(
+        self, authorization_code: str, verifier: str, source: str = "cli"
+    ):
+        self._verify()
+        tokens = exchange_token(
+            self.account,
+            self.handle,
+            self.hq,
+            "oauth_code",
+            dict(code=authorization_code, verifier=verifier, source=source),
+        )
+        existing_tokens = self._read_tokens().get(self.token_key, {}).get(self.hq, {})
+        tokens = existing_tokens | tokens
+        self.save_new_token(tokens)
         return tokens
 
     def get_token(self):
         if self.token:
             return self.token
 
-        tokens = self._read_tokens().get(self.handle, {}).get(self.hq, {})
+        tokens = self._read_tokens().get(self.token_key, {}).get(self.hq, {})
         if "token" not in tokens:
             raise Exception("Please login to continue")
         return tokens["token"]
