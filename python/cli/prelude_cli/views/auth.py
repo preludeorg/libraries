@@ -1,4 +1,5 @@
 import click
+import webbrowser
 
 from prelude_cli.views.shared import Spinner, pretty_print
 
@@ -11,9 +12,7 @@ def auth(ctx):
 
 
 @auth.command("login")
-@click.option(
-    "-p", "--password", type=str, help="password for login. Ignored if SSO is used"
-)
+@click.option("-p", "--password", type=str, help="password for login")
 @click.pass_obj
 @pretty_print
 def login(account, password):
@@ -23,25 +22,19 @@ def login(account, password):
         with Spinner(description="Logging in and saving tokens"):
             return account.password_login(password), "Login with password successful"
 
-    def _signin_url(platform_url, handle, provider, slug):
-        url = f"{platform_url}/cli-auth?handle={handle}&provider={provider}"
-        if provider == "custom":
-            slug = slug or click.prompt("Please enter your account slug")
-            url += f"&slug={slug}"
-        return url
-
-    url = _signin_url(
-        account.hq.replace("api", "platform"),
-        account.handle,
-        account.oidc,
-        account.slug,
-    )
+    url = f"{account.hq.replace('api', 'platform')}/cli-auth?handle={account.handle}&provider={account.oidc}"
+    if account.oidc == "custom":
+        slug = account.slug or click.prompt("Please enter your account slug")
+        url += f"&slug={slug}"
+    webbrowser.open(url)
     code = click.prompt(
-        f"Please open the following URL in your browser and authenticate:\n\n{url}\n\nEnter the authorization code here"
+        f"Launching browser for authentication:\n\n{url}\n\nPlease enter your authorization code here"
     )
-    authorization_code, verifier = code.split("/")
+    verifier, authorization_code = code.split("/")
     with Spinner(description="Logging in and saving tokens"):
-        tokens = account.exchange_authorization_code(authorization_code, verifier, source="cli")
+        tokens = account.exchange_authorization_code(
+            authorization_code, verifier, source="cli"
+        )
     return tokens, "Login with SSO successful"
 
 
