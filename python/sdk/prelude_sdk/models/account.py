@@ -170,15 +170,19 @@ class _Account:
             with open(self.token_location, "x") as f:
                 json.dump({}, f)
 
+    @property
+    def token_key(self):
+        return f"{self.handle}/{self.oidc}" if self.oidc else self.handle
+
     def _read_tokens(self):
         with open(self.token_location, "r") as f:
             return json.load(f)
 
     def save_new_token(self, new_tokens):
         existing_tokens = self._read_tokens()
-        if self.handle not in existing_tokens:
-            existing_tokens[self.handle] = dict()
-        existing_tokens[self.handle][self.hq] = new_tokens
+        if self.token_key not in existing_tokens:
+            existing_tokens[self.token_key] = dict()
+        existing_tokens[self.token_key][self.hq] = new_tokens
         with open(self.token_location, "w") as f:
             json.dump(existing_tokens, f)
 
@@ -200,7 +204,7 @@ class _Account:
 
     def refresh_tokens(self):
         self._verify()
-        existing_tokens = self._read_tokens().get(self.handle, {}).get(self.hq, {})
+        existing_tokens = self._read_tokens().get(self.token_key, {}).get(self.hq, {})
         if not (refresh_token := existing_tokens.get("refresh_token")):
             raise Exception("No refresh token found, please login first to continue")
         tokens = exchange_token(
@@ -225,7 +229,7 @@ class _Account:
             "oauth_code",
             dict(code=authorization_code, verifier=verifier, source=source),
         )
-        existing_tokens = self._read_tokens().get(self.handle, {}).get(self.hq, {})
+        existing_tokens = self._read_tokens().get(self.token_key, {}).get(self.hq, {})
         tokens = existing_tokens | tokens
         self.save_new_token(tokens)
         return tokens
@@ -234,7 +238,7 @@ class _Account:
         if self.token:
             return self.token
 
-        tokens = self._read_tokens().get(self.handle, {}).get(self.hq, {})
+        tokens = self._read_tokens().get(self.token_key, {}).get(self.hq, {})
         if "token" not in tokens:
             raise Exception("Please login to continue")
         return tokens["token"]
