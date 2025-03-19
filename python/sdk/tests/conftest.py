@@ -79,6 +79,7 @@ class Account:
         self.headers = dict(account=account, _product="py-sdk")
         self.token = ""
         self.keychain = Keychain()
+        self.token_location = None
 
     def password_login(self, password, new_password=None):
         body = dict(

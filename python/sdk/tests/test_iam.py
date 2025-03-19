@@ -124,12 +124,18 @@ class TestIAM:
         if not manual:
             pytest.skip("Not manual mode")
 
-        self.iam_user.forgot_password(pytest.second_user_account.handle)
+        self.iam_user.forgot_password(email=pytest.account.handle)
         with pause_for_manual_action:
-            code = input("Enter your confirmation code:\n")
+            code = input("\nEnter your confirmation code:\n")
         password = "PySdkTests123!"
-        self.iam_user.change_password(pytest.second_user_account.handle, code, password)
-        pytest.second_user_account.password_login(password)
+        self.iam_user.change_password(
+            email=pytest.account.handle,
+            confirmation_code=code,
+            new_password=password,
+        )
+        pytest.account.password_login(password)
+        pytest.account.headers["authorization"] = f"Bearer {pytest.account.token}"
+        self.iam_account = IAMAccountController(pytest.account)
 
         res = unwrap(self.iam_account.get_account)(self.iam_account)
         diffs = check_dict_items(pytest.expected_account, res)
