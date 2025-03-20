@@ -89,7 +89,7 @@ class Account:
         """
         keychain = Keychain()
         profile_items = keychain.get_profile(profile)
-        if "handle" not in profile_items:
+        if any([item not in profile_items for item in ["account", "handle", "hq"]]):
             raise ValueError(
                 "Please make sure you are using an up-to-date profile with the following fields: account, handle, hq"
             )
