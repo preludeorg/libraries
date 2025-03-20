@@ -89,17 +89,23 @@ class Account:
         """
         keychain = Keychain()
         profile_items = keychain.get_profile(profile)
-        if "handle" not in profile_items:
+        if any([item not in profile_items for item in ["account", "handle", "hq"]]):
             raise ValueError(
                 "Please make sure you are using an up-to-date profile with the following fields: account, handle, hq"
             )
+        if (
+            oidc := profile_items.get("oidc")
+            and oidc == "custom"
+            and not (slug := profile_items.get("slug"))
+        ):
+            raise ValueError("Please provide a slug for custom OIDC providers")
         return _Account(
             account=profile_items["account"],
             handle=profile_items["handle"],
             hq=profile_items["hq"],
-            oidc=profile_items.get("oidc"),
+            oidc=oidc,
             profile=profile,
-            slug=profile_items.get("slug"),
+            slug=slug,
         )
 
     @staticmethod
