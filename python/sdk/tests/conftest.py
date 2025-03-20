@@ -18,6 +18,21 @@ def unwrap():
     yield unwrapper
 
 
+@pytest.fixture(scope="session")
+def pause_for_manual_action(pytestconfig):
+    class suspend:
+        def __init__(self):
+            self.capture = pytestconfig.pluginmanager.getplugin("capturemanager")
+
+        def __enter__(self):
+            self.capture.suspend_global_capture(in_=True)
+
+        def __exit__(self, _1, _2, _3):
+            self.capture.resume_global_capture()
+
+    yield suspend()
+
+
 def pytest_addoption(parser):
     parser.addoption(
         "--api",
@@ -38,6 +53,9 @@ def pytest_addoption(parser):
         "--password",
         action="store",
         help="User password to use for testing. Only used in conjunction with --email",
+    )
+    parser.addoption(
+        "--manual", action="store_true", default=False, help="Enable manual tests"
     )
 
 
@@ -64,6 +82,7 @@ class Account:
         self.headers = dict(account=account, _product="py-sdk")
         self.token = ""
         self.keychain = Keychain()
+        self.token_location = None
 
     def password_login(self, password, new_password=None):
         body = dict(
@@ -83,6 +102,11 @@ class Account:
         if not res.ok:
             raise Exception("Error logging in using password: %s" % res.text)
         self.token = res.json()["token"]
+
+
+@pytest.fixture(scope="session")
+def manual(pytestconfig):
+    return pytestconfig.getoption("manual")
 
 
 @pytest.fixture(scope="session")

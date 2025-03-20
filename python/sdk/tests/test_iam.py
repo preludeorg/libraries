@@ -120,6 +120,25 @@ class TestIAM:
         diffs = check_dict_items(pytest.expected_account, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
+    def test_forgot_password(self, manual, pause_for_manual_action, unwrap):
+        if not manual:
+            pytest.skip("Not manual mode")
+
+        self.iam_user.forgot_password()
+        with pause_for_manual_action:
+            code = input("\nEnter your confirmation code:\n")
+        password = "PySdkTests123!"
+        self.iam_user.confirm_forgot_password(
+            confirmation_code=code, new_password=password
+        )
+        pytest.account.password_login(password)
+        pytest.account.headers["authorization"] = f"Bearer {pytest.account.token}"
+        self.iam_account = IAMAccountController(pytest.account)
+
+        res = unwrap(self.iam_account.get_account)(self.iam_account)
+        diffs = check_dict_items(pytest.expected_account, res)
+        assert not diffs, json.dumps(diffs, indent=2)
+
     @pytest.mark.order(-3)
     def test_delete_service_user(self, unwrap):
         unwrap(self.iam_account.delete_service_user)(
