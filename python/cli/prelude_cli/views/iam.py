@@ -328,7 +328,9 @@ def forgot_password(controller, email):
 
 @user.command("change-password")
 @click.option("-c", "--code", help="confirmation code", required=True)
-@click.option("-p", "--password", help="new password", required=True)
+@click.option(
+    "-p", "--password", help="new password", required=True, hide_input=True, prompt=True
+)
 @click.argument("email")
 @click.pass_obj
 @pretty_print
