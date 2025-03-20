@@ -54,6 +54,9 @@ def pytest_addoption(parser):
         action="store",
         help="User password to use for testing. Only used in conjunction with --email",
     )
+    parser.addoption(
+        "--manual", action="store_true", default=False, help="Enable manual tests"
+    )
 
 
 @pytest.fixture(scope="session")
@@ -103,9 +106,7 @@ class Account:
 
 @pytest.fixture(scope="session")
 def manual(pytestconfig):
-    return not pytestconfig.getoption("email").endswith(
-        "@auto-accept.developer.preludesecurity.com"
-    )
+    return pytestconfig.getoption("manual")
 
 
 @pytest.fixture(scope="session")
