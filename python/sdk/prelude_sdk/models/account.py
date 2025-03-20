@@ -93,19 +93,13 @@ class Account:
             raise ValueError(
                 "Please make sure you are using an up-to-date profile with the following fields: account, handle, hq"
             )
-        if (
-            oidc := profile_items.get("oidc")
-            and oidc == "custom"
-            and not (slug := profile_items.get("slug"))
-        ):
-            raise ValueError("Please provide a slug for custom OIDC providers")
         return _Account(
             account=profile_items["account"],
             handle=profile_items["handle"],
             hq=profile_items["hq"],
-            oidc=oidc,
+            oidc=profile_items.get("oidc"),
             profile=profile,
-            slug=slug,
+            slug=profile_items.get("slug"),
         )
 
     @staticmethod
