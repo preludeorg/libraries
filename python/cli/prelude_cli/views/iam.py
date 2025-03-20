@@ -314,32 +314,30 @@ def update_user(controller, name):
 
 
 @user.command("forgot-password")
-@click.argument("email")
 @click.pass_obj
 @pretty_print
-def forgot_password(controller, email):
+def forgot_password(controller):
     """Send a password reset email"""
     with Spinner(description="Sending password reset email"):
         return (
-            controller.forgot_password(email=email),
+            controller.forgot_password(),
             "Please check your email for a confirmation code",
         )
 
 
-@user.command("change-password")
+@user.command("confirm-forgot-password")
 @click.option("-c", "--code", help="confirmation code", required=True)
 @click.option(
     "-p", "--password", help="new password", required=True, hide_input=True, prompt=True
 )
-@click.argument("email")
 @click.pass_obj
 @pretty_print
-def change_password(controller, code, password, email):
+def confirm_forgot_password(controller, code, password):
     """Change your password using a confirmation code"""
     with Spinner(description="Changing password"):
         return (
-            controller.change_password(
-                email=email, confirmation_code=code, new_password=password
+            controller.confirm_forgot_password(
+                confirmation_code=code, new_password=password
             ),
             "Password changed successfully",
         )
