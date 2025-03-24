@@ -102,21 +102,47 @@ class TestIAM:
         diffs = check_dict_items(expected, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
+    def test_invite_account_user(self, unwrap):
+        pytest.second_user = second_email = (
+            f"second-{str(uuid.uuid4())[:12]}@auto-accept.developer.preludesecurity.com"
+        )
+        unwrap(self.iam_account.invite_user)(
+            self.iam_account,
+            email=pytest.second_user,
+            oidc=None,
+            permission=Permission.EXECUTIVE,
+            name="second",
+        )
+        pytest.expected_account = unwrap(self.iam_account.get_account)(self.iam_account)
+
     def test_update_account_user(self, unwrap):
         unwrap(self.iam_account.update_account_user)(
             self.iam_account,
-            email=pytest.second_user_account.handle,
+            email=pytest.second_user,
             oidc="",
             permission=Permission.ADMIN,
         )
 
         res = unwrap(self.iam_account.get_account)(self.iam_account)
-
         for user in pytest.expected_account["users"]:
-            if user["handle"] == pytest.second_user_account.handle:
+            if user["handle"] == pytest.second_user:
                 user["permission"] = Permission.ADMIN.value
                 break
 
+        diffs = check_dict_items(pytest.expected_account, res)
+        assert not diffs, json.dumps(diffs, indent=2)
+    
+    def test_remove_account_user(self, unwrap):
+        unwrap(self.iam_account.remove_user)(
+            self.iam_account, email=pytest.second_user, oidc=""
+        )
+
+        for i, user in enumerate(pytest.expected_account["users"]):
+            if user["handle"] == pytest.second_user:
+                del pytest.expected_account["users"][i]
+                break
+
+        res = unwrap(self.iam_account.get_account)(self.iam_account)
         diffs = check_dict_items(pytest.expected_account, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
@@ -155,9 +181,6 @@ class TestIAM:
 
     @pytest.mark.order(-1)
     def test_purge_user(self, unwrap, existing_account):
-        iam = IAMUserController(pytest.second_user_account)
-        unwrap(iam.purge_user)(iam)
-
         if not existing_account:
             iam = IAMUserController(pytest.account)
             unwrap(iam.purge_user)(iam)
