@@ -148,26 +148,6 @@ def setup_account(unwrap, email, api, existing_account):
     service_user = unwrap(iam.create_service_user)(iam, name="pysdktests")
     pytest.service_user_handle = service_user["handle"]
     pytest.service_user_token = service_user["token"]
-
-    second_email = (
-        f"second-{str(uuid.uuid4())[:12]}@auto-accept.developer.preludesecurity.com"
-    )
-    invited_user = unwrap(iam.invite_user)(
-        iam,
-        email=second_email,
-        oidc=None,
-        permission=Permission.EXECUTIVE,
-        name="second",
-    )
-    pytest.second_user_account = Account(
-        handle=second_email, hq=api, account=pytest.account.account
-    )
-    password = "PySdkTests123!"
-    pytest.second_user_account.password_login(invited_user["temp_password"], password)
-    pytest.second_user_account.headers["authorization"] = (
-        f"Bearer {pytest.second_user_account.token}"
-    )
-
     pytest.expected_account = unwrap(iam.get_account)(iam)
 
 
