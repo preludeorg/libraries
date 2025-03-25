@@ -50,8 +50,10 @@ class IAMAccountController(HttpController):
         client_secret: str,
         issuer: str,
         oidc_url: str,
-        email_attr: str = "email",
     ):
+        email_attr = "email"
+        if issuer == "azure":
+            email_attr = "upn"
         """Attach OIDC to an account"""
         body = dict(
             client_id=client_id,
