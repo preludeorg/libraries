@@ -1,0 +1,277 @@
+openapi: 3.0.3
+info:
+  title: DetectController API
+  description: API for managing endpoint detection and threat hunting.
+  version: 1.1.0
+servers:
+  - url: "{hq}/detect"
+    variables:
+      hq:
+        default: "https://api.preludesecurity.com"
+
+paths:
+  /endpoint:
+    post:
+      summary: Register or re-register an endpoint
+      operationId: registerEndpoint
+      parameters:
+        - name: host
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: serial_num
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: tags
+          in: query
+          schema:
+            type: string
+            description: A comma-separated list of tags for this endpoint
+      responses:
+        "200":
+          description: Endpoint registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        "400":
+          description: Bad request
+
+  /endpoint/{endpoint_id}:
+    post:
+      summary: Update an endpoint
+      operationId: updateEndpoint
+      parameters:
+        - name: endpoint_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tags:
+                  type: string
+                  description: A comma-separated list of tags
+      responses:
+        "200":
+          description: Endpoint updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Bad request
+
+  /tests:
+    get:
+      summary: List all security tests
+      operationId: listTests
+      parameters:
+        - name: techniques
+          in: query
+          schema:
+            type: string
+            description: A comma-separated list of techniques
+      responses:
+        "200":
+          description: List of tests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "400":
+          description: Bad request
+
+  /tests/{test_id}:
+    get:
+      summary: Get properties of an existing test
+      operationId: getTest
+      parameters:
+        - name: test_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Test details
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Bad request
+
+  /techniques:
+    get:
+      summary: List techniques
+      operationId: listTechniques
+      responses:
+        "200":
+          description: List of techniques
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "400":
+          description: Bad request
+
+  /threats:
+    get:
+      summary: List threats
+      operationId: listThreats
+      responses:
+        "200":
+          description: List of threats
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "400":
+          description: Bad request
+
+  /detections:
+    get:
+      summary: List detections
+      operationId: listDetections
+      responses:
+        "200":
+          description: List of detections
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "400":
+          description: Bad request
+
+  /queue:
+    post:
+      summary: Schedule tests and threats
+      operationId: schedule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      test_id:
+                        type: string
+                      threat_id:
+                        type: string
+                      run_code:
+                        type: string
+                        description: Run frequency (e.g., DAILY)
+                      tags:
+                        type: string
+                        description: A comma-separated list of tags
+      responses:
+        "200":
+          description: Scheduled successfully
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Bad request
+
+    delete:
+      summary: Unschedule tests and threats
+      operationId: unschedule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      test_id:
+                        type: string
+                      threat_id:
+                        type: string
+                      tags:
+                        type: string
+                        description: A comma-separated list of tags
+      responses:
+        "200":
+          description: Unscheduled successfully
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Bad request
+
+  /activity:
+    get:
+      summary: Get account activity report
+      operationId: describeActivity
+      parameters:
+        - name: view
+          in: query
+          schema:
+            type: string
+            enum: [endpoints, findings, logs, metrics, protected, techniques, tests, threats]
+            default: logs
+        - name: techniques
+          in: query
+          schema:
+            type: string
+            description: A comma-separated list of techniques
+        - name: tests
+          in: query
+          schema:
+            type: string
+            description: A comma-separated list of test IDs
+        - name: threats
+          in: query
+          schema:
+            type: string
+            description: A comma-separated list of threat IDs
+        - name: start
+          in: query
+          schema:
+            type: string
+            format: date-time
+            description: Start date of activity
+        - name: finish
+          in: query
+          schema:
+            type: string
+            format: date-time
+            description: End date of activity
+      responses:
+        "200":
+          description: Activity report
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Bad request

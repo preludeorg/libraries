@@ -16,12 +16,13 @@ def iam(ctx):
 
 
 @iam.command("account")
+@click.option('-p', '--pat', is_flag=True, help='check if the account has a PAT')
 @click.pass_obj
 @pretty_print
-def describe_account(controller):
+def describe_account(controller, pat=False):
     """Get account details"""
     with Spinner(description="Fetching account details"):
-        return controller.get_account()
+        return controller.get_account(check_pat=pat)
 
 
 @iam.command("purge-account")
@@ -59,13 +60,21 @@ def purge_account(controller):
     show_default=False,
     type=str,
 )
+@click.option(
+    "-p",
+    "--pat",
+    help="provide a personal access token to authenticate private git repos.  use \"\" to remove.",
+    default=None,
+    show_default=False,
+    type=str,
+)
 @click.pass_obj
 @pretty_print
-def update_account(controller, mode, company, slug):
+def update_account(controller, mode, company, slug, pat=None):
     """Update an account"""
     with Spinner(description="Updating account information"):
         return controller.update_account(
-            mode=Mode[mode] if mode else None, company=company, slug=slug
+            mode=Mode[mode] if mode else None, company=company, slug=slug, pat=pat
         )
 
 

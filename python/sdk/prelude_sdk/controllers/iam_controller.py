@@ -9,10 +9,11 @@ class IAMAccountController(HttpController):
         super().__init__(account)
 
     @verify_credentials
-    def get_account(self):
+    def get_account(self, check_pat=False):
         """Get account properties"""
+        params = dict(check_pat=check_pat)
         res = self.get(
-            f"{self.account.hq}/iam/account", headers=self.account.headers, timeout=10
+            f"{self.account.hq}/iam/account", params=params, headers=self.account.headers, timeout=10
         )
         return res.json()
 
@@ -25,7 +26,7 @@ class IAMAccountController(HttpController):
         return res.json()
 
     @verify_credentials
-    def update_account(self, mode: Mode = None, company: str = None, slug: str = None):
+    def update_account(self, mode: Mode = None, company: str = None, slug: str = None, pat: str = None):
         """Update properties on an account"""
         body = dict()
         if mode is not None:
@@ -34,6 +35,10 @@ class IAMAccountController(HttpController):
             body["company"] = company
         if slug is not None:
             body["slug"] = slug
+        # "" = remove
+        # None = do nothing
+        # "value" = set
+        body["pat"] = pat
 
         res = self.put(
             f"{self.account.hq}/iam/account",
@@ -50,11 +55,9 @@ class IAMAccountController(HttpController):
         client_secret: str,
         issuer: str,
         oidc_url: str,
+        email_attr: str = "email",
     ):
         """Attach OIDC to an account"""
-        email_attr = "email"
-        if issuer == "azure":
-            email_attr = "upn"
         body = dict(
             client_id=client_id,
             client_secret=client_secret,
