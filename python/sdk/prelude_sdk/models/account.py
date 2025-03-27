@@ -194,10 +194,14 @@ class _Account:
                 "Please configure your %s profile to continue" % self.profile
             )
 
-    def password_login(self, password):
+    def password_login(self, password, new_password=None):
         self._verify()
         tokens = exchange_token(
-            self.account, self.handle, self.hq, "password", dict(password=password)
+            self.account,
+            self.handle,
+            self.hq,
+            "password_change" if new_password else "password",
+            dict(password=password, new_password=new_password),
         )
         self.save_new_token(tokens)
         return tokens
