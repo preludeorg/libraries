@@ -340,4 +340,34 @@ def confirm_forgot_password(controller, code, password):
         )
 
 
+@user.command("change-password")
+@click.option(
+    "-c",
+    "--current_password",
+    help="current password",
+    required=True,
+    hide_input=True,
+    prompt=True,
+)
+@click.option(
+    "-n",
+    "--new_password",
+    help="new password",
+    required=True,
+    hide_input=True,
+    prompt=True,
+)
+@click.pass_obj
+@pretty_print
+def change_password(controller, current_password, new_password):
+    """Change your password"""
+    with Spinner(description="Changing password"):
+        return (
+            controller.change_password(
+                current_password=current_password, new_password=new_password
+            ),
+            "Password changed successfully",
+        )
+
+
 iam.add_command(user)

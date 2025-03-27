@@ -282,3 +282,16 @@ class IAMUserController(HttpController):
             timeout=10,
         )
         return res.json()
+
+    @verify_credentials
+    def change_password(self, current_password: str, new_password: str):
+        """Change your password"""
+        body = dict(current_password=current_password, new_password=new_password)
+
+        res = self.post(
+            f"{self.account.hq}/iam/user/change_password",
+            json=body,
+            headers=self.account.headers,
+            timeout=10,
+        )
+        return res.json()
