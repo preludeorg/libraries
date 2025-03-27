@@ -13,7 +13,12 @@ def auth(ctx):
 
 @auth.command("login")
 @click.option("-p", "--password", type=str, help="password for login")
-@click.option("-t", "--temp_password", type=str, help="temporary password for login (if set, `password` will become your new password)")
+@click.option(
+    "-t",
+    "--temp_password",
+    type=str,
+    help="temporary password for login (if set, `password` will become your new password)",
+)
 @click.pass_obj
 @pretty_print
 def login(account, password, temp_password):
@@ -23,7 +28,10 @@ def login(account, password, temp_password):
         with Spinner(description="Logging in and saving tokens"):
             if temp_password:
                 new_password, password = password, temp_password
-                return account.password_login(password, new_password), "Login with password successful"
+                return (
+                    account.password_login(password, new_password),
+                    "Login with password successful",
+                )
             return account.password_login(password), "Login with password successful"
 
     url = f"{account.hq.replace('api', 'platform')}/cli-auth?handle={account.handle}&provider={account.oidc}"
