@@ -174,6 +174,7 @@ class Control(Enum, metaclass=MissingItem):
     CROWDSTRIKE_IDENTITY = 13
     GMAIL = 14
     GOOGLE_IDENTITY = 15
+    DEFENDER_DISCOVERY = 16
 
     @classmethod
     def _missing_(cls, value):
@@ -203,6 +204,7 @@ class ControlCategory(Enum, metaclass=MissingItem):
     NETWORK = 4
     XDR = 5
     ASSET_MANAGER = 6
+    DISCOVERED_DEVICES = 7
 
     @classmethod
     def _missing_(cls, value):
@@ -217,6 +219,9 @@ class ControlCategory(Enum, metaclass=MissingItem):
                 Control.JAMF,
             ],
             ControlCategory.CLOUD: [],
+            ControlCategory.DISCOVERED_DEVICES: [
+                Control.DEFENDER_DISCOVERY,
+            ],
             ControlCategory.EMAIL: [
                 Control.GMAIL,
                 Control.M365,
@@ -253,6 +258,7 @@ class SCMCategory(Enum, metaclass=MissingItem):
             SCMCategory.ENDPOINT: [
                 Control.CROWDSTRIKE,
                 Control.DEFENDER,
+                Control.DEFENDER_DISCOVERY,
                 Control.INTUNE,
                 Control.JAMF,
                 Control.SENTINELONE,
@@ -273,7 +279,11 @@ class SCMCategory(Enum, metaclass=MissingItem):
     @classmethod
     def category_mapping(cls):
         return {
-            SCMCategory.ENDPOINT: [ControlCategory.ASSET_MANAGER, ControlCategory.XDR],
+            SCMCategory.ENDPOINT: [
+                ControlCategory.ASSET_MANAGER,
+                ControlCategory.DISCOVERED_DEVICES,
+                ControlCategory.XDR,
+            ],
             SCMCategory.USER: [ControlCategory.IDENTITY],
             SCMCategory.INBOX: [ControlCategory.EMAIL],
         }
