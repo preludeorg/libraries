@@ -265,16 +265,13 @@ def unsubscribe(controller, event):
 @iam.command("sign-up", hidden=True)
 @click.option("-c", "--company", type=str, required=True)
 @click.option("-n", "--name", type=str, required=True)
-@click.option("-p", "--profile", type=str, default=None)
 @click.argument("email", type=str, required=True)
 @click.pass_obj
 @pretty_print
-def sign_up(controller, company, name, profile, email):
+def sign_up(controller, company, name, email):
     """(NOT AVAIABLE IN PRODUCTION) Create a new user and account"""
     with Spinner(description="Creating new user and account"):
-        return controller.sign_up(
-            email=email, company=company, name=name, profile=profile
-        )
+        return controller.sign_up(company=company, email=email, name=name)
 
 
 @click.group()

@@ -193,7 +193,7 @@ class IAMAccountController(HttpController):
         )
         return res.json()
 
-    def sign_up(self, company, email, name, profile=None):
+    def sign_up(self, company, email, name):
         """(NOT AVAIABLE IN PRODUCTION) Create a new user and account"""
         body = dict(company=company, email=email, name=name)
 
@@ -204,9 +204,12 @@ class IAMAccountController(HttpController):
             timeout=20,
         )
         data = res.json()
-        if profile:
+        if self.account.profile:
             self.account.keychain.configure_keychain(
-                data["account_id"], data["user_id"], self.account.hq, profile
+                account=data["account_id"],
+                handle=data["user_id"],
+                hq=self.account.hq,
+                profile=self.account.profile,
             )
         return data
 
