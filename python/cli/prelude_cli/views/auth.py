@@ -26,13 +26,9 @@ def login(account, password, temp_password):
     if not account.oidc:
         password = password or click.prompt("Password", type=str, hide_input=True)
         with Spinner(description="Logging in and saving tokens"):
-            if temp_password:
-                new_password, password = password, temp_password
-                return (
-                    account.password_login(password, new_password),
-                    "Login with password successful",
-                )
-            return account.password_login(password), "Login with password successful"
+            new_password = password if temp_password else None
+            password = temp_password or password
+            return account.password_login(password, new_password), "Login with password successful"
 
     url = f"{account.hq.replace('api', 'platform')}/cli-auth?handle={account.handle}&provider={account.oidc}"
     if account.oidc == "custom":
