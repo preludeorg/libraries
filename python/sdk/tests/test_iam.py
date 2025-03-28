@@ -131,7 +131,7 @@ class TestIAM:
 
         diffs = check_dict_items(pytest.expected_account, res)
         assert not diffs, json.dumps(diffs, indent=2)
-    
+
     def test_remove_account_user(self, unwrap):
         unwrap(self.iam_account.remove_user)(
             self.iam_account, email=pytest.second_user, oidc=""

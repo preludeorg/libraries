@@ -325,16 +325,71 @@ def forgot_password(controller):
 @user.command("confirm-forgot-password")
 @click.option("-c", "--code", help="confirmation code", required=True)
 @click.option(
-    "-p", "--password", help="new password", required=True, hide_input=True, prompt=True
+    "-n",
+    "--new_password",
+    help="new password",
+    required=True,
+    hide_input=True,
+    prompt=True,
+)
+@click.option(
+    "-r",
+    "--confirm_new_password",
+    help="confirm new password",
+    required=True,
+    hide_input=True,
+    prompt=True,
 )
 @click.pass_obj
 @pretty_print
-def confirm_forgot_password(controller, code, password):
+def confirm_forgot_password(controller, code, new_password, confirm_new_password):
     """Change your password using a confirmation code"""
+    if new_password != confirm_new_password:
+        raise ValueError("New password and confirmation do not match")
     with Spinner(description="Changing password"):
         return (
             controller.confirm_forgot_password(
-                confirmation_code=code, new_password=password
+                confirmation_code=code, new_password=new_password
+            ),
+            "Password changed successfully",
+        )
+
+
+@user.command("change-password")
+@click.option(
+    "-c",
+    "--current_password",
+    help="current password",
+    required=True,
+    hide_input=True,
+    prompt=True,
+)
+@click.option(
+    "-n",
+    "--new_password",
+    help="new password",
+    required=True,
+    hide_input=True,
+    prompt=True,
+)
+@click.option(
+    "-r",
+    "--confirm_new_password",
+    help="confirm new password",
+    required=True,
+    hide_input=True,
+    prompt=True,
+)
+@click.pass_obj
+@pretty_print
+def change_password(controller, current_password, new_password, confirm_new_password):
+    """Change your password"""
+    if new_password != confirm_new_password:
+        raise ValueError("New password and confirmation do not match")
+    with Spinner(description="Changing password"):
+        return (
+            controller.change_password(
+                current_password=current_password, new_password=new_password
             ),
             "Password changed successfully",
         )
