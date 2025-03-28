@@ -16,7 +16,7 @@ def configure(account):
     oidc = click.prompt(
         "If authenticating via OIDC, enter the provider name",
         default="none",
-        type=click.Choice(["google", "entra", "custom", "none"], case_sensitive=False),
+        type=click.Choice(["google", "custom", "none"], case_sensitive=False),
     ).lower()
     slug = None
     if oidc == "none":
