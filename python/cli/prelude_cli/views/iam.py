@@ -325,7 +325,12 @@ def forgot_password(controller):
 @user.command("confirm-forgot-password")
 @click.option("-c", "--code", help="confirmation code", required=True)
 @click.option(
-    "-p", "--password", help="new password", required=True, hide_input=True, prompt=True
+    "-n",
+    "--new_password",
+    help="new password",
+    required=True,
+    hide_input=True,
+    prompt=True,
 )
 @click.option(
     "-r",
