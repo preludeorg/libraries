@@ -26,7 +26,7 @@ class IAMAccountController(HttpController):
         return res.json()
 
     @verify_credentials
-    def update_account(self, mode: Mode = None, company: str = None, slug: str = None, pat: str = None):
+    def update_account(self, mode: Mode = None, company: str = None, slug: str = None, pat: dict = None):
         """Update properties on an account"""
         body = dict()
         if mode is not None:
@@ -35,11 +35,8 @@ class IAMAccountController(HttpController):
             body["company"] = company
         if slug is not None:
             body["slug"] = slug
-        # "" = remove
-        # None = do nothing
-        # "value" = set
-        body["pat"] = pat
 
+        body["pat"] = pat
         res = self.put(
             f"{self.account.hq}/iam/account",
             headers=self.account.headers,

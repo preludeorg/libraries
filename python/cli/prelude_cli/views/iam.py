@@ -63,18 +63,35 @@ def purge_account(controller):
 @click.option(
     "-p",
     "--pat",
-    help="provide a personal access token to authenticate private git repos.  use \"\" to remove.",
+    help="Sets the personal access tokens (PAT), overwriting any matching, to access private repositories. The format is 'organization[/repository]=PAT'.  use 'organization[/repository]=\"\"' to remove.  Any existing PAT that is not referenced is unaffected.",
     default=None,
     show_default=False,
     type=str,
+    multiple=True,
+)
+@click.option(
+    "--remove_pat",
+    help="Remove all personal access tokens (PAT)",
+    is_flag=True,
 )
 @click.pass_obj
 @pretty_print
-def update_account(controller, mode, company, slug, pat=None):
+def update_account(controller, mode, company, slug, pat=None, remove_pat=False):
     """Update an account"""
+    if remove_pat:
+        pat={"*":""}
+    elif pat is not None:
+        # {
+        #   "org/repo":"pat", #set pat
+        #   "org/repo":"",    #remove pat            
+        # }
+        pat = { k: v for k,v in (item.split('=', 1) for item in pat) if k != "*"}
     with Spinner(description="Updating account information"):
         return controller.update_account(
-            mode=Mode[mode] if mode else None, company=company, slug=slug, pat=pat
+            mode=Mode[mode] if mode else None, 
+            company=company, 
+            slug=slug, 
+            pat=pat
         )
 
 
