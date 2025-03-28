@@ -109,12 +109,14 @@ class Account:
         token: str | None = None,
         refresh_token: str | None = None,
         hq: str = "https://api.us1.preludesecurity.com",
+        oidc: str | None = None,
+        slug: str | None = None,
     ):
         """
-        Create an account object from an ID token or a refresh token
+        Create an account object from an access token or a refresh token
         """
         if not any([token, refresh_token]):
-            raise ValueError("Please provide either an ID token or a refresh token")
+            raise ValueError("Please provide either an access token or a refresh token")
         if refresh_token:
             res = exchange_token(
                 account, handle, hq, "refresh", dict(refresh_token=refresh_token)
@@ -125,8 +127,8 @@ class Account:
             handle,
             hq,
             keychain_location=None,
-            oidc=None,
-            slug=None,
+            oidc=oidc,
+            slug=slug,
             token=token,
             token_location=None,
         )
@@ -151,7 +153,9 @@ class _Account:
         ),
     ):
         if token is None and token_location is None:
-            raise ValueError("Please provide either an ID token or a token location")
+            raise ValueError(
+                "Please provide either an access token or a token location"
+            )
 
         super().__init__()
         self.account = account
@@ -216,7 +220,7 @@ class _Account:
             self.handle,
             self.hq,
             "refresh",
-            dict(refresh_token=refresh_token),
+            dict(refresh_token=refresh_token, source="cli" if self.oidc else "main"),
         )
         tokens = existing_tokens | tokens
         self.save_new_token(tokens)
