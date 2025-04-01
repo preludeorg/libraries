@@ -215,12 +215,12 @@ class ControlCategory(Enum, metaclass=MissingItem):
         return {
             ControlCategory.ASSET_MANAGER: [
                 Control.INTUNE,
-                Control.SERVICENOW,
                 Control.JAMF,
             ],
             ControlCategory.CLOUD: [],
             ControlCategory.DISCOVERED_DEVICES: [
                 Control.DEFENDER_DISCOVERY,
+                Control.SERVICENOW,
             ],
             ControlCategory.EMAIL: [
                 Control.GMAIL,
