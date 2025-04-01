@@ -28,7 +28,10 @@ def login(account, password, temp_password):
         with Spinner(description="Logging in and saving tokens"):
             new_password = password if temp_password else None
             password = temp_password or password
-            return account.password_login(password, new_password), "Login with password successful"
+            return (
+                account.password_login(password, new_password),
+                "Login with password successful",
+            )
 
     url = f"{account.hq.replace('api', 'platform')}/cli-auth?handle={account.handle}&provider={account.oidc}"
     if account.oidc == "custom":
@@ -40,9 +43,7 @@ def login(account, password, temp_password):
     )
     verifier, authorization_code = code.split("/")
     with Spinner(description="Logging in and saving tokens"):
-        tokens = account.exchange_authorization_code(
-            authorization_code, verifier, source="cli"
-        )
+        tokens = account.exchange_authorization_code(authorization_code, verifier)
     return tokens, "Login with SSO successful"
 
 

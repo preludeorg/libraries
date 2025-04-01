@@ -173,6 +173,7 @@ class _Account:
             Path(head).mkdir(parents=True, exist_ok=True)
             with open(self.token_location, "x") as f:
                 json.dump({}, f)
+        self.source = "cli" if self.oidc else "main"
 
     @property
     def token_key(self):
@@ -220,22 +221,20 @@ class _Account:
             self.handle,
             self.hq,
             "refresh",
-            dict(refresh_token=refresh_token, source="cli" if self.oidc else "main"),
+            dict(refresh_token=refresh_token, source=self.source),
         )
         tokens = existing_tokens | tokens
         self.save_new_token(tokens)
         return tokens
 
-    def exchange_authorization_code(
-        self, authorization_code: str, verifier: str, source: str = "cli"
-    ):
+    def exchange_authorization_code(self, authorization_code: str, verifier: str):
         self._verify()
         tokens = exchange_token(
             self.account,
             self.handle,
             self.hq,
             "oauth_code",
-            dict(code=authorization_code, verifier=verifier, source=source),
+            dict(code=authorization_code, verifier=verifier, source=self.source),
         )
         existing_tokens = self._read_tokens().get(self.token_key, {}).get(self.hq, {})
         tokens = existing_tokens | tokens
