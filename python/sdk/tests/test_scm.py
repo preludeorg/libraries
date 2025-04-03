@@ -72,7 +72,12 @@ class TestScmAcrossControls:
     def test_evaluation_summary(self, unwrap):
         summary = unwrap(self.scm.evaluation_summary)(self.scm)
         assert {"endpoint_summary", "user_summary", "inbox_summary"} == summary.keys()
-        assert {"categories", "endpoint_count"} == summary["endpoint_summary"].keys()
+        assert {
+            "categories",
+            "endpoint_count",
+            "missing_asset_manager_count",
+            "missing_edr_count",
+        } == summary["endpoint_summary"].keys()
         if categories := summary["endpoint_summary"].get("categories"):
             assert {
                 "category",
