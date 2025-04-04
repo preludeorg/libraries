@@ -175,6 +175,7 @@ class Control(Enum, metaclass=MissingItem):
     GMAIL = 14
     GOOGLE_IDENTITY = 15
     DEFENDER_DISCOVERY = 16
+    TENABLE = 17
 
     @classmethod
     def _missing_(cls, value):
@@ -205,6 +206,7 @@ class ControlCategory(Enum, metaclass=MissingItem):
     XDR = 5
     ASSET_MANAGER = 6
     DISCOVERED_DEVICES = 7
+    VULN_MANAGER = 8
 
     @classmethod
     def _missing_(cls, value):
@@ -233,6 +235,7 @@ class ControlCategory(Enum, metaclass=MissingItem):
                 Control.OKTA,
             ],
             ControlCategory.NETWORK: [],
+            ControlCategory.VULN_MANAGER: [Control.TENABLE],
             ControlCategory.XDR: [
                 Control.CROWDSTRIKE,
                 Control.DEFENDER,
@@ -263,6 +266,7 @@ class SCMCategory(Enum, metaclass=MissingItem):
                 Control.JAMF,
                 Control.SENTINELONE,
                 Control.SERVICENOW,
+                Control.TENABLE,
             ],
             SCMCategory.USER: [
                 Control.CROWDSTRIKE_IDENTITY,
@@ -282,6 +286,7 @@ class SCMCategory(Enum, metaclass=MissingItem):
             SCMCategory.ENDPOINT: [
                 ControlCategory.ASSET_MANAGER,
                 ControlCategory.DISCOVERED_DEVICES,
+                ControlCategory.VULN_MANAGER,
                 ControlCategory.XDR,
             ],
             SCMCategory.USER: [ControlCategory.IDENTITY],
