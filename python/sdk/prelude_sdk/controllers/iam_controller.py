@@ -1,6 +1,6 @@
 from prelude_sdk.controllers.http_controller import HttpController
 from prelude_sdk.models.account import verify_credentials
-from prelude_sdk.models.codes import AuditEvent, Mode, Permission
+from prelude_sdk.models.codes import Mode, Permission
 
 
 class IAMAccountController(HttpController):
@@ -173,25 +173,6 @@ class IAMAccountController(HttpController):
         )
         return res.json()
 
-    @verify_credentials
-    def subscribe(self, event: AuditEvent):
-        """Subscribe to email notifications for an event"""
-        res = self.post(
-            f"{self.account.hq}/iam/subscribe/{event.name}",
-            headers=self.account.headers,
-            timeout=10,
-        )
-        return res.json()
-
-    @verify_credentials
-    def unsubscribe(self, event: AuditEvent):
-        """Unsubscribe to email notifications for an event"""
-        res = self.delete(
-            f"{self.account.hq}/iam/subscribe/{event.name}",
-            headers=self.account.headers,
-            timeout=10,
-        )
-        return res.json()
 
     def sign_up(self, company, email, name):
         """(NOT AVAIABLE IN PRODUCTION) Create a new user and account"""

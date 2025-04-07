@@ -5,7 +5,7 @@ from prelude_sdk.controllers.iam_controller import (
     IAMAccountController,
     IAMUserController,
 )
-from prelude_sdk.models.codes import AuditEvent, Mode, Permission
+from prelude_sdk.models.codes import Mode, Permission
 
 
 @click.group()
@@ -230,36 +230,6 @@ def logs(controller, days, limit):
     """Get audit logs"""
     with Spinner(description="Fetching logs"):
         return controller.audit_logs(days=days, limit=limit)
-
-
-@iam.command("subscribe")
-@click.argument(
-    "event",
-    type=click.Choice(
-        [e.name for e in AuditEvent if e != AuditEvent.INVALID], case_sensitive=False
-    ),
-)
-@click.pass_obj
-@pretty_print
-def subscribe(controller, event):
-    """Subscribe to email notifications for an event"""
-    with Spinner(description="Subscribing"):
-        return controller.subscribe(event=AuditEvent[event])
-
-
-@iam.command("unsubscribe")
-@click.argument(
-    "event",
-    type=click.Choice(
-        [e.name for e in AuditEvent if e != AuditEvent.INVALID], case_sensitive=False
-    ),
-)
-@click.pass_obj
-@pretty_print
-def unsubscribe(controller, event):
-    """Unsubscribe to email notifications for an event"""
-    with Spinner(description="Unsubscribing"):
-        return controller.unsubscribe(event=AuditEvent[event])
 
 
 @iam.command("sign-up", hidden=True)
