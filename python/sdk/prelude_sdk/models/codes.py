@@ -327,6 +327,7 @@ class PartnerEvents(Enum, metaclass=MissingItem):
     MISSING_MFA = 5
     NO_ASSET_MANAGER = 6
     MISCONFIGURED_POLICY_SETTING = 7
+    MISSING_SCAN = 8
 
     @classmethod
     def _missing_(cls, value):
@@ -348,6 +349,7 @@ class PartnerEvents(Enum, metaclass=MissingItem):
                 ControlCategory.EMAIL,
                 ControlCategory.IDENTITY,
             ],
+            PartnerEvents.MISSING_SCAN: [ControlCategory.VULN_MANAGER],
         }
 
 
