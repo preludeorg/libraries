@@ -367,40 +367,6 @@ class AlertTypes(Enum, metaclass=MissingItem):
         return AlertTypes.INVALID
 
 
-class AuditEvent(Enum, metaclass=MissingItem):
-    INVALID = 0
-    ATTACH_PARTNER = 1
-    CREATE_DETECTION = 25
-    CREATE_TEST = 2
-    CREATE_THREAT = 18
-    CREATE_USER = 3
-    DELETE_DETECTION = 26
-    DELETE_ENDPOINT = 4
-    DELETE_TEST = 5
-    DELETE_THREAT = 20
-    DELETE_USER = 6
-    DETACH_PARTNER = 7
-    DISABLE_TEST = 8
-    DOWNLOAD_TEST_ATTACHMENT = 9
-    ENABLE_TEST = 10
-    PARTNER_BLOCK_TEST = 11
-    REGISTER_ENDPOINT = 12
-    SCHEDULE = 23
-    UNSCHEDULE = 24
-    UPDATE_ACCOUNT = 13
-    UPDATE_DETECTIONS = 27
-    UPDATE_ENDPOINT = 14
-    UPDATE_TEST = 15
-    UPDATE_THREAT = 19
-    UPDATE_USER = 17
-    UPLOAD_TEST_ATTACHMENT = 16
-    # Next value: 28
-
-    @classmethod
-    def _missing_(cls, value):
-        return AuditEvent.INVALID
-
-
 class PolicyType(Enum, metaclass=MissingItem):
     INVALID = 0
     EDR = 1
