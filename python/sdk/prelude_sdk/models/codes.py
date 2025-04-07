@@ -367,6 +367,9 @@ class AlertTypes(Enum, metaclass=MissingItem):
     NEW_NO_ASSET_MANAGER_ENDPOINTS = 6
     NEW_POLICY_SETTING_FAILURE = 7
     NEW_POLICY_SETTING_PASS = 8
+    NEW_MISSING_SCAN_ENDPOINTS = 9
+    NEW_NO_VULN_MANAGER_ENDPOINTS = 10
+    NEW_OUT_OF_DATE_SCAN_ENDPOINTS = 11
 
     @classmethod
     def _missing_(cls, value):
