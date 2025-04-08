@@ -327,6 +327,9 @@ class PartnerEvents(Enum, metaclass=MissingItem):
     MISSING_MFA = 5
     NO_ASSET_MANAGER = 6
     MISCONFIGURED_POLICY_SETTING = 7
+    MISSING_SCAN = 8
+    OUT_OF_DATE_SCAN = 9
+    NO_VULN_MANAGER = 10
 
     @classmethod
     def _missing_(cls, value):
@@ -348,6 +351,9 @@ class PartnerEvents(Enum, metaclass=MissingItem):
                 ControlCategory.EMAIL,
                 ControlCategory.IDENTITY,
             ],
+            PartnerEvents.MISSING_SCAN: [ControlCategory.VULN_MANAGER],
+            PartnerEvents.OUT_OF_DATE_SCAN: [ControlCategory.VULN_MANAGER],
+            PartnerEvents.NO_VULN_MANAGER: [ControlCategory.VULN_MANAGER],
         }
 
 
@@ -361,6 +367,9 @@ class AlertTypes(Enum, metaclass=MissingItem):
     NEW_NO_ASSET_MANAGER_ENDPOINTS = 6
     NEW_POLICY_SETTING_FAILURE = 7
     NEW_POLICY_SETTING_PASS = 8
+    NEW_MISSING_SCAN_ENDPOINTS = 9
+    NEW_NO_VULN_MANAGER_ENDPOINTS = 10
+    NEW_OUT_OF_DATE_SCAN_ENDPOINTS = 11
 
     @classmethod
     def _missing_(cls, value):
