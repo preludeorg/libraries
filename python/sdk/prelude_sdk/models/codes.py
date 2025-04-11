@@ -176,6 +176,8 @@ class Control(Enum, metaclass=MissingItem):
     GOOGLE_IDENTITY = 15
     DEFENDER_DISCOVERY = 16
     TENABLE = 17
+    EC2 = 18
+    AWS_SSM = 19
 
     @classmethod
     def _missing_(cls, value):
@@ -216,12 +218,14 @@ class ControlCategory(Enum, metaclass=MissingItem):
     def mapping(cls):
         return {
             ControlCategory.ASSET_MANAGER: [
+                Control.AWS_SSM,
                 Control.INTUNE,
                 Control.JAMF,
             ],
             ControlCategory.CLOUD: [],
             ControlCategory.DISCOVERED_DEVICES: [
                 Control.DEFENDER_DISCOVERY,
+                Control.EC2,
                 Control.SERVICENOW,
             ],
             ControlCategory.EMAIL: [
@@ -259,9 +263,11 @@ class SCMCategory(Enum, metaclass=MissingItem):
     def control_mapping(cls):
         return {
             SCMCategory.ENDPOINT: [
+                Control.AWS_SSM,
                 Control.CROWDSTRIKE,
                 Control.DEFENDER,
                 Control.DEFENDER_DISCOVERY,
+                Control.EC2,
                 Control.INTUNE,
                 Control.JAMF,
                 Control.SENTINELONE,
