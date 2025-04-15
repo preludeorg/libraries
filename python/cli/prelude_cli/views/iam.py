@@ -5,7 +5,7 @@ from prelude_sdk.controllers.iam_controller import (
     IAMAccountController,
     IAMUserController,
 )
-from prelude_sdk.models.codes import AuditEvent, Mode, Permission
+from prelude_sdk.models.codes import Mode, Permission
 
 
 @click.group()
@@ -258,49 +258,16 @@ def logs(controller, days, limit):
         return controller.audit_logs(days=days, limit=limit)
 
 
-@iam.command("subscribe")
-@click.argument(
-    "event",
-    type=click.Choice(
-        [e.name for e in AuditEvent if e != AuditEvent.INVALID], case_sensitive=False
-    ),
-)
-@click.pass_obj
-@pretty_print
-def subscribe(controller, event):
-    """Subscribe to email notifications for an event"""
-    with Spinner(description="Subscribing"):
-        return controller.subscribe(event=AuditEvent[event])
-
-
-@iam.command("unsubscribe")
-@click.argument(
-    "event",
-    type=click.Choice(
-        [e.name for e in AuditEvent if e != AuditEvent.INVALID], case_sensitive=False
-    ),
-)
-@click.pass_obj
-@pretty_print
-def unsubscribe(controller, event):
-    """Unsubscribe to email notifications for an event"""
-    with Spinner(description="Unsubscribing"):
-        return controller.unsubscribe(event=AuditEvent[event])
-
-
 @iam.command("sign-up", hidden=True)
 @click.option("-c", "--company", type=str, required=True)
 @click.option("-n", "--name", type=str, required=True)
-@click.option("-p", "--profile", type=str, default=None)
 @click.argument("email", type=str, required=True)
 @click.pass_obj
 @pretty_print
-def sign_up(controller, company, name, profile, email):
+def sign_up(controller, company, name, email):
     """(NOT AVAIABLE IN PRODUCTION) Create a new user and account"""
     with Spinner(description="Creating new user and account"):
-        return controller.sign_up(
-            email=email, company=company, name=name, profile=profile
-        )
+        return controller.sign_up(company=company, email=email, name=name)
 
 
 @click.group()
@@ -354,16 +321,71 @@ def forgot_password(controller):
 @user.command("confirm-forgot-password")
 @click.option("-c", "--code", help="confirmation code", required=True)
 @click.option(
-    "-p", "--password", help="new password", required=True, hide_input=True, prompt=True
+    "-n",
+    "--new_password",
+    help="new password",
+    required=True,
+    hide_input=True,
+    prompt=True,
+)
+@click.option(
+    "-r",
+    "--confirm_new_password",
+    help="confirm new password",
+    required=True,
+    hide_input=True,
+    prompt=True,
 )
 @click.pass_obj
 @pretty_print
-def confirm_forgot_password(controller, code, password):
+def confirm_forgot_password(controller, code, new_password, confirm_new_password):
     """Change your password using a confirmation code"""
+    if new_password != confirm_new_password:
+        raise ValueError("New password and confirmation do not match")
     with Spinner(description="Changing password"):
         return (
             controller.confirm_forgot_password(
-                confirmation_code=code, new_password=password
+                confirmation_code=code, new_password=new_password
+            ),
+            "Password changed successfully",
+        )
+
+
+@user.command("change-password")
+@click.option(
+    "-c",
+    "--current_password",
+    help="current password",
+    required=True,
+    hide_input=True,
+    prompt=True,
+)
+@click.option(
+    "-n",
+    "--new_password",
+    help="new password",
+    required=True,
+    hide_input=True,
+    prompt=True,
+)
+@click.option(
+    "-r",
+    "--confirm_new_password",
+    help="confirm new password",
+    required=True,
+    hide_input=True,
+    prompt=True,
+)
+@click.pass_obj
+@pretty_print
+def change_password(controller, current_password, new_password, confirm_new_password):
+    """Change your password"""
+    if new_password != confirm_new_password:
+        raise ValueError("New password and confirmation do not match")
+    with Spinner(description="Changing password"):
+        return (
+            controller.change_password(
+                current_password=current_password, new_password=new_password
             ),
             "Password changed successfully",
         )

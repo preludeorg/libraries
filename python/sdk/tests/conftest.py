@@ -1,11 +1,10 @@
 import pytest
 import uuid
 
-import requests
-
+from prelude_sdk.models.account import _Account
 from prelude_sdk.controllers.build_controller import BuildController
 from prelude_sdk.controllers.iam_controller import IAMAccountController
-from prelude_sdk.models.codes import Control, Permission
+from prelude_sdk.models.codes import Control
 
 
 @pytest.fixture(scope="session")
@@ -74,36 +73,6 @@ class Keychain:
         pass
 
 
-class Account:
-    def __init__(self, handle, hq, account=""):
-        self.account = account
-        self.handle = handle
-        self.hq = hq
-        self.headers = dict(account=account, _product="py-sdk")
-        self.token = ""
-        self.keychain = Keychain()
-        self.token_location = None
-
-    def password_login(self, password, new_password=None):
-        body = dict(
-            auth_flow="password_change" if new_password else "password",
-            handle=self.handle,
-            password=password,
-        )
-        if new_password:
-            body["new_password"] = new_password
-
-        res = requests.post(
-            f"{self.hq}/iam/token",
-            headers=self.headers,
-            json=body,
-            timeout=10,
-        )
-        if not res.ok:
-            raise Exception("Error logging in using password: %s" % res.text)
-        self.token = res.json()["token"]
-
-
 @pytest.fixture(scope="session")
 def manual(pytestconfig):
     return pytestconfig.getoption("manual")
@@ -126,7 +95,7 @@ def setup_account(unwrap, email, api, existing_account):
     if hasattr(pytest, "expected_account"):
         return
 
-    pytest.account = Account(handle=email, hq=api)
+    pytest.account = _Account(account=None, handle=email, hq=api)
     iam = IAMAccountController(pytest.account)
     if existing_account:
         pytest.account.account = existing_account["account_id"]

@@ -1,6 +1,6 @@
 from prelude_sdk.controllers.http_controller import HttpController
 from prelude_sdk.models.account import verify_credentials
-from prelude_sdk.models.codes import AuditEvent, Mode, Permission
+from prelude_sdk.models.codes import Mode, Permission
 
 
 class IAMAccountController(HttpController):
@@ -173,27 +173,8 @@ class IAMAccountController(HttpController):
         )
         return res.json()
 
-    @verify_credentials
-    def subscribe(self, event: AuditEvent):
-        """Subscribe to email notifications for an event"""
-        res = self.post(
-            f"{self.account.hq}/iam/subscribe/{event.name}",
-            headers=self.account.headers,
-            timeout=10,
-        )
-        return res.json()
 
-    @verify_credentials
-    def unsubscribe(self, event: AuditEvent):
-        """Unsubscribe to email notifications for an event"""
-        res = self.delete(
-            f"{self.account.hq}/iam/subscribe/{event.name}",
-            headers=self.account.headers,
-            timeout=10,
-        )
-        return res.json()
-
-    def sign_up(self, company, email, name, profile=None):
+    def sign_up(self, company, email, name):
         """(NOT AVAIABLE IN PRODUCTION) Create a new user and account"""
         body = dict(company=company, email=email, name=name)
 
@@ -204,9 +185,12 @@ class IAMAccountController(HttpController):
             timeout=20,
         )
         data = res.json()
-        if profile:
+        if self.account.profile:
             self.account.keychain.configure_keychain(
-                data["account_id"], data["user_id"], self.account.hq, profile
+                account=data["account_id"],
+                handle=data["user_id"],
+                hq=self.account.hq,
+                profile=self.account.profile,
             )
         return data
 
@@ -274,6 +258,19 @@ class IAMUserController(HttpController):
 
         res = self.post(
             f"{self.account.hq}/iam/user/forgot_password",
+            json=body,
+            headers=self.account.headers,
+            timeout=10,
+        )
+        return res.json()
+
+    @verify_credentials
+    def change_password(self, current_password: str, new_password: str):
+        """Change your password"""
+        body = dict(current_password=current_password, new_password=new_password)
+
+        res = self.post(
+            f"{self.account.hq}/iam/user/change_password",
             json=body,
             headers=self.account.headers,
             timeout=10,

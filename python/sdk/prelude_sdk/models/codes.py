@@ -174,6 +174,8 @@ class Control(Enum, metaclass=MissingItem):
     CROWDSTRIKE_IDENTITY = 13
     GMAIL = 14
     GOOGLE_IDENTITY = 15
+    DEFENDER_DISCOVERY = 16
+    TENABLE = 17
 
     @classmethod
     def _missing_(cls, value):
@@ -203,6 +205,8 @@ class ControlCategory(Enum, metaclass=MissingItem):
     NETWORK = 4
     XDR = 5
     ASSET_MANAGER = 6
+    DISCOVERED_DEVICES = 7
+    VULN_MANAGER = 8
 
     @classmethod
     def _missing_(cls, value):
@@ -213,10 +217,13 @@ class ControlCategory(Enum, metaclass=MissingItem):
         return {
             ControlCategory.ASSET_MANAGER: [
                 Control.INTUNE,
-                Control.SERVICENOW,
                 Control.JAMF,
             ],
             ControlCategory.CLOUD: [],
+            ControlCategory.DISCOVERED_DEVICES: [
+                Control.DEFENDER_DISCOVERY,
+                Control.SERVICENOW,
+            ],
             ControlCategory.EMAIL: [
                 Control.GMAIL,
                 Control.M365,
@@ -228,6 +235,7 @@ class ControlCategory(Enum, metaclass=MissingItem):
                 Control.OKTA,
             ],
             ControlCategory.NETWORK: [],
+            ControlCategory.VULN_MANAGER: [Control.TENABLE],
             ControlCategory.XDR: [
                 Control.CROWDSTRIKE,
                 Control.DEFENDER,
@@ -253,10 +261,12 @@ class SCMCategory(Enum, metaclass=MissingItem):
             SCMCategory.ENDPOINT: [
                 Control.CROWDSTRIKE,
                 Control.DEFENDER,
+                Control.DEFENDER_DISCOVERY,
                 Control.INTUNE,
                 Control.JAMF,
                 Control.SENTINELONE,
                 Control.SERVICENOW,
+                Control.TENABLE,
             ],
             SCMCategory.USER: [
                 Control.CROWDSTRIKE_IDENTITY,
@@ -273,7 +283,12 @@ class SCMCategory(Enum, metaclass=MissingItem):
     @classmethod
     def category_mapping(cls):
         return {
-            SCMCategory.ENDPOINT: [ControlCategory.ASSET_MANAGER, ControlCategory.XDR],
+            SCMCategory.ENDPOINT: [
+                ControlCategory.ASSET_MANAGER,
+                ControlCategory.DISCOVERED_DEVICES,
+                ControlCategory.VULN_MANAGER,
+                ControlCategory.XDR,
+            ],
             SCMCategory.USER: [ControlCategory.IDENTITY],
             SCMCategory.INBOX: [ControlCategory.EMAIL],
         }
@@ -312,6 +327,9 @@ class PartnerEvents(Enum, metaclass=MissingItem):
     MISSING_MFA = 5
     NO_ASSET_MANAGER = 6
     MISCONFIGURED_POLICY_SETTING = 7
+    MISSING_SCAN = 8
+    OUT_OF_DATE_SCAN = 9
+    NO_VULN_MANAGER = 10
 
     @classmethod
     def _missing_(cls, value):
@@ -333,6 +351,9 @@ class PartnerEvents(Enum, metaclass=MissingItem):
                 ControlCategory.EMAIL,
                 ControlCategory.IDENTITY,
             ],
+            PartnerEvents.MISSING_SCAN: [ControlCategory.VULN_MANAGER],
+            PartnerEvents.OUT_OF_DATE_SCAN: [ControlCategory.VULN_MANAGER],
+            PartnerEvents.NO_VULN_MANAGER: [ControlCategory.VULN_MANAGER],
         }
 
 
@@ -346,44 +367,13 @@ class AlertTypes(Enum, metaclass=MissingItem):
     NEW_NO_ASSET_MANAGER_ENDPOINTS = 6
     NEW_POLICY_SETTING_FAILURE = 7
     NEW_POLICY_SETTING_PASS = 8
+    NEW_MISSING_SCAN_ENDPOINTS = 9
+    NEW_NO_VULN_MANAGER_ENDPOINTS = 10
+    NEW_OUT_OF_DATE_SCAN_ENDPOINTS = 11
 
     @classmethod
     def _missing_(cls, value):
         return AlertTypes.INVALID
-
-
-class AuditEvent(Enum, metaclass=MissingItem):
-    INVALID = 0
-    ATTACH_PARTNER = 1
-    CREATE_DETECTION = 25
-    CREATE_TEST = 2
-    CREATE_THREAT = 18
-    CREATE_USER = 3
-    DELETE_DETECTION = 26
-    DELETE_ENDPOINT = 4
-    DELETE_TEST = 5
-    DELETE_THREAT = 20
-    DELETE_USER = 6
-    DETACH_PARTNER = 7
-    DISABLE_TEST = 8
-    DOWNLOAD_TEST_ATTACHMENT = 9
-    ENABLE_TEST = 10
-    PARTNER_BLOCK_TEST = 11
-    REGISTER_ENDPOINT = 12
-    SCHEDULE = 23
-    UNSCHEDULE = 24
-    UPDATE_ACCOUNT = 13
-    UPDATE_DETECTIONS = 27
-    UPDATE_ENDPOINT = 14
-    UPDATE_TEST = 15
-    UPDATE_THREAT = 19
-    UPDATE_USER = 17
-    UPLOAD_TEST_ATTACHMENT = 16
-    # Next value: 28
-
-    @classmethod
-    def _missing_(cls, value):
-        return AuditEvent.INVALID
 
 
 class PolicyType(Enum, metaclass=MissingItem):
