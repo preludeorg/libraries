@@ -336,6 +336,9 @@ class PartnerEvents(Enum, metaclass=MissingItem):
     MISSING_SCAN = 8
     OUT_OF_DATE_SCAN = 9
     NO_VULN_MANAGER = 10
+    USER_MISSING_ASSET_MANAGER = 11
+    USER_MISSING_EDR = 12
+    USER_MISSING_VULN_MANAGER = 13
 
     @classmethod
     def _missing_(cls, value):
@@ -360,6 +363,9 @@ class PartnerEvents(Enum, metaclass=MissingItem):
             PartnerEvents.MISSING_SCAN: [ControlCategory.VULN_MANAGER],
             PartnerEvents.OUT_OF_DATE_SCAN: [ControlCategory.VULN_MANAGER],
             PartnerEvents.NO_VULN_MANAGER: [ControlCategory.VULN_MANAGER],
+            PartnerEvents.USER_MISSING_ASSET_MANAGER: [ControlCategory.IDENTITY],
+            PartnerEvents.USER_MISSING_EDR: [ControlCategory.IDENTITY],
+            PartnerEvents.USER_MISSING_VULN_MANAGER: [ControlCategory.IDENTITY],
         }
 
 
@@ -376,6 +382,9 @@ class AlertTypes(Enum, metaclass=MissingItem):
     NEW_MISSING_SCAN_ENDPOINTS = 9
     NEW_NO_VULN_MANAGER_ENDPOINTS = 10
     NEW_OUT_OF_DATE_SCAN_ENDPOINTS = 11
+    NEW_USER_MISSING_ASSET_MANAGER = 12
+    NEW_USER_MISSING_EDR = 13
+    NEW_USER_MISSING_VULN_MANAGER = 14
 
     @classmethod
     def _missing_(cls, value):
