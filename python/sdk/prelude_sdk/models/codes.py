@@ -179,6 +179,8 @@ class Control(Enum, metaclass=MissingItem):
     EC2 = 18
     AWS_SSM = 19
     AZURE_VM = 20
+    GITHUB = 21
+    AZURE_DEVOPS = 22
 
     @classmethod
     def _missing_(cls, value):
@@ -210,6 +212,8 @@ class ControlCategory(Enum, metaclass=MissingItem):
     ASSET_MANAGER = 6
     DISCOVERED_DEVICES = 7
     VULN_MANAGER = 8
+    SIEM = 9
+    PRIVATE_REPO = 10
 
     @classmethod
     def _missing_(cls, value):
@@ -241,6 +245,15 @@ class ControlCategory(Enum, metaclass=MissingItem):
                 Control.OKTA,
             ],
             ControlCategory.NETWORK: [],
+            ControlCategory.PRIVATE_REPO: [
+                Control.AZURE_DEVOPS,
+                Control.GITHUB,
+            ],
+            ControlCategory.SIEM: [
+                Control.S3,
+                Control.SPLUNK,
+                Control.VECTR,
+            ],
             ControlCategory.VULN_MANAGER: [Control.TENABLE],
             ControlCategory.XDR: [
                 Control.CROWDSTRIKE,
