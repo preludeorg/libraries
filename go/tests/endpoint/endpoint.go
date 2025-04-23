@@ -15,6 +15,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -299,13 +300,27 @@ func Start(test fn, clean ...fn) {
 
 	Say(fmt.Sprintf("Starting test at: %s", time.Now().Format("2006-01-02T15:04:05")))
 
+	// Read timeout from env, with a minimum of 30s and offset of -15s
+	timeout := 30 * time.Second // minimum effective timeout
+
+	if val := os.Getenv("PRELUDE_MAXTIMEOUT"); val != "" {
+		if sec, err := strconv.Atoi(val); err == nil {
+			full := time.Duration(sec) * time.Second
+			adjusted := full - 15*time.Second
+			if adjusted >= 30*time.Second {
+				timeout = adjusted
+			} else {
+				Say(fmt.Sprintf("Adjusted timeout (%v) is less than minimum (30s), using default", adjusted))
+			}
+		}
+	}	
 	go func() {
 		test()
 	}()
 
 	select {
-	case <-time.After(30 * time.Second):
-		Say("Test timed out after 30 seconds")
+	case <-time.After(timeout):
+		Say("Test timed out after %v seconds", timeout)
 		Stop(TimeoutExceeded)
 	}
 }
