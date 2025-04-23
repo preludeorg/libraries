@@ -25,7 +25,7 @@ function Execute {
         return 127
     } catch {
         $message = $_.Exception.Message
-        Log "Exception: GenericException - $($_.Exception.Message)"
+        Log "Exception: GenericException - $message"
         switch -Wildcard ($message) {
             "*contains a virus*" {
                 return 127  # Test binary was quarantined after it ran
@@ -40,7 +40,8 @@ function Execute {
                 return 109  # Not relevant - lacks permission
             }
             "*The system cannot find the file specified*" {
-                return 3    # Unreported - process likely killed/quarantined. Should consider 127
+                return 3    # Unreported - process likely killed/quarantined. 
+                # TODO: Should consider 127
             }
             "*The file could not be written*" {
                 return 105  # File extracted was quarantined
