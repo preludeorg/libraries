@@ -8,7 +8,7 @@ function Execute {
         $stderrTempFile = New-Item -path "$dir\stderr.log" -Force
         $proc = Start-Process -WorkingDirectory "$dir" -FilePath $File -NoNewWindow -PassThru -RedirectStandardOutput $stdoutTempFile -RedirectStandardError $stderrTempFile
 
-        $proc | Wait-Process -Timeout 45 -ErrorAction SilentlyContinue -ErrorVariable timeoutVar
+        $proc | Wait-Process -Timeout $max_timeout -ErrorAction SilentlyContinue -ErrorVariable timeoutVar
 
         if ($timeoutVar) {
             $proc | kill
@@ -18,12 +18,13 @@ function Execute {
         $code = if (Test-Path $File) {$proc.ExitCode} Else {127}
         return $code
     } catch [System.UnauthorizedAccessException] {
-        "System.UnauthorizedAccessException - $File" | Out-File -FilePath $stderrTempFile -Append
+        Log "Exception: UnauthorizedAccessException - $($_.Exception.Message)"
         return 126
     } catch [System.InvalidOperationException] {
-        "System.InvalidOperationException - $File" | Out-File -FilePath $stderrTempFile -Append
+        Log "Exception: InvalidOperationException - $($_.Exception.Message)"
         return 127
     } catch {
+        Log "Exception: GenericException - $($_.Exception.Message)"
         return 1
     } finally {
         $logMessageArray = @()
@@ -76,6 +77,7 @@ $ca = FromEnv "PRELUDE_CA" "prelude-account-us1-us-east-2.s3.amazonaws.com"
 $dir = FromEnv "PRELUDE_DIR" ".vst"
 $dat = ""
 $version = "2.7"
+$max_timeout = [int](FromEnv "PRELUDE_MAXTIMEOUT" 45)
 $logDir = FromEnv "PRELUDE_LOGDIR" (Join-Path (Split-Path -Parent $dir) "logs")
 $baseLogFileName = "LogFile"
 $logFileCount = [int](FromEnv "PRELUDE_LOGCOUNT" 7)
