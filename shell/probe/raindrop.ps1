@@ -24,8 +24,40 @@ function Execute {
         Log "Exception: InvalidOperationException - $($_.Exception.Message)"
         return 127
     } catch {
+        $message = $_.Exception.Message
         Log "Exception: GenericException - $($_.Exception.Message)"
-        return 1
+        switch -Wildcard ($message) {
+            "*contains a virus*" {
+                return 127  # Test binary was quarantined after it ran
+            }
+            "*blocked by group policy*" {
+                return 126  # OS is blocking execution (e.g. policy)
+            }
+            "*Access is denied*" {
+                return 126  # OS is blocking execution (e.g. Defender/Permissions)
+            }
+            "*requires elevation*" {
+                return 109  # Not relevant - lacks permission
+            }
+            "*The system cannot find the file specified*" {
+                return 3    # Unreported - process likely killed/quarantined. Should consider 127
+            }
+            "*The file could not be written*" {
+                return 105  # File extracted was quarantined
+            }
+            "*app has been blocked*" {
+                return 126  # OS/SmartScreen block
+            }
+            "*Operation did not complete successfully because the file contains a virus*" {
+                return 127  # Quarantined after execution
+            }
+            "*timed out*" {
+                return 102  # Exceeded timeout
+            }
+            default {
+                return 1    # Generic error
+            }
+        }
     } finally {
         $logMessageArray = @()
 
