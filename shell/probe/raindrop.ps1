@@ -38,7 +38,7 @@ function Execute {
 
         if ($logMessageArray) {
             $logMessageString = [string]::Join("`n", $logMessageArray)
-            Write-Host  $logMessageString
+            Log $logMessageString
         }
     }
 }
@@ -48,12 +48,28 @@ function FromEnv { param ([string]$envVar, [string]$default)
     if ($envVal) { return $envVal } else { return $default }
 }
 
+function Log { param ([string]$message, [bool]$hostonly = $true)
+    if ($hostonly) { Write-Host $message }
+    else { Write-Output $message }
+    if ($logFileCount -gt 0) { Add-Content -Path $global:LogFile -Value $message }
+}
+
 $ca = FromEnv "PRELUDE_CA" "prelude-account-us1-us-east-2.s3.amazonaws.com"
 $dir = FromEnv "PRELUDE_DIR" ".vst"
 $dat = ""
 $version = "2.7"
+$logDir = FromEnv "PRELUDE_LOGDIR" (Join-Path (Split-Path -Parent $dir) "logs")
+$baseLogFileName = "LogFile"
+$logFileCount = [int](FromEnv "PRELUDE_LOGCOUNT" 7)
+$LogFile = Get-LogFileName
+$logEveryoneRead = (FromEnv "PRELUDE_LOGREADEVERYONE" "false") -imatch "^(1|yes|true)$"
 
-Write-Output "Prelude probe: version ${version}"
+if (-not (Test-Path $logDir)) {
+    New-Item -Path $logDir -ItemType Directory | Out-Null
+}
+if ($logEveryoneRead) { icacls $logDir /grant "Everyone:R" /t /c | Out-Null }
+
+Log "Prelude probe: version ${version}" $false
 
 while ($true) {
     try {
@@ -77,11 +93,11 @@ while ($true) {
             throw "Test cycle done"
         }
     } catch {
-        Write-Output $_.Exception
+        Log $_.Exception
         Remove-Item $dir -Force -Recurse -ErrorAction SilentlyContinue
         $dat = ""
         if (-Not ($task.content -as [int])) {
-            Write-Output "Invalid sleep time: $task"
+            Log "Invalid sleep time: $task" $false
             $task = 1800
         }
         Start-Sleep -Seconds "$task"
