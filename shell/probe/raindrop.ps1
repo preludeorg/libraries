@@ -108,7 +108,7 @@ function Get-LogFileName {
 $ca = FromEnv "PRELUDE_CA" "prelude-account-us1-us-east-2.s3.amazonaws.com"
 $dir = FromEnv "PRELUDE_DIR" ".vst"
 $dat = ""
-$version = "2.7"
+$version = "2.8"
 $max_timeout = [int](FromEnv "PRELUDE_MAXTIMEOUT" 45)
 $logDir = FromEnv "PRELUDE_LOGDIR" (Join-Path (Split-Path -Parent $dir) "logs")
 $baseLogFileName = "LogFile"
