@@ -26,13 +26,19 @@ function Execute {
     } catch {
         return 1
     } finally {
-        $stdout = Get-Content -Path $stdoutTempFile
-        $stdout = if ($stdout) { [string]::Join("; ", $stdout) } else { "" }
-        $stderr = Get-Content -Path $stderrTempFile
-        $stderr = if ($stderr) { [string]::Join("; ", $stderr) } else { "" }
+        $logMessageArray = @()
 
-        if ($stdout -or $stderr -or $timeoutVar) {
-            Write-Host "${stdout}; ${stderr}; ${timeoutVar}"
+        $stdoutLines = Get-Content -Path $stdoutTempFile | Where-Object { $_ -ne "" }
+        if ($stdoutLines) { $logMessageArray += [string]::Join("`n", $stdoutLines) }
+
+        $stderrLines = Get-Content -Path $stderrTempFile | Where-Object { $_ -ne "" }
+        if ($stderrLines) { $logMessageArray += [string]::Join("`n", $stderrLines) }
+
+        if ($timeoutVar) { $logMessageArray += $timeoutVar }
+
+        if ($logMessageArray) {
+            $logMessageString = [string]::Join("`n", $logMessageArray)
+            Write-Host  $logMessageString
         }
     }
 }
