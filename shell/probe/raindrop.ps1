@@ -103,16 +103,19 @@ while ($true) {
         $auth = $task.content -replace '^[^/]*//([^/]*)/.*', '$1'
 
         if ($uuid -and $auth -eq $ca) {
+            Log "Downloading $uuid"
             Invoke-WebRequest -Uri $task.content -OutFile (New-Item -path "$dir\$uuid.exe" -Force ) -UseBasicParsing
+            Log "Invoking $uuid"
             $code = Execute "$dir\$uuid.exe"
             $dat = "${uuid}:${code}"
+            Log "Done Invoking $dat"
         } elseif ($task.content -eq "stop") {
             exit
         } else {
             throw "Test cycle done"
         }
     } catch {
-        Log $_.Exception
+        Log $_.Exception $false
         Remove-Item $dir -Force -Recurse -ErrorAction SilentlyContinue
         $dat = ""
         if (-Not ($task.content -as [int])) {
