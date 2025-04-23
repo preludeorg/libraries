@@ -54,6 +54,24 @@ function Log { param ([string]$message, [bool]$hostonly = $true)
     if ($logFileCount -gt 0) { Add-Content -Path $global:LogFile -Value $message }
 }
 
+function RotateLogs {
+    if ($logFileCount -lt 1) { return }
+    $logFiles = Get-ChildItem -Path $logDir -Filter "$baseLogFileName-*.log" | Sort-Object LastWriteTime -Descending
+
+    if ($logFiles.Count -gt $logFileCount) {
+        Log "Rotating Logs"
+        $logFiles[$logFileCount..($logFiles.Count - 1)] | ForEach-Object { Remove-Item $_.FullName }
+        $global:LogFile = Get-LogFileName
+        Log "Logs Rotated"
+        if ($logEveryoneRead) { icacls $logDir /grant "Everyone:R" /t /c | Out-Null }
+    }
+    $global:LogFile = Get-LogFileName
+}
+
+function Get-LogFileName {
+    return Join-Path $logDir "$baseLogFileName-$(Get-Date -Format 'yyyyMMdd').log"
+}
+
 $ca = FromEnv "PRELUDE_CA" "prelude-account-us1-us-east-2.s3.amazonaws.com"
 $dir = FromEnv "PRELUDE_DIR" ".vst"
 $dat = ""
@@ -73,6 +91,7 @@ Log "Prelude probe: version ${version}" $false
 
 while ($true) {
     try {
+        RotateLogs
         $task = Invoke-WebRequest -Uri "https://api.preludesecurity.com" -Headers @{
             "token" = $env:PRELUDE_TOKEN
             "dos" = "windows-$Env:PROCESSOR_ARCHITECTURE"
