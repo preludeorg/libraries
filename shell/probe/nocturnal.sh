@@ -2,8 +2,13 @@
 
 ca=${PRELUDE_CA:-prelude-account-us1-us-east-2.s3.amazonaws.com}
 vst=${PRELUDE_DIR:-"$PWD/.vst"}
+envTimeout=${PRELUDE_MAXTIMEOUT-45}
+if ! [[ "$envTimeout" =~ ^[0-9]+$ ]]; then
+  envTimeout=45
+fi
+timeout=$(( envTimeout < 45 ? 45 : envTimeout ))
 
-version='2.7'
+version='2.8'
 
 echo "Prelude probe: version ${version}"
 
@@ -23,7 +28,7 @@ do
         ./"$uuid" & test_pid=$!
         elapsed_time=0
         while kill -0 $test_pid 2> /dev/null; do
-          if [ $elapsed_time -ge 45 ]; then
+          if [ $elapsed_time -ge $timeout ]; then
             disown $test_pid
             kill -9 $test_pid 2> /dev/null
             echo "TIMEOUT: Killed long running test ${uuid} (${test_pid})"
