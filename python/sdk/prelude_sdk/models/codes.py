@@ -178,6 +178,7 @@ class Control(Enum, metaclass=MissingItem):
     TENABLE = 17
     EC2 = 18
     AWS_SSM = 19
+    AZURE_VM = 20
 
     @classmethod
     def _missing_(cls, value):
@@ -224,6 +225,7 @@ class ControlCategory(Enum, metaclass=MissingItem):
             ],
             ControlCategory.CLOUD: [],
             ControlCategory.DISCOVERED_DEVICES: [
+                Control.AZURE_VM,
                 Control.DEFENDER_DISCOVERY,
                 Control.EC2,
                 Control.SERVICENOW,
@@ -264,6 +266,7 @@ class SCMCategory(Enum, metaclass=MissingItem):
         return {
             SCMCategory.ENDPOINT: [
                 Control.AWS_SSM,
+                Control.AZURE_VM,
                 Control.CROWDSTRIKE,
                 Control.DEFENDER,
                 Control.DEFENDER_DISCOVERY,
