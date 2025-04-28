@@ -107,7 +107,7 @@ function Get-LogFileName {
 }
 
 $ca = FromEnv "PRELUDE_CA" "prelude-account-us1-us-east-2.s3.amazonaws.com"
-$dir = FromEnv "PRELUDE_DIR" ".vst"
+$dir = FromEnv "PRELUDE_DIR" (Join-Path -Path $PSScriptRoot -ChildPath ".vst")
 $dat = ""
 $version = "2.8"
 $env_timeout = [int](FromEnv "PRELUDE_MAXTIMEOUT" 45)
