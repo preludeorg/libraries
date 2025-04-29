@@ -180,7 +180,6 @@ class Control(Enum, metaclass=MissingItem):
     AWS_SSM = 19
     AZURE_VM = 20
     GITHUB = 21
-    AZURE_DEVOPS = 22
 
     @classmethod
     def _missing_(cls, value):
@@ -246,7 +245,6 @@ class ControlCategory(Enum, metaclass=MissingItem):
             ],
             ControlCategory.NETWORK: [],
             ControlCategory.PRIVATE_REPO: [
-                Control.AZURE_DEVOPS,
                 Control.GITHUB,
             ],
             ControlCategory.SIEM: [
