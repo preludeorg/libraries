@@ -165,6 +165,7 @@ class TestScmAcrossControls:
                     "control_failure_count",
                     "instance_id",
                     "user_count",
+                    "missing_mfa_count",
                     "setting_count",
                     "setting_misconfiguration_count",
                     "excepted",
