@@ -132,21 +132,33 @@ class TestScmAcrossControls:
                         "setting_misconfiguration_count",
                     } == excepted.keys()
 
-        assert {"categories", "user_count", "excepted"} == summary[
-            "user_summary"
+        assert {
+            "categories",
+            "user_count",
+            "endpoint_failure_count",
+            "excepted",
+        } == summary["user_summary"].keys()
+        assert {"user_count", "endpoint_failure_count"} == summary["user_summary"][
+            "excepted"
         ].keys()
-        assert {"user_count"} == summary["user_summary"]["excepted"].keys()
         if categories := summary["user_summary"].get("categories"):
             assert {
                 "category",
                 "control_failure_count",
                 "user_count",
+                "missing_asset_manager_count",
+                "missing_edr_count",
+                "missing_vuln_manager_count",
                 "excepted",
                 "instances",
             } == categories[0].keys()
-            assert {"control_failure_count", "user_count"} == categories[0][
-                "excepted"
-            ].keys()
+            assert {
+                "control_failure_count",
+                "user_count",
+                "missing_asset_manager_count",
+                "missing_edr_count",
+                "missing_vuln_manager_count",
+            } == categories[0]["excepted"].keys()
             if instances := categories[0].get("instances"):
                 assert {
                     "control",
@@ -160,6 +172,7 @@ class TestScmAcrossControls:
                 assert {
                     "control_failure_count",
                     "user_count",
+                    "missing_mfa_count",
                     "setting_misconfiguration_count",
                 } == instances[0]["excepted"].keys()
 
@@ -216,7 +229,7 @@ class TestScmAcrossControls:
 @pytest.mark.order(9)
 @pytest.mark.usefixtures("setup_account")
 @pytest.mark.parametrize(
-    "control", [c for c in Control if c.control_category != ControlCategory.NONE]
+    "control", [c for c in Control if c.scm_category != SCMCategory.NONE]
 )
 class TestScmPerControl:
     def setup_class(self):
