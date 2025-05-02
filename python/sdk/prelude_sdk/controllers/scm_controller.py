@@ -317,6 +317,7 @@ class ScmController(HttpController):
         message: str = "",
         slack_urls: list[str] = None,
         suppress_empty: bool = True,
+        teams_urls: list[str] = None,
         title: str = "SCM Notification",
     ):
         body = dict(
@@ -334,6 +335,8 @@ class ScmController(HttpController):
             body["email"] = dict(emails=emails, message=message, subject=title)
         if slack_urls:
             body["slack"] = dict(hook_urls=slack_urls, message=message)
+        if teams_urls:
+            body["teams"] = dict(hook_urls=teams_urls, message=message)
         res = self.put(
             f"{self.account.hq}/scm/notifications",
             json=body,
