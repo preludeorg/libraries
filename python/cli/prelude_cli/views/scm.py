@@ -390,6 +390,13 @@ def delete_notification(controller, notification_id):
     type=bool,
 )
 @click.option(
+    "-u",
+    "--teams_urls",
+    help="comma-separated list of Teams Webhook URLs to notify",
+    default=None,
+    type=str,
+)
+@click.option(
     "-t", "--title", help="notification title", default="SCM Notification", type=str
 )
 @click.pass_obj
@@ -406,6 +413,7 @@ def upsert_notification(
     scheduled_hour,
     slack_urls,
     suppress_empty,
+    teams_urls,
     title,
 ):
     """Upsert an SCM notification"""
@@ -421,5 +429,6 @@ def upsert_notification(
             scheduled_hour=scheduled_hour,
             slack_urls=slack_urls.split(",") if slack_urls else None,
             suppress_empty=suppress_empty,
+            teams_urls=teams_urls.split(",") if teams_urls else None,
             title=title,
         )
