@@ -180,6 +180,7 @@ class Control(Enum, metaclass=MissingItem):
     AWS_SSM = 19
     AZURE_VM = 20
     GITHUB = 21
+    TENABLE_DISCOVERY = 22
 
     @classmethod
     def _missing_(cls, value):
@@ -232,6 +233,7 @@ class ControlCategory(Enum, metaclass=MissingItem):
                 Control.DEFENDER_DISCOVERY,
                 Control.EC2,
                 Control.SERVICENOW,
+                Control.TENABLE_DISCOVERY,
             ],
             ControlCategory.EMAIL: [
                 Control.GMAIL,
@@ -287,6 +289,7 @@ class SCMCategory(Enum, metaclass=MissingItem):
                 Control.SENTINELONE,
                 Control.SERVICENOW,
                 Control.TENABLE,
+                Control.TENABLE_DISCOVERY,
             ],
             SCMCategory.USER: [
                 Control.CROWDSTRIKE_IDENTITY,
