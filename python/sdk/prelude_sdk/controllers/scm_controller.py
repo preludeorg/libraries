@@ -199,6 +199,60 @@ class ScmController(HttpController):
         return res.json()
 
     @verify_credentials
+    def list_views(self):
+        """List views"""
+        res = self.get(
+            f"{self.account.hq}/scm/views",
+            headers=self.account.headers,
+            timeout=10,
+        )
+        return res.json()
+
+    @verify_credentials
+    def create_object_exception(
+        self, category: ControlCategory, filter: str, name: str
+    ):
+        """Create a view"""
+        body = dict(category=category.name, filter=filter, name=name)
+        res = self.post(
+            f"{self.account.hq}/scm/views",
+            json=body,
+            headers=self.account.headers,
+            timeout=10,
+        )
+        return res.json()
+
+    @verify_credentials
+    def update_view(
+        self, view_id, category: ControlCategory = None, filter=None, name=None
+    ):
+        """Update a view"""
+        body = dict()
+        if category:
+            body["category"] = category.name
+        if filter:
+            body["filter"] = filter
+        if name:
+            body["name"] = name
+        res = self.post(
+            f"{self.account.hq}/scm/views/{view_id}",
+            json=body,
+            headers=self.account.headers,
+            timeout=10,
+        )
+        return res.json()
+
+    @verify_credentials
+    def delete_view(self, view_id):
+        """Delete a view"""
+        res = self.delete(
+            f"{self.account.hq}/scm/views/{view_id}",
+            headers=self.account.headers,
+            timeout=10,
+        )
+        return res.json()
+
+    @verify_credentials
     def create_threat(
         self,
         name,
