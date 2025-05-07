@@ -179,7 +179,7 @@ def sync(controller, partner, instance_id):
     required=True,
 )
 @click.option(
-    "--limit", default=100, help="maximum number of results to return", type=int
+    "--limit", default=None, help="maximum number of results to return", type=int
 )
 @click.option("--odata_filter", help="OData filter string", default=None)
 @click.option("--odata_orderby", help="OData orderby string", default=None)
