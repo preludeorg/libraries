@@ -209,7 +209,7 @@ class ScmController(HttpController):
         return res.json()
 
     @verify_credentials
-    def create_object_exception(
+    def create_view(
         self, category: ControlCategory, filter: str, name: str
     ):
         """Create a view"""
