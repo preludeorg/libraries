@@ -70,134 +70,171 @@ class TestScmAcrossControls:
             assert notification["id"] != self.notification_id
 
     def test_evaluation_summary(self, unwrap):
+        def _compare_keys(expected, actual):
+            assert set(expected.keys()) == set(
+                actual.keys()
+            ), f"Keys are not the same {expected.keys()} {actual.keys()}"
+            for key in expected.keys():
+                if isinstance(expected[key], list) and isinstance(actual[key], list):
+                    nested_expected = expected[key][0]
+                    if not actual[key]:
+                        continue
+                    nested_actual = actual[key][0]
+                elif isinstance(expected[key], dict) and isinstance(actual[key], dict):
+                    nested_expected = expected[key]
+                    nested_actual = actual[key]
+                else:
+                    continue
+                _compare_keys(nested_expected, nested_actual)
+
         summary = unwrap(self.scm.evaluation_summary)(self.scm)
-        assert {"endpoint_summary", "user_summary", "inbox_summary"} == summary.keys()
-        assert {
-            "categories",
-            "endpoint_count",
-            "missing_asset_manager_count",
-            "missing_edr_count",
-            "missing_vuln_manager_count",
-            "excepted",
-        } == summary["endpoint_summary"].keys()
-        assert {
-            "endpoint_count",
-            "missing_asset_manager_count",
-            "missing_edr_count",
-            "missing_vuln_manager_count",
-        } == summary["endpoint_summary"]["excepted"].keys()
-        if categories := summary["endpoint_summary"].get("categories"):
-            assert {
-                "category",
-                "control_failure_count",
-                "endpoint_count",
-                "missing_asset_manager_count",
-                "missing_edr_count",
-                "missing_vuln_manager_count",
-                "excepted",
-                "instances",
-            } == categories[0].keys()
-            assert {
-                "control_failure_count",
-                "endpoint_count",
-                "missing_asset_manager_count",
-                "missing_edr_count",
-                "missing_vuln_manager_count",
-            } == categories[0]["excepted"].keys()
-            if instances := categories[0].get("instances"):
-                assert {
-                    "control",
-                    "control_failure_count",
-                    "endpoint_count",
-                    "excepted",
-                    "instance_id",
-                    "missing_scan_count",
-                    "no_av_policy",
-                    "no_edr_policy",
-                    "out_of_date_scan_count",
-                    "policy_conflict_count",
-                    "reduced_functionality_mode",
-                    "setting_count",
-                    "setting_misconfiguration_count",
-                } == instances[0].keys()
-                if excepted := instances[0]["excepted"]:
-                    assert {
-                        "control_failure_count",
-                        "endpoint_count",
-                        "no_av_policy",
-                        "no_edr_policy",
-                        "reduced_functionality_mode",
-                        "missing_scan_count",
-                        "out_of_date_scan_count",
-                        "setting_misconfiguration_count",
-                    } == excepted.keys()
+        expected = {
+            "inbox_summary": {
+                "categories": [
+                    {
+                        "category": None,
+                        "inbox_count": None,
+                        "excepted": {
+                            "inbox_count": None,
+                        },
+                        "instances": [
+                            {
+                                "control": None,
+                                "inbox_count": None,
+                                "instance_id": None,
+                                "setting_count": None,
+                                "setting_misconfiguration_count": None,
+                                "excepted": {
+                                    "inbox_count": None,
+                                    "setting_misconfiguration_count": None,
+                                },
+                            }
+                        ],
+                    }
+                ],
+                "inbox_count": None,
+                "excepted": {
+                    "inbox_count": None,
+                },
+            },
+            "user_summary": {
+                "categories": [
+                    {
+                        "category": None,
+                        "control_failure_count": None,
+                        "any_endpoint_failure_count": None,
+                        "all_endpoint_failure_count": None,
+                        "user_count": None,
+                        "excepted": {
+                            "control_failure_count": None,
+                            "any_endpoint_failure_count": None,
+                            "all_endpoint_failure_count": None,
+                            "user_count": None,
+                        },
+                        "instances": [
+                            {
+                                "control": None,
+                                "instance_id": None,
+                                "control_failure_count": None,
+                                "missing_mfa_count": None,
+                                "user_count": None,
+                                "missing_asset_manager_count": None,
+                                "missing_edr_count": None,
+                                "missing_vuln_manager_count": None,
+                                "any_endpoint_failure_count": None,
+                                "all_endpoint_failure_count": None,
+                                "setting_count": None,
+                                "setting_misconfiguration_count": None,
+                                "excepted": {
+                                    "control_failure_count": None,
+                                    "missing_mfa_count": None,
+                                    "user_count": None,
+                                    "missing_asset_manager_count": None,
+                                    "missing_edr_count": None,
+                                    "missing_vuln_manager_count": None,
+                                    "any_endpoint_failure_count": None,
+                                    "all_endpoint_failure_count": None,
+                                    "setting_misconfiguration_count": None,
+                                },
+                            },
+                        ],
+                    }
+                ],
+                "user_count": None,
+                "control_failure_count": None,
+                "any_endpoint_failure_count": None,
+                "all_endpoint_failure_count": None,
+                "excepted": {
+                    "user_count": None,
+                    "control_failure_count": None,
+                    "any_endpoint_failure_count": None,
+                    "all_endpoint_failure_count": None,
+                },
+            },
+            "endpoint_summary": {
+                "categories": [
+                    {
+                        "category": None,
+                        "control_failure_count": None,
+                        "endpoint_count": None,
+                        "missing_asset_manager_count": None,
+                        "missing_edr_count": None,
+                        "missing_vuln_manager_count": None,
+                        "missing_vuln_scan_count": None,
+                        "excepted": {
+                            "control_failure_count": None,
+                            "endpoint_count": None,
+                            "missing_asset_manager_count": None,
+                            "missing_edr_count": None,
+                            "missing_vuln_manager_count": None,
+                            "missing_vuln_scan_count": None,
+                        },
+                        "instances": [
+                            {
+                                "control": None,
+                                "instance_id": None,
+                                "control_failure_count": None,
+                                "endpoint_count": None,
+                                "no_av_policy": None,
+                                "no_edr_policy": None,
+                                "policy_conflict_count": None,
+                                "reduced_functionality_mode": None,
+                                "missing_agent_count": None,
+                                "missing_scan_count": None,
+                                "out_of_date_scan_count": None,
+                                "setting_count": None,
+                                "setting_misconfiguration_count": None,
+                                "excepted": {
+                                    "control_failure_count": None,
+                                    "endpoint_count": None,
+                                    "no_av_policy": None,
+                                    "no_edr_policy": None,
+                                    "reduced_functionality_mode": None,
+                                    "missing_agent_count": None,
+                                    "missing_scan_count": None,
+                                    "out_of_date_scan_count": None,
+                                    "setting_misconfiguration_count": None,
+                                },
+                            }
+                        ],
+                    },
+                ],
+                "endpoint_count": None,
+                "missing_asset_manager_count": None,
+                "missing_edr_count": None,
+                "missing_vuln_manager_count": None,
+                "missing_vuln_scan_count": None,
+                "excepted": {
+                    "endpoint_count": None,
+                    "missing_asset_manager_count": None,
+                    "missing_edr_count": None,
+                    "missing_vuln_manager_count": None,
+                    "missing_vuln_scan_count": None,
+                },
+            },
+        }
 
-        assert {
-            "categories",
-            "user_count",
-            "endpoint_failure_count",
-            "excepted",
-        } == summary["user_summary"].keys()
-        assert {"user_count", "endpoint_failure_count"} == summary["user_summary"][
-            "excepted"
-        ].keys()
-        if categories := summary["user_summary"].get("categories"):
-            assert {
-                "category",
-                "control_failure_count",
-                "user_count",
-                "missing_asset_manager_count",
-                "missing_edr_count",
-                "missing_vuln_manager_count",
-                "excepted",
-                "instances",
-            } == categories[0].keys()
-            assert {
-                "control_failure_count",
-                "user_count",
-                "missing_asset_manager_count",
-                "missing_edr_count",
-                "missing_vuln_manager_count",
-            } == categories[0]["excepted"].keys()
-            if instances := categories[0].get("instances"):
-                assert {
-                    "control",
-                    "control_failure_count",
-                    "instance_id",
-                    "user_count",
-                    "missing_mfa_count",
-                    "setting_count",
-                    "setting_misconfiguration_count",
-                    "excepted",
-                } == instances[0].keys()
-                assert {
-                    "control_failure_count",
-                    "user_count",
-                    "missing_mfa_count",
-                    "setting_misconfiguration_count",
-                } == instances[0]["excepted"].keys()
-
-        assert {"categories", "inbox_count", "excepted"} == summary[
-            "inbox_summary"
-        ].keys()
-        assert {"inbox_count"} == summary["inbox_summary"]["excepted"].keys()
-        if categories := summary["inbox_summary"].get("categories"):
-            assert {"category", "inbox_count", "excepted", "instances"} == categories[
-                0
-            ].keys()
-            assert {"inbox_count"} == categories[0]["excepted"].keys()
-            if instances := categories[0].get("instances"):
-                assert {
-                    "control",
-                    "inbox_count",
-                    "instance_id",
-                    "setting_count",
-                    "setting_misconfiguration_count",
-                    "excepted",
-                } == instances[0].keys()
-                assert {"inbox_count", "setting_misconfiguration_count"} == instances[
-                    0
-                ]["excepted"].keys()
+        _compare_keys(expected, summary)
 
     def test_technique_summary(self, unwrap):
         summary = unwrap(self.scm.technique_summary)(self.scm, "T1078,T1027")
