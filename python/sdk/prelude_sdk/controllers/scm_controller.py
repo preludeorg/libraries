@@ -209,9 +209,7 @@ class ScmController(HttpController):
         return res.json()
 
     @verify_credentials
-    def create_view(
-        self, category: ControlCategory, filter: str, name: str
-    ):
+    def create_view(self, category: ControlCategory, filter: str, name: str):
         """Create a view"""
         body = dict(category=category.name, filter=filter, name=name)
         res = self.post(
