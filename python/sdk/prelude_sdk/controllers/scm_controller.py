@@ -111,6 +111,32 @@ class ScmController(HttpController):
         return res.json()
 
     @verify_credentials
+    def partner_groups(self, filter: str = None, orderby: str = None):
+        """List groups"""
+        params = {"$filter": filter, "$orderby": orderby}
+        res = self.get(
+            f"{self.account.hq}/scm/groups",
+            headers=self.account.headers,
+            params=params,
+            timeout=10,
+        )
+        return res.json()
+
+    @verify_credentials
+    def update_partner_groups(
+        self, partner: Control, instance_id: str, group_ids: list[str]
+    ):
+        """Update groups"""
+        body = dict(group_ids=group_ids)
+        res = self.post(
+            f"{self.account.hq}/scm/groups/{partner.name}/{instance_id}",
+            headers=self.account.headers,
+            json=body,
+            timeout=10,
+        )
+        return res.json()
+
+    @verify_credentials
     def list_object_exceptions(self):
         """List object exceptions"""
         res = self.get(
