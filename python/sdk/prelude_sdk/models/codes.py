@@ -181,6 +181,8 @@ class Control(Enum, metaclass=MissingItem):
     AZURE_VM = 20
     GITHUB = 21
     TENABLE_DISCOVERY = 22
+    QUALYS = 23
+    QUALYS_DISCOVERY = 24
 
     @classmethod
     def _missing_(cls, value):
@@ -232,6 +234,7 @@ class ControlCategory(Enum, metaclass=MissingItem):
                 Control.AZURE_VM,
                 Control.DEFENDER_DISCOVERY,
                 Control.EC2,
+                Control.QUALYS_DISCOVERY,
                 Control.SERVICENOW,
                 Control.TENABLE_DISCOVERY,
             ],
@@ -254,7 +257,7 @@ class ControlCategory(Enum, metaclass=MissingItem):
                 Control.SPLUNK,
                 Control.VECTR,
             ],
-            ControlCategory.VULN_MANAGER: [Control.TENABLE],
+            ControlCategory.VULN_MANAGER: [Control.QUALYS, Control.TENABLE],
             ControlCategory.XDR: [
                 Control.CROWDSTRIKE,
                 Control.DEFENDER,
@@ -286,6 +289,8 @@ class SCMCategory(Enum, metaclass=MissingItem):
                 Control.EC2,
                 Control.INTUNE,
                 Control.JAMF,
+                Control.QUALYS,
+                Control.QUALYS_DISCOVERY,
                 Control.SENTINELONE,
                 Control.SERVICENOW,
                 Control.TENABLE,
