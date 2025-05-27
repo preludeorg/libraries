@@ -173,3 +173,20 @@ def partner_advisories(controller, partner, start, offset, limit):
         return controller.list_advisories(
             partner=Control[partner], start=start, offset=offset, limit=limit
         )
+
+@partner.command("groups")
+@click.argument(
+    "partner",
+    type=click.Choice(
+        [c.name for c in Control if c != Control.INVALID], case_sensitive=False
+    ),
+)
+@click.option("--instance_id", required=True, help="instance ID of the partner")
+@click.pass_obj
+@pretty_print
+def partner_groups(controller, partner, instance_id):
+    """Get a list of groups from a partner"""
+    with Spinner(description="Fetching groups from partner"):
+        return controller.partner_groups(
+            partner=Control[partner], instance_id=instance_id
+        )

@@ -205,6 +205,43 @@ def export(controller, type, output_file, limit, odata_filter, odata_orderby):
         return result, f"Exported data to {output_file}"
 
 
+@scm.command("groups")
+@click.option("--odata_filter", help="OData filter string", default=None)
+@click.option("--odata_orderby", help="OData orderby string", default=None)
+@click.pass_obj
+@pretty_print
+def list_partner_groups(controller, odata_filter, odata_orderby):
+    """List all partner groups"""
+    with Spinner(description="Fetching partner groups"):
+        return controller.list_partner_groups(filter=odata_filter, orderby=odata_orderby)
+
+
+@scm.command("sync-groups")
+@click.argument(
+    "partner",
+    type=click.Choice(
+        [c.name for c in Control if c != Control.INVALID], case_sensitive=False
+    ),
+    required=True,
+)
+@click.option("--instance_id", required=True, help="instance ID of the partner")
+@click.option("--group_ids", required=True, help="comma-separated list of group IDs")
+@click.pass_obj
+@pretty_print
+def sync_groups(controller, partner, instance_id, group_ids):
+    """Update groups for a partner"""
+    with Spinner(description="Updating groups"):
+        job_id = controller.update_partner_groups(
+            partner=Control[partner],
+            instance_id=instance_id,
+            group_ids=group_ids.split(","),
+        )["job_id"]
+        jobs = JobsController(account=controller.account)
+        while (result := jobs.job_status(job_id))["end_time"] is None:
+            sleep(3)
+        return result
+
+
 @scm.command("create-threat")
 @click.argument("name")
 @click.option(
