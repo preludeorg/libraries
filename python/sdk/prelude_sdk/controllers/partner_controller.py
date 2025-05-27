@@ -156,7 +156,7 @@ class PartnerController(HttpController):
         return res.json()
 
     @verify_credentials
-    def list_partner_groups(self, partner: Control, instance_id: str):
+    def partner_groups(self, partner: Control, instance_id: str):
         """Get a list of partner groups"""
         res = self.get(
             f"{self.account.hq}/partner/groups/{partner.name}/{instance_id}",

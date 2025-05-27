@@ -187,6 +187,6 @@ def partner_advisories(controller, partner, start, offset, limit):
 def partner_groups(controller, partner, instance_id):
     """Get a list of groups from a partner"""
     with Spinner(description="Fetching groups from partner"):
-        return controller.list_partner_groups(
+        return controller.partner_groups(
             partner=Control[partner], instance_id=instance_id
         )

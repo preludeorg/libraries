@@ -111,7 +111,7 @@ class ScmController(HttpController):
         return res.json()
 
     @verify_credentials
-    def partner_groups(self, filter: str = None, orderby: str = None):
+    def list_partner_groups(self, filter: str = None, orderby: str = None):
         """List groups"""
         params = {"$filter": filter, "$orderby": orderby}
         res = self.get(
