@@ -350,7 +350,7 @@ class TestScmPerControl:
             assert False, "No evaluation returned"
 
 
-@pytest.mark.order(10)
+@pytest.mark.order(9)
 @pytest.mark.usefixtures("setup_account")
 class TestScmGroups:
     def setup_class(self):
