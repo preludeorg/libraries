@@ -65,7 +65,7 @@ def pytest_generate_tests(metafunc):
             idlist.append(scenario[0])
             items = scenario[1].items()
             argnames = [x[0] for x in items]
-            if not scenario[1]["partner_api"]:
+            if not (scenario[1]["partner_api"] or scenario[1]["user"]):
                 argvalues.append(
                     pytest.param(
                         *[x[1] for x in items],
@@ -92,13 +92,12 @@ class TestPartnerAttach:
             c.name,
             dict(
                 control=c,
-                partner_api=os.getenv(f"{c.name.upper()}_API"),
+                partner_api=os.getenv(f"{c.name.upper()}_API") or "",
                 user=os.getenv(f"{c.name.upper()}_USER") or "",
                 secret=os.getenv(f"{c.name.upper()}_SECRET") or "",
             ),
         )
         for c in Control
-        if c.value > 0
     ]
 
     def setup_class(self):
@@ -121,6 +120,7 @@ class TestPartnerAttach:
             api=partner_api,
             id=control.value,
             instance_id=pytest.controls[control.value],
+            max_groups=30,
             name="",
             username=user,
         )
