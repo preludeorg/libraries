@@ -5,6 +5,7 @@ import uuid
 
 from prelude_sdk.controllers.export_controller import ExportController
 from prelude_sdk.controllers.jobs_controller import JobsController
+from prelude_sdk.controllers.partner_controller import PartnerController
 from prelude_sdk.controllers.scm_controller import ScmController
 from prelude_sdk.models.codes import (
     Control,
@@ -243,10 +244,14 @@ class TestScmAcrossControls:
         assert len(summary[0]["instances"]) > 0
         assert {
             "control",
+            "excepted",
             "instance_id",
             "setting_count",
             "setting_misconfiguration_count",
         } == summary[0]["instances"][0].keys()
+        assert {"setting_count", "setting_misconfiguration_count"} == summary[0][
+            "instances"
+        ][0]["excepted"].keys()
 
     def test_export_endpoints_csv(self, unwrap):
         job_id = unwrap(self.export.export_scm)(
@@ -273,8 +278,9 @@ class TestScmPerControl:
     def setup_class(self):
         if not pytest.expected_account["features"]["policy_evaluator"]:
             pytest.skip("POLICY_EVALUATOR feature not enabled")
-        self.scm = ScmController(pytest.account)
         self.jobs = JobsController(pytest.account)
+        self.partner = PartnerController(pytest.account)
+        self.scm = ScmController(pytest.account)
 
     @pytest.fixture(scope="function", autouse=True)
     def setup_and_teardown(self, control):
@@ -342,3 +348,44 @@ class TestScmPerControl:
             ].keys()
         else:
             assert False, "No evaluation returned"
+
+
+@pytest.mark.order(10)
+@pytest.mark.usefixtures("setup_account")
+class TestScmGroups:
+    def setup_class(self):
+        if not pytest.expected_account["features"]["policy_evaluator"]:
+            pytest.skip("POLICY_EVALUATOR feature not enabled")
+        self.jobs = JobsController(pytest.account)
+        self.partner = PartnerController(pytest.account)
+        self.scm = ScmController(pytest.account)
+
+    def test_groups(self, unwrap):
+        control = Control.ENTRA
+        if control.value not in pytest.controls:
+            pytest.skip(f"{control.name} not attached")
+
+        instance_id = pytest.controls.get(control.value)
+        groups = unwrap(self.partner.partner_groups)(
+            self.partner, partner=control, instance_id=instance_id
+        )
+        assert len(groups) > 0, "No groups found for the partner"
+        group_id = "3af0324e-0cbe-491c-8d1b-98dba25ad500"
+        assert group_id in [g["id"] for g in groups]
+
+        job_id = unwrap(self.scm.update_partner_groups)(
+            self.scm,
+            partner=control,
+            instance_id=instance_id,
+            group_ids=[group_id],
+        )["job_id"]
+        while (result := unwrap(self.jobs.job_status)(self.jobs, job_id))[
+            "end_time"
+        ] is None:
+            time.sleep(3)
+        assert result["successful"]
+
+        groups = unwrap(self.scm.list_partner_groups)(self.scm)
+        actual = [dict(control=g["control"], group_id=g["group_id"]) for g in groups]
+        expected = dict(control=control.value, group_id=group_id)
+        assert expected in actual
