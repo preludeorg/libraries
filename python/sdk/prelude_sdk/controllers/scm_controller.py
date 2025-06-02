@@ -66,9 +66,9 @@ class ScmController(HttpController):
     ):
         """Get policy evaluation summary"""
         params = dict(
-            endpoint_filter=endpoint_filter,
-            inbox_filter=inbox_filter,
-            user_filter=user_filter,
+            endpoints_filter=endpoint_filter,
+            inboxes_filter=inbox_filter,
+            users_filter=user_filter,
         )
         if techniques:
             params["techniques"] = techniques
