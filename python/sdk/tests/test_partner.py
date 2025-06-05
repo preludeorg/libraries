@@ -2,11 +2,13 @@ import os
 import json
 import pytest
 import requests
+import time
 
 from datetime import datetime, timedelta, timezone
 from prelude_sdk.models.codes import Control
 from prelude_sdk.controllers.iam_controller import IAMAccountController
 from prelude_sdk.controllers.detect_controller import DetectController
+from prelude_sdk.controllers.jobs_controller import JobsController
 from prelude_sdk.controllers.partner_controller import PartnerController
 
 from testutils import *
@@ -98,6 +100,7 @@ class TestPartnerAttach:
             ),
         )
         for c in Control
+        if c.value > 0
     ]
 
     def setup_class(self):
@@ -146,6 +149,7 @@ class TestPartner:
 
     def setup_class(self):
         self.detect = DetectController(pytest.account)
+        self.jobs = JobsController(pytest.account)
         self.partner = PartnerController(pytest.account)
 
         self.host = "pardner-host"
@@ -199,6 +203,20 @@ class TestPartner:
         webhook_keys,
         group_id,
     ):
+        def _open_sync_jobs():
+            result = unwrap(self.jobs.job_statuses)(self.jobs)
+            print(json.dumps(result["PRELUDE_ENDPOINT_SYNC"], indent=2))
+            print("\n")
+            return any(
+                job["end_time"] is None
+                for job in result["PRELUDE_ENDPOINT_SYNC"]
+                if job["control"] == control.value
+            )
+
+        time.sleep(2)
+        while _open_sync_jobs():
+            time.sleep(2)
+
         res = unwrap(self.detect.list_endpoints)(self.detect)
         assert len(res) >= 1
         sorted_res = {r["serial_num"]: r for r in res}
