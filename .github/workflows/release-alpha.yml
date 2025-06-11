@@ -28,27 +28,16 @@ jobs:
           SETUP_CFG: ./setup.cfg
         working-directory: ./python/sdk
         run: |
-          CURRENT_VERSION=$(grep -E '^version\s*=' "$SETUP_CFG" | awk -F '=' '{print $2}' | tr -d '[:space:]')
-
-          if [[ ! "$CURRENT_VERSION" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+) ]]; then
-              echo "Error: Couldn't parse version from setup.cfg: '$CURRENT_VERSION'"
-              exit 1
-          fi
-
-          MAJOR="${BASH_REMATCH[1]}"
-          MINOR="${BASH_REMATCH[2]}"
-          PATCH="${BASH_REMATCH[3]}"
-
-          NEW_PATCH=$((PATCH + 1))
-
           GIT_COUNT=$(git rev-list --count HEAD)
-
-          NEW_VERSION="${MAJOR}.${MINOR}.${NEW_PATCH}a${GIT_COUNT}"
-
-          sed -i -E "s/^(version\s*=\s*).*/\1$NEW_VERSION/" "$SETUP_CFG"
-
-          echo "semver=$NEW_VERSION" >> "$GITHUB_OUTPUT"
           echo "gitcount=$GIT_COUNT" >> "$GITHUB_OUTPUT"
+
+          sed -i -E 's/^(name\s*=\s*).*/\1prelude-cli-beta/' "$SETUP_CFG"
+          sed -i -E "s/^(version\s*=\s*).*/\1$GIT_COUNT/" "$SETUP_CFG"
+
+          find ./ -name '*.py' -exec sed 's/import prelude_sdk/import prelude_sdk_beta/g' {} \;
+          find ./ -name '*.py' -exec sed 's/from prelude_sdk/from prelude_sdk_beta/g' {} \;
+
+          mv prelude_sdk prelude_sdk_beta
 
           python -m pip install -U build
           python -m build
@@ -65,6 +54,12 @@ jobs:
           sed -i -E 's/prelude-sdk\s*==\s*.*$/prelude-sdk == ${{ steps.buildsdkreleasedist.outputs.semver }}/' "$SETUP_CFG"
 
           mv prelude_cli prelude_cli_beta
+
+          find ./ -name '*.py' -exec sed 's/import prelude_cli/import prelude_cli_beta/g' {} \;
+          find ./ -name '*.py' -exec sed 's/from prelude_cli/from prelude_cli_beta/g' {} \;
+          find ./ -name '*.py' -exec sed 's/import prelude_sdk/import prelude_sdk_beta/g' {} \;
+          find ./ -name '*.py' -exec sed 's/from prelude_sdk/from prelude_sdk_beta/g' {} \;
+
           python -m build
 
       - name: publish sdk release dist to PyPI
@@ -83,7 +78,7 @@ jobs:
           git config user.name "GitHub Action"
           git config user.email "action@github.com"
           
-          tag="python/sdk/${{ steps.buildsdkreleasedist.outputs.semver }}"
+          tag="python/sdk/${{ steps.buildsdkreleasedist.outputs.gitcount }}"
           cli_tag="python/cli_beta/${{ steps.buildsdkreleasedist.outputs.gitcount }}"
 
           git tag $tag
@@ -98,13 +93,13 @@ jobs:
         with:
           payload: |
             {
-              "text": "Python alpha sdk (${{ steps.buildsdkreleasedist.outputs.semver }}) and beta cli (${{ steps.buildsdkreleasedist.outputs.gitcount }}) published (${{ github.triggering_actor }}): ${{ github.ref }} - ${{ job.status }}",
+              "text": "Python alpha sdk (${{ steps.buildsdkreleasedist.outputs.gitcount }}) and beta cli (${{ steps.buildsdkreleasedist.outputs.gitcount }}) published (${{ github.triggering_actor }}): ${{ github.ref }} - ${{ job.status }}",
               "blocks": [
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "Python alpha sdk (${{ steps.buildsdkreleasedist.outputs.semver }}) and beta cli (${{ steps.buildsdkreleasedist.outputs.gitcount }}) published (${{ github.triggering_actor }}): ${{ github.ref }} - ${{ job.status }}"
+                    "text": "Python alpha sdk (${{ steps.buildsdkreleasedist.outputs.gitcount }}) and beta cli (${{ steps.buildsdkreleasedist.outputs.gitcount }}) published (${{ github.triggering_actor }}): ${{ github.ref }} - ${{ job.status }}"
                   }
                 }
               ]
