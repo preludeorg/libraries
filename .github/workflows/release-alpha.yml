@@ -15,6 +15,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: 3.11
@@ -60,6 +62,7 @@ jobs:
           sed -i -E 's/^(version\s*=\s*).*/\1${{ env.gitcount }}/' "$SETUP_CFG"
           sed -i -E 's/prelude-sdk\s*==\s*.*$/prelude-sdk == ${{ env.semver }}/' "$SETUP_CFG"
 
+          cat $SETUP_CFG
           python -m build
 
       - name: publish sdk release dist to PyPI
@@ -86,7 +89,7 @@ jobs:
 
           git push origin $tag
           git push origin $cli_tag
-          
+
       - name: Notify Slack
         if: always()
         uses: slackapi/slack-github-action@v1.26.0
