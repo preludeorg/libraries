@@ -75,21 +75,26 @@ jobs:
           git config user.email "action@github.com"
           
           tag="python/sdk/${{ needs.release-build.outputs.semver }}"
+          cli_tag="python/beta_cli/${{ env.gitcount }}"
+
           git tag $tag
+          git tag $cli_tag
+
           git push origin $tag
+          git push origin $cli_tag
       - name: Notify Slack
         if: always()
         uses: slackapi/slack-github-action@v1.26.0
         with:
           payload: |
             {
-              "text": "Python sdk published (${{ github.triggering_actor }}): ${{ github.ref }} - ${{ job.status }}",
+              "text": "Python alpha sdk and beta cli published (${{ github.triggering_actor }}): ${{ github.ref }} - ${{ job.status }}",
               "blocks": [
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "Python sdk published (${{ github.triggering_actor }}): ${{ github.ref }} - ${{ job.status }}"
+                    "text": "Python alpha sdk and beta cli published (${{ github.triggering_actor }}): ${{ github.ref }} - ${{ job.status }}"
                   }
                 }
               ]
