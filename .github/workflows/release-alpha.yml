@@ -21,12 +21,15 @@ jobs:
       - name: build sdk dist
         id: buildsdkreleasedist
         env:
-          SETUP_CFG=./setup.cfg
+          SETUP_CFG: ./setup.cfg
         working-directory: ./python/sdk
         run: |
-          setup_semver=$(grep version setup.cfg | cut -d' ' -f3)
-
           CURRENT_VERSION=$(grep -E '^version\s*=' "$SETUP_CFG" | awk -F '=' '{print $2}' | tr -d '[:space:]')
+
+          if [[ ! "$CURRENT_VERSION" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+) ]]; then
+              echo "Error: Couldn't parse version from setup.cfg: '$CURRENT_VERSION'"
+              exit 1
+          fi
 
           MAJOR="${BASH_REMATCH[1]}"
           MINOR="${BASH_REMATCH[2]}"
@@ -49,7 +52,7 @@ jobs:
       - name: build cli dist
         id: buildclireleasedist
         env:
-          SETUP_CFG=./setup.cfg
+          SETUP_CFG: ./setup.cfg
         working-directory: ./python/cli
         run: |
 
@@ -75,7 +78,7 @@ jobs:
           git config user.name "GitHub Action"
           git config user.email "action@github.com"
           
-          tag="python/sdk/${{ needs.release-build.outputs.semver }}"
+          tag="python/sdk/${{ env.semver }}"
           cli_tag="python/cli_beta/${{ env.gitcount }}"
 
           git tag $tag
@@ -83,6 +86,7 @@ jobs:
 
           git push origin $tag
           git push origin $cli_tag
+          
       - name: Notify Slack
         if: always()
         uses: slackapi/slack-github-action@v1.26.0
