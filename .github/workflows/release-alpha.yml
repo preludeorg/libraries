@@ -1,9 +1,10 @@
-name: Release Alpha Python SDK and CLI
+name: Release Alpha Python SDK and Beta CLI
 
 on:
   push:
     branches:
       - main
+      - det-2968/beta-cli
     paths:
       - python/**
       - .github/workflows/release-alpha.yml
@@ -48,6 +49,8 @@ jobs:
 
           echo "semver=$NEW_VERSION" >> "$GITHUB_OUTPUT"
           echo "gitcount=$GIT_COUNT" >> "$GITHUB_OUTPUT"
+
+          mv prelude_cli prelude_cli_beta
 
           python -m pip install -U build
           python -m build
