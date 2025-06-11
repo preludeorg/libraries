@@ -4,7 +4,7 @@ Shell probes are intended to be dependency-free executable code that works on mo
 
 ## Quick start
 
-> [Register an endpoint](https://docs.preludesecurity.com/docs/probes#registering-endpoints) to get a token
+> [Register an endpoint](https://support.preludesecurity.com/docs/ephemeral-probe) to get a token
 
 ### Raindrop 
 
