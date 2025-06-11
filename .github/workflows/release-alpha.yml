@@ -31,11 +31,11 @@ jobs:
           GIT_COUNT=$(git rev-list --count HEAD)
           echo "gitcount=$GIT_COUNT" >> "$GITHUB_OUTPUT"
 
-          sed -i -E 's/^(name\s*=\s*).*/\1prelude-cli-beta/' "$SETUP_CFG"
+          sed -i -E 's/^(name\s*=\s*).*/\1prelude-sdk-beta/' "$SETUP_CFG"
           sed -i -E "s/^(version\s*=\s*).*/\1$GIT_COUNT/" "$SETUP_CFG"
 
-          find ./ -name '*.py' -exec sed 's/import prelude_sdk/import prelude_sdk_beta/g' {} \;
-          find ./ -name '*.py' -exec sed 's/from prelude_sdk/from prelude_sdk_beta/g' {} \;
+          find ./ -name '*.py' -exec sed -i 's/import prelude_sdk/import prelude_sdk_beta/g' {} \;
+          find ./ -name '*.py' -exec sed -i 's/from prelude_sdk/from prelude_sdk_beta/g' {} \;
 
           mv prelude_sdk prelude_sdk_beta
 
@@ -55,10 +55,10 @@ jobs:
 
           mv prelude_cli prelude_cli_beta
 
-          find ./ -name '*.py' -exec sed 's/import prelude_cli/import prelude_cli_beta/g' {} \;
-          find ./ -name '*.py' -exec sed 's/from prelude_cli/from prelude_cli_beta/g' {} \;
-          find ./ -name '*.py' -exec sed 's/import prelude_sdk/import prelude_sdk_beta/g' {} \;
-          find ./ -name '*.py' -exec sed 's/from prelude_sdk/from prelude_sdk_beta/g' {} \;
+          find ./ -name '*.py' -exec sed -i 's/import prelude_cli/import prelude_cli_beta/g' {} \;
+          find ./ -name '*.py' -exec sed -i 's/from prelude_cli/from prelude_cli_beta/g' {} \;
+          find ./ -name '*.py' -exec sed -i 's/import prelude_sdk/import prelude_sdk_beta/g' {} \;
+          find ./ -name '*.py' -exec sed -i 's/from prelude_sdk/from prelude_sdk_beta/g' {} \;
 
           python -m build
 
