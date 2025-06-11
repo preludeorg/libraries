@@ -23,8 +23,6 @@ jobs:
           SETUP_CFG=./setup.cfg
         working-directory: ./python/sdk
         run: |
-          python -m pip install -U build
-
           setup_semver=$(grep version setup.cfg | cut -d' ' -f3)
 
           CURRENT_VERSION=$(grep -E '^version\s*=' "$SETUP_CFG" | awk -F '=' '{print $2}' | tr -d '[:space:]')
@@ -43,6 +41,8 @@ jobs:
 
           echo "semver=$NEW_VERSION" >> "$GITHUB_OUTPUT"
           echo "gitcount=$GIT_COUNT" >> "$GITHUB_OUTPUT"
+
+          python -m pip install -U build
           python -m build
 
       - name: build cli dist
@@ -75,7 +75,7 @@ jobs:
           git config user.email "action@github.com"
           
           tag="python/sdk/${{ needs.release-build.outputs.semver }}"
-          cli_tag="python/beta_cli/${{ env.gitcount }}"
+          cli_tag="python/cli_beta/${{ env.gitcount }}"
 
           git tag $tag
           git tag $cli_tag
