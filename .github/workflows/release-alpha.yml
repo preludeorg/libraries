@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - det-2968/beta-cli
     paths:
       - python/**
       - .github/workflows/release-alpha.yml
