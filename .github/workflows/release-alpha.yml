@@ -6,7 +6,7 @@ on:
       - main
       - det-2968/beta-cli
     paths:
-      - python/sdk/**
+      - python/**
       - .github/workflows/release-alpha.yml
 
 jobs:
