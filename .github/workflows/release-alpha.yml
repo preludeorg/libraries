@@ -12,7 +12,9 @@ on:
 jobs:
   release-build:
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: write
+      id-token: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -62,7 +64,6 @@ jobs:
           sed -i -E 's/^(version\s*=\s*).*/\1${{ steps.buildsdkreleasedist.outputs.gitcount }}/' "$SETUP_CFG"
           sed -i -E 's/prelude-sdk\s*==\s*.*$/prelude-sdk == ${{ steps.buildsdkreleasedist.outputs.semver }}/' "$SETUP_CFG"
 
-          cat "$SETUP_CFG"
           python -m build
 
       - name: publish sdk release dist to PyPI
