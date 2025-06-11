@@ -51,7 +51,7 @@ jobs:
 
           sed -i -E 's/^(name\s*=\s*).*/\1prelude-cli-beta/' "$SETUP_CFG"
           sed -i -E 's/^(version\s*=\s*).*/\1${{ steps.buildsdkreleasedist.outputs.gitcount }}/' "$SETUP_CFG"
-          sed -i -E 's/prelude-sdk\s*==\s*.*$/prelude-sdk == ${{ steps.buildsdkreleasedist.outputs.semver }}/' "$SETUP_CFG"
+          sed -i -E 's/prelude-sdk\s*==\s*.*$/prelude-sdk == ${{ steps.buildsdkreleasedist.outputs.gitcount }}/' "$SETUP_CFG"
 
           mv prelude_cli prelude_cli_beta
 
