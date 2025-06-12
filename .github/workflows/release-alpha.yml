@@ -71,21 +71,6 @@ jobs:
         with:
           packages-dir: python/cli/dist
 
-      - name: tag repo
-        if: success()
-        run: |
-          git config user.name "GitHub Action"
-          git config user.email "action@github.com"
-          
-          tag="python/sdk/${{ steps.buildsdkreleasedist.outputs.gitcount }}"
-          cli_tag="python/cli_beta/${{ steps.buildsdkreleasedist.outputs.gitcount }}"
-
-          git tag $tag
-          git tag $cli_tag
-
-          git push origin $tag
-          git push origin $cli_tag
-
       - name: Notify Slack
         if: always()
         uses: slackapi/slack-github-action@v1.26.0
