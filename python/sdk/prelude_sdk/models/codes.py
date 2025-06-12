@@ -362,6 +362,7 @@ class PartnerEvents(Enum, metaclass=MissingItem):
     USER_MISSING_ASSET_MANAGER = 11
     USER_MISSING_EDR = 12
     USER_MISSING_VULN_MANAGER = 13
+    NO_SERVER_MANAGER = 14
 
     @classmethod
     def _missing_(cls, value):
@@ -389,6 +390,7 @@ class PartnerEvents(Enum, metaclass=MissingItem):
             PartnerEvents.USER_MISSING_ASSET_MANAGER: [ControlCategory.IDENTITY],
             PartnerEvents.USER_MISSING_EDR: [ControlCategory.IDENTITY],
             PartnerEvents.USER_MISSING_VULN_MANAGER: [ControlCategory.IDENTITY],
+            PartnerEvents.NO_SERVER_MANAGER: [ControlCategory.ASSET_MANAGER],
         }
 
 
@@ -408,6 +410,7 @@ class AlertTypes(Enum, metaclass=MissingItem):
     NEW_USER_MISSING_ASSET_MANAGER = 12
     NEW_USER_MISSING_EDR = 13
     NEW_USER_MISSING_VULN_MANAGER = 14
+    NEW_NO_SERVER_MANAGER_ENDPOINTS = 15
 
     @classmethod
     def _missing_(cls, value):
