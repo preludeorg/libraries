@@ -1,4 +1,4 @@
-name: Release Alpha Python SDK and Beta CLI
+name: Release Beta Python SDK and Beta CLI
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - python/**
-      - .github/workflows/release-alpha.yml
+      - .github/workflows/release-beta.yml
 
 jobs:
   release-build:
@@ -77,13 +77,13 @@ jobs:
         with:
           payload: |
             {
-              "text": "Python alpha sdk (${{ steps.buildsdkreleasedist.outputs.gitcount }}) and beta cli (${{ steps.buildsdkreleasedist.outputs.gitcount }}) published (${{ github.triggering_actor }}): ${{ github.ref }} - ${{ job.status }}",
+              "text": "Python beta sdk (${{ steps.buildsdkreleasedist.outputs.gitcount }}) and beta cli (${{ steps.buildsdkreleasedist.outputs.gitcount }}) published (${{ github.triggering_actor }}): ${{ github.ref }} - ${{ job.status }}",
               "blocks": [
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "Python alpha sdk (${{ steps.buildsdkreleasedist.outputs.gitcount }}) and beta cli (${{ steps.buildsdkreleasedist.outputs.gitcount }}) published (${{ github.triggering_actor }}): ${{ github.ref }} - ${{ job.status }}"
+                    "text": "Python beta sdk (${{ steps.buildsdkreleasedist.outputs.gitcount }}) and beta cli (${{ steps.buildsdkreleasedist.outputs.gitcount }}) published (${{ github.triggering_actor }}): ${{ github.ref }} - ${{ job.status }}"
                   }
                 }
               ]
