@@ -182,6 +182,8 @@ class Control(Enum, metaclass=MissingItem):
     TENABLE_DISCOVERY = 22
     QUALYS = 23
     QUALYS_DISCOVERY = 24
+    RAPID7 = 25
+    RAPID7_DISCOVERY = 26
 
     @classmethod
     def _missing_(cls, value):
@@ -234,6 +236,7 @@ class ControlCategory(Enum, metaclass=MissingItem):
                 Control.DEFENDER_DISCOVERY,
                 Control.EC2,
                 Control.QUALYS_DISCOVERY,
+                Control.RAPID7_DISCOVERY,
                 Control.SERVICENOW,
                 Control.TENABLE_DISCOVERY,
             ],
@@ -255,7 +258,11 @@ class ControlCategory(Enum, metaclass=MissingItem):
                 Control.SPLUNK,
                 Control.VECTR,
             ],
-            ControlCategory.VULN_MANAGER: [Control.QUALYS, Control.TENABLE],
+            ControlCategory.VULN_MANAGER: [
+                Control.QUALYS,
+                Control.RAPID7,
+                Control.TENABLE,
+            ],
             ControlCategory.XDR: [
                 Control.CROWDSTRIKE,
                 Control.DEFENDER,
@@ -289,6 +296,8 @@ class SCMCategory(Enum, metaclass=MissingItem):
                 Control.JAMF,
                 Control.QUALYS,
                 Control.QUALYS_DISCOVERY,
+                Control.RAPID7,
+                Control.RAPID7_DISCOVERY,
                 Control.SENTINELONE,
                 Control.SERVICENOW,
                 Control.TENABLE,
