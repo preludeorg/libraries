@@ -1,0 +1,93 @@
+name: Release Beta Python SDK and Beta CLI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - python/**
+      - .github/workflows/release-beta.yml
+
+jobs:
+  release-build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+      - name: build sdk dist
+        id: buildsdkreleasedist
+        env:
+          SETUP_CFG: ./setup.cfg
+        working-directory: ./python/sdk
+        run: |
+          GIT_COUNT=$(git rev-list --count HEAD)
+          echo "gitcount=$GIT_COUNT" >> "$GITHUB_OUTPUT"
+
+          sed -i -E 's/^(name\s*=\s*).*/\1prelude-sdk-beta/' "$SETUP_CFG"
+          sed -i -E "s/^(version\s*=\s*).*/\1$GIT_COUNT/" "$SETUP_CFG"
+
+          find ./ -name '*.py' -exec sed -i 's/import prelude_sdk/import prelude_sdk_beta/g' {} \;
+          find ./ -name '*.py' -exec sed -i 's/from prelude_sdk/from prelude_sdk_beta/g' {} \;
+
+          mv prelude_sdk prelude_sdk_beta
+
+          python -m pip install -U build
+          python -m build
+
+      - name: build cli dist
+        id: buildclireleasedist
+        env:
+          SETUP_CFG: ./setup.cfg
+        working-directory: ./python/cli
+        run: |
+
+          sed -i -E 's/^(name\s*=\s*).*/\1prelude-cli-beta/' "$SETUP_CFG"
+          sed -i -E 's/^(version\s*=\s*).*/\1${{ steps.buildsdkreleasedist.outputs.gitcount }}/' "$SETUP_CFG"
+          sed -i -E 's/prelude-sdk\s*==\s*.*$/prelude-sdk-beta == ${{ steps.buildsdkreleasedist.outputs.gitcount }}/' "$SETUP_CFG"
+
+          mv prelude_cli prelude_cli_beta
+
+          find ./ -name '*.py' -exec sed -i 's/import prelude_cli/import prelude_cli_beta/g' {} \;
+          find ./ -name '*.py' -exec sed -i 's/from prelude_cli/from prelude_cli_beta/g' {} \;
+          find ./ -name '*.py' -exec sed -i 's/import prelude_sdk/import prelude_sdk_beta/g' {} \;
+          find ./ -name '*.py' -exec sed -i 's/from prelude_sdk/from prelude_sdk_beta/g' {} \;
+
+          python -m build
+
+      - name: publish sdk release dist to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: python/sdk/dist
+
+      - name: publish cli release dist to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: python/cli/dist
+
+      - name: Notify Slack
+        if: always()
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          payload: |
+            {
+              "text": "Python beta sdk (${{ steps.buildsdkreleasedist.outputs.gitcount }}) and beta cli (${{ steps.buildsdkreleasedist.outputs.gitcount }}) published (${{ github.triggering_actor }}): ${{ github.ref }} - ${{ job.status }}",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Python beta sdk (${{ steps.buildsdkreleasedist.outputs.gitcount }}) and beta cli (${{ steps.buildsdkreleasedist.outputs.gitcount }}) published (${{ github.triggering_actor }}): ${{ github.ref }} - ${{ job.status }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.US2_SLACK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
