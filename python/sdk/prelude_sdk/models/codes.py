@@ -182,6 +182,8 @@ class Control(Enum, metaclass=MissingItem):
     TENABLE_DISCOVERY = 22
     QUALYS = 23
     QUALYS_DISCOVERY = 24
+    RAPID7 = 25
+    RAPID7_DISCOVERY = 26
 
     @classmethod
     def _missing_(cls, value):
