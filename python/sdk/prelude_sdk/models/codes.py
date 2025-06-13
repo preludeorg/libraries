@@ -171,7 +171,6 @@ class Control(Enum, metaclass=MissingItem):
     M365 = 10
     ENTRA = 11
     JAMF = 12
-    CROWDSTRIKE_IDENTITY = 13
     GMAIL = 14
     GOOGLE_IDENTITY = 15
     DEFENDER_DISCOVERY = 16
@@ -243,7 +242,6 @@ class ControlCategory(Enum, metaclass=MissingItem):
                 Control.M365,
             ],
             ControlCategory.IDENTITY: [
-                Control.CROWDSTRIKE_IDENTITY,
                 Control.ENTRA,
                 Control.GOOGLE_IDENTITY,
                 Control.OKTA,
@@ -297,7 +295,6 @@ class SCMCategory(Enum, metaclass=MissingItem):
                 Control.TENABLE_DISCOVERY,
             ],
             SCMCategory.USER: [
-                Control.CROWDSTRIKE_IDENTITY,
                 Control.ENTRA,
                 Control.GOOGLE_IDENTITY,
                 Control.OKTA,
