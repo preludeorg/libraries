@@ -373,7 +373,7 @@ def list_policy_exceptions(controller):
     with Spinner(description="Querying Policy exceptions"):
         return controller.list_policy_exceptions()
 
-@policy_exceptions.command("put")
+@policy_exceptions.command("update")
 @click.argument(
     "partner",
     type=click.Choice(
@@ -383,18 +383,42 @@ def list_policy_exceptions(controller):
 @click.option("-e", "--expires", help="Expiry Date (YYYY-MM-DD hh:mm:ss ([+-]hh:mm))", default=None, type=str)
 @click.option("-i", "--instance_id", required=True, help="instance ID of the partner")
 @click.option("-p", "--policy_id", required=True, help="instance ID of the partner")
-@click.option("-s", "--settings", help="Comma separated list of setting names", default=None)
+@click.option("-s", "--settings", required=True, help="Comma separated list of all setting names to be excluded")
 @click.pass_obj
 @pretty_print
-def put_policy_exception(controller, partner, expires=None, instance_id=None, policy_id=None, settings=None ):
-    """put policy exception"""
-    with Spinner(description=f"Upserting Policy exceptions"):
+def upsert_policy_exception(controller, partner, expires=None, instance_id=None, policy_id=None, settings=None ):
+    """update policy exception"""
+    with Spinner(description=f"Updating/Updating Policy exceptions"):
         return controller.put_policy_exceptions(
             partner=Control[partner],
             expires=expires,
             instance_id=instance_id,
             policy_id=policy_id,
             setting_names=settings.split(",") if settings else None
+        )
+policy_exceptions.add_command(upsert_policy_exception, name="create")
+
+@policy_exceptions.command("delete")
+@click.argument(
+    "partner",
+    type=click.Choice(
+        [c.name for c in Control if c != Control.INVALID], case_sensitive=False
+    ),
+)
+@click.option("-i", "--instance_id", required=True, help="instance ID of the partner")
+@click.option("-p", "--policy_id", required=True, help="instance ID of the partner")
+@click.confirmation_option(prompt="Are you sure?")
+@click.pass_obj
+@pretty_print
+def delete_policy_exception(controller, partner, instance_id=None, policy_id=None ):
+    """put policy exception"""
+    with Spinner(description=f"Upserting Policy exceptions"):
+        return controller.put_policy_exceptions(
+            partner=Control[partner],
+            expires=None,
+            instance_id=instance_id,
+            policy_id=policy_id,
+            setting_names=[]
         )
 
 @exceptions.group("object")
