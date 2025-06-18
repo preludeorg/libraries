@@ -373,18 +373,18 @@ def list_exceptions(controller):
 @click.option("-e", "--expires", help="Expiry Date (YYYY-MM-DD hh:mm:ss ([+-]hh:mm))", default=None, type=str)
 @click.option("-i", "--instance_id", required=True, help="instance ID of the partner")
 @click.option("-p", "--policy_id", required=True, help="instance ID of the partner")
-@click.option("s", "--settings", help="Comma separated list of setting names", default=None)
+@click.option("-s", "--settings", help="Comma separated list of setting names", default=None)
 @click.pass_obj
 @pretty_print
-def put_policy_exception(controller, partner, expires=None, instance_id=None, policy_id=None, setting_names=None ):
+def put_policy_exception(controller, partner, expires=None, instance_id=None, policy_id=None, settings=None ):
     """put policy exception"""
     with Spinner(description=f"Upserting Policy exceptions"):
-        return controller.put_policy_exception(
-            partner=partner,
+        return controller.put_policy_exceptions(
+            partner=Control[partner],
             expires=expires,
             instance_id=instance_id, 
             policy_id=policy_id, 
-            setting_names=setting_names.split(",") if setting_names else None
+            setting_names=settings.split(",") if settings else None
         )
 
 
@@ -398,7 +398,7 @@ def list_exceptions(controller):
 
 
 @scm.command("create-object-exception")
-@click.argument("category", type=click.Choice([c.name for c in ControlCategory], case_sensitive=False))
+@click.argument("category", type=click.Choice([c.name for c in ControlCategory if c not in [ControlCategory.NONE, ControlCategory.INVALID, ControlCategory.PRIVATE_REPO]], case_sensitive=False))
 @click.option("-n", "--name", help="Exception Name", default=None, type=str)
 @click.option("-f", "--filter", help="OData filter string", default=None, required=True, type=str)
 @click.option("-e", "--expires", help="Expiry Date (YYYY-MM-DD hh:mm:ss ([+-]hh:mm))", default=None, type=str)
@@ -407,7 +407,7 @@ def list_exceptions(controller):
 def create_object_exception(controller, category, filter=None, name=None, expires=None ):
     """create object exception"""
     with Spinner(description=f"Creating Object exceptions"):
-        return controller.create_object_exception(category=category, filter=filter, name=name, expires=expires)
+        return controller.create_object_exception(category=ControlCategory[category], filter=filter, name=name, expires=expires)
 
 @scm.command("update-object-exception")
 @click.option("-i", "--id", help="ID of the exception to update", default=None, type=str)
