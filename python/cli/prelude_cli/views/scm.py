@@ -426,10 +426,10 @@ def update_object_exception(controller, id=None, filter=None, name=None, expires
 @click.confirmation_option(prompt="Are you sure?")
 @click.pass_obj
 @pretty_print
-def update_object_exception(controller, id=None, filter=None, name=None, expires=None ):
-    """update object exception"""
+def delete_object_exception(controller, id=None, filter=None, name=None, expires=None ):
+    """delete object exception"""
     with Spinner(description=f"Delete Object exception"):
-        return controller.update_object_exception(exception_id=id, filter=filter, name=name, expires=expires)
+        return controller.delete_object_exception(exception_id=id)
 
 
 @scm.command("list-notifications")
