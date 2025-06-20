@@ -359,7 +359,7 @@ def parse_from_partner_advisory(controller, partner, advisory_id):
 @click.pass_obj
 @pretty_print
 def list_policy_exceptions(controller):
-    """list all policy exceptions"""
+    """List all policy exceptions"""
     with Spinner(description="Querying Policy exceptions"):
         return controller.list_policy_exceptions()
 
@@ -377,7 +377,7 @@ def list_policy_exceptions(controller):
 @click.pass_obj
 @pretty_print
 def update_policy_exception(controller, partner, expires=None, instance_id=None, policy_id=None, settings=None ):
-    """update policy exception"""
+    """Update policy exception"""
     with Spinner(description=f"Updating/Updating Policy exceptions"):
         return controller.put_policy_exceptions(
             partner=Control[partner],
@@ -401,7 +401,7 @@ def update_policy_exception(controller, partner, expires=None, instance_id=None,
 @click.pass_obj
 @pretty_print
 def create_policy_exception(controller, partner, expires=None, instance_id=None, policy_id=None, settings=None ):
-    """update policy exception"""
+    """Update policy exception"""
     with Spinner(description=f"Updating/Updating Policy exceptions"):
         return controller.put_policy_exceptions(
             partner=Control[partner],
@@ -425,7 +425,7 @@ def create_policy_exception(controller, partner, expires=None, instance_id=None,
 @click.pass_obj
 @pretty_print
 def delete_policy_exception(controller, partner, instance_id=None, policy_id=None ):
-    """put policy exception"""
+    """Delete policy exception"""
     with Spinner(description=f"Upserting Policy exceptions"):
         return controller.put_policy_exceptions(
             partner=Control[partner],
@@ -439,7 +439,7 @@ def delete_policy_exception(controller, partner, instance_id=None, policy_id=Non
 @click.pass_obj
 @pretty_print
 def list_object_exceptions(controller):
-    """list all object exceptions"""
+    """List all object exceptions"""
     with Spinner(description="Querying Object exceptions"):
         return controller.list_object_exceptions()
 
@@ -452,7 +452,7 @@ def list_object_exceptions(controller):
 @click.pass_obj
 @pretty_print
 def create_object_exception(controller, category, filter=None, name=None, expires=None ):
-    """create object exception"""
+    """Create object exception"""
     with Spinner(description=f"Creating Object exceptions"):
         return controller.create_object_exception(category=ControlCategory[category], filter=filter, name=name, expires=expires)
 
@@ -464,7 +464,7 @@ def create_object_exception(controller, category, filter=None, name=None, expire
 @click.pass_obj
 @pretty_print
 def update_object_exception(controller, id=None, filter=None, name=None, expires=None ):
-    """update object exception"""
+    """Update object exception"""
     with Spinner(description=f"Updating Object exceptions"):
         return controller.update_object_exception(exception_id=id, filter=filter, name=name, expires=expires)
 
@@ -473,8 +473,8 @@ def update_object_exception(controller, id=None, filter=None, name=None, expires
 @click.confirmation_option(prompt="Are you sure?")
 @click.pass_obj
 @pretty_print
-def delete_object_exception(controller, id=None, filter=None, name=None, expires=None ):
-    """delete object exception"""
+def delete_object_exception(controller, id=None):
+    """Delete object exception"""
     with Spinner(description=f"Delete Object exception"):
         return controller.delete_object_exception(exception_id=id)
 
