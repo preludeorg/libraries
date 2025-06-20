@@ -365,9 +365,7 @@ class TestThreatHunt:
             control=Control.CROWDSTRIKE.value,
             id=pytest.crwd_threat_hunt_id,
             name="test CRWD threat hunt",
-            query="""
-            #repo=base_sensor | FilePath = "\\Device\\HarddiskVolume3\\Program Files\\Prelude Security\\Prelude Probe\\.vst\\" | ContextImageFileName = /prelude_dropper.exe/
-            """,
+            query="""#repo=base_sensor | FilePath = "\\Device\\HarddiskVolume3\\Program Files\\Prelude Security\\Prelude Probe\\.vst\\" | ContextImageFileName = /prelude_dropper.exe/""",
             test_id=pytest.test_id,
         )
 
