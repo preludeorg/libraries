@@ -376,7 +376,7 @@ def list_policy_exceptions(controller):
 @click.option("-s", "--settings", required=True, help="Comma separated list of all setting names to be excluded")
 @click.pass_obj
 @pretty_print
-def update_policy_exception(controller, partner, expires, instance_id, policy_id, settings ):
+def update_policy_exception(controller, partner, expires, instance_id, policy_id, settings):
     """Update policy exception"""
     with Spinner(description=f"Updating Policy exception"):
         return controller.put_policy_exceptions(
