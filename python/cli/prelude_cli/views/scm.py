@@ -372,7 +372,7 @@ def list_policy_exceptions(controller):
 )
 @click.option("-e", "--expires", help="Expiry Date (YYYY-MM-DD hh:mm:ss ([+-]hh:mm))", default=None, type=str)
 @click.option("-i", "--instance_id", required=True, help="instance ID of the partner")
-@click.option("-p", "--policy_id", required=True, help="instance ID of the partner")
+@click.option("-p", "--policy_id", required=True, help="ID of the policy to update")
 @click.option("-s", "--settings", required=True, help="Comma separated list of all setting names to be excluded")
 @click.pass_obj
 @pretty_print
@@ -396,7 +396,7 @@ def update_policy_exception(controller, partner, expires=None, instance_id=None,
 )
 @click.option("-e", "--expires", help="Expiry Date (YYYY-MM-DD hh:mm:ss ([+-]hh:mm))", default=None, type=str)
 @click.option("-i", "--instance_id", required=True, help="instance ID of the partner")
-@click.option("-p", "--policy_id", required=True, help="instance ID of the partner")
+@click.option("-p", "--policy_id", required=True, help="ID of the policy to create")
 @click.option("-s", "--settings", required=True, help="Comma separated list of all setting names to be excluded")
 @click.pass_obj
 @pretty_print
@@ -420,7 +420,7 @@ def create_policy_exception(controller, partner, expires=None, instance_id=None,
     ),
 )
 @click.option("-i", "--instance_id", required=True, help="instance ID of the partner")
-@click.option("-p", "--policy_id", required=True, help="instance ID of the partner")
+@click.option("-p", "--policy_id", required=True, help="ID of the policy to be deleted")
 @click.confirmation_option(prompt="Are you sure?")
 @click.pass_obj
 @pretty_print
@@ -469,7 +469,7 @@ def update_object_exception(controller, id=None, filter=None, name=None, expires
         return controller.update_object_exception(exception_id=id, filter=filter, name=name, expires=expires)
 
 @scm.command("delete-object-exceptions")
-@click.option("-i", "--id", help="ID of the exception to update", default=None, type=str)
+@click.option("-i", "--id", help="ID of the exception to delete", default=None, type=str)
 @click.confirmation_option(prompt="Are you sure?")
 @click.pass_obj
 @pretty_print
