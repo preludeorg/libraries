@@ -376,7 +376,7 @@ def list_policy_exceptions(controller):
 @click.option("-s", "--settings", required=True, help="Comma separated list of all setting names to be excluded")
 @click.pass_obj
 @pretty_print
-def update_policy_exception(controller, partner, expires=None, instance_id=None, policy_id=None, settings=None ):
+def update_policy_exception(controller, partner, expires, instance_id, policy_id, settings ):
     """Update policy exception"""
     with Spinner(description=f"Updating/Updating Policy exceptions"):
         return controller.put_policy_exceptions(
@@ -400,9 +400,9 @@ def update_policy_exception(controller, partner, expires=None, instance_id=None,
 @click.option("-s", "--settings", required=True, help="Comma separated list of all setting names to be excluded")
 @click.pass_obj
 @pretty_print
-def create_policy_exception(controller, partner, expires=None, instance_id=None, policy_id=None, settings=None ):
+def create_policy_exception(controller, partner, expires, instance_id, policy_id, settings ):
     """Update policy exception"""
-    with Spinner(description=f"Updating/Updating Policy exceptions"):
+    with Spinner(description=f"Updating Policy exceptions"):
         return controller.put_policy_exceptions(
             partner=Control[partner],
             expires=expires,
@@ -424,7 +424,7 @@ def create_policy_exception(controller, partner, expires=None, instance_id=None,
 @click.confirmation_option(prompt="Are you sure?")
 @click.pass_obj
 @pretty_print
-def delete_policy_exception(controller, partner, instance_id=None, policy_id=None ):
+def delete_policy_exception(controller, partner, instance_id, policy_id ):
     """Delete policy exception"""
     with Spinner(description=f"Upserting Policy exceptions"):
         return controller.put_policy_exceptions(
@@ -451,7 +451,7 @@ def list_object_exceptions(controller):
 @click.option("-e", "--expires", help="Expiry Date (YYYY-MM-DD hh:mm:ss ([+-]hh:mm))", default=None, type=str)
 @click.pass_obj
 @pretty_print
-def create_object_exception(controller, category, filter=None, name=None, expires=None ):
+def create_object_exception(controller, category, filter, name, expires ):
     """Create object exception"""
     with Spinner(description=f"Creating Object exceptions"):
         return controller.create_object_exception(category=ControlCategory[category], filter=filter, name=name, expires=expires)
@@ -463,7 +463,7 @@ def create_object_exception(controller, category, filter=None, name=None, expire
 @click.option("-e", "--expires", help="Expiry Date (YYYY-MM-DD hh:mm:ss ([+-]hh:mm))", default=None, type=str)
 @click.pass_obj
 @pretty_print
-def update_object_exception(controller, id=None, filter=None, name=None, expires=None ):
+def update_object_exception(controller, id, filter, name, expires ):
     """Update object exception"""
     with Spinner(description=f"Updating Object exceptions"):
         return controller.update_object_exception(exception_id=id, filter=filter, name=name, expires=expires)
@@ -473,7 +473,7 @@ def update_object_exception(controller, id=None, filter=None, name=None, expires
 @click.confirmation_option(prompt="Are you sure?")
 @click.pass_obj
 @pretty_print
-def delete_object_exception(controller, id=None):
+def delete_object_exception(controller, id):
     """Delete object exception"""
     with Spinner(description=f"Delete Object exception"):
         return controller.delete_object_exception(exception_id=id)
