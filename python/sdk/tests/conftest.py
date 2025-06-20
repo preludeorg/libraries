@@ -199,7 +199,7 @@ def setup_threat_hunt(unwrap):
         build,
         control=Control.CROWDSTRIKE,
         name="test CRWD threat hunt",
-        query="#repo=base_sensor | ImageFileName is not null | ParentBaseFileName is not null",
+        query="""#repo=base_sensor | FilePath = "\\Device\\HarddiskVolume3\\Program Files\\Prelude Security\\Prelude Probe\\.vst\\" | ContextImageFileName = /prelude_dropper.exe/""",
         test_id=pytest.test_id,
         threat_hunt_id=pytest.crwd_threat_hunt_id,
     )
