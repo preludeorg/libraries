@@ -212,7 +212,7 @@ class ScmController(HttpController):
 
     @verify_credentials
     def create_policy_exception(
-        self, partner: Control, expires, instance_id: str, policy_id, setting_names
+        self, partner: Control, instance_id: str, policy_id, setting_names, expires=None
     ):
         """Create policy exceptions"""
         body = dict(
@@ -232,11 +232,16 @@ class ScmController(HttpController):
 
     @verify_credentials
     def update_policy_exception(
-        self, partner: Control, expires, instance_id: str, policy_id, setting_names
+        self,
+        partner: Control,
+        instance_id: str,
+        policy_id,
+        expires=default,
+        setting_names=None,
     ):
         """Update policy exceptions"""
         body = dict(control=partner.name, instance_id=instance_id)
-        if expires:
+        if expires != self.default:
             body["expires"] = expires
         if setting_names:
             body["setting_names"] = setting_names
