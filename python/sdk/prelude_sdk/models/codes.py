@@ -454,17 +454,21 @@ class Platform(Enum, metaclass=MissingItem):
     def _missing_(cls, value):
         return Platform.INVALID
 
+
 class NotationType(Enum, metaclass=MissingItem):
     INVALID = -1
     OBJECT_EXCEPTION_CREATED = 1
     OBJECT_EXCEPTION_DELETED = 2
     OBJECT_EXCEPTION_UPDATED = 3
     OBJECT_EXCEPTION_EXPIRED = 4
+    POLICY_EXCEPTION_CREATED = 10
+    POLICY_EXCEPTION_DELETED = 11
     POLICY_EXCEPTION_UPDATED = 5
     POLICY_EXCEPTION_EXPIRED = 6
     PARTNER_ATTACHED = 7
     PARTNER_DETACHED = 8
     PARTNER_UPDATED = 9
+    # Next value: 12
 
     @classmethod
     def _missing_(cls, value):

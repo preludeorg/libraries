@@ -356,7 +356,7 @@ def parse_from_partner_advisory(controller, partner, advisory_id):
         )
 
 
-@scm.command("list-notifications")
+@scm.command("notifications")
 @click.pass_obj
 @pretty_print
 def list_notifications(controller):
@@ -469,3 +469,11 @@ def upsert_notification(
             teams_urls=teams_urls.split(",") if teams_urls else None,
             title=title,
         )
+
+@scm.command("notations")
+@click.pass_obj
+@pretty_print
+def list_notations(controller):
+    """List all notations"""
+    with Spinner("Fetching notations"):
+        return controller.list_notations()

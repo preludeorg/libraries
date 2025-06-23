@@ -422,3 +422,13 @@ class ScmController(HttpController):
             timeout=10,
         )
         return res.json()
+
+    @verify_credentials
+    def list_notations(self):
+        """List notations"""
+        res = self.get(
+            f"{self.account.hq}/scm/notations",
+            headers=self.account.headers,
+            timeout=10,
+        )
+        return res.json()
