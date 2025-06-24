@@ -400,8 +400,8 @@ def update_policy_exception(controller, partner, expires, instance_id, policy_id
 @click.option("-s", "--settings", required=True, help="Comma separated list of all setting names to be excluded")
 @click.pass_obj
 @pretty_print
-def create_policy_exception(controller, partner, expires, instance_id, policy_id, settings ):
-    """Update policy exception"""
+def create_policy_exception(controller, partner, expires, instance_id, policy_id, settings):
+    """Create policy exception"""
     with Spinner(description=f"Creating Policy exception"):
         return controller.put_policy_exceptions(
             partner=Control[partner],
@@ -424,8 +424,8 @@ def create_policy_exception(controller, partner, expires, instance_id, policy_id
 @click.confirmation_option(prompt="Are you sure?")
 @click.pass_obj
 @pretty_print
-def delete_policy_exception(controller, partner, instance_id, policy_id ):
-    """Delete policy exception"""
+def delete_policy_exception(controller, partner, instance_id, policy_id):
+    """Delete policy exception removes all exceptions in a policy"""
     with Spinner(description=f"deleting Policy exception"):
         return controller.put_policy_exceptions(
             partner=Control[partner],
@@ -451,7 +451,7 @@ def list_object_exceptions(controller):
 @click.option("-e", "--expires", help="Expiry Date (YYYY-MM-DD hh:mm:ss ([+-]hh:mm))", default=None, type=str)
 @click.pass_obj
 @pretty_print
-def create_object_exception(controller, category, filter, name, expires ):
+def create_object_exception(controller, category, filter, name, expires):
     """Create object exception"""
     with Spinner(description=f"Creating Object exception"):
         return controller.create_object_exception(category=ControlCategory[category], filter=filter, name=name, expires=expires)
@@ -463,7 +463,7 @@ def create_object_exception(controller, category, filter, name, expires ):
 @click.option("-e", "--expires", help="Expiry Date (YYYY-MM-DD hh:mm:ss ([+-]hh:mm))", default=None, type=str)
 @click.pass_obj
 @pretty_print
-def update_object_exception(controller, id, filter, name, expires ):
+def update_object_exception(controller, id, filter, name, expires):
     """Update object exception"""
     with Spinner(description=f"Updating Object exception"):
         return controller.update_object_exception(exception_id=id, filter=filter, name=name, expires=expires)
