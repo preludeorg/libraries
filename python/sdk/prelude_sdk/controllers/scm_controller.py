@@ -176,7 +176,6 @@ class ScmController(HttpController):
     ):
         """Update an object exception"""
         body = dict()
-        print(expires, type(expires), self.default, type(self.default))
         if expires != self.default:
             body["expires"] = expires
         if filter:
