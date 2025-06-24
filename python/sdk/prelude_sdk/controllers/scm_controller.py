@@ -10,7 +10,7 @@ from prelude_sdk.models.codes import (
 
 
 class ScmController(HttpController):
-    default = -1
+    default = "-1"
 
     def __init__(self, account):
         super().__init__(account)
@@ -176,6 +176,7 @@ class ScmController(HttpController):
     ):
         """Update an object exception"""
         body = dict()
+        print(expires, type(expires), self.default, type(self.default))
         if expires != self.default:
             body["expires"] = expires
         if filter:
