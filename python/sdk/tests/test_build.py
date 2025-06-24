@@ -394,13 +394,13 @@ class TestThreatHunt:
         pytest.expected_threat_hunt = unwrap(self.build.update_threat_hunt)(
             self.build,
             name="updated threat hunt",
-            query="#repo=base_sensor | ImageFileName is not null | ParentBaseFileName is not null | aid is not null",
+            query='#repo=base_sensor | FilePath = "the-file-path"',
             threat_hunt_id=pytest.crwd_threat_hunt_id,
         )
         assert pytest.expected_threat_hunt["name"] == "updated threat hunt"
         assert (
             pytest.expected_threat_hunt["query"]
-            == "#repo=base_sensor | ImageFileName is not null | ParentBaseFileName is not null | aid is not null"
+            == '#repo=base_sensor | FilePath = "the-file-path"'
         )
 
     @pytest.mark.order(-7)
