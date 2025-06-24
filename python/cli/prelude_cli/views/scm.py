@@ -213,7 +213,9 @@ def export(controller, type, output_file, limit, odata_filter, odata_orderby):
 def list_partner_groups(controller, odata_filter, odata_orderby):
     """List all partner groups"""
     with Spinner(description="Fetching partner groups"):
-        return controller.list_partner_groups(filter=odata_filter, orderby=odata_orderby)
+        return controller.list_partner_groups(
+            filter=odata_filter, orderby=odata_orderby
+        )
 
 
 @scm.command("sync-groups")
@@ -593,6 +595,7 @@ def upsert_notification(
             title=title,
         )
 
+
 @scm.command("notations")
 @click.pass_obj
 @pretty_print
@@ -600,3 +603,40 @@ def list_notations(controller):
     """List all notations"""
     with Spinner("Fetching notations"):
         return controller.list_notations()
+
+
+@scm.command("history")
+@click.option(
+    "--category",
+    type=click.Choice([c.name for c in SCMCategory if c.value > 0]),
+    default=None,
+    help="filter by SCM category",
+)
+@click.option(
+    "--event",
+    type=click.Choice([e.name for e in PartnerEvents]),
+    default=None,
+    help="filter by failure event",
+)
+@click.option(
+    "--control",
+    type=click.Choice([c.name for c in Control if c.value > 0]),
+    default=None,
+    help="filter by control name",
+)
+@click.option("--instance_id", type=str, default=None, help="filter by instance ID")
+@click.option("--start", type=str, default=None, help="start date")
+@click.option("--end", type=str, default=None, help="end date")
+@click.pass_obj
+@pretty_print
+def list_history(controller, category, event, control, instance_id, start, end):
+    """List history"""
+    with Spinner("Fetching SCM history"):
+        return controller.list_history(
+            start,
+            end,
+            category=category,
+            event=event,
+            control=control,
+            instance_id=instance_id,
+        )
