@@ -440,15 +440,10 @@ class ScmController(HttpController):
         return res.json()
 
     @verify_credentials
-    def list_history(self, start_date, end_date, category, event, control, instance_id):
-        params = dict(
-            start_date=start_date,
-            end_date=end_date,
-            category=category,
-            event=event,
-            control=control,
-            instance_id=instance_id,
-        )
+    def list_history(
+        self, start_date: str = None, end_date: str = None, filter: str = None
+    ):
+        params = {"start_date": start_date, "end_date": end_date, "$filter": filter}
         """List history"""
         res = self.get(
             f"{self.account.hq}/scm/history",
