@@ -606,37 +606,12 @@ def list_notations(controller):
 
 
 @scm.command("history")
-@click.option(
-    "--category",
-    type=click.Choice([c.name for c in SCMCategory if c.value > 0]),
-    default=None,
-    help="filter by SCM category",
-)
-@click.option(
-    "--event",
-    type=click.Choice([e.name for e in PartnerEvents]),
-    default=None,
-    help="filter by failure event",
-)
-@click.option(
-    "--control",
-    type=click.Choice([c.name for c in Control if c.value > 0]),
-    default=None,
-    help="filter by control name",
-)
-@click.option("--instance_id", type=str, default=None, help="filter by instance ID")
+@click.option("--odata_filter", help="OData filter string", default=None)
 @click.option("--start", type=str, default=None, help="start date")
 @click.option("--end", type=str, default=None, help="end date")
 @click.pass_obj
 @pretty_print
-def list_history(controller, category, event, control, instance_id, start, end):
+def list_history(controller, odata_filter, start, end):
     """List history"""
     with Spinner("Fetching SCM history"):
-        return controller.list_history(
-            start,
-            end,
-            category=category,
-            event=event,
-            control=control,
-            instance_id=instance_id,
-        )
+        return controller.list_history(start, end, filter=odata_filter)
