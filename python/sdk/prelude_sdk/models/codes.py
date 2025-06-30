@@ -204,6 +204,36 @@ class Control(Enum, metaclass=MissingItem):
                 return k
         return SCMCategory.NONE
 
+    @property
+    def parent(self):
+        match self:
+            case Control.DEFENDER_DISCOVERY:
+                return Control.DEFENDER
+            case Control.QUALYS_DISCOVERY:
+                return Control.QUALYS
+            case Control.RAPID7_DISCOVERY:
+                return Control.RAPID7
+            case Control.TENABLE_DISCOVERY:
+                return Control.TENABLE
+            case Control.INTUNE_HOST_FIREWALL:
+                return Control.INTUNE
+
+    @property
+    def children(self):
+        match self:
+            case Control.DEFENDER:
+                return [Control.DEFENDER_DISCOVERY]
+            case Control.QUALYS:
+                return [Control.QUALYS_DISCOVERY]
+            case Control.RAPID7:
+                return [Control.RAPID7_DISCOVERY]
+            case Control.TENABLE:
+                return [Control.TENABLE_DISCOVERY]
+            case Control.INTUNE:
+                return [Control.INTUNE_HOST_FIREWALL]
+            case _:
+                return []
+
 
 class ControlCategory(Enum, metaclass=MissingItem):
     INVALID = -1
@@ -376,6 +406,9 @@ class PartnerEvents(Enum, metaclass=MissingItem):
     USER_MISSING_EDR = 12
     USER_MISSING_VULN_MANAGER = 13
     NO_SERVER_MANAGER = 14
+    NO_HOST_FIREWALL = 15
+    MISSING_HOST_FIREWALL_POLICY = 16
+    USER_MISSING_HOST_FIREWALL = 17
 
     @classmethod
     def _missing_(cls, value):
@@ -404,6 +437,7 @@ class PartnerEvents(Enum, metaclass=MissingItem):
             PartnerEvents.USER_MISSING_EDR: [ControlCategory.IDENTITY],
             PartnerEvents.USER_MISSING_VULN_MANAGER: [ControlCategory.IDENTITY],
             PartnerEvents.NO_SERVER_MANAGER: [ControlCategory.ASSET_MANAGER],
+            PartnerEvents.MISSING_HOST_FIREWALL_POLICY: [ControlCategory.HOST_FIREWALL],
         }
 
 
@@ -424,6 +458,9 @@ class AlertTypes(Enum, metaclass=MissingItem):
     NEW_USER_MISSING_EDR = 13
     NEW_USER_MISSING_VULN_MANAGER = 14
     NEW_NO_SERVER_MANAGER_ENDPOINTS = 15
+    NEW_NO_HOST_FIREWALL_ENDPOINTS = 16
+    NEW_MISSING_HOST_FIREWALL_POLICY_ENDPOINTS = 17
+    NEW_USER_MISSING_HOST_FIREWALL = 18
 
     @classmethod
     def _missing_(cls, value):
