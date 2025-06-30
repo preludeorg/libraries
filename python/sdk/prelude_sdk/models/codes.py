@@ -184,6 +184,7 @@ class Control(Enum, metaclass=MissingItem):
     QUALYS_DISCOVERY = 24
     RAPID7 = 25
     RAPID7_DISCOVERY = 26
+    INTUNE_HOST_FIREWALL = 27
 
     @classmethod
     def _missing_(cls, value):
@@ -217,6 +218,7 @@ class ControlCategory(Enum, metaclass=MissingItem):
     VULN_MANAGER = 8
     SIEM = 9
     PRIVATE_REPO = 10
+    HOST_FIREWALL = 11
 
     @classmethod
     def _missing_(cls, value):
@@ -243,6 +245,9 @@ class ControlCategory(Enum, metaclass=MissingItem):
             ControlCategory.EMAIL: [
                 Control.GMAIL,
                 Control.M365,
+            ],
+            ControlCategory.HOST_FIREWALL: [
+                Control.INTUNE_HOST_FIREWALL,
             ],
             ControlCategory.IDENTITY: [
                 Control.ENTRA,
@@ -293,6 +298,7 @@ class SCMCategory(Enum, metaclass=MissingItem):
                 Control.DEFENDER_DISCOVERY,
                 Control.EC2,
                 Control.INTUNE,
+                Control.INTUNE_HOST_FIREWALL,
                 Control.JAMF,
                 Control.QUALYS,
                 Control.QUALYS_DISCOVERY,
@@ -320,6 +326,7 @@ class SCMCategory(Enum, metaclass=MissingItem):
             SCMCategory.ENDPOINT: [
                 ControlCategory.ASSET_MANAGER,
                 ControlCategory.DISCOVERED_DEVICES,
+                ControlCategory.HOST_FIREWALL,
                 ControlCategory.VULN_MANAGER,
                 ControlCategory.XDR,
             ],
@@ -437,6 +444,7 @@ class PolicyType(Enum, metaclass=MissingItem):
     EMAIL_DKIM = 10
     DEVICE_COMPLIANCE = 11
     IDENTITY_MFA = 12
+    HOST_FIREWALL = 13
 
     @classmethod
     def _missing_(cls, value):
