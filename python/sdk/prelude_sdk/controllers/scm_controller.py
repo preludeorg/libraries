@@ -443,8 +443,8 @@ class ScmController(HttpController):
     def list_history(
         self, start_date: str = None, end_date: str = None, filter: str = None
     ):
-        params = {"start_date": start_date, "end_date": end_date, "$filter": filter}
         """List history"""
+        params = {"start_date": start_date, "end_date": end_date, "$filter": filter}
         res = self.get(
             f"{self.account.hq}/scm/history",
             headers=self.account.headers,
