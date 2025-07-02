@@ -1,6 +1,12 @@
 from prelude_sdk.controllers.http_controller import HttpController
 from prelude_sdk.models.account import verify_credentials
-from prelude_sdk.models.codes import Control, ControlCategory, PartnerEvents, RunCode
+from prelude_sdk.models.codes import (
+    Control,
+    ControlCategory,
+    PartnerEvents,
+    RunCode,
+    SCMCategory,
+)
 
 
 class ScmController(HttpController):
@@ -429,6 +435,20 @@ class ScmController(HttpController):
         res = self.get(
             f"{self.account.hq}/scm/notations",
             headers=self.account.headers,
+            timeout=10,
+        )
+        return res.json()
+
+    @verify_credentials
+    def list_history(
+        self, start_date: str = None, end_date: str = None, filter: str = None
+    ):
+        """List history"""
+        params = {"start_date": start_date, "end_date": end_date, "$filter": filter}
+        res = self.get(
+            f"{self.account.hq}/scm/history",
+            headers=self.account.headers,
+            params=params,
             timeout=10,
         )
         return res.json()
