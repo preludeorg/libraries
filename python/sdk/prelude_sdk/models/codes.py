@@ -184,6 +184,7 @@ class Control(Enum, metaclass=MissingItem):
     QUALYS_DISCOVERY = 24
     RAPID7 = 25
     RAPID7_DISCOVERY = 26
+    INTUNE_HOST_FIREWALL = 27
 
     @classmethod
     def _missing_(cls, value):
@@ -203,6 +204,36 @@ class Control(Enum, metaclass=MissingItem):
                 return k
         return SCMCategory.NONE
 
+    @property
+    def parent(self):
+        match self:
+            case Control.DEFENDER_DISCOVERY:
+                return Control.DEFENDER
+            case Control.QUALYS_DISCOVERY:
+                return Control.QUALYS
+            case Control.RAPID7_DISCOVERY:
+                return Control.RAPID7
+            case Control.TENABLE_DISCOVERY:
+                return Control.TENABLE
+            case Control.INTUNE_HOST_FIREWALL:
+                return Control.INTUNE
+
+    @property
+    def children(self):
+        match self:
+            case Control.DEFENDER:
+                return [Control.DEFENDER_DISCOVERY]
+            case Control.QUALYS:
+                return [Control.QUALYS_DISCOVERY]
+            case Control.RAPID7:
+                return [Control.RAPID7_DISCOVERY]
+            case Control.TENABLE:
+                return [Control.TENABLE_DISCOVERY]
+            case Control.INTUNE:
+                return [Control.INTUNE_HOST_FIREWALL]
+            case _:
+                return []
+
 
 class ControlCategory(Enum, metaclass=MissingItem):
     INVALID = -1
@@ -217,6 +248,7 @@ class ControlCategory(Enum, metaclass=MissingItem):
     VULN_MANAGER = 8
     SIEM = 9
     PRIVATE_REPO = 10
+    HOST_FIREWALL = 11
 
     @classmethod
     def _missing_(cls, value):
@@ -243,6 +275,9 @@ class ControlCategory(Enum, metaclass=MissingItem):
             ControlCategory.EMAIL: [
                 Control.GMAIL,
                 Control.M365,
+            ],
+            ControlCategory.HOST_FIREWALL: [
+                Control.INTUNE_HOST_FIREWALL,
             ],
             ControlCategory.IDENTITY: [
                 Control.ENTRA,
@@ -293,6 +328,7 @@ class SCMCategory(Enum, metaclass=MissingItem):
                 Control.DEFENDER_DISCOVERY,
                 Control.EC2,
                 Control.INTUNE,
+                Control.INTUNE_HOST_FIREWALL,
                 Control.JAMF,
                 Control.QUALYS,
                 Control.QUALYS_DISCOVERY,
@@ -320,6 +356,7 @@ class SCMCategory(Enum, metaclass=MissingItem):
             SCMCategory.ENDPOINT: [
                 ControlCategory.ASSET_MANAGER,
                 ControlCategory.DISCOVERED_DEVICES,
+                ControlCategory.HOST_FIREWALL,
                 ControlCategory.VULN_MANAGER,
                 ControlCategory.XDR,
             ],
@@ -369,6 +406,9 @@ class PartnerEvents(Enum, metaclass=MissingItem):
     USER_MISSING_EDR = 12
     USER_MISSING_VULN_MANAGER = 13
     NO_SERVER_MANAGER = 14
+    NO_HOST_FIREWALL = 15
+    MISSING_HOST_FIREWALL_POLICY = 16
+    USER_MISSING_HOST_FIREWALL = 17
 
     @classmethod
     def _missing_(cls, value):
@@ -377,26 +417,28 @@ class PartnerEvents(Enum, metaclass=MissingItem):
     @classmethod
     def control_category_mapping(cls):
         return {
-            PartnerEvents.REDUCED_FUNCTIONALITY_MODE: [ControlCategory.XDR],
-            PartnerEvents.NO_EDR: [
-                ControlCategory.XDR,
-            ],
-            PartnerEvents.MISSING_EDR_POLICY: [ControlCategory.XDR],
-            PartnerEvents.MISSING_AV_POLICY: [ControlCategory.XDR],
-            PartnerEvents.MISSING_MFA: [ControlCategory.IDENTITY],
-            PartnerEvents.NO_ASSET_MANAGER: [ControlCategory.ASSET_MANAGER],
             PartnerEvents.MISCONFIGURED_POLICY_SETTING: [
-                ControlCategory.XDR,
                 ControlCategory.EMAIL,
+                ControlCategory.HOST_FIREWALL,
                 ControlCategory.IDENTITY,
+                ControlCategory.XDR,
             ],
+            PartnerEvents.MISSING_AV_POLICY: [ControlCategory.XDR],
+            PartnerEvents.MISSING_EDR_POLICY: [ControlCategory.XDR],
+            PartnerEvents.MISSING_HOST_FIREWALL_POLICY: [ControlCategory.HOST_FIREWALL],
+            PartnerEvents.MISSING_MFA: [ControlCategory.IDENTITY],
             PartnerEvents.MISSING_SCAN: [ControlCategory.VULN_MANAGER],
-            PartnerEvents.OUT_OF_DATE_SCAN: [ControlCategory.VULN_MANAGER],
+            PartnerEvents.NO_ASSET_MANAGER: [ControlCategory.ASSET_MANAGER],
+            PartnerEvents.NO_EDR: [ControlCategory.XDR],
+            PartnerEvents.NO_HOST_FIREWALL: [ControlCategory.HOST_FIREWALL],
+            PartnerEvents.NO_SERVER_MANAGER: [ControlCategory.ASSET_MANAGER],
             PartnerEvents.NO_VULN_MANAGER: [ControlCategory.VULN_MANAGER],
+            PartnerEvents.OUT_OF_DATE_SCAN: [ControlCategory.VULN_MANAGER],
+            PartnerEvents.REDUCED_FUNCTIONALITY_MODE: [ControlCategory.XDR],
             PartnerEvents.USER_MISSING_ASSET_MANAGER: [ControlCategory.IDENTITY],
             PartnerEvents.USER_MISSING_EDR: [ControlCategory.IDENTITY],
+            PartnerEvents.USER_MISSING_HOST_FIREWALL: [ControlCategory.HOST_FIREWALL],
             PartnerEvents.USER_MISSING_VULN_MANAGER: [ControlCategory.IDENTITY],
-            PartnerEvents.NO_SERVER_MANAGER: [ControlCategory.ASSET_MANAGER],
         }
 
 
@@ -417,6 +459,9 @@ class AlertTypes(Enum, metaclass=MissingItem):
     NEW_USER_MISSING_EDR = 13
     NEW_USER_MISSING_VULN_MANAGER = 14
     NEW_NO_SERVER_MANAGER_ENDPOINTS = 15
+    NEW_NO_HOST_FIREWALL_ENDPOINTS = 16
+    NEW_MISSING_HOST_FIREWALL_POLICY_ENDPOINTS = 17
+    NEW_USER_MISSING_HOST_FIREWALL = 18
 
     @classmethod
     def _missing_(cls, value):
@@ -437,6 +482,7 @@ class PolicyType(Enum, metaclass=MissingItem):
     EMAIL_DKIM = 10
     DEVICE_COMPLIANCE = 11
     IDENTITY_MFA = 12
+    HOST_FIREWALL = 13
 
     @classmethod
     def _missing_(cls, value):
