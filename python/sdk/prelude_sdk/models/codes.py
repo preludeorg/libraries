@@ -417,27 +417,28 @@ class PartnerEvents(Enum, metaclass=MissingItem):
     @classmethod
     def control_category_mapping(cls):
         return {
-            PartnerEvents.REDUCED_FUNCTIONALITY_MODE: [ControlCategory.XDR],
-            PartnerEvents.NO_EDR: [
-                ControlCategory.XDR,
-            ],
-            PartnerEvents.MISSING_EDR_POLICY: [ControlCategory.XDR],
-            PartnerEvents.MISSING_AV_POLICY: [ControlCategory.XDR],
-            PartnerEvents.MISSING_MFA: [ControlCategory.IDENTITY],
-            PartnerEvents.NO_ASSET_MANAGER: [ControlCategory.ASSET_MANAGER],
             PartnerEvents.MISCONFIGURED_POLICY_SETTING: [
-                ControlCategory.XDR,
                 ControlCategory.EMAIL,
+                ControlCategory.HOST_FIREWALL,
                 ControlCategory.IDENTITY,
+                ControlCategory.XDR,
             ],
+            PartnerEvents.MISSING_AV_POLICY: [ControlCategory.XDR],
+            PartnerEvents.MISSING_EDR_POLICY: [ControlCategory.XDR],
+            PartnerEvents.MISSING_HOST_FIREWALL_POLICY: [ControlCategory.HOST_FIREWALL],
+            PartnerEvents.MISSING_MFA: [ControlCategory.IDENTITY],
             PartnerEvents.MISSING_SCAN: [ControlCategory.VULN_MANAGER],
-            PartnerEvents.OUT_OF_DATE_SCAN: [ControlCategory.VULN_MANAGER],
+            PartnerEvents.NO_ASSET_MANAGER: [ControlCategory.ASSET_MANAGER],
+            PartnerEvents.NO_EDR: [ControlCategory.XDR],
+            PartnerEvents.NO_HOST_FIREWALL: [ControlCategory.HOST_FIREWALL],
+            PartnerEvents.NO_SERVER_MANAGER: [ControlCategory.ASSET_MANAGER],
             PartnerEvents.NO_VULN_MANAGER: [ControlCategory.VULN_MANAGER],
+            PartnerEvents.OUT_OF_DATE_SCAN: [ControlCategory.VULN_MANAGER],
+            PartnerEvents.REDUCED_FUNCTIONALITY_MODE: [ControlCategory.XDR],
             PartnerEvents.USER_MISSING_ASSET_MANAGER: [ControlCategory.IDENTITY],
             PartnerEvents.USER_MISSING_EDR: [ControlCategory.IDENTITY],
+            PartnerEvents.USER_MISSING_HOST_FIREWALL: [ControlCategory.HOST_FIREWALL],
             PartnerEvents.USER_MISSING_VULN_MANAGER: [ControlCategory.IDENTITY],
-            PartnerEvents.NO_SERVER_MANAGER: [ControlCategory.ASSET_MANAGER],
-            PartnerEvents.MISSING_HOST_FIREWALL_POLICY: [ControlCategory.HOST_FIREWALL],
         }
 
 
