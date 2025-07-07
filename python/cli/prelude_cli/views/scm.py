@@ -213,7 +213,9 @@ def export(controller, type, output_file, limit, odata_filter, odata_orderby):
 def list_partner_groups(controller, odata_filter, odata_orderby):
     """List all partner groups"""
     with Spinner(description="Fetching partner groups"):
-        return controller.list_partner_groups(filter=odata_filter, orderby=odata_orderby)
+        return controller.list_partner_groups(
+            filter=odata_filter, orderby=odata_orderby
+        )
 
 
 @scm.command("sync-groups")
@@ -593,6 +595,7 @@ def upsert_notification(
             title=title,
         )
 
+
 @scm.command("notations")
 @click.pass_obj
 @pretty_print
@@ -600,3 +603,15 @@ def list_notations(controller):
     """List all notations"""
     with Spinner("Fetching notations"):
         return controller.list_notations()
+
+
+@scm.command("history")
+@click.option("--odata_filter", help="OData filter string", default=None)
+@click.option("--start", type=str, default=None, help="start date")
+@click.option("--end", type=str, default=None, help="end date")
+@click.pass_obj
+@pretty_print
+def list_history(controller, odata_filter, start, end):
+    """List history"""
+    with Spinner("Fetching SCM history"):
+        return controller.list_history(start, end, filter=odata_filter)
