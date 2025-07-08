@@ -63,6 +63,7 @@ class DetectController(HttpController):
         endpoints = res.json()
         if self.account.resolve_enums:
             self.resolve_enum(endpoints, Control, "control")
+        return endpoints
 
     @verify_credentials
     def describe_activity(self, filters: dict, view: str = "protected"):
