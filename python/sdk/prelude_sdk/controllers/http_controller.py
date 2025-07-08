@@ -35,12 +35,8 @@ class HttpController(object):
                             v[i] = enum_class[item].name
                     elif v is not None:
                         data[k] = enum_class[v].name
-                elif isinstance(v, dict):
+                elif isinstance(v, dict) or isinstance(v, list):
                     self.resolve_enum(v, enum_class, key)
-                elif isinstance(v, list):
-                    for item in v:
-                        if isinstance(item, dict):
-                            self.resolve_enum(item, enum_class, key)
 
     def get(self, url, retry=True, **kwargs):
         res = self._session.get(url, **kwargs)
