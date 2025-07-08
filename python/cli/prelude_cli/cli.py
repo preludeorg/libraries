@@ -27,7 +27,7 @@ def complete_profile(ctx, param, incomplete):
     shell_complete=complete_profile,
 )
 @click.option(
-    "--resolve_enums",
+    "--resolve-enums",
     is_flag=True,
     help="Resolve enum values to their string representation",
 )
