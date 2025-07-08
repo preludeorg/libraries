@@ -18,7 +18,7 @@ class JobsController(HttpController):
         )
         jobs = res.json()
         if self.account.resolve_enums:
-            self.resolve_enum(chain.from_iterable(jobs.values()), Control, "control")
+            self.resolve_enum(jobs, Control, "control")
         return jobs
 
     @verify_credentials
