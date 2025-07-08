@@ -83,7 +83,7 @@ def exchange_token(
 class Account:
 
     @staticmethod
-    def from_keychain(profile: str = "default"):
+    def from_keychain(profile: str = "default", resolve_enums: bool = False):
         """
         Create an account object from a pre-configured profile in your keychain file
         """
@@ -100,6 +100,7 @@ class Account:
             oidc=profile_items.get("oidc"),
             profile=profile,
             slug=profile_items.get("slug"),
+            resolve_enums=resolve_enums,
         )
 
     @staticmethod
@@ -111,6 +112,7 @@ class Account:
         hq: str = "https://api.us1.preludesecurity.com",
         oidc: str | None = None,
         slug: str | None = None,
+        resolve_enums: bool = False,
     ):
         """
         Create an account object from an access token or a refresh token
@@ -131,6 +133,7 @@ class Account:
             slug=slug,
             token=token,
             token_location=None,
+            resolve_enums=resolve_enums,
         )
 
 
@@ -151,6 +154,7 @@ class _Account:
         token_location: str | None = os.path.join(
             Path.home(), ".prelude", "tokens.json"
         ),
+        resolve_enums: bool = False,
     ):
         if token is None and token_location is None:
             raise ValueError(
@@ -168,6 +172,7 @@ class _Account:
         self.slug = slug
         self.token = token
         self.token_location = token_location
+        self.resolve_enums = resolve_enums
         if self.token_location and not os.path.exists(self.token_location):
             head, _ = os.path.split(Path(self.token_location))
             Path(head).mkdir(parents=True, exist_ok=True)

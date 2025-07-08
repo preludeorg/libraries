@@ -4,8 +4,9 @@ from prelude_sdk.models.codes import (
     Control,
     ControlCategory,
     PartnerEvents,
+    PolicyType,
+    NotationType,
     RunCode,
-    SCMCategory,
 )
 
 
@@ -25,7 +26,18 @@ class ScmController(HttpController):
             params=params,
             timeout=30,
         )
-        return res.json()
+        data = res.json()
+        if self.account.resolve_enums:
+            self.resolve_enums(
+                data,
+                [
+                    (Control, "controls"),
+                    (Control, "control"),
+                    (ControlCategory, "category"),
+                    (PartnerEvents, "event"),
+                ],
+            )
+        return data
 
     @verify_credentials
     def inboxes(self, filter: str = None, orderby: str = None, top: int = None):
@@ -37,7 +49,18 @@ class ScmController(HttpController):
             params=params,
             timeout=30,
         )
-        return res.json()
+        data = res.json()
+        if self.account.resolve_enums:
+            self.resolve_enums(
+                data,
+                [
+                    (Control, "controls"),
+                    (Control, "control"),
+                    (ControlCategory, "category"),
+                    (PartnerEvents, "event"),
+                ],
+            )
+        return data
 
     @verify_credentials
     def users(self, filter: str = None, orderby: str = None, top: int = None):
@@ -49,7 +72,18 @@ class ScmController(HttpController):
             params=params,
             timeout=30,
         )
-        return res.json()
+        data = res.json()
+        if self.account.resolve_enums:
+            self.resolve_enums(
+                data,
+                [
+                    (Control, "controls"),
+                    (Control, "control"),
+                    (ControlCategory, "category"),
+                    (PartnerEvents, "event"),
+                ],
+            )
+        return data
 
     @verify_credentials
     def technique_summary(self, techniques: str):
@@ -84,7 +118,12 @@ class ScmController(HttpController):
             headers=self.account.headers,
             timeout=30,
         )
-        return res.json()
+        data = res.json()
+        if self.account.resolve_enums:
+            self.resolve_enums(
+                data, [(Control, "control"), (ControlCategory, "category")]
+            )
+        return data
 
     @verify_credentials
     def evaluation(
@@ -104,7 +143,10 @@ class ScmController(HttpController):
             headers=self.account.headers,
             timeout=30,
         )
-        return res.json()
+        data = res.json()
+        if self.account.resolve_enums:
+            self.resolve_enums(data, [(PolicyType, "policy_type")])
+        return data
 
     @verify_credentials
     def update_evaluation(self, partner: Control, instance_id: str):
@@ -126,7 +168,10 @@ class ScmController(HttpController):
             params=params,
             timeout=10,
         )
-        return res.json()
+        groups = res.json()
+        if self.account.resolve_enums:
+            self.resolve_enums(groups, [(Control, "control")])
+        return groups
 
     @verify_credentials
     def update_partner_groups(
@@ -150,7 +195,10 @@ class ScmController(HttpController):
             headers=self.account.headers,
             timeout=10,
         )
-        return res.json()
+        exceptions = res.json()
+        if self.account.resolve_enums:
+            self.resolve_enums(exceptions, [(ControlCategory, "category")])
+        return exceptions
 
     @verify_credentials
     def create_object_exception(
@@ -208,7 +256,12 @@ class ScmController(HttpController):
             headers=self.account.headers,
             timeout=10,
         )
-        return res.json()
+        exceptions = res.json()
+        if self.account.resolve_enums:
+            self.resolve_enums(
+                exceptions, [(Control, "control"), (ControlCategory, "category")]
+            )
+        return exceptions
 
     @verify_credentials
     def create_policy_exception(
@@ -273,7 +326,10 @@ class ScmController(HttpController):
             headers=self.account.headers,
             timeout=10,
         )
-        return res.json()
+        views = res.json()
+        if self.account.resolve_enums:
+            self.resolve_enums(views, [(ControlCategory, "category")])
+        return views
 
     @verify_credentials
     def create_view(self, category: ControlCategory, filter: str, name: str):
@@ -412,7 +468,17 @@ class ScmController(HttpController):
             headers=self.account.headers,
             timeout=10,
         )
-        return res.json()
+        notifications = res.json()
+        if self.account.resolve_enums:
+            self.resolve_enums(
+                notifications,
+                [
+                    (ControlCategory, "control_category"),
+                    (PartnerEvents, "event"),
+                    (RunCode, "run_code"),
+                ],
+            )
+        return notifications
 
     @verify_credentials
     def delete_notification(self, notification_id: str):
@@ -472,7 +538,10 @@ class ScmController(HttpController):
             headers=self.account.headers,
             timeout=10,
         )
-        return res.json()
+        notations = res.json()
+        if self.account.resolve_enums:
+            self.resolve_enums(notations, [(NotationType, "event")])
+        return notations
 
     @verify_credentials
     def list_history(
@@ -486,4 +555,14 @@ class ScmController(HttpController):
             params=params,
             timeout=10,
         )
-        return res.json()
+        history = res.json()
+        if self.account.resolve_enums:
+            self.resolve_enums(
+                history,
+                [
+                    (Control, "control"),
+                    (ControlCategory, "category"),
+                    (PartnerEvents, "event"),
+                ],
+            )
+        return history

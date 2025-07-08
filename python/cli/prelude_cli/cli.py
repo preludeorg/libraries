@@ -26,8 +26,13 @@ def complete_profile(ctx, param, incomplete):
     show_default=True,
     shell_complete=complete_profile,
 )
-def cli(ctx, profile):
-    ctx.obj = Account.from_keychain(profile=profile)
+@click.option(
+    "--resolve_enums",
+    is_flag=True,
+    help="Resolve enum values to their string representation",
+)
+def cli(ctx, profile, resolve_enums):
+    ctx.obj = Account.from_keychain(profile=profile, resolve_enums=resolve_enums)
     if ctx.invoked_subcommand is None:
         click.echo(ctx.get_help())
 
