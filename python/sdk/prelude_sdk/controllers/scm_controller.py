@@ -10,7 +10,7 @@ from prelude_sdk.models.codes import (
 
 
 class ScmController(HttpController):
-    default = -1
+    default = "-1"
 
     def __init__(self, account):
         super().__init__(account)
@@ -211,10 +211,10 @@ class ScmController(HttpController):
         return res.json()
 
     @verify_credentials
-    def put_policy_exceptions(
-        self, partner: Control, expires, instance_id: str, policy_id, setting_names
+    def create_policy_exception(
+        self, partner: Control, instance_id: str, policy_id, setting_names, expires=None
     ):
-        """Put policy exceptions"""
+        """Create policy exceptions"""
         body = dict(
             control=partner.name,
             expires=expires,
@@ -222,8 +222,43 @@ class ScmController(HttpController):
             policy_id=policy_id,
             setting_names=setting_names,
         )
-        res = self.put(
+        res = self.post(
             f"{self.account.hq}/scm/exceptions/policies",
+            json=body,
+            headers=self.account.headers,
+            timeout=10,
+        )
+        return res.json()
+
+    @verify_credentials
+    def update_policy_exception(
+        self,
+        partner: Control,
+        instance_id: str,
+        policy_id,
+        expires=default,
+        setting_names=None,
+    ):
+        """Update policy exceptions"""
+        body = dict(control=partner.name, instance_id=instance_id)
+        if expires != self.default:
+            body["expires"] = expires
+        if setting_names:
+            body["setting_names"] = setting_names
+        res = self.post(
+            f"{self.account.hq}/scm/exceptions/policies/{policy_id}",
+            json=body,
+            headers=self.account.headers,
+            timeout=10,
+        )
+        return res.json()
+
+    @verify_credentials
+    def delete_policy_exception(self, instance_id: str, policy_id: str):
+        """Delete policy exceptions"""
+        body = dict(instance_id=instance_id)
+        res = self.delete(
+            f"{self.account.hq}/scm/exceptions/policies/{policy_id}",
             json=body,
             headers=self.account.headers,
             timeout=10,
