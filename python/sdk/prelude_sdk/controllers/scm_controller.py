@@ -293,13 +293,13 @@ class ScmController(HttpController):
         setting_names=None,
     ):
         """Update policy exceptions"""
-        body = dict(control=partner.name, instance_id=instance_id)
+        body = dict(control=partner.name, instance_id=instance_id, policy_id=policy_id)
         if expires != self.default:
             body["expires"] = expires
         if setting_names:
             body["setting_names"] = setting_names
-        res = self.post(
-            f"{self.account.hq}/scm/exceptions/policies/{policy_id}",
+        res = self.put(
+            f"{self.account.hq}/scm/exceptions/policies",
             json=body,
             headers=self.account.headers,
             timeout=10,
@@ -309,9 +309,9 @@ class ScmController(HttpController):
     @verify_credentials
     def delete_policy_exception(self, instance_id: str, policy_id: str):
         """Delete policy exceptions"""
-        body = dict(instance_id=instance_id)
+        body = dict(instance_id=instance_id, policy_id=policy_id)
         res = self.delete(
-            f"{self.account.hq}/scm/exceptions/policies/{policy_id}",
+            f"{self.account.hq}/scm/exceptions/policies",
             json=body,
             headers=self.account.headers,
             timeout=10,
