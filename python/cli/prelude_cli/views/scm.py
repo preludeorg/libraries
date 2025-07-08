@@ -212,6 +212,9 @@ def group(ctx):
     ctx.obj = ScmController(account=ctx.obj.account)
 
 
+scm.add_command(group)
+
+
 @group.command("list")
 @click.option("--odata_filter", help="OData filter string", default=None)
 @click.option("--odata_orderby", help="OData orderby string", default=None)
@@ -251,14 +254,14 @@ def sync_groups(controller, partner, instance_id, group_ids):
         return result
 
 
-scm.add_command(group)
-
-
 @click.group()
 @click.pass_context
 def threat(ctx):
     """SCM threat commands"""
     ctx.obj = ScmController(account=ctx.obj.account)
+
+
+scm.add_command(threat)
 
 
 @threat.command("create")
@@ -347,9 +350,6 @@ def get_threat(controller, threat_id):
         return controller.get_threat(id=threat_id)
 
 
-scm.add_command(threat)
-
-
 @scm.command("threat-intel")
 @click.argument(
     "threat_pdf",
@@ -390,6 +390,18 @@ def exception(ctx):
 def object(ctx):
     """SCM object exception commands"""
     ctx.obj = ScmController(account=ctx.obj.account)
+
+
+@click.group()
+@click.pass_context
+def policy(ctx):
+    """SCM policy exception commands"""
+    ctx.obj = ScmController(account=ctx.obj.account)
+
+
+exception.add_command(object)
+exception.add_command(policy)
+scm.add_command(exception)
 
 
 @object.command("list")
@@ -471,16 +483,6 @@ def delete_object_exception(controller, exception_id):
     """Delete object exception"""
     with Spinner(description=f"Delete object exception"):
         return controller.delete_object_exception(exception_id=exception_id)
-
-
-exception.add_command(object)
-
-
-@click.group()
-@click.pass_context
-def policy(ctx):
-    """SCM policy exception commands"""
-    ctx.obj = ScmController(account=ctx.obj.account)
 
 
 @policy.command("list")
@@ -596,15 +598,14 @@ def delete_policy_exception(controller, partner, instance_id, policy_id):
         )
 
 
-exception.add_command(policy)
-scm.add_command(exception)
-
-
 @click.group()
 @click.pass_context
 def notification(ctx):
     """SCM notification commands"""
     ctx.obj = ScmController(account=ctx.obj.account)
+
+
+scm.add_command(notification)
 
 
 @notification.command("list")
@@ -720,9 +721,6 @@ def upsert_notification(
             teams_urls=teams_urls.split(",") if teams_urls else None,
             title=title,
         )
-
-
-scm.add_command(notification)
 
 
 @scm.command("notations")
