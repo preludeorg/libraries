@@ -271,7 +271,10 @@ class BuildController(HttpController):
             headers=self.account.headers,
             timeout=10,
         )
-        return res.json()
+        threat_hunt = res.json()
+        if self.account.resolve_enums:
+            self.resolve_enum(threat_hunt, Control, "control")
+        return threat_hunt
 
     @verify_credentials
     def update_threat_hunt(
@@ -296,7 +299,10 @@ class BuildController(HttpController):
             headers=self.account.headers,
             timeout=10,
         )
-        return res.json()
+        threat_hunt = res.json()
+        if self.account.resolve_enums:
+            self.resolve_enum(threat_hunt, Control, "control")
+        return threat_hunt
 
     @verify_credentials
     def delete_threat_hunt(self, threat_hunt_id: str):

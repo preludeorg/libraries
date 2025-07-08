@@ -1,5 +1,8 @@
+from itertools import chain
+
 from prelude_sdk.controllers.http_controller import HttpController
 from prelude_sdk.models.account import verify_credentials
+from prelude_sdk.models.codes import BackgroundJobTypes, Control
 
 
 class JobsController(HttpController):
@@ -13,7 +16,10 @@ class JobsController(HttpController):
         res = self.get(
             f"{self.account.hq}/jobs/statuses", headers=self.account.headers, timeout=30
         )
-        return res.json()
+        jobs = res.json()
+        if self.account.resolve_enums:
+            self.resolve_enum(chain.from_iterable(jobs.values()), Control, "control")
+        return jobs
 
     @verify_credentials
     def job_status(self, job_id: str):
@@ -23,4 +29,8 @@ class JobsController(HttpController):
             headers=self.account.headers,
             timeout=30,
         )
-        return res.json()
+        job = res.json()
+        if self.account.resolve_enums:
+            self.resolve_enum(job, Control, "control")
+            self.resolve_enum(job, BackgroundJobTypes, "job_type")
+        return job

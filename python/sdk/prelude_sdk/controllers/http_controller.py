@@ -22,6 +22,26 @@ class HttpController(object):
         self._session.mount("http://", HTTPAdapter(max_retries=retry))
         self._session.mount("https://", HTTPAdapter(max_retries=retry))
 
+    def resolve_enum(self, data, enum_class, key):
+        if isinstance(data, list):
+            for item in data:
+                if isinstance(item, dict):
+                    self.resolve_enum(item, enum_class, key)
+        elif isinstance(data, dict):
+            for k, v in data.items():
+                if k == key:
+                    if isinstance(v, list):
+                        for i, item in enumerate(v):
+                            v[i] = enum_class[item].name
+                    elif v is not None:
+                        data[k] = enum_class[v].name
+                elif isinstance(v, dict):
+                    self.resolve_enum(v, enum_class, key)
+                elif isinstance(v, list):
+                    for item in v:
+                        if isinstance(item, dict):
+                            self.resolve_enum(item, enum_class, key)
+
     def get(self, url, retry=True, **kwargs):
         res = self._session.get(url, **kwargs)
         if res.status_code == 200:

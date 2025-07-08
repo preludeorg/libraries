@@ -205,7 +205,14 @@ def export(controller, type, output_file, limit, odata_filter, odata_orderby):
         return result, f"Exported data to {output_file}"
 
 
-@scm.command("groups")
+@click.group()
+@click.pass_context
+def group(ctx):
+    """SCM group commands"""
+    ctx.obj = ScmController(account=ctx.obj.account)
+
+
+@group.command("list")
 @click.option("--odata_filter", help="OData filter string", default=None)
 @click.option("--odata_orderby", help="OData orderby string", default=None)
 @click.pass_obj
@@ -218,7 +225,7 @@ def list_partner_groups(controller, odata_filter, odata_orderby):
         )
 
 
-@scm.command("sync-groups")
+@group.command("sync")
 @click.argument(
     "partner",
     type=click.Choice(
@@ -244,7 +251,17 @@ def sync_groups(controller, partner, instance_id, group_ids):
         return result
 
 
-@scm.command("create-threat")
+scm.add_command(group)
+
+
+@click.group()
+@click.pass_context
+def threat(ctx):
+    """SCM threat commands"""
+    ctx.obj = ScmController(account=ctx.obj.account)
+
+
+@threat.command("create")
 @click.argument("name")
 @click.option(
     "-d", "--description", help="description of the threat", default=None, type=str
@@ -300,7 +317,7 @@ def create_threat(
         )
 
 
-@scm.command("delete-threat")
+@threat.command("delete")
 @click.argument("threat_id")
 @click.confirmation_option(prompt="Are you sure?")
 @click.pass_obj
@@ -311,7 +328,7 @@ def delete_threat(controller, threat_id):
         return controller.delete_threat(id=threat_id)
 
 
-@scm.command("threats")
+@threat.command("list")
 @click.pass_obj
 @pretty_print
 def list_threats(controller):
@@ -320,7 +337,7 @@ def list_threats(controller):
         return controller.list_threats()
 
 
-@scm.command("threat")
+@threat.command("get")
 @click.argument("threat_id")
 @click.pass_obj
 @pretty_print
@@ -328,6 +345,9 @@ def get_threat(controller, threat_id):
     """Get specific scm threat"""
     with Spinner(description="Fetching scm threat"):
         return controller.get_threat(id=threat_id)
+
+
+scm.add_command(threat)
 
 
 @scm.command("threat-intel")
@@ -358,16 +378,30 @@ def parse_from_partner_advisory(controller, partner, advisory_id):
         )
 
 
-@scm.command("object-exceptions")
+@click.group()
+@click.pass_context
+def exception(ctx):
+    """SCM exception commands"""
+    ctx.obj = ScmController(account=ctx.obj.account)
+
+
+@click.group()
+@click.pass_context
+def object(ctx):
+    """SCM object exception commands"""
+    ctx.obj = ScmController(account=ctx.obj.account)
+
+
+@object.command("list")
 @click.pass_obj
 @pretty_print
 def list_object_exceptions(controller):
     """List all object exceptions"""
-    with Spinner(description="Querying Object exceptions"):
+    with Spinner(description="Fetching object exceptions"):
         return controller.list_object_exceptions()
 
 
-@scm.command("create-object-exception")
+@object.command("create")
 @click.argument(
     "category",
     type=click.Choice(
@@ -384,22 +418,22 @@ def list_object_exceptions(controller):
         case_sensitive=False,
     ),
 )
+@click.option("-n", "--name", help="exception name", default=None, type=str)
 @click.option(
     "-f", "--filter", help="OData filter string", default=None, required=True, type=str
 )
 @click.option(
     "-e",
     "--expires",
-    help="Expiry Date (YYYY-MM-DD hh:mm:ss ([+-]hh:mm))",
+    help="expiry date (YYYY-MM-DD hh:mm:ss ([+-]hh:mm))",
     default=None,
     type=str,
 )
-@click.option("-n", "--name", help="Exception Name", default=None, type=str)
 @click.pass_obj
 @pretty_print
-def create_object_exception(controller, category, filter, expires, name):
+def create_object_exception(controller, category, filter, name, expires):
     """Create object exception"""
-    with Spinner(description=f"Creating Object exception"):
+    with Spinner(description=f"Creating object exception"):
         return controller.create_object_exception(
             category=ControlCategory[category],
             filter=filter,
@@ -408,52 +442,76 @@ def create_object_exception(controller, category, filter, expires, name):
         )
 
 
-@scm.command("update-object-exception")
-@click.argument("exception_id", type=str)
+@object.command("update")
+@click.option(
+    "-i", "--id", help="ID of the exception to update", default=None, type=str
+)
+@click.option("-n", "--name", help="exception name", default=None, type=str)
+@click.option(
+    "-f", "--filter", help="OData filter string", default=None, required=True, type=str
+)
 @click.option(
     "-e",
     "--expires",
-    help="Expiry Date (YYYY-MM-DD hh:mm:ss ([+-]hh:mm))",
-    default=ScmController.default,
+    help="expiry date (YYYY-MM-DD hh:mm:ss ([+-]hh:mm))",
+    default=None,
+    type=str,
 )
-@click.option("-f", "--filter", help="OData filter string", default=None, type=str)
-@click.option("-n", "--name", help="Exception Name", default=None, type=str)
 @click.pass_obj
 @pretty_print
-def update_object_exception(controller, exception_id, expires, filter, name):
+def update_object_exception(controller, id, filter, name, expires):
     """Update object exception"""
-    with Spinner(description=f"Updating Object exception"):
+    with Spinner(description=f"Updating object exception"):
         return controller.update_object_exception(
-            exception_id=exception_id, filter=filter, name=name, expires=expires
+            exception_id=id, filter=filter, name=name, expires=expires
         )
 
 
-@scm.command("delete-object-exception")
-@click.argument("exception_id", type=str)
+@object.command("delete")
+@click.option(
+    "-i", "--id", help="ID of the exception to delete", default=None, type=str
+)
 @click.confirmation_option(prompt="Are you sure?")
 @click.pass_obj
 @pretty_print
-def delete_object_exception(controller, exception_id):
+def delete_object_exception(controller, id):
     """Delete object exception"""
-    with Spinner(description=f"Deleting Object exception"):
-        return controller.delete_object_exception(exception_id=exception_id)
+    with Spinner(description=f"Delete object exception"):
+        return controller.delete_object_exception(exception_id=id)
 
 
-@scm.command("policy-exceptions")
+exception.add_command(object)
+
+
+@click.group()
+@click.pass_context
+def policy(ctx):
+    """SCM policy exception commands"""
+    ctx.obj = ScmController(account=ctx.obj.account)
+
+
+@policy.command("list")
 @click.pass_obj
 @pretty_print
 def list_policy_exceptions(controller):
     """List all policy exceptions"""
-    with Spinner(description="Querying Policy exceptions"):
+    with Spinner(description="Fetching policy exceptions"):
         return controller.list_policy_exceptions()
 
 
-@scm.command("create-policy-exception")
+@policy.command("create")
 @click.argument(
     "partner",
     type=click.Choice(
         [c.name for c in Control if c != Control.INVALID], case_sensitive=False
     ),
+)
+@click.option(
+    "-e",
+    "--expires",
+    help="expiry date (YYYY-MM-DD hh:mm:ss ([+-]hh:mm))",
+    default=None,
+    type=str,
 )
 @click.option("-i", "--instance_id", required=True, help="instance ID of the partner")
 @click.option("-p", "--policy_id", required=True, help="ID of the policy to create")
@@ -476,8 +534,8 @@ def create_policy_exception(
     controller, partner, instance_id, policy_id, settings, expires
 ):
     """Create policy exception"""
-    with Spinner(description=f"Creating Policy exception"):
-        return controller.create_policy_exception(
+    with Spinner(description=f"Creating policy exception"):
+        return controller.put_policy_exceptions(
             partner=Control[partner],
             expires=expires,
             instance_id=instance_id,
@@ -486,7 +544,7 @@ def create_policy_exception(
         )
 
 
-@scm.command("update-policy-exception")
+@scm.command("update")
 @click.argument(
     "partner",
     type=click.Choice(
@@ -522,7 +580,7 @@ def update_policy_exception(
         )
 
 
-@scm.command("delete-policy-exception")
+@policy.command("delete")
 @click.argument(
     "partner",
     type=click.Choice(
@@ -541,8 +599,29 @@ def delete_policy_exception(controller, partner, instance_id, policy_id):
             instance_id=instance_id, policy_id=policy_id
         )
 
+    """Delete policy exception removes all exceptions in a policy"""
+    with Spinner(description=f"Deleting policy exception"):
+        return controller.put_policy_exceptions(
+            partner=Control[partner],
+            expires=None,
+            instance_id=instance_id,
+            policy_id=policy_id,
+            setting_names=[],
+        )
 
-@scm.command("notifications")
+
+exception.add_command(policy)
+scm.add_command(exception)
+
+
+@click.group()
+@click.pass_context
+def notification(ctx):
+    """SCM notification commands"""
+    ctx.obj = ScmController(account=ctx.obj.account)
+
+
+@notification.command("list")
 @click.pass_obj
 @pretty_print
 def list_notifications(controller):
@@ -550,7 +629,7 @@ def list_notifications(controller):
         return controller.list_notifications()
 
 
-@scm.command("delete-notification")
+@notification.command("delete")
 @click.argument("notification_id", type=str)
 @click.confirmation_option(prompt="Are you sure?")
 @click.pass_obj
@@ -560,7 +639,7 @@ def delete_notification(controller, notification_id):
         return controller.delete_notification(notification_id)
 
 
-@scm.command("upsert-notification")
+@notification.command("upsert")
 @click.argument(
     "control_category",
     type=click.Choice([c.name for c in ControlCategory], case_sensitive=False),
@@ -655,6 +734,9 @@ def upsert_notification(
             teams_urls=teams_urls.split(",") if teams_urls else None,
             title=title,
         )
+
+
+scm.add_command(notification)
 
 
 @scm.command("notations")

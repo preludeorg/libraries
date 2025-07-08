@@ -1,6 +1,6 @@
 from prelude_sdk.controllers.http_controller import HttpController
 from prelude_sdk.models.account import verify_credentials
-from prelude_sdk.models.codes import Mode, Permission
+from prelude_sdk.models.codes import Control, Mode, Permission
 
 
 class IAMAccountController(HttpController):
@@ -14,7 +14,12 @@ class IAMAccountController(HttpController):
         res = self.get(
             f"{self.account.hq}/iam/account", headers=self.account.headers, timeout=10
         )
-        return res.json()
+        account = res.json()
+        if self.account.resolve_enums:
+            self.resolve_enum(account, Mode, "mode")
+            self.resolve_enum(account, Permission, "permission")
+            self.resolve_enum(account, Control, "id")
+        return account
 
     @verify_credentials
     def purge_account(self):
@@ -100,7 +105,10 @@ class IAMAccountController(HttpController):
             headers=self.account.headers,
             timeout=10,
         )
-        return res.json()
+        user = res.json()
+        if self.account.resolve_enums:
+            self.resolve_enum(user, Permission, "permission")
+        return user
 
     @verify_credentials
     def create_service_user(self, name: str):
@@ -172,7 +180,6 @@ class IAMAccountController(HttpController):
             timeout=30,
         )
         return res.json()
-
 
     def sign_up(self, company, email, name):
         """(NOT AVAIABLE IN PRODUCTION) Create a new user and account"""

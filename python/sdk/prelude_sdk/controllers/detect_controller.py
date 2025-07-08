@@ -1,5 +1,6 @@
 from prelude_sdk.controllers.http_controller import HttpController
 from prelude_sdk.models.account import verify_credentials
+from prelude_sdk.models.codes import Control, RunCode
 
 
 class DetectController(HttpController):
@@ -59,7 +60,9 @@ class DetectController(HttpController):
             params=params,
             timeout=10,
         )
-        return res.json()
+        endpoints = res.json()
+        if self.account.resolve_enums:
+            self.resolve_enum(endpoints, Control, "control")
 
     @verify_credentials
     def describe_activity(self, filters: dict, view: str = "protected"):
@@ -169,7 +172,10 @@ class DetectController(HttpController):
             params=filters if filters else {},
             timeout=10,
         )
-        return res.json()
+        threat_hunts = res.json()
+        if self.account.resolve_enums:
+            self.resolve_enum(threat_hunts, Control, "control")
+        return threat_hunts
 
     @verify_credentials
     def get_threat_hunt(self, threat_hunt_id):
@@ -179,7 +185,10 @@ class DetectController(HttpController):
             headers=self.account.headers,
             timeout=10,
         )
-        return res.json()
+        threat_hunt = res.json()
+        if self.account.resolve_enums:
+            self.resolve_enum(threat_hunt, Control, "control")
+        return threat_hunt
 
     @verify_credentials
     def do_threat_hunt(self, threat_hunt_id):
@@ -214,7 +223,10 @@ class DetectController(HttpController):
             json=dict(items=items),
             timeout=10,
         )
-        return res.json()
+        schedule = res.json()
+        if self.account.resolve_enums:
+            self.resolve_enum(schedule, RunCode, "run_code")
+        return schedule
 
     @verify_credentials
     def unschedule(self, items: list):
