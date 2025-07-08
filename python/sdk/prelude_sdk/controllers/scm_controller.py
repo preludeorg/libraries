@@ -28,10 +28,15 @@ class ScmController(HttpController):
         )
         data = res.json()
         if self.account.resolve_enums:
-            self.resolve_enum(data, Control, "controls")
-            self.resolve_enum(data, Control, "control")
-            self.resolve_enum(data, ControlCategory, "category")
-            self.resolve_enum(data, PartnerEvents, "event")
+            self.resolve_enums(
+                data,
+                [
+                    (Control, "controls"),
+                    (Control, "control"),
+                    (ControlCategory, "category"),
+                    (PartnerEvents, "event"),
+                ],
+            )
         return data
 
     @verify_credentials
@@ -46,10 +51,15 @@ class ScmController(HttpController):
         )
         data = res.json()
         if self.account.resolve_enums:
-            self.resolve_enum(data, Control, "controls")
-            self.resolve_enum(data, Control, "control")
-            self.resolve_enum(data, ControlCategory, "category")
-            self.resolve_enum(data, PartnerEvents, "event")
+            self.resolve_enums(
+                data,
+                [
+                    (Control, "controls"),
+                    (Control, "control"),
+                    (ControlCategory, "category"),
+                    (PartnerEvents, "event"),
+                ],
+            )
         return data
 
     @verify_credentials
@@ -64,10 +74,15 @@ class ScmController(HttpController):
         )
         data = res.json()
         if self.account.resolve_enums:
-            self.resolve_enum(data, Control, "controls")
-            self.resolve_enum(data, Control, "control")
-            self.resolve_enum(data, ControlCategory, "category")
-            self.resolve_enum(data, PartnerEvents, "event")
+            self.resolve_enums(
+                data,
+                [
+                    (Control, "controls"),
+                    (Control, "control"),
+                    (ControlCategory, "category"),
+                    (PartnerEvents, "event"),
+                ],
+            )
         return data
 
     @verify_credentials
@@ -105,8 +120,9 @@ class ScmController(HttpController):
         )
         data = res.json()
         if self.account.resolve_enums:
-            self.resolve_enum(data, Control, "control")
-            self.resolve_enum(data, ControlCategory, "category")
+            self.resolve_enums(
+                data, [(Control, "control"), (ControlCategory, "category")]
+            )
         return data
 
     @verify_credentials
@@ -129,7 +145,7 @@ class ScmController(HttpController):
         )
         data = res.json()
         if self.account.resolve_enums:
-            self.resolve_enum(data, PolicyType, "policy_type")
+            self.resolve_enums(data, [(PolicyType, "policy_type")])
         return data
 
     @verify_credentials
@@ -154,7 +170,7 @@ class ScmController(HttpController):
         )
         groups = res.json()
         if self.account.resolve_enums:
-            self.resolve_enum(groups, Control, "control")
+            self.resolve_enums(groups, [(Control, "control")])
         return groups
 
     @verify_credentials
@@ -181,7 +197,7 @@ class ScmController(HttpController):
         )
         exceptions = res.json()
         if self.account.resolve_enums:
-            self.resolve_enum(exceptions, ControlCategory, "category")
+            self.resolve_enums(exceptions, [(ControlCategory, "category")])
         return exceptions
 
     @verify_credentials
@@ -242,8 +258,9 @@ class ScmController(HttpController):
         )
         exceptions = res.json()
         if self.account.resolve_enums:
-            self.resolve_enum(exceptions, Control, "control")
-            self.resolve_enum(exceptions, ControlCategory, "category")
+            self.resolve_enums(
+                exceptions, [(Control, "control"), (ControlCategory, "category")]
+            )
         return exceptions
 
     @verify_credentials
@@ -311,7 +328,7 @@ class ScmController(HttpController):
         )
         views = res.json()
         if self.account.resolve_enums:
-            self.resolve_enum(views, ControlCategory, "category")
+            self.resolve_enums(views, [(ControlCategory, "category")])
         return views
 
     @verify_credentials
@@ -453,9 +470,14 @@ class ScmController(HttpController):
         )
         notifications = res.json()
         if self.account.resolve_enums:
-            self.resolve_enum(notifications, ControlCategory, "control_category")
-            self.resolve_enum(notifications, PartnerEvents, "event")
-            self.resolve_enum(notifications, RunCode, "run_code")
+            self.resolve_enums(
+                notifications,
+                [
+                    (ControlCategory, "control_category"),
+                    (PartnerEvents, "event"),
+                    (RunCode, "run_code"),
+                ],
+            )
         return notifications
 
     @verify_credentials
@@ -518,7 +540,7 @@ class ScmController(HttpController):
         )
         notations = res.json()
         if self.account.resolve_enums:
-            self.resolve_enum(notations, NotationType, "event")
+            self.resolve_enums(notations, [(NotationType, "event")])
         return notations
 
     @verify_credentials
@@ -535,7 +557,12 @@ class ScmController(HttpController):
         )
         history = res.json()
         if self.account.resolve_enums:
-            self.resolve_enum(history, Control, "control")
-            self.resolve_enum(history, ControlCategory, "category")
-            self.resolve_enum(history, PartnerEvents, "event")
+            self.resolve_enums(
+                history,
+                [
+                    (Control, "control"),
+                    (ControlCategory, "category"),
+                    (PartnerEvents, "event"),
+                ],
+            )
         return history

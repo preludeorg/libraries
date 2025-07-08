@@ -16,9 +16,9 @@ class IAMAccountController(HttpController):
         )
         account = res.json()
         if self.account.resolve_enums:
-            self.resolve_enum(account, Mode, "mode")
-            self.resolve_enum(account, Permission, "permission")
-            self.resolve_enum(account, Control, "id")
+            self.resolve_enums(
+                account, [(Mode, "mode"), (Permission, "permission"), (Control, "id")]
+            )
         return account
 
     @verify_credentials
@@ -107,7 +107,7 @@ class IAMAccountController(HttpController):
         )
         user = res.json()
         if self.account.resolve_enums:
-            self.resolve_enum(user, Permission, "permission")
+            self.resolve_enums(user, [(Permission, "permission")])
         return user
 
     @verify_credentials

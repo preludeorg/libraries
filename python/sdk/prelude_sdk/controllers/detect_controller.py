@@ -62,7 +62,7 @@ class DetectController(HttpController):
         )
         endpoints = res.json()
         if self.account.resolve_enums:
-            self.resolve_enum(endpoints, Control, "control")
+            self.resolve_enums(endpoints, [(Control, "control")])
         return endpoints
 
     @verify_credentials
@@ -175,7 +175,7 @@ class DetectController(HttpController):
         )
         threat_hunts = res.json()
         if self.account.resolve_enums:
-            self.resolve_enum(threat_hunts, Control, "control")
+            self.resolve_enums(threat_hunts, [(Control, "control")])
         return threat_hunts
 
     @verify_credentials
@@ -188,7 +188,7 @@ class DetectController(HttpController):
         )
         threat_hunt = res.json()
         if self.account.resolve_enums:
-            self.resolve_enum(threat_hunt, Control, "control")
+            self.resolve_enums(threat_hunt, [(Control, "control")])
         return threat_hunt
 
     @verify_credentials
@@ -226,7 +226,7 @@ class DetectController(HttpController):
         )
         schedule = res.json()
         if self.account.resolve_enums:
-            self.resolve_enum(schedule, RunCode, "run_code")
+            self.resolve_enums(schedule, [(RunCode, "run_code")])
         return schedule
 
     @verify_credentials

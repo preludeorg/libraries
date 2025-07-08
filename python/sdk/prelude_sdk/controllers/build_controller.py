@@ -273,7 +273,7 @@ class BuildController(HttpController):
         )
         threat_hunt = res.json()
         if self.account.resolve_enums:
-            self.resolve_enum(threat_hunt, Control, "control")
+            self.resolve_enums(threat_hunt, [(Control, "control")])
         return threat_hunt
 
     @verify_credentials
@@ -301,7 +301,7 @@ class BuildController(HttpController):
         )
         threat_hunt = res.json()
         if self.account.resolve_enums:
-            self.resolve_enum(threat_hunt, Control, "control")
+            self.resolve_enums(threat_hunt, [(Control, "control")])
         return threat_hunt
 
     @verify_credentials

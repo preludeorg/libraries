@@ -18,7 +18,7 @@ class JobsController(HttpController):
         )
         jobs = res.json()
         if self.account.resolve_enums:
-            self.resolve_enum(jobs, Control, "control")
+            self.resolve_enums(jobs, [(Control, "control")])
         return jobs
 
     @verify_credentials
@@ -31,6 +31,7 @@ class JobsController(HttpController):
         )
         job = res.json()
         if self.account.resolve_enums:
-            self.resolve_enum(job, Control, "control")
-            self.resolve_enum(job, BackgroundJobTypes, "job_type")
+            self.resolve_enums(
+                job, [(Control, "control"), (BackgroundJobTypes, "job_type")]
+            )
         return job
