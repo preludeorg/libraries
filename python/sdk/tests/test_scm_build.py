@@ -17,7 +17,7 @@ class TestScmBuild:
         res = unwrap(self.scm.create_object_exception)(
             self.scm,
             ControlCategory.ASSET_MANAGER,
-            "normalized_hostname eq 'host1'",
+            "hostname eq 'host1'",
             name="filter me",
             expires="5555-05-05",
         )
@@ -28,7 +28,7 @@ class TestScmBuild:
         res = unwrap(self.scm.update_object_exception)(
             self.scm,
             pytest.exception_id,
-            filter="normalized_hostname eq 'host2'",
+            filter="hostname eq 'host2'",
             expires=None,
         )
         assert res["status"]
@@ -43,7 +43,7 @@ class TestScmBuild:
         assert exception == {
             "category": ControlCategory.ASSET_MANAGER.value,
             "expires": None,
-            "filter": "normalized_hostname eq 'host2'",
+            "filter": "hostname eq 'host2'",
             "id": pytest.exception_id,
             "name": "filter me",
         }
