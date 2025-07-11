@@ -48,6 +48,11 @@ def _process_results(result: dict, output_dir: str, job_id: str) -> dict:
                         f,
                         indent=4,
                     )
+                if content["readme"]:
+                    with open(
+                        f"{output_dir}/{technique_directory}/README.md", "w"
+                    ) as f:
+                        f.write(content["readme"])
         return dict(
             output_dir=output_dir,
             successfully_generated=[
