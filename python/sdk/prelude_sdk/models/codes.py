@@ -185,6 +185,7 @@ class Control(Enum, metaclass=MissingItem):
     RAPID7 = 25
     RAPID7_DISCOVERY = 26
     INTUNE_HOST_FIREWALL = 27
+    CISCO_MERAKI = 28
 
     @classmethod
     def _missing_(cls, value):
@@ -284,7 +285,7 @@ class ControlCategory(Enum, metaclass=MissingItem):
                 Control.GOOGLE_IDENTITY,
                 Control.OKTA,
             ],
-            ControlCategory.NETWORK: [],
+            ControlCategory.NETWORK: [Control.CISCO_MERAKI],
             ControlCategory.PRIVATE_REPO: [
                 Control.GITHUB,
             ],
@@ -312,6 +313,7 @@ class SCMCategory(Enum, metaclass=MissingItem):
     ENDPOINT = 1
     INBOX = 2
     USER = 3
+    NETWORK_DEVICE = 4
 
     @classmethod
     def _missing_(cls, value):
@@ -339,14 +341,17 @@ class SCMCategory(Enum, metaclass=MissingItem):
                 Control.TENABLE,
                 Control.TENABLE_DISCOVERY,
             ],
+            SCMCategory.INBOX: [
+                Control.GMAIL,
+                Control.M365,
+            ],
+            SCMCategory.NETWORK_DEVICE: [
+                Control.CISCO_MERAKI,
+            ],
             SCMCategory.USER: [
                 Control.ENTRA,
                 Control.GOOGLE_IDENTITY,
                 Control.OKTA,
-            ],
-            SCMCategory.INBOX: [
-                Control.GMAIL,
-                Control.M365,
             ],
         }
 
@@ -360,8 +365,9 @@ class SCMCategory(Enum, metaclass=MissingItem):
                 ControlCategory.VULN_MANAGER,
                 ControlCategory.XDR,
             ],
-            SCMCategory.USER: [ControlCategory.IDENTITY],
             SCMCategory.INBOX: [ControlCategory.EMAIL],
+            SCMCategory.NETWORK_DEVICE: [ControlCategory.NETWORK],
+            SCMCategory.USER: [ControlCategory.IDENTITY],
         }
 
 
@@ -409,6 +415,8 @@ class PartnerEvents(Enum, metaclass=MissingItem):
     NO_HOST_FIREWALL = 15
     MISSING_HOST_FIREWALL_POLICY = 16
     USER_MISSING_HOST_FIREWALL = 17
+    OUT_OF_DATE_FIRMWARE = 18
+    MISSING_ADMIN_MFA = 19
 
     @classmethod
     def _missing_(cls, value):
@@ -423,6 +431,7 @@ class PartnerEvents(Enum, metaclass=MissingItem):
                 ControlCategory.IDENTITY,
                 ControlCategory.XDR,
             ],
+            PartnerEvents.MISSING_ADMIN_MFA: [ControlCategory.NETWORK],
             PartnerEvents.MISSING_AV_POLICY: [ControlCategory.XDR],
             PartnerEvents.MISSING_EDR_POLICY: [ControlCategory.XDR],
             PartnerEvents.MISSING_HOST_FIREWALL_POLICY: [ControlCategory.HOST_FIREWALL],
@@ -433,6 +442,7 @@ class PartnerEvents(Enum, metaclass=MissingItem):
             PartnerEvents.NO_HOST_FIREWALL: [ControlCategory.HOST_FIREWALL],
             PartnerEvents.NO_SERVER_MANAGER: [ControlCategory.ASSET_MANAGER],
             PartnerEvents.NO_VULN_MANAGER: [ControlCategory.VULN_MANAGER],
+            PartnerEvents.OUT_OF_DATE_FIRMWARE: [ControlCategory.NETWORK],
             PartnerEvents.OUT_OF_DATE_SCAN: [ControlCategory.VULN_MANAGER],
             PartnerEvents.REDUCED_FUNCTIONALITY_MODE: [ControlCategory.XDR],
             PartnerEvents.USER_MISSING_ASSET_MANAGER: [ControlCategory.IDENTITY],
