@@ -470,6 +470,7 @@ class AlertTypes(Enum, metaclass=MissingItem):
     NEW_NO_HOST_FIREWALL_ENDPOINTS = 16
     NEW_MISSING_HOST_FIREWALL_POLICY_ENDPOINTS = 17
     NEW_USER_MISSING_HOST_FIREWALL = 18
+    NEW_OUT_OF_DATE_FIRMWARE_NETWORK_DEVICES = 19
 
     @classmethod
     def _missing_(cls, value):
