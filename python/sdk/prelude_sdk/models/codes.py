@@ -416,7 +416,6 @@ class PartnerEvents(Enum, metaclass=MissingItem):
     MISSING_HOST_FIREWALL_POLICY = 16
     USER_MISSING_HOST_FIREWALL = 17
     OUT_OF_DATE_FIRMWARE = 18
-    MISSING_ADMIN_MFA = 19
 
     @classmethod
     def _missing_(cls, value):
@@ -431,7 +430,6 @@ class PartnerEvents(Enum, metaclass=MissingItem):
                 ControlCategory.IDENTITY,
                 ControlCategory.XDR,
             ],
-            PartnerEvents.MISSING_ADMIN_MFA: [ControlCategory.NETWORK],
             PartnerEvents.MISSING_AV_POLICY: [ControlCategory.XDR],
             PartnerEvents.MISSING_EDR_POLICY: [ControlCategory.XDR],
             PartnerEvents.MISSING_HOST_FIREWALL_POLICY: [ControlCategory.HOST_FIREWALL],
