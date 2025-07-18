@@ -493,7 +493,8 @@ class PolicyType(Enum, metaclass=MissingItem):
     IDENTITY_MFA = 12
     HOST_FIREWALL = 13
     NETWORK = 14
-    NETWORK_FIREWALL = 15
+    NETWORK_SNMP = 15
+    NETWORK_FIREWALL = 16
 
     @classmethod
     def _missing_(cls, value):
