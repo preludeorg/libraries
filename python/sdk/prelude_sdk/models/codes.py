@@ -492,6 +492,8 @@ class PolicyType(Enum, metaclass=MissingItem):
     DEVICE_COMPLIANCE = 11
     IDENTITY_MFA = 12
     HOST_FIREWALL = 13
+    NETWORK = 14
+    NETWORK_FIREWALL = 15
 
     @classmethod
     def _missing_(cls, value):
