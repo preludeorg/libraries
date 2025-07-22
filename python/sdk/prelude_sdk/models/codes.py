@@ -492,8 +492,6 @@ class PolicyType(Enum, metaclass=MissingItem):
     DEVICE_COMPLIANCE = 11
     IDENTITY_MFA = 12
     HOST_FIREWALL = 13
-    NETWORK = 14
-    NETWORK_SNMP = 15
     NETWORK_FIREWALL = 16
 
     @classmethod
