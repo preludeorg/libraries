@@ -186,6 +186,7 @@ class Control(Enum, metaclass=MissingItem):
     RAPID7_DISCOVERY = 26
     INTUNE_HOST_FIREWALL = 27
     CISCO_MERAKI = 28
+    CISCO_MERAKI_IDENTITY = 29
 
     @classmethod
     def _missing_(cls, value):
@@ -208,6 +209,8 @@ class Control(Enum, metaclass=MissingItem):
     @property
     def parent(self):
         match self:
+            case Control.CISCO_MERAKI_IDENTITY:
+                return Control.CISCO_MERAKI
             case Control.DEFENDER_DISCOVERY:
                 return Control.DEFENDER
             case Control.QUALYS_DISCOVERY:
@@ -222,6 +225,8 @@ class Control(Enum, metaclass=MissingItem):
     @property
     def children(self):
         match self:
+            case Control.CISCO_MERAKI:
+                return [Control.CISCO_MERAKI_IDENTITY]
             case Control.DEFENDER:
                 return [Control.DEFENDER_DISCOVERY]
             case Control.QUALYS:
@@ -281,6 +286,7 @@ class ControlCategory(Enum, metaclass=MissingItem):
                 Control.INTUNE_HOST_FIREWALL,
             ],
             ControlCategory.IDENTITY: [
+                Control.CISCO_MERAKI_IDENTITY,
                 Control.ENTRA,
                 Control.GOOGLE_IDENTITY,
                 Control.OKTA,
@@ -349,6 +355,7 @@ class SCMCategory(Enum, metaclass=MissingItem):
                 Control.CISCO_MERAKI,
             ],
             SCMCategory.USER: [
+                Control.CISCO_MERAKI_IDENTITY,
                 Control.ENTRA,
                 Control.GOOGLE_IDENTITY,
                 Control.OKTA,
