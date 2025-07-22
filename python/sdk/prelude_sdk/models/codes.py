@@ -209,8 +209,6 @@ class Control(Enum, metaclass=MissingItem):
     @property
     def parent(self):
         match self:
-            case Control.CISCO_MERAKI_IDENTITY:
-                return Control.CISCO_MERAKI
             case Control.DEFENDER_DISCOVERY:
                 return Control.DEFENDER
             case Control.QUALYS_DISCOVERY:
@@ -225,8 +223,6 @@ class Control(Enum, metaclass=MissingItem):
     @property
     def children(self):
         match self:
-            case Control.CISCO_MERAKI:
-                return [Control.CISCO_MERAKI_IDENTITY]
             case Control.DEFENDER:
                 return [Control.DEFENDER_DISCOVERY]
             case Control.QUALYS:
