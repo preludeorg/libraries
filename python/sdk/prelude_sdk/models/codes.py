@@ -185,6 +185,8 @@ class Control(Enum, metaclass=MissingItem):
     RAPID7 = 25
     RAPID7_DISCOVERY = 26
     INTUNE_HOST_FIREWALL = 27
+    CISCO_MERAKI = 28
+    CISCO_MERAKI_IDENTITY = 29
 
     @classmethod
     def _missing_(cls, value):
@@ -207,6 +209,8 @@ class Control(Enum, metaclass=MissingItem):
     @property
     def parent(self):
         match self:
+            case Control.CISCO_MERAKI_IDENTITY:
+                return Control.CISCO_MERAKI
             case Control.DEFENDER_DISCOVERY:
                 return Control.DEFENDER
             case Control.QUALYS_DISCOVERY:
@@ -221,6 +225,8 @@ class Control(Enum, metaclass=MissingItem):
     @property
     def children(self):
         match self:
+            case Control.CISCO_MERAKI:
+                return [Control.CISCO_MERAKI_IDENTITY]
             case Control.DEFENDER:
                 return [Control.DEFENDER_DISCOVERY]
             case Control.QUALYS:
@@ -280,11 +286,12 @@ class ControlCategory(Enum, metaclass=MissingItem):
                 Control.INTUNE_HOST_FIREWALL,
             ],
             ControlCategory.IDENTITY: [
+                Control.CISCO_MERAKI_IDENTITY,
                 Control.ENTRA,
                 Control.GOOGLE_IDENTITY,
                 Control.OKTA,
             ],
-            ControlCategory.NETWORK: [],
+            ControlCategory.NETWORK: [Control.CISCO_MERAKI],
             ControlCategory.PRIVATE_REPO: [
                 Control.GITHUB,
             ],
@@ -312,6 +319,7 @@ class SCMCategory(Enum, metaclass=MissingItem):
     ENDPOINT = 1
     INBOX = 2
     USER = 3
+    NETWORK_DEVICE = 4
 
     @classmethod
     def _missing_(cls, value):
@@ -339,14 +347,18 @@ class SCMCategory(Enum, metaclass=MissingItem):
                 Control.TENABLE,
                 Control.TENABLE_DISCOVERY,
             ],
-            SCMCategory.USER: [
-                Control.ENTRA,
-                Control.GOOGLE_IDENTITY,
-                Control.OKTA,
-            ],
             SCMCategory.INBOX: [
                 Control.GMAIL,
                 Control.M365,
+            ],
+            SCMCategory.NETWORK_DEVICE: [
+                Control.CISCO_MERAKI,
+            ],
+            SCMCategory.USER: [
+                Control.CISCO_MERAKI_IDENTITY,
+                Control.ENTRA,
+                Control.GOOGLE_IDENTITY,
+                Control.OKTA,
             ],
         }
 
@@ -360,8 +372,9 @@ class SCMCategory(Enum, metaclass=MissingItem):
                 ControlCategory.VULN_MANAGER,
                 ControlCategory.XDR,
             ],
-            SCMCategory.USER: [ControlCategory.IDENTITY],
             SCMCategory.INBOX: [ControlCategory.EMAIL],
+            SCMCategory.NETWORK_DEVICE: [ControlCategory.NETWORK],
+            SCMCategory.USER: [ControlCategory.IDENTITY],
         }
 
 
@@ -409,6 +422,7 @@ class PartnerEvents(Enum, metaclass=MissingItem):
     NO_HOST_FIREWALL = 15
     MISSING_HOST_FIREWALL_POLICY = 16
     USER_MISSING_HOST_FIREWALL = 17
+    OUT_OF_DATE_FIRMWARE = 18
 
     @classmethod
     def _missing_(cls, value):
@@ -433,6 +447,7 @@ class PartnerEvents(Enum, metaclass=MissingItem):
             PartnerEvents.NO_HOST_FIREWALL: [ControlCategory.HOST_FIREWALL],
             PartnerEvents.NO_SERVER_MANAGER: [ControlCategory.ASSET_MANAGER],
             PartnerEvents.NO_VULN_MANAGER: [ControlCategory.VULN_MANAGER],
+            PartnerEvents.OUT_OF_DATE_FIRMWARE: [ControlCategory.NETWORK],
             PartnerEvents.OUT_OF_DATE_SCAN: [ControlCategory.VULN_MANAGER],
             PartnerEvents.REDUCED_FUNCTIONALITY_MODE: [ControlCategory.XDR],
             PartnerEvents.USER_MISSING_ASSET_MANAGER: [ControlCategory.IDENTITY],
@@ -462,6 +477,7 @@ class AlertTypes(Enum, metaclass=MissingItem):
     NEW_NO_HOST_FIREWALL_ENDPOINTS = 16
     NEW_MISSING_HOST_FIREWALL_POLICY_ENDPOINTS = 17
     NEW_USER_MISSING_HOST_FIREWALL = 18
+    NEW_OUT_OF_DATE_FIRMWARE_NETWORK_DEVICES = 19
 
     @classmethod
     def _missing_(cls, value):
@@ -483,6 +499,7 @@ class PolicyType(Enum, metaclass=MissingItem):
     DEVICE_COMPLIANCE = 11
     IDENTITY_MFA = 12
     HOST_FIREWALL = 13
+    NETWORK_FIREWALL = 16
 
     @classmethod
     def _missing_(cls, value):
