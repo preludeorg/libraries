@@ -7,6 +7,7 @@ from prelude_sdk.models.codes import (
     PolicyType,
     NotationType,
     RunCode,
+    SCMCategory,
 )
 
 
@@ -561,8 +562,8 @@ class ScmController(HttpController):
                 history,
                 [
                     (Control, "control"),
-                    (ControlCategory, "category"),
                     (PartnerEvents, "event"),
+                    (SCMCategory, "category"),
                 ],
             )
         return history
