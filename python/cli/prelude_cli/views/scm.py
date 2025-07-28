@@ -10,6 +10,7 @@ from prelude_sdk.models.codes import (
     Control,
     ControlCategory,
     PartnerEvents,
+    PolicyType,
     RunCode,
     SCMCategory,
 )
@@ -122,6 +123,16 @@ def evaluation_summary(
 @click.option("--instance_id", required=True, help="instance ID of the partner")
 @click.option("--odata_filter", help="OData filter string", default=None)
 @click.option(
+    "-p",
+    "--policy_type",
+    help="Policy types to filter by",
+    multiple=True,
+    default=[],
+    type=click.Choice(
+        [p.name for p in PolicyType if p != PolicyType.INVALID], case_sensitive=False
+    ),
+)
+@click.option(
     "-q",
     "--techniques",
     help="comma-separated list of techniques to filter by",
@@ -130,13 +141,14 @@ def evaluation_summary(
 )
 @click.pass_obj
 @pretty_print
-def evaluation(controller, partner, instance_id, odata_filter, techniques):
+def evaluation(controller, partner, instance_id, odata_filter, policy_type, techniques):
     """Get policy evaluation for given partner"""
     with Spinner(description="Getting policy evaluation"):
         return controller.evaluation(
             partner=Control[partner],
             instance_id=instance_id,
             filter=odata_filter,
+            policy_types=",".join(policy_type),
             techniques=techniques,
         )
 
