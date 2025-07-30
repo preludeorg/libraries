@@ -13,3 +13,5 @@ swift/probe/moonlight
 env/
 venv/
 .vscode/
+**pytest.ini**
+**/pytest_logs/**
