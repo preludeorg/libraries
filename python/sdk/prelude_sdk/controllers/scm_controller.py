@@ -132,10 +132,13 @@ class ScmController(HttpController):
         partner: Control,
         instance_id: str,
         filter: str = None,
+        policy_types: str = None,
         techniques: str = None,
     ):
         """Get policy evaluations for given partner"""
         params = {"$filter": filter}
+        if policy_types:
+            params["policy_types"] = policy_types
         if techniques:
             params["techniques"] = techniques
         res = self.get(
