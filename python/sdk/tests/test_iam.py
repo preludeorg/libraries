@@ -1,186 +1,170 @@
 import json
+import logging
+import os
 import pytest
 
-from prelude_sdk.controllers.iam_controller import (
-    IAMAccountController,
-    IAMUserController,
-)
 from prelude_sdk.models.codes import Permission
-
 from testutils import *
 
 
-@pytest.mark.order(1)
-@pytest.mark.usefixtures("setup_account")
+@pytest.mark.stage1
+@pytest.mark.order(2)
 class TestIAM:
 
-    def setup_class(self):
-        self.iam_account = IAMAccountController(pytest.account)
-        self.iam_user = IAMUserController(pytest.account)
-        self.company = "prelude"
-        self.service_user = "registration"
+    @pytest.fixture(autouse=True, scope="class")
+    def _inject_shared_fixtures(self, request):
+        # This runs once per class and injects the fixture values to class-level vars
+        cls = self.__class__
+        logging.info(f"Starting {cls.__name__} in PID {os.getpid()}")
+        cls.account, cls.expected_account = request.getfixturevalue(
+            "setup_existing_account"
+        )
 
-    def test_get_account(self, unwrap):
-        res = unwrap(self.iam_account.get_account)(self.iam_account)
-        diffs = check_dict_items(pytest.expected_account, res)
+        cls.company = "prelude"
+        cls.service_user_name = "registration"
+        cls.second_user_handle = (
+            f"second-{str(uuid.uuid4())[:12]}@auto-accept.developer.preludesecurity.com"
+        )
+        cls.state = dict()
+
+    def test_get_account(self, iam_account):
+        res = unwrap(iam_account.get_account)(iam_account)
+        diffs = check_dict_items(self.expected_account, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_list_accounts(self, unwrap):
-        res = unwrap(self.iam_user.list_accounts)(self.iam_user)
-        assert pytest.expected_account["account_id"] in [a["account_id"] for a in res]
+    def test_list_accounts(self, iam_user):
+        res = unwrap(iam_user.list_accounts)(iam_user)
+        assert self.expected_account["account_id"] in [a["account_id"] for a in res]
 
-    def test_create_service_user(self, unwrap):
-        service_user = unwrap(self.iam_account.create_service_user)(
-            self.iam_account, name=self.service_user
+    def test_create_service_user(self, iam_account):
+        res = unwrap(iam_account.create_service_user)(
+            iam_account, name=self.service_user_name
         )
-        assert self.service_user == service_user["name"]
-        assert check_if_string_is_uuid(service_user["token"])
-        pytest.second_service_user_handle = service_user["handle"]
+        assert self.service_user_name == res["name"]
+        assert check_if_string_is_uuid(res["token"])
+        self.state["service_user_handle"] = res["handle"]
 
-        res = unwrap(self.iam_account.get_account)(self.iam_account)
+        res = unwrap(iam_account.get_account)(iam_account)
 
         for user in res["token_users"]:
-            if user["handle"] != service_user["handle"]:
+            if user["handle"] != self.state["service_user_handle"]:
                 continue
-            pytest.expected_account["token_users"].append(
+            self.expected_account["token_users"].append(
                 dict(
                     created=user["created"],
-                    handle=service_user["handle"],
+                    handle=self.state["service_user_handle"],
                     last_seen=user["last_seen"],
-                    name=self.service_user,
+                    name=self.service_user_name,
                     oidc="",
                     permission=Permission.SERVICE.value,
                 )
             )
 
-        diffs = check_dict_items(pytest.expected_account, res)
+        diffs = check_dict_items(self.expected_account, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_delete_service_user(self, unwrap):
-        unwrap(self.iam_account.delete_service_user)(
-            self.iam_account, handle=pytest.second_service_user_handle
+    def test_delete_service_user(self, iam_account):
+        unwrap(iam_account.delete_service_user)(
+            iam_account, handle=self.state["service_user_handle"]
         )
 
-        for i, user in enumerate(pytest.expected_account["token_users"]):
-            if user["handle"] == pytest.second_service_user_handle:
-                del pytest.expected_account["token_users"][i]
+        for i, user in enumerate(self.expected_account["token_users"]):
+            if user["handle"] == self.state["service_user_handle"]:
+                del self.expected_account["token_users"][i]
                 break
 
-        res = unwrap(self.iam_account.get_account)(self.iam_account)
-        diffs = check_dict_items(pytest.expected_account, res)
+        res = unwrap(iam_account.get_account)(iam_account)
+        diffs = check_dict_items(self.expected_account, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_update_user(self, unwrap):
-        unwrap(self.iam_user.update_user)(self.iam_user, name="Robb")
+    def test_update_user(self, iam_account, iam_user):
+        unwrap(iam_user.update_user)(iam_user, name="MAKK")
 
-        for user in pytest.expected_account["users"]:
-            if user["handle"] == pytest.account.handle:
-                user["name"] = "Robb"
+        for user in self.expected_account["users"]:
+            if user["handle"] == self.account.handle:
+                user["name"] = "MAKK"
                 break
 
-        res = unwrap(self.iam_account.get_account)(self.iam_account)
-        diffs = check_dict_items(pytest.expected_account, res)
+        res = unwrap(iam_account.get_account)(iam_account)
+        diffs = check_dict_items(self.expected_account, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_update_account(self, unwrap):
-        unwrap(self.iam_account.update_account)(self.iam_account, company=self.company)
-        pytest.expected_account["company"] = self.company
+    def test_update_account(self, iam_account):
+        unwrap(iam_account.update_account)(iam_account, company=self.company)
+        self.expected_account["company"] = self.company
 
-        res = unwrap(self.iam_account.get_account)(self.iam_account)
-        diffs = check_dict_items(pytest.expected_account, res)
+        res = unwrap(iam_account.get_account)(iam_account)
+        diffs = check_dict_items(self.expected_account, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_audit_logs(self, unwrap):
-        res = unwrap(self.iam_account.audit_logs)(self.iam_account, limit=1)[0]
+    def test_audit_logs(self, iam_account):
+        res = unwrap(iam_account.audit_logs)(iam_account, limit=10)
+        actual = [r for r in res if r["event"] == "update_account"][0]
         expected = dict(
             event="update_account",
-            user_id=pytest.expected_account["whoami"]["handle"],
+            user_id=self.expected_account["whoami"]["handle"],
             status="200",
             values=dict(company=self.company),
-            account_id=pytest.expected_account["account_id"],
+            account_id=self.expected_account["account_id"],
         )
-        diffs = check_dict_items(expected, res)
+        diffs = check_dict_items(expected, actual)
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_invite_account_user(self, unwrap):
-        pytest.second_user = second_email = (
-            f"second-{str(uuid.uuid4())[:12]}@auto-accept.developer.preludesecurity.com"
-        )
-        unwrap(self.iam_account.invite_user)(
-            self.iam_account,
-            email=pytest.second_user,
+    def test_invite_account_user(self, iam_account):
+        unwrap(iam_account.invite_user)(
+            iam_account,
+            email=self.second_user_handle,
             oidc=None,
             permission=Permission.EXECUTIVE,
             name="second",
         )
-        pytest.expected_account = unwrap(self.iam_account.get_account)(self.iam_account)
+        self.expected_account = unwrap(iam_account.get_account)(iam_account)
 
-    def test_update_account_user(self, unwrap):
-        unwrap(self.iam_account.update_account_user)(
-            self.iam_account,
-            email=pytest.second_user,
+    def test_update_account_user(self, iam_account):
+        unwrap(iam_account.update_account_user)(
+            iam_account,
+            email=self.second_user_handle,
             oidc="",
             permission=Permission.ADMIN,
         )
 
-        res = unwrap(self.iam_account.get_account)(self.iam_account)
-        for user in pytest.expected_account["users"]:
-            if user["handle"] == pytest.second_user:
+        res = unwrap(iam_account.get_account)(iam_account)
+        for user in self.expected_account["users"]:
+            if user["handle"] == self.second_user_handle:
                 user["permission"] = Permission.ADMIN.value
                 break
 
-        diffs = check_dict_items(pytest.expected_account, res)
+        diffs = check_dict_items(self.expected_account, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_remove_account_user(self, unwrap):
-        unwrap(self.iam_account.remove_user)(
-            self.iam_account, email=pytest.second_user, oidc=""
+    def test_remove_account_user(self, iam_account):
+        unwrap(iam_account.remove_user)(
+            iam_account, email=self.second_user_handle, oidc=""
         )
 
-        for i, user in enumerate(pytest.expected_account["users"]):
-            if user["handle"] == pytest.second_user:
-                del pytest.expected_account["users"][i]
+        for i, user in enumerate(self.expected_account["users"]):
+            if user["handle"] == self.second_user_handle:
+                del self.expected_account["users"][i]
                 break
 
-        res = unwrap(self.iam_account.get_account)(self.iam_account)
-        diffs = check_dict_items(pytest.expected_account, res)
+        res = unwrap(iam_account.get_account)(iam_account)
+        diffs = check_dict_items(self.expected_account, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_forgot_password(self, manual, pause_for_manual_action, unwrap):
+    def test_forgot_password(
+        self, manual, pause_for_manual_action, iam_account, iam_user
+    ):
         if not manual:
             pytest.skip("Not manual mode")
 
-        self.iam_user.forgot_password()
+        iam_user.forgot_password()
         with pause_for_manual_action:
             code = input("\nEnter your confirmation code:\n")
         password = "PySdkTests123!"
-        self.iam_user.confirm_forgot_password(
-            confirmation_code=code, new_password=password
-        )
-        pytest.account.password_login(password)
-        pytest.account.headers["authorization"] = f"Bearer {pytest.account.token}"
-        self.iam_account = IAMAccountController(pytest.account)
+        iam_user.confirm_forgot_password(confirmation_code=code, new_password=password)
+        self.account.password_login(password)
+        self.account.headers["authorization"] = f"Bearer {self.account.token}"
 
-        res = unwrap(self.iam_account.get_account)(self.iam_account)
-        diffs = check_dict_items(pytest.expected_account, res)
+        res = unwrap(iam_account.get_account)(iam_account)
+        diffs = check_dict_items(self.expected_account, res)
         assert not diffs, json.dumps(diffs, indent=2)
-
-    @pytest.mark.order(-3)
-    def test_delete_service_user(self, unwrap):
-        unwrap(self.iam_account.delete_service_user)(
-            self.iam_account, handle=pytest.service_user_handle
-        )
-
-    @pytest.mark.order(-2)
-    def test_purge_account(self, unwrap, existing_account):
-        if existing_account:
-            pytest.skip("Pre-existing account")
-
-        iam = IAMAccountController(pytest.account)
-        unwrap(iam.purge_account)(iam)
-
-    @pytest.mark.order(-1)
-    def test_purge_user(self, unwrap, existing_account):
-        if not existing_account:
-            iam = IAMUserController(pytest.account)
-            unwrap(iam.purge_user)(iam)
