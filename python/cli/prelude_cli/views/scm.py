@@ -47,10 +47,26 @@ def endpoints(controller, limit, odata_filter, odata_orderby):
 @click.option("--odata_orderby", help="OData orderby string", default=None)
 @click.pass_obj
 @pretty_print
-def endpoints(controller, limit, odata_filter, odata_orderby):
+def inboxes(controller, limit, odata_filter, odata_orderby):
     """List inboxes with SCM data"""
     with Spinner(description="Fetching inboxes from partner"):
         return controller.inboxes(filter=odata_filter, orderby=odata_orderby, top=limit)
+
+
+@scm.command("network_devices")
+@click.option(
+    "--limit", default=100, help="maximum number of results to return", type=int
+)
+@click.option("--odata_filter", help="OData filter string", default=None)
+@click.option("--odata_orderby", help="OData orderby string", default=None)
+@click.pass_obj
+@pretty_print
+def network_devices(controller, limit, odata_filter, odata_orderby):
+    """List network devices with SCM data"""
+    with Spinner(description="Fetching network devices from partner"):
+        return controller.network_devices(
+            filter=odata_filter, orderby=odata_orderby, top=limit
+        )
 
 
 @scm.command("users")
@@ -61,7 +77,7 @@ def endpoints(controller, limit, odata_filter, odata_orderby):
 @click.option("--odata_orderby", help="OData orderby string", default=None)
 @click.pass_obj
 @pretty_print
-def endpoints(controller, limit, odata_filter, odata_orderby):
+def users(controller, limit, odata_filter, odata_orderby):
     """List users with SCM data"""
     with Spinner(description="Fetching users from partner"):
         return controller.users(filter=odata_filter, orderby=odata_orderby, top=limit)

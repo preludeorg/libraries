@@ -64,6 +64,29 @@ class ScmController(HttpController):
         return data
 
     @verify_credentials
+    def network_devices(self, filter: str = None, orderby: str = None, top: int = None):
+        """List network_devices with SCM analysis"""
+        params = {"$filter": filter, "$orderby": orderby, "$top": top}
+        res = self.get(
+            f"{self.account.hq}/scm/network_devices",
+            headers=self.account.headers,
+            params=params,
+            timeout=30,
+        )
+        data = res.json()
+        if self.account.resolve_enums:
+            self.resolve_enums(
+                data,
+                [
+                    (Control, "controls"),
+                    (Control, "control"),
+                    (ControlCategory, "category"),
+                    (PartnerEvents, "event"),
+                ],
+            )
+        return data
+
+    @verify_credentials
     def users(self, filter: str = None, orderby: str = None, top: int = None):
         """List users with SCM analysis"""
         params = {"$filter": filter, "$orderby": orderby, "$top": top}
