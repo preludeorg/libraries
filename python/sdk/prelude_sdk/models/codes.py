@@ -184,7 +184,6 @@ class Control(Enum, metaclass=MissingItem):
     QUALYS_DISCOVERY = 24
     RAPID7 = 25
     RAPID7_DISCOVERY = 26
-    INTUNE_HOST_FIREWALL = 27
     INTEL_INTUNE = 28
     CISCO_MERAKI = 29
     CISCO_MERAKI_IDENTITY = 30
@@ -220,8 +219,6 @@ class Control(Enum, metaclass=MissingItem):
                 return Control.RAPID7
             case Control.TENABLE_DISCOVERY:
                 return Control.TENABLE
-            case Control.INTUNE_HOST_FIREWALL:
-                return Control.INTUNE
 
     @property
     def children(self):
@@ -236,8 +233,6 @@ class Control(Enum, metaclass=MissingItem):
                 return [Control.RAPID7_DISCOVERY]
             case Control.TENABLE:
                 return [Control.TENABLE_DISCOVERY]
-            case Control.INTUNE:
-                return [Control.INTUNE_HOST_FIREWALL]
             case _:
                 return []
 
@@ -255,8 +250,7 @@ class ControlCategory(Enum, metaclass=MissingItem):
     VULN_MANAGER = 8
     SIEM = 9
     PRIVATE_REPO = 10
-    HOST_FIREWALL = 11
-    HARDWARE = 12
+    HARDWARE = 11
 
     @classmethod
     def _missing_(cls, value):
@@ -286,9 +280,6 @@ class ControlCategory(Enum, metaclass=MissingItem):
             ],
             ControlCategory.HARDWARE: [
                 Control.INTEL_INTUNE,
-            ],
-            ControlCategory.HOST_FIREWALL: [
-                Control.INTUNE_HOST_FIREWALL,
             ],
             ControlCategory.IDENTITY: [
                 Control.CISCO_MERAKI_IDENTITY,
@@ -342,7 +333,6 @@ class SCMCategory(Enum, metaclass=MissingItem):
                 Control.EC2,
                 Control.INTEL_INTUNE,
                 Control.INTUNE,
-                Control.INTUNE_HOST_FIREWALL,
                 Control.JAMF,
                 Control.QUALYS,
                 Control.QUALYS_DISCOVERY,
@@ -375,7 +365,6 @@ class SCMCategory(Enum, metaclass=MissingItem):
                 ControlCategory.ASSET_MANAGER,
                 ControlCategory.DISCOVERED_DEVICES,
                 ControlCategory.HARDWARE,
-                ControlCategory.HOST_FIREWALL,
                 ControlCategory.VULN_MANAGER,
                 ControlCategory.XDR,
             ],
@@ -426,9 +415,7 @@ class PartnerEvents(Enum, metaclass=MissingItem):
     USER_MISSING_EDR = 12
     USER_MISSING_VULN_MANAGER = 13
     NO_SERVER_MANAGER = 14
-    NO_HOST_FIREWALL = 15
     MISSING_HOST_FIREWALL_POLICY = 16
-    USER_MISSING_HOST_FIREWALL = 17
     OUT_OF_DATE_FIRMWARE = 18
     NO_HARDWARE = 19
 
@@ -440,20 +427,19 @@ class PartnerEvents(Enum, metaclass=MissingItem):
     def control_category_mapping(cls):
         return {
             PartnerEvents.MISCONFIGURED_POLICY_SETTING: [
+                ControlCategory.ASSET_MANAGER,
                 ControlCategory.EMAIL,
-                ControlCategory.HOST_FIREWALL,
                 ControlCategory.IDENTITY,
                 ControlCategory.XDR,
             ],
             PartnerEvents.MISSING_AV_POLICY: [ControlCategory.XDR],
             PartnerEvents.MISSING_EDR_POLICY: [ControlCategory.XDR],
-            PartnerEvents.MISSING_HOST_FIREWALL_POLICY: [ControlCategory.HOST_FIREWALL],
+            PartnerEvents.MISSING_HOST_FIREWALL_POLICY: [ControlCategory.ASSET_MANAGER],
             PartnerEvents.MISSING_MFA: [ControlCategory.IDENTITY],
             PartnerEvents.MISSING_SCAN: [ControlCategory.VULN_MANAGER],
             PartnerEvents.NO_ASSET_MANAGER: [ControlCategory.ASSET_MANAGER],
             PartnerEvents.NO_EDR: [ControlCategory.XDR],
             PartnerEvents.NO_HARDWARE: [ControlCategory.HARDWARE],
-            PartnerEvents.NO_HOST_FIREWALL: [ControlCategory.HOST_FIREWALL],
             PartnerEvents.NO_SERVER_MANAGER: [ControlCategory.ASSET_MANAGER],
             PartnerEvents.NO_VULN_MANAGER: [ControlCategory.VULN_MANAGER],
             PartnerEvents.OUT_OF_DATE_FIRMWARE: [ControlCategory.NETWORK],
@@ -461,7 +447,6 @@ class PartnerEvents(Enum, metaclass=MissingItem):
             PartnerEvents.REDUCED_FUNCTIONALITY_MODE: [ControlCategory.XDR],
             PartnerEvents.USER_MISSING_ASSET_MANAGER: [ControlCategory.IDENTITY],
             PartnerEvents.USER_MISSING_EDR: [ControlCategory.IDENTITY],
-            PartnerEvents.USER_MISSING_HOST_FIREWALL: [ControlCategory.HOST_FIREWALL],
             PartnerEvents.USER_MISSING_VULN_MANAGER: [ControlCategory.IDENTITY],
         }
 
@@ -483,9 +468,7 @@ class AlertTypes(Enum, metaclass=MissingItem):
     NEW_USER_MISSING_EDR = 13
     NEW_USER_MISSING_VULN_MANAGER = 14
     NEW_NO_SERVER_MANAGER_ENDPOINTS = 15
-    NEW_NO_HOST_FIREWALL_ENDPOINTS = 16
     NEW_MISSING_HOST_FIREWALL_POLICY_ENDPOINTS = 17
-    NEW_USER_MISSING_HOST_FIREWALL = 18
     NEW_OUT_OF_DATE_FIRMWARE_NETWORK_DEVICES = 19
     NEW_NO_HARDWARE_ENDPOINTS = 20
 
