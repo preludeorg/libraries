@@ -91,8 +91,9 @@ class TestScmAcrossControls:
         summary = unwrap(self.scm.evaluation_summary)(self.scm)
         assert summary.keys() == {
             "endpoint_summary",
-            "user_summary",
             "inbox_summary",
+            "network_device_summary",
+            "user_summary",
         }
 
     def test_technique_summary(self, unwrap):
@@ -173,7 +174,10 @@ class TestScmPerControl:
         if "endpoint_evaluation" in evaluation:
             evaluation = evaluation["endpoint_evaluation"]
             assert {"policies"} == evaluation.keys()
-            if control.control_category == ControlCategory.XDR:
+            if (
+                control.control_category == ControlCategory.XDR
+                or control == Control.INTUNE
+            ):
                 assert len(evaluation["policies"]) > 0
                 assert {
                     "id",
