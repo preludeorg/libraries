@@ -493,6 +493,7 @@ class PolicyType(Enum, metaclass=MissingItem):
     INTEL_BELOW_OS = 16
     INTEL_OS = 17
     INTEL_TDT = 18
+    INTEL_CHIP = 19
 
     @classmethod
     def _missing_(cls, value):
