@@ -417,7 +417,6 @@ class PartnerEvents(Enum, metaclass=MissingItem):
     NO_SERVER_MANAGER = 14
     MISSING_HOST_FIREWALL_POLICY = 16
     OUT_OF_DATE_FIRMWARE = 18
-    NO_HARDWARE = 19
 
     @classmethod
     def _missing_(cls, value):
@@ -439,7 +438,6 @@ class PartnerEvents(Enum, metaclass=MissingItem):
             PartnerEvents.MISSING_SCAN: [ControlCategory.VULN_MANAGER],
             PartnerEvents.NO_ASSET_MANAGER: [ControlCategory.ASSET_MANAGER],
             PartnerEvents.NO_EDR: [ControlCategory.XDR],
-            PartnerEvents.NO_HARDWARE: [ControlCategory.HARDWARE],
             PartnerEvents.NO_SERVER_MANAGER: [ControlCategory.ASSET_MANAGER],
             PartnerEvents.NO_VULN_MANAGER: [ControlCategory.VULN_MANAGER],
             PartnerEvents.OUT_OF_DATE_FIRMWARE: [ControlCategory.NETWORK],
@@ -470,7 +468,6 @@ class AlertTypes(Enum, metaclass=MissingItem):
     NEW_NO_SERVER_MANAGER_ENDPOINTS = 15
     NEW_MISSING_HOST_FIREWALL_POLICY_ENDPOINTS = 17
     NEW_OUT_OF_DATE_FIRMWARE_NETWORK_DEVICES = 19
-    NEW_NO_HARDWARE_ENDPOINTS = 20
 
     @classmethod
     def _missing_(cls, value):
