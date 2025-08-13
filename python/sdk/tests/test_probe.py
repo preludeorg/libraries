@@ -1,45 +1,51 @@
 import json
+import logging
 import os
 import pytest
 import subprocess
 from datetime import datetime, timedelta, timezone
 
-from prelude_sdk.controllers.detect_controller import DetectController
-from prelude_sdk.controllers.iam_controller import IAMAccountController
-from prelude_sdk.controllers.probe_controller import ProbeController
 from prelude_sdk.models.codes import RunCode
+from testutils import *
 
 
-@pytest.mark.order(10)
-@pytest.mark.usefixtures("setup_account", "setup_test", "setup_threat")
+@pytest.mark.stage4
+@pytest.mark.order(12)
 class TestProbe:
 
-    def setup_class(self):
-        self.iam = IAMAccountController(pytest.account)
-        self.detect = DetectController(pytest.account)
-        self.probe = ProbeController(pytest.account)
+    @pytest.fixture(autouse=True, scope="class")
+    def _inject_shared_fixtures(self, request):
+        cls = self.__class__
+        logging.info(f"Starting {cls.__name__} in PID {os.getpid()}")
+        cls.account, cls.expected_account = request.getfixturevalue(
+            "setup_existing_account"
+        )
+        cls.threat = request.getfixturevalue("my_threat")
+        assert cls.threat, "No threat found for detect tests"
+        cls.threat_id = cls.threat["id"]
 
-        self.host = "olive"
-        self.serial = "abc-123"
+        cls.host = "olive"
+        cls.serial = "abc-123"
+        cls.state = dict()
 
-    def test_create_endpoint(self, unwrap):
-        pytest.token = self.detect.register_endpoint(
+    def test_create_endpoint(self, detect, service_user_token):
+        self.state["endpoint_token"] = detect.register_endpoint(
             host=self.host,
             serial_num=self.serial,
-            reg_string=f"{pytest.expected_account['account_id']}/{pytest.service_user_token}",
+            reg_string=f"{self.expected_account['account_id']}/{service_user_token}",
         )
 
-        res = unwrap(self.detect.list_endpoints)(self.detect)
+        res = unwrap(detect.list_endpoints)(detect)
         ep = [r for r in res if r["serial_num"] == self.serial]
-        pytest.endpoint_id = ep[0]["endpoint_id"]
+        self.state["endpoint_id"] = ep[0]["endpoint_id"]
 
-    def test_schedule(self, unwrap):
-        if not pytest.expected_account["features"]["detect"]:
+    def test_schedule(self, detect, iam_account):
+        if not self.expected_account["features"]["detect"]:
             pytest.skip("DETECT feature not enabled")
 
-        queue_len = len(pytest.expected_account["queue"])
-        unwrap(self.detect.schedule)(
-            self.detect,
+        queue_len = len(self.expected_account["queue"])
+        unwrap(detect.schedule)(
+            detect,
             [
                 dict(
                     test_id="9f410a6b-76b6-45d6-b80f-d7365add057e",
@@ -52,7 +58,7 @@ class TestProbe:
                     tags="",
                 ),
                 # 3 tests in this threat (881.., b74..., 740... or uuid)
-                dict(threat_id=pytest.threat_id, run_code=RunCode.DAILY.name, tags=""),
+                dict(threat_id=self.threat_id, run_code=RunCode.DAILY.name, tags=""),
                 # windows only test
                 dict(
                     test_id="f12d00db-571f-4c51-a536-12a3577b5a4b",
@@ -68,75 +74,73 @@ class TestProbe:
             ],
         )
 
-        queue = unwrap(self.iam.get_account)(self.iam)["queue"]
-        pytest.expected_account["queue"] = queue
+        queue = unwrap(iam_account.get_account)(iam_account)["queue"]
+        self.expected_account["queue"] = queue
         assert queue_len + 5 == len(queue), json.dumps(queue, indent=2)
 
-    def test_download_probe(self):
+    def test_download_probe(self, probe):
         probe_name = "nocturnal"
-        res = self.probe.download(name=probe_name, dos="darwin-arm64")
+        res = probe.download(name=probe_name, dos="darwin-arm64")
         assert res is not None
 
         with open(f"{probe_name}.sh", "w") as f:
             f.write(res)
         assert os.path.isfile(f"{probe_name}.sh")
-        pytest.probe_file = os.path.abspath(f"{probe_name}.sh")
-        os.chmod(pytest.probe_file, 0o755)
+        self.state["probe_file"] = os.path.abspath(f"{probe_name}.sh")
+        os.chmod(self.state["probe_file"], 0o755)
 
-    def test_describe_activity(self, unwrap):
-        if not pytest.expected_account["features"]["detect"]:
+    def test_describe_activity(self, detect):
+        if not self.expected_account["features"]["detect"]:
             pytest.skip("DETECT feature not enabled")
 
         try:
             with pytest.raises(subprocess.TimeoutExpired):
                 subprocess.run(
-                    [pytest.probe_file],
+                    [self.state["probe_file"]],
                     capture_output=True,
-                    env={"PRELUDE_TOKEN": pytest.token},
+                    env={"PRELUDE_TOKEN": self.state["endpoint_token"]},
                     timeout=120,
                 )
 
             filters = dict(
                 start=datetime.now(timezone.utc) - timedelta(days=1),
                 finish=datetime.now(timezone.utc) + timedelta(days=1),
-                endpoints=pytest.endpoint_id,
+                endpoints=self.state["endpoint_id"],
             )
-            res = unwrap(self.detect.describe_activity)(
-                self.detect, view="logs", filters=filters
-            )
+            res = unwrap(detect.describe_activity)(detect, view="logs", filters=filters)
             assert 6 <= len(res), json.dumps(res, indent=2)
             tests_run = {r["test"] for r in res}
             queued_tests = [
                 "9f410a6b-76b6-45d6-b80f-d7365add057e",
                 "b74ad239-2ddd-4b1e-b608-8397a43c7c54",
                 "f12d00db-571f-4c51-a536-12a3577b5a4b",
-            ] + pytest.expected_threat["tests"]
+            ] + self.threat["tests"]
             assert set(queued_tests) <= tests_run, json.dumps(tests_run, indent=2)
         finally:
-            os.remove(pytest.probe_file)
+            os.remove(self.state["probe_file"])
 
-    def test_unschedule(self, unwrap):
-        if not pytest.expected_account["features"]["detect"]:
+    def test_unschedule(self, detect, iam_account):
+        if not self.expected_account["features"]["detect"]:
             pytest.skip("DETECT feature not enabled")
 
-        queue_len = len(pytest.expected_account["queue"])
-        unwrap(self.detect.unschedule)(
-            self.detect,
+        queue_len = len(self.expected_account["queue"])
+        unwrap(detect.unschedule)(
+            detect,
             [
                 dict(test_id="9f410a6b-76b6-45d6-b80f-d7365add057e", tags=""),
                 dict(test_id="b74ad239-2ddd-4b1e-b608-8397a43c7c54", tags=""),
-                dict(threat_id=pytest.threat_id, tags=""),
+                dict(threat_id=self.threat_id, tags=""),
                 dict(test_id="f12d00db-571f-4c51-a536-12a3577b5a4b", tags=""),
                 dict(test_id="8f9558f3-d451-46e3-bdda-97378c1e8ce4", tags="diff-tag"),
             ],
         )
 
-        queue = unwrap(self.iam.get_account)(self.iam)["queue"]
-        pytest.expected_account["queue"] = queue
+        queue = unwrap(iam_account.get_account)(iam_account)["queue"]
+        self.expected_account["queue"] = queue
         assert queue_len - 5 == len(queue), json.dumps(queue, indent=2)
 
-    def test_delete_endpoint(self, unwrap):
-        unwrap(self.detect.delete_endpoint)(self.detect, ident=pytest.endpoint_id)
-        res = unwrap(self.detect.list_endpoints)(self.detect)
+    def test_delete_endpoint(self, detect):
+        unwrap(detect.delete_endpoint)(detect, ident=self.state["endpoint_id"])
+        res = unwrap(detect.list_endpoints)(detect)
         ep = [r for r in res if r["serial_num"] == self.serial]
         assert 0 == len(ep), json.dumps(ep, indent=2)
