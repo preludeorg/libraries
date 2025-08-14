@@ -20,16 +20,16 @@ class TestIAM:
         self.company = "prelude"
         self.service_user = "registration"
 
-    def test_get_account(self, unwrap):
+    def test_get_account(self):
         res = unwrap(self.iam_account.get_account)(self.iam_account)
         diffs = check_dict_items(pytest.expected_account, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_list_accounts(self, unwrap):
+    def test_list_accounts(self):
         res = unwrap(self.iam_user.list_accounts)(self.iam_user)
         assert pytest.expected_account["account_id"] in [a["account_id"] for a in res]
 
-    def test_create_service_user(self, unwrap):
+    def test_create_service_user(self):
         service_user = unwrap(self.iam_account.create_service_user)(
             self.iam_account, name=self.service_user
         )
@@ -56,7 +56,7 @@ class TestIAM:
         diffs = check_dict_items(pytest.expected_account, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_delete_service_user(self, unwrap):
+    def test_delete_service_user(self):
         unwrap(self.iam_account.delete_service_user)(
             self.iam_account, handle=pytest.second_service_user_handle
         )
@@ -70,7 +70,7 @@ class TestIAM:
         diffs = check_dict_items(pytest.expected_account, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_update_user(self, unwrap):
+    def test_update_user(self):
         unwrap(self.iam_user.update_user)(self.iam_user, name="Robb")
 
         for user in pytest.expected_account["users"]:
@@ -82,7 +82,7 @@ class TestIAM:
         diffs = check_dict_items(pytest.expected_account, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_update_account(self, unwrap):
+    def test_update_account(self):
         unwrap(self.iam_account.update_account)(self.iam_account, company=self.company)
         pytest.expected_account["company"] = self.company
 
@@ -90,7 +90,7 @@ class TestIAM:
         diffs = check_dict_items(pytest.expected_account, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_audit_logs(self, unwrap):
+    def test_audit_logs(self):
         res = unwrap(self.iam_account.audit_logs)(self.iam_account, limit=1)[0]
         expected = dict(
             event="update_account",
@@ -102,7 +102,7 @@ class TestIAM:
         diffs = check_dict_items(expected, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_invite_account_user(self, unwrap):
+    def test_invite_account_user(self):
         pytest.second_user = second_email = (
             f"second-{str(uuid.uuid4())[:12]}@auto-accept.developer.preludesecurity.com"
         )
@@ -115,7 +115,7 @@ class TestIAM:
         )
         pytest.expected_account = unwrap(self.iam_account.get_account)(self.iam_account)
 
-    def test_update_account_user(self, unwrap):
+    def test_update_account_user(self):
         unwrap(self.iam_account.update_account_user)(
             self.iam_account,
             email=pytest.second_user,
@@ -132,7 +132,7 @@ class TestIAM:
         diffs = check_dict_items(pytest.expected_account, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_remove_account_user(self, unwrap):
+    def test_remove_account_user(self):
         unwrap(self.iam_account.remove_user)(
             self.iam_account, email=pytest.second_user, oidc=""
         )
@@ -146,7 +146,7 @@ class TestIAM:
         diffs = check_dict_items(pytest.expected_account, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_forgot_password(self, manual, pause_for_manual_action, unwrap):
+    def test_forgot_password(self, manual, pause_for_manual_action):
         if not manual:
             pytest.skip("Not manual mode")
 
@@ -166,13 +166,13 @@ class TestIAM:
         assert not diffs, json.dumps(diffs, indent=2)
 
     @pytest.mark.order(-3)
-    def test_delete_service_user(self, unwrap):
+    def test_delete_service_user(self):
         unwrap(self.iam_account.delete_service_user)(
             self.iam_account, handle=pytest.service_user_handle
         )
 
     @pytest.mark.order(-2)
-    def test_purge_account(self, unwrap, existing_account):
+    def test_purge_account(self, existing_account):
         if existing_account:
             pytest.skip("Pre-existing account")
 
@@ -180,7 +180,7 @@ class TestIAM:
         unwrap(iam.purge_account)(iam)
 
     @pytest.mark.order(-1)
-    def test_purge_user(self, unwrap, existing_account):
+    def test_purge_user(self, existing_account):
         if not existing_account:
             iam = IAMUserController(pytest.account)
             unwrap(iam.purge_user)(iam)

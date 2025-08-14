@@ -1,11 +1,12 @@
 import pytest
-from datetime import datetime, timezone, timedelta
 
 from prelude_sdk.controllers.scm_controller import ScmController
-from prelude_sdk.models.codes import Control, ControlCategory
+from prelude_sdk.models.codes import ControlCategory
+
+from testutils import *
 
 
-@pytest.mark.order(8)
+@pytest.mark.order(11)
 @pytest.mark.usefixtures("setup_account")
 class TestScmBuild:
     def setup_class(self):
@@ -13,7 +14,7 @@ class TestScmBuild:
             pytest.skip("POLICY_EVALUATOR feature not enabled")
         self.scm = ScmController(pytest.account)
 
-    def test_create_object_exception(self, unwrap):
+    def test_create_object_exception(self):
         res = unwrap(self.scm.create_object_exception)(
             self.scm,
             ControlCategory.ASSET_MANAGER,
@@ -24,7 +25,7 @@ class TestScmBuild:
         assert res["exception_id"]
         pytest.exception_id = res["exception_id"]
 
-    def test_update_object_exception(self, unwrap):
+    def test_update_object_exception(self):
         res = unwrap(self.scm.update_object_exception)(
             self.scm,
             pytest.exception_id,
@@ -33,7 +34,7 @@ class TestScmBuild:
         )
         assert res["status"]
 
-    def test_list_object_exceptions(self, unwrap):
+    def test_list_object_exceptions(self):
         res = unwrap(self.scm.list_object_exceptions)(self.scm)
         exception = [x for x in res if x["id"] == pytest.exception_id]
         assert len(exception) == 1
@@ -48,7 +49,7 @@ class TestScmBuild:
             "name": "filter me",
         }
 
-    def test_delete_object_exception(self, unwrap):
+    def test_delete_object_exception(self):
         res = unwrap(self.scm.delete_object_exception)(self.scm, pytest.exception_id)
         assert res["status"]
         res = unwrap(self.scm.list_object_exceptions)(self.scm)

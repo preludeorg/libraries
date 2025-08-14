@@ -2,6 +2,12 @@ import json
 import uuid
 
 
+def unwrap(func):
+    if not hasattr(func, "__wrapped__"):
+        return func
+    return unwrap(func.__wrapped__)
+
+
 def check_if_string_is_uuid(string):
     try:
         uuid.UUID(string)

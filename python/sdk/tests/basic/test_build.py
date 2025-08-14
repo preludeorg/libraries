@@ -9,7 +9,7 @@ from dateutil.parser import parse
 
 from prelude_sdk.controllers.build_controller import BuildController
 from prelude_sdk.controllers.detect_controller import DetectController
-from prelude_sdk.models.codes import Control, EDRResponse
+from prelude_sdk.models.codes import EDRResponse
 
 import templates
 from testutils import *
@@ -41,7 +41,7 @@ class TestVST:
         diffs = check_dict_items(expected, pytest.expected_test)
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_upload(self, unwrap):
+    def test_upload(self):
         def wait_for_compile(job_id):
             timeout = time.time() + 120
             while time.time() < timeout:
@@ -84,7 +84,7 @@ class TestVST:
         for platform in per_platform_res:
             assert "SUCCEEDED" == platform["status"]
 
-    def test_compile_code_string(self, unwrap):
+    def test_compile_code_string(self):
         def wait_for_compile(job_id):
             timeout = time.time() + 60
             while time.time() < timeout:
@@ -104,13 +104,13 @@ class TestVST:
         for platform in res["results"]:
             assert "SUCCEEDED" == platform["status"]
 
-    def test_get_test(self, unwrap):
+    def test_get_test(self):
         res = unwrap(self.detect.get_test)(self.detect, test_id=pytest.test_id)
 
         diffs = check_dict_items(pytest.expected_test, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_list_tests(self, unwrap):
+    def test_list_tests(self):
         res = unwrap(self.detect.list_tests)(self.detect)
         owners = set([r["account_id"] for r in res])
         assert {"prelude", pytest.account.headers["account"]} >= owners
@@ -123,7 +123,7 @@ class TestVST:
         )
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_update_test(self, unwrap):
+    def test_update_test(self):
         updated_name = "updated_test"
         res = unwrap(self.build.update_test)(
             self.build,
@@ -140,7 +140,7 @@ class TestVST:
         diffs = check_dict_items(pytest.expected_test, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_download(self, unwrap):
+    def test_download(self):
         filename = f"{pytest.test_id}.go"
         res = unwrap(self.detect.download)(
             self.detect, test_id=pytest.test_id, filename=filename
@@ -151,7 +151,7 @@ class TestVST:
         assert os.path.isfile(filename)
         os.remove(filename)
 
-    def test_tombstone_test(self, unwrap):
+    def test_tombstone_test(self):
         unwrap(self.build.delete_test)(self.build, test_id=pytest.test_id, purge=False)
         res = unwrap(self.detect.get_test)(self.detect, test_id=pytest.test_id)
         pytest.expected_test["tombstoned"] = res["tombstoned"]
@@ -162,7 +162,7 @@ class TestVST:
             timezone.utc
         ) + timedelta(minutes=1)
 
-    def test_undelete_test(self, unwrap):
+    def test_undelete_test(self):
         unwrap(self.build.undelete_test)(self.build, test_id=pytest.test_id)
         res = unwrap(self.detect.get_test)(self.detect, test_id=pytest.test_id)
         pytest.expected_test["tombstoned"] = None
@@ -171,7 +171,7 @@ class TestVST:
         assert not diffs, json.dumps(diffs, indent=2)
 
     @pytest.mark.order(-4)
-    def test_purge_test(self, unwrap):
+    def test_purge_test(self):
         unwrap(self.build.delete_test)(self.build, test_id=pytest.test_id, purge=True)
         with pytest.raises(Exception):
             unwrap(self.detect.get_test)(self.detect, test_id=pytest.test_id)
@@ -206,13 +206,13 @@ class TestThreat:
         diffs = check_dict_items(expected, pytest.expected_threat)
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_get_threat(self, unwrap):
+    def test_get_threat(self):
         res = unwrap(self.detect.get_threat)(self.detect, threat_id=pytest.threat_id)
 
         diffs = check_dict_items(pytest.expected_threat, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_list_threats(self, unwrap):
+    def test_list_threats(self):
         res = unwrap(self.detect.list_threats)(self.detect)
         owners = set([r["account_id"] for r in res])
         assert {"prelude", pytest.account.headers["account"]} >= owners
@@ -222,7 +222,7 @@ class TestThreat:
         diffs = check_dict_items(pytest.expected_threat, mine[0])
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_update_threat(self, unwrap):
+    def test_update_threat(self):
         updated_name = "updated-threat"
         updated_tests = [
             "881f9052-fb52-4daf-9ad2-0a7ad9615baf",
@@ -245,7 +245,7 @@ class TestThreat:
         diffs = check_dict_items(pytest.expected_threat, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_tombstone_threat(self, unwrap):
+    def test_tombstone_threat(self):
         unwrap(self.build.delete_threat)(
             self.build, threat_id=pytest.threat_id, purge=False
         )
@@ -258,7 +258,7 @@ class TestThreat:
             timezone.utc
         ) + timedelta(minutes=1)
 
-    def test_undelete_threat(self, unwrap):
+    def test_undelete_threat(self):
         unwrap(self.build.undelete_threat)(self.build, threat_id=pytest.threat_id)
         res = unwrap(self.detect.get_threat)(self.detect, threat_id=pytest.threat_id)
         pytest.expected_threat["tombstoned"] = None
@@ -267,7 +267,7 @@ class TestThreat:
         assert not diffs, json.dumps
 
     @pytest.mark.order(-5)
-    def test_purge_threat(self, unwrap):
+    def test_purge_threat(self):
         unwrap(self.build.delete_threat)(
             self.build, threat_id=pytest.threat_id, purge=True
         )
@@ -286,7 +286,7 @@ class TestDetection:
         self.build = BuildController(pytest.account)
         self.detect = DetectController(pytest.account)
 
-    def test_create_detection(self, unwrap):
+    def test_create_detection(self):
         expected = dict(
             account_id=pytest.account.headers["account"],
             id=pytest.detection_id,
@@ -307,7 +307,7 @@ class TestDetection:
         diffs = check_dict_items(expected, pytest.expected_detection)
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_get_detection(self, unwrap):
+    def test_get_detection(self):
         res = unwrap(self.detect.get_detection)(
             self.detect, detection_id=pytest.detection_id
         )
@@ -315,7 +315,7 @@ class TestDetection:
         diffs = check_dict_items(pytest.expected_detection, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_list_detections(self, unwrap):
+    def test_list_detections(self):
         res = unwrap(self.detect.list_detections)(self.detect)
         owners = set([r["account_id"] for r in res])
         assert {"prelude", pytest.account.headers["account"]} >= owners
@@ -325,7 +325,7 @@ class TestDetection:
         diffs = check_dict_items(pytest.expected_detection, mine[0])
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_update_detection(self, unwrap):
+    def test_update_detection(self):
         updated_rule = pytest.detection_rule.replace(
             pytest.expected_detection["rule"]["title"], "Suspicious no more"
         )
@@ -338,77 +338,11 @@ class TestDetection:
         assert not diffs, json.dumps(diffs, indent=2)
 
     @pytest.mark.order(-6)
-    def test_delete_detection(self, unwrap):
+    def test_delete_detection(self):
         unwrap(self.build.delete_detection)(
             self.build, detection_id=pytest.detection_id
         )
         with pytest.raises(Exception):
             unwrap(self.detect.get_detection)(
                 self.detect, detection_id=pytest.detection_id
-            )
-
-
-@pytest.mark.order(4)
-@pytest.mark.usefixtures("setup_account", "setup_test", "setup_threat_hunt")
-class TestThreatHunt:
-
-    def setup_class(self):
-        if not pytest.expected_account["features"]["threat_intel"]:
-            pytest.skip("threat intel feature not enabled")
-
-        self.build = BuildController(pytest.account)
-        self.detect = DetectController(pytest.account)
-
-    def test_create_threat_hunt(self, unwrap):
-        expected = dict(
-            account_id=pytest.account.headers["account"],
-            control=Control.CROWDSTRIKE.value,
-            id=pytest.crwd_threat_hunt_id,
-            name="test CRWD threat hunt",
-            query="#repo=base_sensor | ContextImageFileName = /prelude_dropper.exe/",
-            test_id=pytest.test_id,
-        )
-
-        diffs = check_dict_items(expected, pytest.expected_threat_hunt)
-        assert not diffs, json.dumps(diffs, indent=2)
-
-    def test_get_threat_hunt(self, unwrap):
-        res = unwrap(self.detect.get_threat_hunt)(
-            self.detect, threat_hunt_id=pytest.crwd_threat_hunt_id
-        )
-
-        diffs = check_dict_items(pytest.expected_threat_hunt, res)
-        assert not diffs, json.dumps(diffs, indent=2)
-
-    def test_list_threat_hunts(self, unwrap):
-        res = unwrap(self.detect.list_threat_hunts)(self.detect)
-        owners = set([r["account_id"] for r in res])
-        assert {"prelude", pytest.account.headers["account"]} >= owners
-
-        mine = [r for r in res if r["id"] == pytest.expected_threat_hunt["id"]]
-        assert 1 == len(mine)
-        diffs = check_dict_items(pytest.expected_threat_hunt, mine[0])
-        assert not diffs, json.dumps(diffs, indent=2)
-
-    def test_update_threat_hunt(self, unwrap):
-        pytest.expected_threat_hunt = unwrap(self.build.update_threat_hunt)(
-            self.build,
-            name="updated threat hunt",
-            query="#repo=base_sensor | FilePath = /Prelude Security/ | groupBy([@timestamp, ParentBaseFileName, ImageFileName, aid], limit=20)| sort(@timestamp, limit=20)",
-            threat_hunt_id=pytest.crwd_threat_hunt_id,
-        )
-        assert pytest.expected_threat_hunt["name"] == "updated threat hunt"
-        assert (
-            pytest.expected_threat_hunt["query"]
-            == "#repo=base_sensor | FilePath = /Prelude Security/ | groupBy([@timestamp, ParentBaseFileName, ImageFileName, aid], limit=20)| sort(@timestamp, limit=20)"
-        )
-
-    @pytest.mark.order(-7)
-    def test_delete_threat_hunt(self, unwrap):
-        unwrap(self.build.delete_threat_hunt)(
-            self.build, threat_hunt_id=pytest.crwd_threat_hunt_id
-        )
-        with pytest.raises(Exception):
-            unwrap(self.detect.get_threat_hunt)(
-                self.detect, threat_hunt_id=pytest.crwd_threat_hunt_id
             )
