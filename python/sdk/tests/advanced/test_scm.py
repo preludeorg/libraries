@@ -15,8 +15,10 @@ from prelude_sdk.models.codes import (
     SCMCategory,
 )
 
+from testutils import *
 
-@pytest.mark.order(8)
+
+@pytest.mark.order(9)
 @pytest.mark.usefixtures("setup_account")
 class TestScmAcrossControls:
     def setup_class(self):
@@ -29,7 +31,7 @@ class TestScmAcrossControls:
         self.scm = ScmController(pytest.account)
         self.notification_id = str(uuid.uuid4())
 
-    def test_create_notification(self, unwrap):
+    def test_create_notification(self):
         unwrap(self.scm.upsert_notification)(
             self.scm,
             ControlCategory.XDR,
@@ -45,7 +47,7 @@ class TestScmAcrossControls:
                 assert notification["scheduled_hour"] == 0
                 assert notification["event"] == PartnerEvents.NO_EDR.value
 
-    def test_update_notification(self, unwrap):
+    def test_update_notification(self):
         unwrap(self.scm.upsert_notification)(
             self.scm,
             ControlCategory.XDR,
@@ -64,13 +66,13 @@ class TestScmAcrossControls:
                     == PartnerEvents.REDUCED_FUNCTIONALITY_MODE.value
                 )
 
-    def test_delete_notification(self, unwrap):
+    def test_delete_notification(self):
         unwrap(self.scm.delete_notification)(self.scm, self.notification_id)
         notifications = unwrap(self.scm.list_notifications)(self.scm)
         for notification in notifications:
             assert notification["id"] != self.notification_id
 
-    def test_evaluation_summary(self, unwrap):
+    def test_evaluation_summary(self):
         def _compare_keys(expected, actual):
             assert set(expected.keys()) == set(
                 actual.keys()
@@ -91,11 +93,12 @@ class TestScmAcrossControls:
         summary = unwrap(self.scm.evaluation_summary)(self.scm)
         assert summary.keys() == {
             "endpoint_summary",
-            "user_summary",
             "inbox_summary",
+            "network_device_summary",
+            "user_summary",
         }
 
-    def test_technique_summary(self, unwrap):
+    def test_technique_summary(self):
         summary = unwrap(self.scm.technique_summary)(self.scm, "T1078,T1027")
         assert len(summary) > 0
         assert {"instances", "technique"} == summary[0].keys()
@@ -111,7 +114,7 @@ class TestScmAcrossControls:
             "instances"
         ][0]["excepted"].keys()
 
-    def test_export_endpoints_csv(self, unwrap):
+    def test_export_endpoints_csv(self):
         job_id = unwrap(self.export.export_scm)(
             self.export,
             SCMCategory.ENDPOINT,
@@ -127,7 +130,7 @@ class TestScmAcrossControls:
         assert len(csv.strip("\r\n").split("\r\n")) == 2
 
 
-@pytest.mark.order(9)
+@pytest.mark.order(10)
 @pytest.mark.usefixtures("setup_account")
 @pytest.mark.parametrize(
     "control", [c for c in Control if c.scm_category != SCMCategory.NONE]
@@ -146,7 +149,7 @@ class TestScmPerControl:
             pytest.skip(f"{control.name} not attached")
         yield
 
-    def test_update_evaluation(self, unwrap, control):
+    def test_update_evaluation(self, control):
         instance_id = pytest.controls.get(control.value)
         assert instance_id
         try:
@@ -160,20 +163,34 @@ class TestScmPerControl:
             assert result["successful"]
         except Exception as e:
             if "job is already running" in str(e):
-                pytest.skip(
-                    "Skipping due to existing job initiated from partner attach"
-                )
+                job_id = None
+                for job in unwrap(self.jobs.job_statuses)(self.jobs)["UPDATE_SCM"]:
+                    if (
+                        job["control"] == control.value
+                        and job["instance_id"] == instance_id
+                    ):
+                        job_id = job["id"]
+                        break
+                assert job_id, "No running job found"
+                while (result := unwrap(self.jobs.job_status)(self.jobs, job_id))[
+                    "end_time"
+                ] is None:
+                    time.sleep(3)
+                assert result["successful"]
             else:
                 raise e
 
-    def test_evaluation(self, unwrap, control):
+    def test_evaluation(self, control):
         instance_id = pytest.controls.get(control.value)
         assert instance_id
         evaluation = unwrap(self.scm.evaluation)(self.scm, control, instance_id)
         if "endpoint_evaluation" in evaluation:
             evaluation = evaluation["endpoint_evaluation"]
             assert {"policies"} == evaluation.keys()
-            if control.control_category == ControlCategory.XDR:
+            if (
+                control.control_category == ControlCategory.XDR
+                or control == Control.INTUNE
+            ):
                 assert len(evaluation["policies"]) > 0
                 assert {
                     "id",
@@ -218,7 +235,7 @@ class TestScmGroups:
         self.partner = PartnerController(pytest.account)
         self.scm = ScmController(pytest.account)
 
-    def test_groups(self, unwrap):
+    def test_groups(self):
         control = Control.ENTRA
         if control.value not in pytest.controls:
             pytest.skip(f"{control.name} not attached")

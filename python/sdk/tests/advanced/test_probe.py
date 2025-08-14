@@ -9,8 +9,10 @@ from prelude_sdk.controllers.iam_controller import IAMAccountController
 from prelude_sdk.controllers.probe_controller import ProbeController
 from prelude_sdk.models.codes import RunCode
 
+from testutils import *
 
-@pytest.mark.order(10)
+
+@pytest.mark.order(12)
 @pytest.mark.usefixtures("setup_account", "setup_test", "setup_threat")
 class TestProbe:
 
@@ -22,7 +24,7 @@ class TestProbe:
         self.host = "olive"
         self.serial = "abc-123"
 
-    def test_create_endpoint(self, unwrap):
+    def test_create_endpoint(self):
         pytest.token = self.detect.register_endpoint(
             host=self.host,
             serial_num=self.serial,
@@ -33,7 +35,7 @@ class TestProbe:
         ep = [r for r in res if r["serial_num"] == self.serial]
         pytest.endpoint_id = ep[0]["endpoint_id"]
 
-    def test_schedule(self, unwrap):
+    def test_schedule(self):
         if not pytest.expected_account["features"]["detect"]:
             pytest.skip("DETECT feature not enabled")
 
@@ -83,7 +85,7 @@ class TestProbe:
         pytest.probe_file = os.path.abspath(f"{probe_name}.sh")
         os.chmod(pytest.probe_file, 0o755)
 
-    def test_describe_activity(self, unwrap):
+    def test_describe_activity(self):
         if not pytest.expected_account["features"]["detect"]:
             pytest.skip("DETECT feature not enabled")
 
@@ -115,7 +117,7 @@ class TestProbe:
         finally:
             os.remove(pytest.probe_file)
 
-    def test_unschedule(self, unwrap):
+    def test_unschedule(self):
         if not pytest.expected_account["features"]["detect"]:
             pytest.skip("DETECT feature not enabled")
 
@@ -135,7 +137,7 @@ class TestProbe:
         pytest.expected_account["queue"] = queue
         assert queue_len - 5 == len(queue), json.dumps(queue, indent=2)
 
-    def test_delete_endpoint(self, unwrap):
+    def test_delete_endpoint(self):
         unwrap(self.detect.delete_endpoint)(self.detect, ident=pytest.endpoint_id)
         res = unwrap(self.detect.list_endpoints)(self.detect)
         ep = [r for r in res if r["serial_num"] == self.serial]

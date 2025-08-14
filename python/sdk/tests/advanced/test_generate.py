@@ -10,7 +10,7 @@ from prelude_sdk.models.codes import Control
 from testutils import *
 
 
-@pytest.mark.order(11)
+@pytest.mark.order(13)
 @pytest.mark.usefixtures("setup_account")
 class TestGenerate:
 
@@ -26,7 +26,7 @@ class TestGenerate:
             os.path.dirname(os.path.realpath(__file__)) + "/data/threat_intel.pdf"
         )
 
-    def test_upload_threat_intel(self, unwrap):
+    def test_upload_threat_intel(self):
         try:
             unwrap(self.detect.accept_terms)(
                 self.detect, name="threat_intel", version="1.0.0"
@@ -66,7 +66,7 @@ class TestGenerate:
                         False
                     ), f" Unexpected status: {status}\n Response: {json.dumps(res)}"
 
-    def test_generate_from_partner_advisory(self, unwrap):
+    def test_generate_from_partner_advisory(self):
         res = unwrap(self.iam.get_account)(self.iam)
         partners = [p["id"] for p in res["controls"]]
         if Control.CROWDSTRIKE.value not in partners:

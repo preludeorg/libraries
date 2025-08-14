@@ -6,15 +6,7 @@ from prelude_sdk.controllers.build_controller import BuildController
 from prelude_sdk.controllers.iam_controller import IAMAccountController
 from prelude_sdk.models.codes import Control
 
-
-@pytest.fixture(scope="session")
-def unwrap():
-    def unwrapper(func):
-        if not hasattr(func, "__wrapped__"):
-            return func
-        return unwrapper(func.__wrapped__)
-
-    yield unwrapper
+from testutils import *
 
 
 @pytest.fixture(scope="session")
@@ -91,7 +83,7 @@ def existing_account(pytestconfig):
 
 
 @pytest.fixture(scope="session")
-def setup_account(unwrap, email, api, existing_account):
+def setup_account(email, api, existing_account):
     if hasattr(pytest, "expected_account"):
         return
 
@@ -121,7 +113,7 @@ def setup_account(unwrap, email, api, existing_account):
 
 
 @pytest.fixture(scope="session")
-def setup_test(unwrap):
+def setup_test():
     if hasattr(pytest, "expected_test"):
         return
 
@@ -133,7 +125,7 @@ def setup_test(unwrap):
 
 
 @pytest.fixture(scope="session")
-def setup_threat(unwrap):
+def setup_threat():
     if hasattr(pytest, "expected_threat"):
         return
 
@@ -156,7 +148,7 @@ def setup_threat(unwrap):
 
 
 @pytest.fixture(scope="session")
-def setup_detection(unwrap):
+def setup_detection():
     if not pytest.expected_account["features"]["detections"]:
         return
     if hasattr(pytest, "expected_detection"):
@@ -187,7 +179,7 @@ def setup_detection(unwrap):
 
 
 @pytest.fixture(scope="session")
-def setup_threat_hunt(unwrap):
+def setup_threat_hunt():
     if not pytest.expected_account["features"]["threat_intel"]:
         return
     if hasattr(pytest, "crwd_threat_hunt_id") and hasattr(pytest, "mde_threat_hunt_id"):
