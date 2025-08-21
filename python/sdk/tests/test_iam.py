@@ -74,7 +74,7 @@ class TestIAM:
         unwrap(self.iam_user.update_user)(self.iam_user, name="Robb")
 
         for user in pytest.expected_account["users"]:
-            if user["handle"] == pytest.account.handle:
+            if user["handle"] == pytest.account.handle and not user["oidc"]:
                 user["name"] = "Robb"
                 break
 
