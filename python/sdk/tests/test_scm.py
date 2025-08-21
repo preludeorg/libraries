@@ -180,6 +180,7 @@ class TestScmPerControl:
             ):
                 assert len(evaluation["policies"]) > 0
                 assert {
+                    "excepted",
                     "id",
                     "name",
                     "platform",
@@ -195,6 +196,7 @@ class TestScmPerControl:
             assert {"policies"} == evaluation.keys()
             assert len(evaluation["policies"]) > 0
             assert {
+                "excepted",
                 "id",
                 "name",
                 "noncompliant_hostnames",
@@ -205,9 +207,9 @@ class TestScmPerControl:
             evaluation = evaluation["inbox_evaluation"]
             assert {"policies"} == evaluation.keys()
             assert len(evaluation["policies"]) > 0
-            assert {"id", "name", "settings", "inbox_count"} == evaluation["policies"][
-                0
-            ].keys()
+            assert {"excepted", "id", "name", "settings", "inbox_count"} == evaluation[
+                "policies"
+            ][0].keys()
         else:
             assert False, "No evaluation returned"
 
