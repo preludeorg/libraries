@@ -161,9 +161,20 @@ class TestScmPerControl:
             assert result["successful"]
         except Exception as e:
             if "job is already running" in str(e):
-                pytest.skip(
-                    "Skipping due to existing job initiated from partner attach"
-                )
+                job_id = None
+                for job in unwrap(self.jobs.job_statuses)(self.jobs)["UPDATE_SCM"]:
+                    if (
+                        job["control"] == control.value
+                        and job["instance_id"] == instance_id
+                    ):
+                        job_id = job["id"]
+                        break
+                assert job_id, "No running job found"
+                while (result := unwrap(self.jobs.job_status)(self.jobs, job_id))[
+                    "end_time"
+                ] is None:
+                    time.sleep(3)
+                assert result["successful"]
             else:
                 raise e
 
