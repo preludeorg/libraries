@@ -418,7 +418,7 @@ class PartnerEvents(Enum, metaclass=MissingItem):
     MISSING_HOST_FIREWALL_POLICY = 16
     OUT_OF_DATE_FIRMWARE = 18
     MISSING_DISK_ENCRYPTION_POLICY = 19
-    INACTIVE_DISK_ENCRYPTION = 20
+    MISSING_DISK_ENCRYPTION = 20
 
     @classmethod
     def _missing_(cls, value):
@@ -434,6 +434,10 @@ class PartnerEvents(Enum, metaclass=MissingItem):
                 ControlCategory.XDR,
             ],
             PartnerEvents.MISSING_AV_POLICY: [ControlCategory.XDR],
+            PartnerEvents.MISSING_DISK_ENCRYPTION: [ControlCategory.ASSET_MANAGER],
+            PartnerEvents.MISSING_DISK_ENCRYPTION_POLICY: [
+                ControlCategory.ASSET_MANAGER
+            ],
             PartnerEvents.MISSING_EDR_POLICY: [ControlCategory.XDR],
             PartnerEvents.MISSING_HOST_FIREWALL_POLICY: [ControlCategory.ASSET_MANAGER],
             PartnerEvents.MISSING_MFA: [ControlCategory.IDENTITY],
@@ -471,7 +475,7 @@ class AlertTypes(Enum, metaclass=MissingItem):
     NEW_MISSING_HOST_FIREWALL_POLICY_ENDPOINTS = 17
     NEW_OUT_OF_DATE_FIRMWARE_NETWORK_DEVICES = 19
     NEW_MISSING_DISK_ENCRYPTION_POLICY_ENDPOINTS = 20
-    NEW_INACTIVE_DISK_ENCRYPTION_ENDPOINTS = 21
+    NEW_MISSING_DISK_ENCRYPTION_ENDPOINTS = 21
 
     @classmethod
     def _missing_(cls, value):
