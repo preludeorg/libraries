@@ -419,6 +419,7 @@ class PartnerEvents(Enum, metaclass=MissingItem):
     OUT_OF_DATE_FIRMWARE = 18
     MISSING_DISK_ENCRYPTION_POLICY = 19
     MISSING_DISK_ENCRYPTION = 20
+    NO_REGISTERED_DEVICES = 21
 
     @classmethod
     def _missing_(cls, value):
@@ -444,6 +445,7 @@ class PartnerEvents(Enum, metaclass=MissingItem):
             PartnerEvents.MISSING_SCAN: [ControlCategory.VULN_MANAGER],
             PartnerEvents.NO_ASSET_MANAGER: [ControlCategory.ASSET_MANAGER],
             PartnerEvents.NO_EDR: [ControlCategory.XDR],
+            PartnerEvents.NO_REGISTERED_DEVICES: [ControlCategory.IDENTITY],
             PartnerEvents.NO_SERVER_MANAGER: [ControlCategory.ASSET_MANAGER],
             PartnerEvents.NO_VULN_MANAGER: [ControlCategory.VULN_MANAGER],
             PartnerEvents.OUT_OF_DATE_FIRMWARE: [ControlCategory.NETWORK],
@@ -476,6 +478,7 @@ class AlertTypes(Enum, metaclass=MissingItem):
     NEW_OUT_OF_DATE_FIRMWARE_NETWORK_DEVICES = 19
     NEW_MISSING_DISK_ENCRYPTION_POLICY_ENDPOINTS = 20
     NEW_MISSING_DISK_ENCRYPTION_ENDPOINTS = 21
+    NEW_NO_REGISTERED_DEVICES_USERS = 22
 
     @classmethod
     def _missing_(cls, value):
