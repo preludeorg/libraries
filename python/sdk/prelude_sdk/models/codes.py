@@ -420,6 +420,9 @@ class PartnerEvents(Enum, metaclass=MissingItem):
     MISSING_DISK_ENCRYPTION_POLICY = 19
     MISSING_DISK_ENCRYPTION = 20
     NO_REGISTERED_DEVICES = 21
+    MISSING_DEVICE_COMPLIANCE_POLICY = 22
+    NONCOMPLIANT_DEVICE = 23
+    MISSING_ASR_POLICY = 24
 
     @classmethod
     def _missing_(cls, value):
@@ -434,7 +437,9 @@ class PartnerEvents(Enum, metaclass=MissingItem):
                 ControlCategory.IDENTITY,
                 ControlCategory.XDR,
             ],
+            PartnerEvents.MISSING_ASR_POLICY: [ControlCategory.ASSET_MANAGER],
             PartnerEvents.MISSING_AV_POLICY: [ControlCategory.XDR],
+            PartnerEvents.MISSING_DEVICE_COMPLIANCE_POLICY: [ControlCategory.ASSET_MANAGER],
             PartnerEvents.MISSING_DISK_ENCRYPTION: [ControlCategory.ASSET_MANAGER],
             PartnerEvents.MISSING_DISK_ENCRYPTION_POLICY: [
                 ControlCategory.ASSET_MANAGER
@@ -448,6 +453,7 @@ class PartnerEvents(Enum, metaclass=MissingItem):
             PartnerEvents.NO_REGISTERED_DEVICES: [ControlCategory.IDENTITY],
             PartnerEvents.NO_SERVER_MANAGER: [ControlCategory.ASSET_MANAGER],
             PartnerEvents.NO_VULN_MANAGER: [ControlCategory.VULN_MANAGER],
+            PartnerEvents.NONCOMPLIANT_DEVICE: [ControlCategory.ASSET_MANAGER],
             PartnerEvents.OUT_OF_DATE_FIRMWARE: [ControlCategory.NETWORK],
             PartnerEvents.OUT_OF_DATE_SCAN: [ControlCategory.VULN_MANAGER],
             PartnerEvents.REDUCED_FUNCTIONALITY_MODE: [ControlCategory.XDR],
@@ -479,6 +485,9 @@ class AlertTypes(Enum, metaclass=MissingItem):
     NEW_MISSING_DISK_ENCRYPTION_POLICY_ENDPOINTS = 20
     NEW_MISSING_DISK_ENCRYPTION_ENDPOINTS = 21
     NEW_NO_REGISTERED_DEVICES_USERS = 22
+    NEW_MISSING_DEVICE_COMPLIANCE_POLICY_ENDPOINTS = 23
+    NEW_NONCOMPLIANT_DEVICE_ENDPOINTS = 24
+    NEW_MISSING_ASR_POLICY_ENDPOINTS = 25
 
     @classmethod
     def _missing_(cls, value):
@@ -506,6 +515,7 @@ class PolicyType(Enum, metaclass=MissingItem):
     INTEL_TDT = 18
     INTEL_CHIP = 19
     DISK_ENCRYPTION = 20
+    ASR = 21
 
     @classmethod
     def _missing_(cls, value):
