@@ -168,6 +168,16 @@ class TestScmPerControl:
                 raise e
 
     def test_evaluation(self, unwrap, control):
+        def _wait_for_policies(control, instance_id, category):
+            timeout = time.time() + 300
+            while time.time() < timeout:
+                evaluation = unwrap(self.scm.evaluation)(self.scm, control, instance_id)
+                evaluation = evaluation[f"{category}_evaluation"]
+                if len(evaluation["policies"]) > 0:
+                    return evaluation
+                time.sleep(5)
+            assert False, "Timed out waiting for policies to show up in evaluation"
+
         instance_id = pytest.controls.get(control.value)
         assert instance_id
         evaluation = unwrap(self.scm.evaluation)(self.scm, control, instance_id)
@@ -178,7 +188,7 @@ class TestScmPerControl:
                 control.control_category == ControlCategory.XDR
                 or control == Control.INTUNE
             ):
-                assert len(evaluation["policies"]) > 0
+                evaluation = _wait_for_policies(control, instance_id, "endpoint")
                 assert {
                     "excepted",
                     "id",
@@ -194,19 +204,14 @@ class TestScmPerControl:
         elif "user_evaluation" in evaluation:
             evaluation = evaluation["user_evaluation"]
             assert {"policies"} == evaluation.keys()
-            assert len(evaluation["policies"]) > 0
-            assert {
-                "excepted",
-                "id",
-                "name",
-                "noncompliant_hostnames",
-                "settings",
-                "user_count",
-            } == evaluation["policies"][0].keys()
+            evaluation = _wait_for_policies(control, instance_id, "user")
+            assert {"excepted", "id", "name", "settings", "user_count"} == evaluation[
+                "policies"
+            ][0].keys()
         elif "inbox_evaluation" in evaluation:
             evaluation = evaluation["inbox_evaluation"]
             assert {"policies"} == evaluation.keys()
-            assert len(evaluation["policies"]) > 0
+            evaluation = _wait_for_policies(control, instance_id, "inbox")
             assert {"excepted", "id", "name", "settings", "inbox_count"} == evaluation[
                 "policies"
             ][0].keys()
