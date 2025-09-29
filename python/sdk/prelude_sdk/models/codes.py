@@ -207,6 +207,10 @@ class Control(Enum, metaclass=MissingItem):
         return SCMCategory.NONE
 
     @property
+    def policy_types(self):
+        return [k for k, v in PolicyType.control_mapping().items() if self in v]
+
+    @property
     def parent(self):
         match self:
             case Control.CISCO_MERAKI_IDENTITY:
@@ -439,7 +443,9 @@ class PartnerEvents(Enum, metaclass=MissingItem):
             ],
             PartnerEvents.MISSING_ASR_POLICY: [ControlCategory.ASSET_MANAGER],
             PartnerEvents.MISSING_AV_POLICY: [ControlCategory.XDR],
-            PartnerEvents.MISSING_DEVICE_COMPLIANCE_POLICY: [ControlCategory.ASSET_MANAGER],
+            PartnerEvents.MISSING_DEVICE_COMPLIANCE_POLICY: [
+                ControlCategory.ASSET_MANAGER
+            ],
             PartnerEvents.MISSING_DISK_ENCRYPTION: [ControlCategory.ASSET_MANAGER],
             PartnerEvents.MISSING_DISK_ENCRYPTION_POLICY: [
                 ControlCategory.ASSET_MANAGER
@@ -520,6 +526,41 @@ class PolicyType(Enum, metaclass=MissingItem):
     @classmethod
     def _missing_(cls, value):
         return PolicyType.INVALID
+
+    @classmethod
+    def control_mapping(cls):
+        return {
+            PolicyType.EDR: ControlCategory.mapping()[ControlCategory.XDR],
+            PolicyType.AV: [Control.DEFENDER],
+            PolicyType.IDENTITY_PASSWORD: ControlCategory.mapping()[
+                ControlCategory.IDENTITY
+            ],
+            PolicyType.EMAIL_ANTIPHISH: ControlCategory.mapping()[
+                ControlCategory.EMAIL
+            ],
+            PolicyType.EMAIL_OUTBOUND: ControlCategory.mapping()[ControlCategory.EMAIL],
+            PolicyType.EMAIL_CONTENT: ControlCategory.mapping()[ControlCategory.EMAIL],
+            PolicyType.EMAIL_MALWARE: ControlCategory.mapping()[ControlCategory.EMAIL],
+            PolicyType.EMAIL_ATTACHMENT: ControlCategory.mapping()[
+                ControlCategory.EMAIL
+            ],
+            PolicyType.EMAIL_LINKS: ControlCategory.mapping()[ControlCategory.EMAIL],
+            PolicyType.EMAIL_DKIM: ControlCategory.mapping()[ControlCategory.EMAIL],
+            PolicyType.DEVICE_COMPLIANCE: [Control.INTUNE],
+            PolicyType.IDENTITY_MFA: ControlCategory.mapping()[
+                ControlCategory.IDENTITY
+            ],
+            PolicyType.HOST_FIREWALL: [Control.INTUNE],
+            PolicyType.NETWORK_FIREWALL: ControlCategory.mapping()[
+                ControlCategory.NETWORK
+            ],
+            PolicyType.INTEL_BELOW_OS: [Control.INTEL_INTUNE],
+            PolicyType.INTEL_OS: [Control.INTEL_INTUNE],
+            PolicyType.INTEL_TDT: [Control.INTEL_INTUNE],
+            PolicyType.INTEL_CHIP: [Control.INTEL_INTUNE],
+            PolicyType.DISK_ENCRYPTION: [Control.INTUNE],
+            PolicyType.ASR: [Control.INTUNE],
+        }
 
 
 class Platform(Enum, metaclass=MissingItem):
