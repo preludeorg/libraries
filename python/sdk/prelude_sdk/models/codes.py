@@ -547,9 +547,7 @@ class PolicyType(Enum, metaclass=MissingItem):
             PolicyType.EMAIL_LINKS: ControlCategory.mapping()[ControlCategory.EMAIL],
             PolicyType.EMAIL_DKIM: ControlCategory.mapping()[ControlCategory.EMAIL],
             PolicyType.DEVICE_COMPLIANCE: [Control.INTUNE],
-            PolicyType.IDENTITY_MFA: ControlCategory.mapping()[
-                ControlCategory.IDENTITY
-            ],
+            PolicyType.IDENTITY_MFA: [Control.GOOGLE_IDENTITY],
             PolicyType.HOST_FIREWALL: [Control.INTUNE],
             PolicyType.NETWORK_FIREWALL: ControlCategory.mapping()[
                 ControlCategory.NETWORK
