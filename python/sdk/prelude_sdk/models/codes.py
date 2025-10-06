@@ -406,27 +406,27 @@ class EDRResponse(Enum, metaclass=MissingItem):
 class PartnerEvents(Enum, metaclass=MissingItem):
     INVALID = -1
     REDUCED_FUNCTIONALITY_MODE = 1
-    NO_EDR = 2
-    MISSING_EDR_POLICY = 3
-    MISSING_AV_POLICY = 4
+    MISSING_EDR = 2
+    NO_EDR_POLICY = 3
+    NO_AV_POLICY = 4
     MISSING_MFA = 5
-    NO_ASSET_MANAGER = 6
+    MISSING_ASSET_MANAGER = 6
     MISCONFIGURED_POLICY_SETTING = 7
-    MISSING_SCAN = 8
+    MISSING_VULN_SCAN = 8
     OUT_OF_DATE_SCAN = 9
-    NO_VULN_MANAGER = 10
+    MISSING_VULN_MANAGER = 10
     USER_MISSING_ASSET_MANAGER = 11
     USER_MISSING_EDR = 12
     USER_MISSING_VULN_MANAGER = 13
-    NO_SERVER_MANAGER = 14
-    MISSING_HOST_FIREWALL_POLICY = 16
+    MISSING_SERVER_MANAGER = 14
+    NO_HOST_FIREWALL_POLICY = 16
     OUT_OF_DATE_FIRMWARE = 18
-    MISSING_DISK_ENCRYPTION_POLICY = 19
-    MISSING_DISK_ENCRYPTION = 20
+    NO_DISK_ENCRYPTION_POLICY = 19
+    NO_DISK_ENCRYPTION = 20
     NO_REGISTERED_DEVICES = 21
-    MISSING_DEVICE_COMPLIANCE_POLICY = 22
-    NONCOMPLIANT_DEVICE = 23
-    MISSING_ASR_POLICY = 24
+    NO_DEVICE_COMPLIANCE_POLICY = 22
+    NONCOMPLIANT = 23
+    NO_ASR_POLICY = 24
 
     @classmethod
     def _missing_(cls, value):
@@ -441,25 +441,21 @@ class PartnerEvents(Enum, metaclass=MissingItem):
                 ControlCategory.IDENTITY,
                 ControlCategory.XDR,
             ],
-            PartnerEvents.MISSING_ASR_POLICY: [ControlCategory.ASSET_MANAGER],
-            PartnerEvents.MISSING_AV_POLICY: [ControlCategory.XDR],
-            PartnerEvents.MISSING_DEVICE_COMPLIANCE_POLICY: [
-                ControlCategory.ASSET_MANAGER
-            ],
-            PartnerEvents.MISSING_DISK_ENCRYPTION: [ControlCategory.ASSET_MANAGER],
-            PartnerEvents.MISSING_DISK_ENCRYPTION_POLICY: [
-                ControlCategory.ASSET_MANAGER
-            ],
-            PartnerEvents.MISSING_EDR_POLICY: [ControlCategory.XDR],
-            PartnerEvents.MISSING_HOST_FIREWALL_POLICY: [ControlCategory.ASSET_MANAGER],
+            PartnerEvents.MISSING_ASSET_MANAGER: [ControlCategory.ASSET_MANAGER],
+            PartnerEvents.MISSING_EDR: [ControlCategory.XDR],
             PartnerEvents.MISSING_MFA: [ControlCategory.IDENTITY],
-            PartnerEvents.MISSING_SCAN: [ControlCategory.VULN_MANAGER],
-            PartnerEvents.NO_ASSET_MANAGER: [ControlCategory.ASSET_MANAGER],
-            PartnerEvents.NO_EDR: [ControlCategory.XDR],
+            PartnerEvents.MISSING_SERVER_MANAGER: [ControlCategory.ASSET_MANAGER],
+            PartnerEvents.MISSING_VULN_MANAGER: [ControlCategory.VULN_MANAGER],
+            PartnerEvents.MISSING_VULN_SCAN: [ControlCategory.VULN_MANAGER],
+            PartnerEvents.NO_ASR_POLICY: [ControlCategory.ASSET_MANAGER],
+            PartnerEvents.NO_AV_POLICY: [ControlCategory.XDR],
+            PartnerEvents.NO_DEVICE_COMPLIANCE_POLICY: [ControlCategory.ASSET_MANAGER],
+            PartnerEvents.NO_DISK_ENCRYPTION: [ControlCategory.ASSET_MANAGER],
+            PartnerEvents.NO_DISK_ENCRYPTION_POLICY: [ControlCategory.ASSET_MANAGER],
+            PartnerEvents.NO_EDR_POLICY: [ControlCategory.XDR],
+            PartnerEvents.NO_HOST_FIREWALL_POLICY: [ControlCategory.ASSET_MANAGER],
             PartnerEvents.NO_REGISTERED_DEVICES: [ControlCategory.IDENTITY],
-            PartnerEvents.NO_SERVER_MANAGER: [ControlCategory.ASSET_MANAGER],
-            PartnerEvents.NO_VULN_MANAGER: [ControlCategory.VULN_MANAGER],
-            PartnerEvents.NONCOMPLIANT_DEVICE: [ControlCategory.ASSET_MANAGER],
+            PartnerEvents.NONCOMPLIANT: [ControlCategory.ASSET_MANAGER],
             PartnerEvents.OUT_OF_DATE_FIRMWARE: [ControlCategory.NETWORK],
             PartnerEvents.OUT_OF_DATE_SCAN: [ControlCategory.VULN_MANAGER],
             PartnerEvents.REDUCED_FUNCTIONALITY_MODE: [ControlCategory.XDR],
@@ -472,28 +468,28 @@ class PartnerEvents(Enum, metaclass=MissingItem):
 class AlertTypes(Enum, metaclass=MissingItem):
     INVALID = -1
     NEW_REDUCED_FUNCTIONALITY_MODE_ENDPOINTS = 1
-    NEW_NO_EDR_ENDPOINTS = 2
-    NEW_MISSING_EDR_POLICY_ENDPOINTS = 3
-    NEW_MISSING_AV_POLICY_ENDPOINTS = 4
+    NEW_MISSING_EDR_ENDPOINTS = 2
+    NEW_NO_EDR_POLICY_ENDPOINTS = 3
+    NEW_NO_AV_POLICY_ENDPOINTS = 4
     NEW_MISSING_MFA_USERS = 5
-    NEW_NO_ASSET_MANAGER_ENDPOINTS = 6
+    NEW_MISSING_ASSET_MANAGER_ENDPOINTS = 6
     NEW_POLICY_SETTING_FAILURE = 7
     NEW_POLICY_SETTING_PASS = 8
-    NEW_MISSING_SCAN_ENDPOINTS = 9
-    NEW_NO_VULN_MANAGER_ENDPOINTS = 10
+    NEW_MISSING_VULN_SCAN_ENDPOINTS = 9
+    NEW_MISSING_VULN_MANAGER_ENDPOINTS = 10
     NEW_OUT_OF_DATE_SCAN_ENDPOINTS = 11
-    NEW_USER_MISSING_ASSET_MANAGER = 12
-    NEW_USER_MISSING_EDR = 13
-    NEW_USER_MISSING_VULN_MANAGER = 14
-    NEW_NO_SERVER_MANAGER_ENDPOINTS = 15
-    NEW_MISSING_HOST_FIREWALL_POLICY_ENDPOINTS = 17
+    NEW_MISSING_ASSET_MANAGER_USERS = 12
+    NEW_MISSING_EDR_USERS = 13
+    NEW_MISSING_VULN_MANAGER_USERS = 14
+    NEW_MISSING_SERVER_MANAGER_ENDPOINTS = 15
+    NEW_NO_HOST_FIREWALL_POLICY_ENDPOINTS = 17
     NEW_OUT_OF_DATE_FIRMWARE_NETWORK_DEVICES = 19
-    NEW_MISSING_DISK_ENCRYPTION_POLICY_ENDPOINTS = 20
-    NEW_MISSING_DISK_ENCRYPTION_ENDPOINTS = 21
+    NEW_NO_DISK_ENCRYPTION_POLICY_ENDPOINTS = 20
+    NEW_NO_DISK_ENCRYPTION_ENDPOINTS = 21
     NEW_NO_REGISTERED_DEVICES_USERS = 22
-    NEW_MISSING_DEVICE_COMPLIANCE_POLICY_ENDPOINTS = 23
-    NEW_NONCOMPLIANT_DEVICE_ENDPOINTS = 24
-    NEW_MISSING_ASR_POLICY_ENDPOINTS = 25
+    NEW_NO_DEVICE_COMPLIANCE_POLICY_ENDPOINTS = 23
+    NEW_NONCOMPLIANT_ENDPOINTS = 24
+    NEW_NO_ASR_POLICY_ENDPOINTS = 25
 
     @classmethod
     def _missing_(cls, value):
