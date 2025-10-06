@@ -33,7 +33,7 @@ class TestScmAcrossControls:
         unwrap(self.scm.upsert_notification)(
             self.scm,
             ControlCategory.XDR,
-            PartnerEvents.NO_EDR,
+            PartnerEvents.MISSING_EDR,
             RunCode.DAILY,
             0,
             ["test@email.com"],
@@ -43,7 +43,7 @@ class TestScmAcrossControls:
         for notification in notifications:
             if notification["id"] == self.notification_id:
                 assert notification["scheduled_hour"] == 0
-                assert notification["event"] == PartnerEvents.NO_EDR.value
+                assert notification["event"] == PartnerEvents.MISSING_EDR.value
 
     def test_update_notification(self, unwrap):
         unwrap(self.scm.upsert_notification)(
