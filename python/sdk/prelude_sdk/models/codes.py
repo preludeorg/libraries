@@ -207,10 +207,6 @@ class Control(Enum, metaclass=MissingItem):
         return SCMCategory.NONE
 
     @property
-    def policy_types(self):
-        return [k for k, v in PolicyType.control_mapping().items() if self in v]
-
-    @property
     def parent(self):
         match self:
             case Control.CISCO_MERAKI_IDENTITY:
