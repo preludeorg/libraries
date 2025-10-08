@@ -536,7 +536,7 @@ class PolicyType(Enum, metaclass=MissingItem):
             ],
             PolicyType.EMAIL_OUTBOUND: ControlCategory.mapping()[ControlCategory.EMAIL],
             PolicyType.EMAIL_CONTENT: ControlCategory.mapping()[ControlCategory.EMAIL],
-            PolicyType.EMAIL_MALWARE: ControlCategory.mapping()[ControlCategory.EMAIL],
+            PolicyType.EMAIL_MALWARE: [Control.M365],
             PolicyType.EMAIL_ATTACHMENT: ControlCategory.mapping()[
                 ControlCategory.EMAIL
             ],
