@@ -523,40 +523,6 @@ class PolicyType(Enum, metaclass=MissingItem):
     def _missing_(cls, value):
         return PolicyType.INVALID
 
-    @classmethod
-    def control_mapping(cls):
-        return {
-            PolicyType.EDR: ControlCategory.mapping()[ControlCategory.XDR],
-            PolicyType.AV: [Control.DEFENDER],
-            PolicyType.IDENTITY_PASSWORD: ControlCategory.mapping()[
-                ControlCategory.IDENTITY
-            ],
-            PolicyType.EMAIL_ANTIPHISH: ControlCategory.mapping()[
-                ControlCategory.EMAIL
-            ],
-            PolicyType.EMAIL_OUTBOUND: ControlCategory.mapping()[ControlCategory.EMAIL],
-            PolicyType.EMAIL_CONTENT: ControlCategory.mapping()[ControlCategory.EMAIL],
-            PolicyType.EMAIL_MALWARE: [Control.M365],
-            PolicyType.EMAIL_ATTACHMENT: ControlCategory.mapping()[
-                ControlCategory.EMAIL
-            ],
-            PolicyType.EMAIL_LINKS: ControlCategory.mapping()[ControlCategory.EMAIL],
-            PolicyType.EMAIL_DKIM: ControlCategory.mapping()[ControlCategory.EMAIL],
-            PolicyType.DEVICE_COMPLIANCE: [Control.INTUNE],
-            PolicyType.IDENTITY_MFA: [Control.GOOGLE_IDENTITY],
-            PolicyType.HOST_FIREWALL: [Control.INTUNE],
-            PolicyType.NETWORK_FIREWALL: ControlCategory.mapping()[
-                ControlCategory.NETWORK
-            ],
-            PolicyType.INTEL_BELOW_OS: [Control.INTEL_INTUNE],
-            PolicyType.INTEL_OS: [Control.INTEL_INTUNE],
-            PolicyType.INTEL_TDT: [Control.INTEL_INTUNE],
-            PolicyType.INTEL_CHIP: [Control.INTEL_INTUNE],
-            PolicyType.DISK_ENCRYPTION: [Control.INTUNE],
-            PolicyType.ASR: [Control.INTUNE],
-        }
-
-
 class Platform(Enum, metaclass=MissingItem):
     INVALID = 0
     WINDOWS = 1
