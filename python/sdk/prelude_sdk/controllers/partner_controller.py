@@ -105,18 +105,6 @@ class PartnerController(HttpController):
         return res.json()
 
     @verify_credentials
-    def ioa_stats(self, test_id: str | None = None):
-        """Get IOA stats"""
-        params = dict(test_id=test_id) if test_id else dict()
-        res = self.get(
-            f"{self.account.hq}/partner/ioa_stats",
-            headers=self.account.headers,
-            json=params,
-            timeout=30,
-        )
-        return res.json()
-
-    @verify_credentials
     def observed_detected(self, test_id: str | None = None, hours: int | None = None):
         """Get observed_detected stats"""
         params = dict()
