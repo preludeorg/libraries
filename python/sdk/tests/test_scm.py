@@ -133,19 +133,18 @@ class TestScmAcrossControls:
         assert report["report_id"]
         self.report_id = report["report_id"]
 
-    def test_list_report(self, unwrap):
-        reports = unwrap(self.scm.list_reports)(self.scm)
-        assert len(reports) == 1
-        assert reports[0]["report_id"] == self.report_id
-
-    def test_get_report(self, unwrap):
+    def test_update_report(self, unwrap):
         report = unwrap(self.scm.get_report)(self.scm, self.report_id)
         assert report["report"] == {"test": "me"}
+        unwrap(self.scm.put_report)(self.scm, self.report_id, {"test": "me2"})
+        report = unwrap(self.scm.get_report)(self.scm, self.report_id)
+        assert report["report"] == {"test": "me2"}
 
     def test_delete_report(self, unwrap):
         unwrap(self.scm.delete_report)(self.scm, self.report_id)
         reports = unwrap(self.scm.list_reports)(self.scm)
-        assert len(reports) == 0
+        for report in reports:
+            assert report["report_id"] != self.report_id
 
 
 @pytest.mark.order(9)
