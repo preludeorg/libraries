@@ -28,6 +28,7 @@ class TestScmAcrossControls:
         self.jobs = JobsController(pytest.account)
         self.scm = ScmController(pytest.account)
         self.notification_id = str(uuid.uuid4())
+        self.report_id = None
 
     def test_create_notification(self, unwrap):
         unwrap(self.scm.upsert_notification)(
@@ -126,6 +127,25 @@ class TestScmAcrossControls:
         assert result["successful"], result
         csv = requests.get(result["results"]["url"], timeout=10).content.decode("utf-8")
         assert len(csv.strip("\r\n").split("\r\n")) == 2
+
+    def test_put_report(self, unwrap):
+        report = unwrap(self.scm.put_report)(self.scm, None, {"test": "me"})
+        assert report["report_id"]
+        self.report_id = report["report_id"]
+
+    def test_list_report(self, unwrap):
+        reports = unwrap(self.scm.list_reports)(self.scm)
+        assert len(reports) == 1
+        assert reports[0]["report_id"] == self.report_id
+
+    def test_get_report(self, unwrap):
+        report = unwrap(self.scm.get_report)(self.scm, self.report_id)
+        assert report["report"] == {"test": "me"}
+
+    def test_delete_report(self, unwrap):
+        unwrap(self.scm.delete_report)(self.scm, self.report_id)
+        reports = unwrap(self.scm.list_reports)(self.scm)
+        assert len(reports) == 0
 
 
 @pytest.mark.order(9)

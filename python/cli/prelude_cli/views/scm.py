@@ -1,4 +1,5 @@
 import click
+import json
 import requests
 from time import sleep
 
@@ -768,3 +769,53 @@ def list_history(controller, odata_filter, start, end):
     """List history"""
     with Spinner("Fetching SCM history"):
         return controller.list_history(start, end, filter=odata_filter)
+
+
+@click.group()
+@click.pass_context
+def report(ctx):
+    """SCM report commands"""
+    ctx.obj = ScmController(account=ctx.obj.account)
+
+
+scm.add_command(report)
+
+
+@report.command("get")
+@click.argument("report_id", type=str)
+@click.pass_obj
+@pretty_print
+def get_report(controller, report_id):
+    with Spinner("Fetching report"):
+        return controller.get_report(report_id)
+
+
+@report.command("list")
+@click.pass_obj
+@pretty_print
+def list_reports(controller):
+    with Spinner("Fetching reports"):
+        return controller.list_reports()
+
+
+@report.command("delete")
+@click.argument("report_id", type=str)
+@click.confirmation_option(prompt="Are you sure?")
+@click.pass_obj
+@pretty_print
+def delete_report(controller, report_id):
+    with Spinner("Deleting report"):
+        return controller.delete_report(report_id)
+
+
+@report.command("put")
+@click.option(
+    "--report_data", required=True, type=str, help="Report data in JSON format"
+)
+@click.option("--report_id", type=str, help="Report ID to update")
+@click.pass_obj
+@pretty_print
+def put_report(controller, report_id, report_data):
+    with Spinner("Updating report"):
+        report_data = json.loads(report_data)
+        return controller.put_report(report_id, report_data)

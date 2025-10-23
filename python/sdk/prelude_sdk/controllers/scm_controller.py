@@ -593,3 +593,44 @@ class ScmController(HttpController):
                 ],
             )
         return history
+
+    @verify_credentials
+    def get_report(self, report_id: str):
+        """Get SCM report by ID"""
+        res = self.get(
+            f"{self.account.hq}/scm/reports/{report_id}",
+            headers=self.account.headers,
+            timeout=10,
+        )
+        return res.json()
+
+    @verify_credentials
+    def list_reports(self):
+        """List SCM reports"""
+        res = self.get(
+            f"{self.account.hq}/scm/reports",
+            headers=self.account.headers,
+            timeout=10,
+        )
+        return res.json()
+
+    @verify_credentials
+    def delete_report(self, report_id: str):
+        """Delete SCM report by ID"""
+        res = self.delete(
+            f"{self.account.hq}/scm/reports/{report_id}",
+            headers=self.account.headers,
+            timeout=10,
+        )
+        return res.json()
+
+    @verify_credentials
+    def put_report(self, report_id: str | None, report_data: dict):
+        """Put SCM report by ID"""
+        res = self.put(
+            f"{self.account.hq}/scm/reports",
+            headers=self.account.headers,
+            json=dict(report=report_data, id=report_id),
+            timeout=10,
+        )
+        return res.json()
