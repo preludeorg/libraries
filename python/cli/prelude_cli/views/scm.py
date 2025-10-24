@@ -693,7 +693,6 @@ def delete_notification(controller, notification_id):
     required=True,
 )
 @click.option(
-    "-u",
     "--slack_urls",
     help="comma-separated list of Slack Webhook URLs to notify",
     default=None,
@@ -707,7 +706,6 @@ def delete_notification(controller, notification_id):
     type=bool,
 )
 @click.option(
-    "-u",
     "--teams_urls",
     help="comma-separated list of Teams Webhook URLs to notify",
     default=None,
