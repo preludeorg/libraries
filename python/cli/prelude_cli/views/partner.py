@@ -136,17 +136,6 @@ def partner_reports(controller, partner, test_id):
     with Spinner(description="Getting reports to partner"):
         return controller.list_reports(partner=Control[partner], test_id=test_id)
 
-
-@partner.command("ioa-stats")
-@click.option("-t", "--test_id", help="test to get IOA stats for")
-@click.pass_obj
-@pretty_print
-def ioa_stats(controller, test_id):
-    """Get IOA stats"""
-    with Spinner(description="Getting IOA stats"):
-        return controller.ioa_stats(test_id=test_id)
-
-
 @partner.command("observed-detected")
 @click.option("-t", "--test_id", help="test to get observed/detected stats for")
 @click.option("-h", "--hours", help="number of hours to look back", type=int)

@@ -431,11 +431,8 @@ class TestPartner:
         )
         assert 1 == len(res)
         expected = dict(
-            blocked=0,
-            detected=0,
             detection_id=pytest.detection_id,
             group_id=group_id,
-            monitored=0,
             platform=pytest.expected_detection["rule"]["logsource"]["product"],
             test_id=pytest.test_id,
         )
@@ -470,32 +467,6 @@ class TestPartner:
         assert (
             res[control.name][0]["account_id"] == pytest.expected_account["account_id"]
         )
-
-    def test_ioa_stats(
-        self,
-        unwrap,
-        host,
-        edr_id,
-        control,
-        os,
-        platform,
-        policy,
-        policy_name,
-        webhook_keys,
-        group_id,
-    ):
-        try:
-            if control != Control.CROWDSTRIKE:
-                pytest.skip("IOA stats only supported for CROWDSTRIKE")
-            if not pytest.expected_account["features"]["observed_detected"]:
-                pytest.skip("OBSERVED_DETECTED feature not enabled")
-
-            res = unwrap(self.partner.ioa_stats)(self.partner)
-            assert 0 == len(res)
-        finally:
-            unwrap(self.detect.delete_endpoint)(
-                self.detect, ident=pytest.endpoint["endpoint_id"]
-            )
 
     def test_list_advisories(
         self,
