@@ -131,7 +131,8 @@ class TestScmAcrossControls:
 @pytest.mark.order(9)
 @pytest.mark.usefixtures("setup_account")
 @pytest.mark.parametrize(
-    "control", [c for c in Control if c.scm_category != SCMCategory.NONE and not c.parent]
+    "control",
+    [c for c in Control if c.scm_category != SCMCategory.NONE and not c.parent],
 )
 class TestScmPerControl:
     def setup_class(self):
