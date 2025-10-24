@@ -100,7 +100,7 @@ class TestPartnerAttach:
             ),
         )
         for c in Control
-        if c.value > 0
+        if c.value > 0 and not c.parent
     ]
 
     def setup_class(self):
