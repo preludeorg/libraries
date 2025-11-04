@@ -45,7 +45,7 @@ class PartnerController(HttpController):
         res = self.delete(
             f"{self.account.hq}/partner/{partner.name}/{instance_id}",
             headers=self.account.headers,
-            timeout=10,
+            timeout=30,
         )
         return res.json()
 
