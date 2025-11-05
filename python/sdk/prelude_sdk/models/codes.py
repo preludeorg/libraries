@@ -519,6 +519,7 @@ class PolicyType(Enum, metaclass=MissingItem):
     def _missing_(cls, value):
         return PolicyType.INVALID
 
+
 class Platform(Enum, metaclass=MissingItem):
     INVALID = 0
     WINDOWS = 1
@@ -549,3 +550,15 @@ class NotationType(Enum, metaclass=MissingItem):
     @classmethod
     def _missing_(cls, value):
         return NotationType.INVALID
+
+
+class ChartType(Enum, metaclass=MissingItem):
+    INVALID = -1
+    NUMBER = 1
+    COLUMN = 2
+    BAR = 3
+    PIE = 4
+
+    @classmethod
+    def _missing_(cls, value):
+        return ChartType.INVALID
