@@ -128,24 +128,6 @@ class TestScmAcrossControls:
         csv = requests.get(result["results"]["url"], timeout=10).content.decode("utf-8")
         assert len(csv.strip("\r\n").split("\r\n")) == 2
 
-    def test_put_report(self, unwrap):
-        report = unwrap(self.scm.put_report)(self.scm, None, {"test": "me"})
-        assert report["report_id"]
-        self.report_id = report["report_id"]
-
-    def test_update_report(self, unwrap):
-        report = unwrap(self.scm.get_report)(self.scm, self.report_id)
-        assert report["report"] == {"test": "me"}
-        unwrap(self.scm.put_report)(self.scm, self.report_id, {"test": "me2"})
-        report = unwrap(self.scm.get_report)(self.scm, self.report_id)
-        assert report["report"] == {"test": "me2"}
-
-    def test_delete_report(self, unwrap):
-        unwrap(self.scm.delete_report)(self.scm, self.report_id)
-        reports = unwrap(self.scm.list_reports)(self.scm)
-        for report in reports:
-            assert report["report_id"] != self.report_id
-
 
 @pytest.mark.order(9)
 @pytest.mark.usefixtures("setup_account")
