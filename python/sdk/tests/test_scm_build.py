@@ -64,7 +64,7 @@ class TestScmBuild:
                         {
                             "name": "test chart",
                             "type": "PIE",
-                            "odata_filter": "instances/any(i: i/control eq 1)",
+                            "filter": "instances/any(i: i/control eq 1)",
                             "scm_category": "ENDPOINT",
                         }
                     ],
