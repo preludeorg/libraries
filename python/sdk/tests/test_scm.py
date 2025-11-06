@@ -28,7 +28,6 @@ class TestScmAcrossControls:
         self.jobs = JobsController(pytest.account)
         self.scm = ScmController(pytest.account)
         self.notification_id = str(uuid.uuid4())
-        self.report_id = None
 
     def test_create_notification(self, unwrap):
         unwrap(self.scm.upsert_notification)(
