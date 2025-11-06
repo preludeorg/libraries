@@ -625,12 +625,41 @@ class ScmController(HttpController):
         return res.json()
 
     @verify_credentials
-    def put_report(self, report_id: str | None, report_data: dict):
+    def put_report(self, report_data: dict, report_id: str = None):
         """Put SCM report by ID"""
         res = self.put(
             f"{self.account.hq}/scm/reports",
             headers=self.account.headers,
             json=dict(report=report_data, id=report_id),
             timeout=10,
+        )
+        return res.json()
+
+    @verify_credentials
+    def get_chart_data(
+        self,
+        scm_category: SCMCategory,
+        sort_by: str,
+        group_by: str,
+        group_limit: int,
+        scopes: str = None,
+        filter: str = None,
+    ):
+        """Get SCM chart data"""
+        params = {
+            "scm_category": scm_category.name,
+            "sort_by": sort_by,
+            "group_by": group_by,
+            "group_limit": group_limit,
+        }
+        if scopes:
+            params["scopes"] = scopes
+        if filter:
+            params["$filter"] = filter
+        res = self.get(
+            f"{self.account.hq}/scm/chart_data",
+            headers=self.account.headers,
+            params=params,
+            timeout=30,
         )
         return res.json()

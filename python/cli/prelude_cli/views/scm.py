@@ -812,10 +812,55 @@ def delete_report(controller, report_id):
 @click.option(
     "--report_data", required=True, type=str, help="Report data in JSON format"
 )
-@click.option("--report_id", type=str, help="Report ID to update")
+@click.option("--report_id", type=str, help="Report ID to update", default=None)
 @click.pass_obj
 @pretty_print
 def put_report(controller, report_id, report_data):
     with Spinner("Updating report"):
         report_data = json.loads(report_data)
         return controller.put_report(report_id, report_data)
+
+
+@report.command("chart-data")
+@click.argument(
+    "scm_category",
+    type=click.Choice(
+        [c.name for c in SCMCategory if c.value > 0], case_sensitive=False
+    ),
+)
+@click.option("--group_by", "-b", help="Field to group by", required=True, type=str)
+@click.option(
+    "--group_limit", "-l", help="Max number of groups to return", type=int, default=100
+)
+@click.option(
+    "--sort_by",
+    "-s",
+    help="Sort method",
+    type=click.Choice(["a-z", "z-a", "0-9", "9-0"]),
+    default="9-0",
+)
+@click.option(
+    "--scopes",
+    "-c",
+    help="Comma-separate list of scope to value pairs, i.e. control=1,platform=windows",
+    default=None,
+    type=str,
+)
+@click.option(
+    "--odata_filter", "-f", help="OData filter string", default=None, type=str
+)
+@click.pass_obj
+@pretty_print
+def get_chart_data(
+    controller, scm_category, group_by, group_limit, sort_by, scopes, odata_filter
+):
+    """Get chart data for SCM reports"""
+    with Spinner("Fetching chart data"):
+        return controller.get_chart_data(
+            scm_category=SCMCategory[scm_category],
+            group_by=group_by,
+            group_limit=group_limit,
+            sort_by=sort_by,
+            scopes=scopes,
+            odata_filter=odata_filter,
+        )
