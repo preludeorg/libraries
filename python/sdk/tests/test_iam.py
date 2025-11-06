@@ -17,7 +17,7 @@ class TestIAM:
     def setup_class(self):
         self.iam_account = IAMAccountController(pytest.account)
         self.iam_user = IAMUserController(pytest.account)
-        self.company = "prelude"
+        self.company = "prelude-sdk-qa"
         self.service_user = "registration"
 
     def test_get_account(self, unwrap):
