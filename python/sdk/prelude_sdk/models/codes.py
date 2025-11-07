@@ -236,6 +236,68 @@ class Control(Enum, metaclass=MissingItem):
             case _:
                 return []
 
+    @property
+    def display_name(self):
+        match self:
+            case Control.CROWDSTRIKE:
+                return "CrowdStrike"
+            case Control.DEFENDER:
+                return "Microsoft Defender"
+            case Control.SPLUNK:
+                return "Splunk"
+            case Control.SENTINELONE:
+                return "SentinelOne"
+            case Control.VECTR:
+                return "VECTR"
+            case Control.S3:
+                return "Amazon S3"
+            case Control.INTUNE:
+                return "Microsoft Intune"
+            case Control.SERVICENOW:
+                return "ServiceNow"
+            case Control.OKTA:
+                return "Okta"
+            case Control.M365:
+                return "Microsoft 365"
+            case Control.ENTRA:
+                return "Microsoft Entra ID"
+            case Control.JAMF:
+                return "Jamf"
+            case Control.GMAIL:
+                return "Gmail"
+            case Control.GOOGLE_IDENTITY:
+                return "Google Cloud Identity Platform"
+            case Control.DEFENDER_DISCOVERY:
+                return "Microsoft Defender Discovery"
+            case Control.TENABLE:
+                return "Tenable"
+            case Control.EC2:
+                return "Amazon EC2"
+            case Control.AWS_SSM:
+                return "Amazon SSM"
+            case Control.AZURE_VM:
+                return "Azure VM"
+            case Control.GITHUB:
+                return "GitHub"
+            case Control.TENABLE_DISCOVERY:
+                return "Tenable Discovery"
+            case Control.QUALYS:
+                return "Qualys"
+            case Control.QUALYS_DISCOVERY:
+                return "Qualys Discovery"
+            case Control.RAPID7:
+                return "Rapid7"
+            case Control.RAPID7_DISCOVERY:
+                return "Rapid7 Discovery"
+            case Control.INTEL_INTUNE:
+                return "Intel"
+            case Control.CISCO_MERAKI:
+                return "Cisco Meraki"
+            case Control.CISCO_MERAKI_IDENTITY:
+                return "Cisco Meraki Identity"
+            case _:
+                return "Unknown Control"
+
 
 class ControlCategory(Enum, metaclass=MissingItem):
     INVALID = -1
@@ -307,6 +369,34 @@ class ControlCategory(Enum, metaclass=MissingItem):
                 Control.SENTINELONE,
             ],
         }
+
+    @property
+    def display_name(self):
+        match self:
+            case ControlCategory.CLOUD:
+                return "Cloud"
+            case ControlCategory.EMAIL:
+                return "Email"
+            case ControlCategory.IDENTITY:
+                return "Identity Provider"
+            case ControlCategory.NETWORK:
+                return "Network"
+            case ControlCategory.XDR:
+                return "EDR"
+            case ControlCategory.ASSET_MANAGER:
+                return "Endpoint Management"
+            case ControlCategory.DISCOVERED_DEVICES:
+                return "Discovered Devices"
+            case ControlCategory.VULN_MANAGER:
+                return "Vulnerability Management"
+            case ControlCategory.SIEM:
+                return "SIEM"
+            case ControlCategory.PRIVATE_REPO:
+                return "Private Repository"
+            case ControlCategory.HARDWARE:
+                return "Client Hardware Security"
+            case _:
+                return "Unknown Control Category"
 
 
 class SCMCategory(Enum, metaclass=MissingItem):
