@@ -811,9 +811,9 @@ def delete_report(controller, report_id):
 @report.command("put")
 @click.option(
     "--report_data",
-    required=True,
     type=str,
     help="report data in JSON format, cannot be used with report_file",
+    default=None,
 )
 @click.option(
     "--report_file",
@@ -825,6 +825,9 @@ def delete_report(controller, report_id):
 @click.pass_obj
 @pretty_print
 def put_report(controller, report_data, report_file, report_id):
+    if not report_data and not report_file:
+        raise ValueError("Either report_data or report_file must be provided")
+
     with Spinner("Updating report"):
         if report_file:
             with open(report_file, "r") as f:
@@ -854,7 +857,7 @@ def put_report(controller, report_data, report_file, report_id):
 @click.option(
     "--scopes",
     "-c",
-    help="comma-separate list of scope to value pairs, i.e. instances/control=1,instances/platform=windows",
+    help="comma-separated list of scope to value pairs, i.e. instances/control=1,instances/platform=windows",
     default=None,
     type=str,
 )
