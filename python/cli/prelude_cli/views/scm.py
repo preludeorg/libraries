@@ -810,15 +810,27 @@ def delete_report(controller, report_id):
 
 @report.command("put")
 @click.option(
-    "--report_data", required=True, type=str, help="Report data in JSON format"
+    "--report_data",
+    required=True,
+    type=str,
+    help="report data in JSON format, cannot be used with report_file",
 )
-@click.option("--report_id", type=str, help="Report ID to update", default=None)
+@click.option(
+    "--report_file",
+    type=click.Path(exists=True, file_okay=True, dir_okay=False, readable=True),
+    help="report data JSON file, will ignore report_data if provided",
+    default=None,
+)
+@click.option("--report_id", type=str, help="report ID to update", default=None)
 @click.pass_obj
 @pretty_print
-def put_report(controller, report_id, report_data):
+def put_report(controller, report_data, report_file, report_id):
     with Spinner("Updating report"):
+        if report_file:
+            with open(report_file, "r") as f:
+                report_data = f.read()
         report_data = json.loads(report_data)
-        return controller.put_report(report_id, report_data)
+        return controller.put_report(report_data, report_id)
 
 
 @report.command("chart-data")
@@ -828,21 +840,21 @@ def put_report(controller, report_id, report_data):
         [c.name for c in SCMCategory if c.value > 0], case_sensitive=False
     ),
 )
-@click.option("--group_by", "-b", help="Field to group by", required=True, type=str)
+@click.option("--group_by", "-b", help="field to group by", required=True, type=str)
 @click.option(
-    "--group_limit", "-l", help="Max number of groups to return", type=int, default=100
+    "--group_limit", "-l", help="max number of groups to return", type=int, default=100
 )
 @click.option(
     "--sort_by",
     "-s",
-    help="Sort method",
+    help="sort method",
     type=click.Choice(["a-z", "z-a", "0-9", "9-0"]),
     default="9-0",
 )
 @click.option(
     "--scopes",
     "-c",
-    help="Comma-separate list of scope to value pairs, i.e. control=1,platform=windows",
+    help="comma-separate list of scope to value pairs, i.e. instances/control=1,instances/platform=windows",
     default=None,
     type=str,
 )

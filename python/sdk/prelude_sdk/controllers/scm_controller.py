@@ -651,9 +651,8 @@ class ScmController(HttpController):
             "sort_by": sort_by,
             "group_by": group_by,
             "group_limit": group_limit,
+            "scopes": scopes,
         }
-        if scopes:
-            params["scopes"] = scopes
         if filter:
             params["$filter"] = filter
         res = self.get(

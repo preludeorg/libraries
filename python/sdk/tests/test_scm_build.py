@@ -65,6 +65,7 @@ class TestScmBuild:
                             "name": "test chart",
                             "type": "PIE",
                             "filter": "instances/any(i: i/control eq 1)",
+                            "group_by": "platforms",
                             "scm_category": "ENDPOINT",
                         }
                     ],
