@@ -1,8 +1,8 @@
 import pytest
-from datetime import datetime, timezone, timedelta
+import uuid
 
 from prelude_sdk.controllers.scm_controller import ScmController
-from prelude_sdk.models.codes import Control, ControlCategory
+from prelude_sdk.models.codes import ControlCategory
 
 
 @pytest.mark.order(8)
@@ -53,3 +53,51 @@ class TestScmBuild:
         assert res["status"]
         res = unwrap(self.scm.list_object_exceptions)(self.scm)
         assert not any(x["id"] == pytest.exception_id for x in res)
+
+    def test_put_report(self, unwrap):
+        report_blob = {
+            "name": "test report",
+            "sections": [
+                {
+                    "name": "test section",
+                    "charts": [
+                        {
+                            "name": "test chart",
+                            "type": "PIE",
+                            "filter": "instances/any(i: i/control eq 1)",
+                            "group_by": "platforms",
+                            "scm_category": "ENDPOINT",
+                        }
+                    ],
+                }
+            ],
+        }
+        res = unwrap(self.scm.put_report)(self.scm, report_data=report_blob)
+        pytest.report_id = res["report_id"]
+        for section in res["report"]["sections"]:
+            assert "id" in section
+        for chart in res["report"]["sections"][0]["charts"]:
+            assert "id" in chart
+            assert "ignore" in chart
+
+    def test_list_reports(self, unwrap):
+        res = unwrap(self.scm.list_reports)(self.scm)
+        report = [r for r in res if r["report_id"] == pytest.report_id]
+        assert len(report) == 1
+        assert report[0]["name"] == "test report"
+        assert "report" not in report[0]
+
+    def test_get_report(self, unwrap):
+        res = unwrap(self.scm.get_report)(self.scm, pytest.report_id)
+        assert res["report_id"] == pytest.report_id
+        for section in res["report"]["sections"]:
+            assert "id" in section
+        for chart in res["report"]["sections"][0]["charts"]:
+            assert "id" in chart
+            assert "ignore" in chart
+
+    def test_delete_report(self, unwrap):
+        res = unwrap(self.scm.delete_report)(self.scm, pytest.report_id)
+        assert res["status"]
+        res = unwrap(self.scm.list_reports)(self.scm)
+        assert not any(r["report_id"] == pytest.report_id for r in res)

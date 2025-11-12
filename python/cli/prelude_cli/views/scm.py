@@ -1,4 +1,5 @@
 import click
+import json
 import requests
 from time import sleep
 
@@ -768,3 +769,113 @@ def list_history(controller, odata_filter, start, end):
     """List history"""
     with Spinner("Fetching SCM history"):
         return controller.list_history(start, end, filter=odata_filter)
+
+
+@click.group()
+@click.pass_context
+def report(ctx):
+    """SCM report commands"""
+    ctx.obj = ScmController(account=ctx.obj.account)
+
+
+scm.add_command(report)
+
+
+@report.command("get")
+@click.argument("report_id", type=str)
+@click.pass_obj
+@pretty_print
+def get_report(controller, report_id):
+    with Spinner("Fetching report"):
+        return controller.get_report(report_id)
+
+
+@report.command("list")
+@click.pass_obj
+@pretty_print
+def list_reports(controller):
+    with Spinner("Fetching reports"):
+        return controller.list_reports()
+
+
+@report.command("delete")
+@click.argument("report_id", type=str)
+@click.confirmation_option(prompt="Are you sure?")
+@click.pass_obj
+@pretty_print
+def delete_report(controller, report_id):
+    with Spinner("Deleting report"):
+        return controller.delete_report(report_id)
+
+
+@report.command("put")
+@click.option(
+    "--report_data",
+    type=str,
+    help="report data in JSON format, cannot be used with report_file",
+    default=None,
+)
+@click.option(
+    "--report_file",
+    type=click.Path(exists=True, file_okay=True, dir_okay=False, readable=True),
+    help="report data JSON file, will ignore report_data if provided",
+    default=None,
+)
+@click.option("--report_id", type=str, help="report ID to update", default=None)
+@click.pass_obj
+@pretty_print
+def put_report(controller, report_data, report_file, report_id):
+    if not report_data and not report_file:
+        raise ValueError("Either report_data or report_file must be provided")
+
+    with Spinner("Updating report"):
+        if report_file:
+            with open(report_file, "r") as f:
+                report_data = f.read()
+        report_data = json.loads(report_data)
+        return controller.put_report(report_data, report_id)
+
+
+@report.command("chart-data")
+@click.argument(
+    "scm_category",
+    type=click.Choice(
+        [c.name for c in SCMCategory if c.value > 0], case_sensitive=False
+    ),
+)
+@click.option("--group_by", "-b", help="field to group by", required=True, type=str)
+@click.option(
+    "--group_limit", "-l", help="max number of groups to return", type=int, default=100
+)
+@click.option(
+    "--sort_by",
+    "-s",
+    help="sort method",
+    type=click.Choice(["a-z", "z-a", "0-9", "9-0"]),
+    default="9-0",
+)
+@click.option(
+    "--scopes",
+    "-c",
+    help="comma-separated list of scope to value pairs, i.e. instances/control=1,instances/platform=windows",
+    default=None,
+    type=str,
+)
+@click.option(
+    "--odata_filter", "-f", help="OData filter string", default=None, type=str
+)
+@click.pass_obj
+@pretty_print
+def get_chart_data(
+    controller, scm_category, group_by, group_limit, sort_by, scopes, odata_filter
+):
+    """Get chart data for SCM reports"""
+    with Spinner("Fetching chart data"):
+        return controller.get_chart_data(
+            scm_category=SCMCategory[scm_category],
+            group_by=group_by,
+            group_limit=group_limit,
+            sort_by=sort_by,
+            scopes=scopes,
+            odata_filter=odata_filter,
+        )
