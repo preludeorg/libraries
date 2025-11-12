@@ -63,6 +63,7 @@ class TestScmBuild:
                     "charts": [
                         {
                             "name": "test chart",
+                            "columns": ["platforms"],
                             "type": "PIE",
                             "filter": "instances/any(i: i/control eq 1)",
                             "group_by": "platforms",
