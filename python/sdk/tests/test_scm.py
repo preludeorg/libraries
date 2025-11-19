@@ -116,7 +116,7 @@ class TestScmAcrossControls:
         job_id = unwrap(self.export.export_scm)(
             self.export,
             SCMCategory.ENDPOINT,
-            filter="contains(hostname, 'spencer')",
+            filter="contains(hostname, 'i')",
             top=1,
         )["job_id"]
         while (result := unwrap(self.jobs.job_status)(self.jobs, job_id))[
