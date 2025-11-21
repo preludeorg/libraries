@@ -648,6 +648,7 @@ class ChartType(Enum, metaclass=MissingItem):
     COLUMN = 2
     BAR = 3
     PIE = 4
+    PERCENT = 5
 
     @classmethod
     def _missing_(cls, value):
