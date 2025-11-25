@@ -642,18 +642,18 @@ class ScmController(HttpController):
         sort_by: str,
         group_by: str,
         group_limit: int,
+        display_overrides: dict = None,
         odata_filter: str = None,
         scopes: dict = None,
-        display_overrides: dict = None,
     ):
         """Get SCM chart data"""
         body = {
             "category": scm_category.name,
-            "sort_by": sort_by,
+            "display_overrides": display_overrides,
             "group_by": group_by,
             "group_limit": group_limit,
             "scopes": scopes,
-            "display_overrides": display_overrides,
+            "sort_by": sort_by,
         }
         if odata_filter:
             body["$filter"] = odata_filter

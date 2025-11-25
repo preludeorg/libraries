@@ -884,10 +884,8 @@ def get_chart_data(
     scopes,
 ):
     """Get chart data for SCM reports"""
-    if display_overrides:
-        display_overrides = json.loads(display_overrides)
-    if scopes:
-        scopes = json.loads(scopes)
+    display_overrides = json.loads(display_overrides) if display_overrides else None
+    scopes = json.loads(scopes) if scopes else None
     with Spinner("Fetching chart data"):
         return controller.get_chart_data(
             scm_category=SCMCategory[scm_category],
