@@ -851,31 +851,48 @@ def put_report(controller, report_data, report_file, report_id):
     "--sort_by",
     "-s",
     help="sort method",
-    type=click.Choice(["a-z", "z-a", "0-9", "9-0"]),
+    type=click.Choice(["count_asc", "count_desc", "group_asc", "group_desc"]),
     default="9-0",
 )
 @click.option(
-    "--scopes",
-    "-c",
-    help="comma-separated list of scope to value pairs, i.e. instances/control=1,instances/platform=windows",
+    "--display_overrides",
+    "-d",
+    help="display overrides in JSON format",
     default=None,
     type=str,
 )
 @click.option(
     "--odata_filter", "-f", help="OData filter string", default=None, type=str
 )
+@click.option(
+    "--scopes",
+    "-c",
+    help="scope-value map in JSON format",
+    default=None,
+    type=str,
+)
 @click.pass_obj
 @pretty_print
 def get_chart_data(
-    controller, scm_category, group_by, group_limit, sort_by, scopes, odata_filter
+    controller,
+    scm_category,
+    group_by,
+    group_limit,
+    sort_by,
+    display_overrides,
+    odata_filter,
+    scopes,
 ):
     """Get chart data for SCM reports"""
+    display_overrides = json.loads(display_overrides) if display_overrides else None
+    scopes = json.loads(scopes) if scopes else None
     with Spinner("Fetching chart data"):
         return controller.get_chart_data(
             scm_category=SCMCategory[scm_category],
             group_by=group_by,
             group_limit=group_limit,
             sort_by=sort_by,
-            scopes=scopes,
+            display_overrides=display_overrides,
             odata_filter=odata_filter,
+            scopes=scopes,
         )
