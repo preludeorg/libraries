@@ -642,23 +642,25 @@ class ScmController(HttpController):
         sort_by: str,
         group_by: str,
         group_limit: int,
-        scopes: str = None,
-        filter: str = None,
+        odata_filter: str = None,
+        scopes: dict = None,
+        display_overrides: dict = None,
     ):
         """Get SCM chart data"""
-        params = {
-            "scm_category": scm_category.name,
+        body = {
+            "category": scm_category.name,
             "sort_by": sort_by,
             "group_by": group_by,
             "group_limit": group_limit,
             "scopes": scopes,
+            "display_overrides": display_overrides,
         }
-        if filter:
-            params["$filter"] = filter
-        res = self.get(
-            f"{self.account.hq}/scm/chart_data",
+        if odata_filter:
+            body["$filter"] = odata_filter
+        res = self.post(
+            f"{self.account.hq}/scm/reports/data",
             headers=self.account.headers,
-            params=params,
+            json=body,
             timeout=30,
         )
         return res.json()
