@@ -851,7 +851,7 @@ def put_report(controller, report_data, report_file, report_id):
     "--sort_by",
     "-s",
     help="sort method",
-    type=click.Choice(["group_asc", "group_desc", "count_asc", "count_desc"]),
+    type=click.Choice(["count_asc", "count_desc", "group_asc", "group_desc"]),
     default="9-0",
 )
 @click.option(
