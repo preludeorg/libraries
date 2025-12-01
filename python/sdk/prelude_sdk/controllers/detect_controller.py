@@ -197,7 +197,7 @@ class DetectController(HttpController):
         res = self.post(
             f"{self.account.hq}/detect/threat_hunts/{threat_hunt_id}",
             headers=self.account.headers,
-            timeout=10,
+            timeout=30,
         )
         return res.json()
 
