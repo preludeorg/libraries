@@ -188,7 +188,6 @@ class TestScmPerControl:
             if (
                 control.control_category == ControlCategory.XDR
                 or control == Control.INTUNE
-                or control == Control.INTEL_INTUNE
             ):
                 evaluation = _wait_for_policies(control, instance_id, "endpoint")
                 assert {
@@ -200,6 +199,17 @@ class TestScmPerControl:
                     "conflict_count",
                     "endpoint_count",
                     "success_count",
+                } == evaluation["policies"][0].keys()
+            elif control == Control.INTEL_INTUNE:
+                evaluation = _wait_for_policies(control, instance_id, "endpoint")
+                assert {
+                    "active_count",
+                    "excepted",
+                    "id",
+                    "name",
+                    "not_supported_count",
+                    "supported_count",
+                    "techniques",
                 } == evaluation["policies"][0].keys()
             else:
                 assert len(evaluation["policies"]) == 0
