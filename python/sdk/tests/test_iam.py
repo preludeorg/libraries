@@ -17,7 +17,7 @@ class TestIAM:
     def setup_class(self):
         self.iam_account = IAMAccountController(pytest.account)
         self.iam_user = IAMUserController(pytest.account)
-        self.company = "prelude"
+        self.company = "prelude-sdk-qa"
         self.service_user = "registration"
 
     def test_get_account(self, unwrap):
@@ -29,7 +29,7 @@ class TestIAM:
         res = unwrap(self.iam_user.list_accounts)(self.iam_user)
         assert pytest.expected_account["account_id"] in [a["account_id"] for a in res]
 
-    def test_create_service_user(self, unwrap):
+    def test_create_second_service_user(self, unwrap):
         service_user = unwrap(self.iam_account.create_service_user)(
             self.iam_account, name=self.service_user
         )
@@ -56,7 +56,7 @@ class TestIAM:
         diffs = check_dict_items(pytest.expected_account, res)
         assert not diffs, json.dumps(diffs, indent=2)
 
-    def test_delete_service_user(self, unwrap):
+    def test_delete_second_service_user(self, unwrap):
         unwrap(self.iam_account.delete_service_user)(
             self.iam_account, handle=pytest.second_service_user_handle
         )
