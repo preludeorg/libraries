@@ -188,6 +188,7 @@ class TestScmPerControl:
             if (
                 control.control_category == ControlCategory.XDR
                 or control == Control.INTUNE
+                or control == Control.INTEL_INTUNE
             ):
                 evaluation = _wait_for_policies(control, instance_id, "endpoint")
                 assert {
