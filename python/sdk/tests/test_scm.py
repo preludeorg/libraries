@@ -200,6 +200,17 @@ class TestScmPerControl:
                     "endpoint_count",
                     "success_count",
                 } == evaluation["policies"][0].keys()
+            elif control == Control.INTEL_INTUNE:
+                evaluation = _wait_for_policies(control, instance_id, "endpoint")
+                assert {
+                    "active_count",
+                    "excepted",
+                    "id",
+                    "name",
+                    "not_supported_count",
+                    "supported_count",
+                    "techniques",
+                } == evaluation["policies"][0].keys()
             else:
                 assert len(evaluation["policies"]) == 0
         elif "user_evaluation" in evaluation:
