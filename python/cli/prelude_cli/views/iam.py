@@ -52,6 +52,14 @@ def purge_account(controller):
     type=str,
 )
 @click.option(
+    "-t",
+    "--timeout",
+    help="inactivity timeout in minutes",
+    default=None,
+    show_default=False,
+    type=int,
+)
+@click.option(
     "-s",
     "--slug",
     help="provide a unique human-readable identifier for your account",
@@ -61,11 +69,14 @@ def purge_account(controller):
 )
 @click.pass_obj
 @pretty_print
-def update_account(controller, mode, company, slug):
+def update_account(controller, mode, company, inactivity_timeout, slug):
     """Update an account"""
     with Spinner(description="Updating account information"):
         return controller.update_account(
-            mode=Mode[mode] if mode else None, company=company, slug=slug
+            mode=Mode[mode] if mode else None,
+            company=company,
+            inactivity_timeout=inactivity_timeout,
+            slug=slug,
         )
 
 
