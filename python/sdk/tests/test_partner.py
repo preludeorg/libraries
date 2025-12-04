@@ -498,3 +498,21 @@ class TestPartner:
         assert res["pagination"]["offset"] == 0
         assert res["pagination"]["total"] > 0
         pytest.crowdstrike_advisory_id = res["advisories"][0]["id"]
+
+    def test_delete_endpoint(
+        self,
+        unwrap,
+        host,
+        edr_id,
+        control,
+        os,
+        platform,
+        policy,
+        policy_name,
+        webhook_keys,
+        group_id,
+    ):
+        unwrap(self.detect.delete_endpoint)(self.detect, pytest.endpoint["endpoint_id"])
+        res = unwrap(self.detect.list_endpoints)(self.detect)
+        sorted_res = {r["serial_num"]: r for r in res}
+        assert pytest.endpoint["serial_num"] not in sorted_res
