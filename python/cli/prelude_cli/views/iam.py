@@ -53,7 +53,7 @@ def purge_account(controller):
 )
 @click.option(
     "-t",
-    "--timeout",
+    "--inactivity_timeout",
     help="inactivity timeout in minutes",
     default=None,
     show_default=False,
