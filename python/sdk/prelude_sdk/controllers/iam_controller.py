@@ -32,9 +32,9 @@ class IAMAccountController(HttpController):
     @verify_credentials
     def update_account(
         self,
-        mode: Mode = None,
         company: str = None,
         inactivity_timeout: int = None,
+        mode: Mode = None,
         slug: str = None,
     ):
         """Update properties on an account"""
@@ -43,10 +43,10 @@ class IAMAccountController(HttpController):
             body["mode"] = mode.name
         if company is not None:
             body["company"] = company
-        if slug is not None:
-            body["slug"] = slug
         if inactivity_timeout is not None:
             body["inactivity_timeout"] = inactivity_timeout
+        if slug is not None:
+            body["slug"] = slug
 
         res = self.put(
             f"{self.account.hq}/iam/account",
