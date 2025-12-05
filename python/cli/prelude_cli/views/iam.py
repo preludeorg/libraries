@@ -36,36 +36,47 @@ def purge_account(controller):
 
 @iam.command("update-account")
 @click.option(
-    "-m",
-    "--mode",
-    help="provide a mode",
-    default=None,
-    show_default=False,
-    type=click.Choice([m.name for m in Mode], case_sensitive=False),
-)
-@click.option(
     "-c",
     "--company",
-    help="provide your associated company",
     default=None,
+    help="provide your associated company",
     show_default=False,
     type=str,
 )
 @click.option(
+    "-t",
+    "--inactivity_timeout",
+    default=None,
+    help="inactivity timeout in minutes",
+    show_default=False,
+    type=int,
+)
+@click.option(
+    "-m",
+    "--mode",
+    default=None,
+    help="provide a mode",
+    show_default=False,
+    type=click.Choice([m.name for m in Mode], case_sensitive=False),
+)
+@click.option(
     "-s",
     "--slug",
-    help="provide a unique human-readable identifier for your account",
     default=None,
+    help="provide a unique human-readable identifier for your account",
     show_default=False,
     type=str,
 )
 @click.pass_obj
 @pretty_print
-def update_account(controller, mode, company, slug):
+def update_account(controller, company, inactivity_timeout, mode, slug):
     """Update an account"""
     with Spinner(description="Updating account information"):
         return controller.update_account(
-            mode=Mode[mode] if mode else None, company=company, slug=slug
+            company=company,
+            inactivity_timeout=inactivity_timeout,
+            mode=Mode[mode] if mode else None,
+            slug=slug,
         )
 
 

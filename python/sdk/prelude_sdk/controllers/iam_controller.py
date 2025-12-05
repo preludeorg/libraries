@@ -30,13 +30,21 @@ class IAMAccountController(HttpController):
         return res.json()
 
     @verify_credentials
-    def update_account(self, mode: Mode = None, company: str = None, slug: str = None):
+    def update_account(
+        self,
+        company: str = None,
+        inactivity_timeout: int = None,
+        mode: Mode = None,
+        slug: str = None,
+    ):
         """Update properties on an account"""
         body = dict()
         if mode is not None:
             body["mode"] = mode.name
         if company is not None:
             body["company"] = company
+        if inactivity_timeout is not None:
+            body["inactivity_timeout"] = inactivity_timeout
         if slug is not None:
             body["slug"] = slug
 
