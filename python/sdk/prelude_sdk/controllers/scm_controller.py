@@ -523,6 +523,7 @@ class ScmController(HttpController):
         event: PartnerEvents,
         run_code: RunCode,
         scheduled_hour: int,
+        days_in_event: int = 0,
         emails: list[str] = None,
         filter: str = None,
         id: str = None,
@@ -534,6 +535,7 @@ class ScmController(HttpController):
     ):
         body = dict(
             control_category=control_category.name,
+            days_in_event=days_in_event,
             event=event.name,
             run_code=run_code.name,
             scheduled_hour=scheduled_hour,

@@ -660,6 +660,13 @@ def delete_notification(controller, notification_id):
     "control_category",
     type=click.Choice([c.name for c in ControlCategory], case_sensitive=False),
 )
+@click.argument(
+    "-d",
+    "--days_in_event",
+    help="filter for results that have been in the event state for at least this many days",
+    default=0,
+    type=int,
+)
 @click.option(
     "-e",
     "--emails",
@@ -720,6 +727,7 @@ def delete_notification(controller, notification_id):
 def upsert_notification(
     controller,
     control_category,
+    days_in_event,
     emails,
     event,
     filter,
@@ -736,6 +744,7 @@ def upsert_notification(
     with Spinner("Upserting notification"):
         return controller.upsert_notification(
             control_category=ControlCategory[control_category],
+            days_in_event=days_in_event,
             emails=emails.split(",") if emails else None,
             event=PartnerEvents[event],
             filter=filter,
