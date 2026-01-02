@@ -187,6 +187,8 @@ class Control(Enum, metaclass=MissingItem):
     INTEL_INTUNE = 28
     CISCO_MERAKI = 29
     CISCO_MERAKI_IDENTITY = 30
+    CROWDSTRIKE_VULN = 31
+    DEFENDER_VULN = 32
 
     @classmethod
     def _missing_(cls, value):
@@ -295,6 +297,10 @@ class Control(Enum, metaclass=MissingItem):
                 return "Cisco Meraki"
             case Control.CISCO_MERAKI_IDENTITY:
                 return "Cisco Meraki Identity"
+            case Control.CROWDSTRIKE_VULN:
+                return "CrowdStrike Vulnerability Management"
+            case Control.DEFENDER_VULN:
+                return "Microsoft Defender Vulnerability Management"
             case _:
                 return "Unknown Control"
 
@@ -359,6 +365,8 @@ class ControlCategory(Enum, metaclass=MissingItem):
                 Control.VECTR,
             ],
             ControlCategory.VULN_MANAGER: [
+                Control.CROWDSTRIKE_VULN,
+                Control.DEFENDER_VULN,
                 Control.QUALYS,
                 Control.RAPID7,
                 Control.TENABLE,
@@ -418,8 +426,10 @@ class SCMCategory(Enum, metaclass=MissingItem):
                 Control.AWS_SSM,
                 Control.AZURE_VM,
                 Control.CROWDSTRIKE,
+                Control.CROWDSTRIKE_VULN,
                 Control.DEFENDER,
                 Control.DEFENDER_DISCOVERY,
+                Control.DEFENDER_VULN,
                 Control.EC2,
                 Control.INTEL_INTUNE,
                 Control.INTUNE,
