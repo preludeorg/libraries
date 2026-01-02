@@ -660,7 +660,7 @@ def delete_notification(controller, notification_id):
     "control_category",
     type=click.Choice([c.name for c in ControlCategory], case_sensitive=False),
 )
-@click.argument(
+@click.option(
     "-d",
     "--days_in_event",
     help="filter for results that have been in the event state for at least this many days",
