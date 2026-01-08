@@ -229,10 +229,12 @@ class ScmController(HttpController):
 
     @verify_credentials
     def create_object_exception(
-        self, category: ControlCategory, filter, name=None, expires: str = None
+        self, category: ControlCategory, filter, comment=None, name=None, expires: str = None
     ):
         """Create an object exception"""
         body = dict(category=category.name, filter=filter)
+        if comment:
+            body["comment"] = comment
         if name:
             body["name"] = name
         if expires:
@@ -247,10 +249,12 @@ class ScmController(HttpController):
 
     @verify_credentials
     def update_object_exception(
-        self, exception_id, expires=default, filter=None, name=None
+        self, exception_id, comment=None, expires=default, filter=None, name=None
     ):
         """Update an object exception"""
         body = dict()
+        if comment:
+            body["comment"] = comment
         if expires != self.default:
             body["expires"] = expires
         if filter:
@@ -292,11 +296,12 @@ class ScmController(HttpController):
 
     @verify_credentials
     def create_policy_exception(
-        self, partner: Control, instance_id: str, policy_id, setting_names, expires=None
+        self, partner: Control, instance_id: str, policy_id, setting_names, comment=None, expires=None
     ):
         """Create policy exceptions"""
         body = dict(
             control=partner.name,
+            comment=comment,
             expires=expires,
             instance_id=instance_id,
             policy_id=policy_id,
@@ -316,11 +321,14 @@ class ScmController(HttpController):
         partner: Control,
         instance_id: str,
         policy_id,
+        comment=None,
         expires=default,
         setting_names=None,
     ):
         """Update policy exceptions"""
         body = dict(control=partner.name, instance_id=instance_id, policy_id=policy_id)
+        if comment:
+            body["comment"] = comment
         if expires != self.default:
             body["expires"] = expires
         if setting_names:

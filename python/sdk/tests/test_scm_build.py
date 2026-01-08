@@ -17,9 +17,10 @@ class TestScmBuild:
         res = unwrap(self.scm.create_object_exception)(
             self.scm,
             ControlCategory.ASSET_MANAGER,
-            "hostname eq 'host1'",
-            name="filter me",
+            comment="test comment",
             expires="5555-05-05",
+            filter="hostname eq 'host1'",
+            name="filter me",
         )
         assert res["exception_id"]
         pytest.exception_id = res["exception_id"]
@@ -28,8 +29,8 @@ class TestScmBuild:
         res = unwrap(self.scm.update_object_exception)(
             self.scm,
             pytest.exception_id,
-            filter="hostname eq 'host2'",
             expires=None,
+            filter="hostname eq 'host2'",
         )
         assert res["status"]
 
@@ -42,6 +43,7 @@ class TestScmBuild:
         del exception["created"]
         assert exception == {
             "category": ControlCategory.ASSET_MANAGER.value,
+            "comment": "test comment",
             "expires": None,
             "filter": "hostname eq 'host2'",
             "id": pytest.exception_id,
