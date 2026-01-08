@@ -36,7 +36,7 @@ class TestScmAcrossControls:
             PartnerEvents.MISSING_EDR,
             RunCode.DAILY,
             0,
-            ["test@email.com"],
+            emails=["test@email.com"],
             id=self.notification_id,
         )
         notifications = unwrap(self.scm.list_notifications)(self.scm)
@@ -52,7 +52,7 @@ class TestScmAcrossControls:
             PartnerEvents.REDUCED_FUNCTIONALITY_MODE,
             RunCode.DAILY,
             1,
-            ["test@email.com"],
+            emails=["test@email.com"],
             id=self.notification_id,
         )
         notifications = unwrap(self.scm.list_notifications)(self.scm)
