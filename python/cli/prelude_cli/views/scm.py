@@ -475,7 +475,7 @@ def list_object_exceptions(controller):
 @click.option("-n", "--name", help="exception name", default=None, type=str)
 @click.pass_obj
 @pretty_print
-def create_object_exception(controller, category, comment, filter, expires, name):
+def create_object_exception(controller, category, filter, comment, expires, name):
     """Create object exception"""
     with Spinner(description=f"Creating object exception"):
         return controller.create_object_exception(
@@ -488,10 +488,10 @@ def create_object_exception(controller, category, comment, filter, expires, name
 
 
 @object.command("update")
+@click.argument("exception_id", type=str)
 @click.option(
     "-c", "--comment", help="exception comment", default=None, type=str
 )
-@click.argument("exception_id", type=str)
 @click.option(
     "-e",
     "--expires",
@@ -502,7 +502,7 @@ def create_object_exception(controller, category, comment, filter, expires, name
 @click.option("-n", "--name", help="Exception Name", default=None, type=str)
 @click.pass_obj
 @pretty_print
-def update_object_exception(controller, comment, exception_id, expires, filter, name):
+def update_object_exception(controller, exception_id, comment, expires, filter, name):
     """Update object exception"""
     with Spinner(description=f"Updating object exception"):
         return controller.update_object_exception(
@@ -558,7 +558,7 @@ def list_policy_exceptions(controller):
 @click.pass_obj
 @pretty_print
 def create_policy_exception(
-    controller, comment, partner, instance_id, policy_id, settings, expires
+    controller, partner, comment, instance_id, policy_id, settings, expires
 ):
     """Create policy exception"""
     with Spinner(description=f"Creating policy exception"):
@@ -598,7 +598,7 @@ def create_policy_exception(
 @click.pass_obj
 @pretty_print
 def update_policy_exception(
-    controller, comment, partner, instance_id, policy_id, expires, settings
+    controller, partner, comment, instance_id, policy_id, expires, settings
 ):
     """Update policy exception"""
     with Spinner(description=f"Updating Policy exception"):
