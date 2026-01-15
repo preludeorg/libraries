@@ -161,15 +161,7 @@ class TestScmPerControl:
     def test_update_evaluation(self, unwrap, control):
         instance_id = pytest.controls.get(control.value)
         assert instance_id
-        try:
-            unwrap(self.scm.update_evaluation)(self.scm, control, instance_id)
-        except Exception as e:
-            if "job is already running" in str(e):
-                pytest.skip(
-                    "Skipping due to existing job initiated from partner attach"
-                )
-            else:
-                raise e
+        unwrap(self.scm.update_evaluation)(self.scm, control, instance_id)
 
     def test_evaluation(self, unwrap, control):
         def _wait_for_policies(control, instance_id, category):
