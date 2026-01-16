@@ -127,6 +127,16 @@ class TestScmAcrossControls:
         csv = requests.get(result["results"]["url"], timeout=10).content.decode("utf-8")
         assert len(csv.strip("\r\n").split("\r\n")) == 2
 
+    def test_setup_for_per_control(self, unwrap):
+        timeout = time.time() + 300
+        while (
+            unwrap(self.jobs.job_statuses)(self.jobs)["UPDATE_SCM"][0]["end_time"]
+            is None
+        ) and time.time() < timeout:
+            time.sleep(3)
+        if time.time() >= timeout:
+            assert False, "Timed out waiting for UPDATE_SCM jobs to complete"
+
 
 @pytest.mark.order(9)
 @pytest.mark.usefixtures("setup_account")
@@ -151,22 +161,7 @@ class TestScmPerControl:
     def test_update_evaluation(self, unwrap, control):
         instance_id = pytest.controls.get(control.value)
         assert instance_id
-        try:
-            job_id = unwrap(self.scm.update_evaluation)(self.scm, control, instance_id)[
-                "job_id"
-            ]
-            while (result := unwrap(self.jobs.job_status)(self.jobs, job_id))[
-                "end_time"
-            ] is None:
-                time.sleep(3)
-            assert result["successful"]
-        except Exception as e:
-            if "job is already running" in str(e):
-                pytest.skip(
-                    "Skipping due to existing job initiated from partner attach"
-                )
-            else:
-                raise e
+        unwrap(self.scm.update_evaluation)(self.scm, control, instance_id)
 
     def test_evaluation(self, unwrap, control):
         def _wait_for_policies(control, instance_id, category):
