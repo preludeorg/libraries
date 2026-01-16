@@ -463,6 +463,9 @@ def list_object_exceptions(controller):
     "-f", "--filter", help="OData filter string", default=None, required=True, type=str
 )
 @click.option(
+    "-c", "--comment", help="exception comment", default=None, type=str
+)
+@click.option(
     "-e",
     "--expires",
     help="expiry date (YYYY-MM-DD hh:mm:ss ([+-]hh:mm))",
@@ -472,11 +475,12 @@ def list_object_exceptions(controller):
 @click.option("-n", "--name", help="exception name", default=None, type=str)
 @click.pass_obj
 @pretty_print
-def create_object_exception(controller, category, filter, expires, name):
+def create_object_exception(controller, category, filter, comment, expires, name):
     """Create object exception"""
     with Spinner(description=f"Creating object exception"):
         return controller.create_object_exception(
             category=ControlCategory[category],
+            comment=comment,
             filter=filter,
             name=name,
             expires=expires,
@@ -485,6 +489,9 @@ def create_object_exception(controller, category, filter, expires, name):
 
 @object.command("update")
 @click.argument("exception_id", type=str)
+@click.option(
+    "-c", "--comment", help="exception comment", default=None, type=str
+)
 @click.option(
     "-e",
     "--expires",
@@ -495,11 +502,11 @@ def create_object_exception(controller, category, filter, expires, name):
 @click.option("-n", "--name", help="Exception Name", default=None, type=str)
 @click.pass_obj
 @pretty_print
-def update_object_exception(controller, exception_id, expires, filter, name):
+def update_object_exception(controller, exception_id, comment, expires, filter, name):
     """Update object exception"""
     with Spinner(description=f"Updating object exception"):
         return controller.update_object_exception(
-            exception_id=exception_id, filter=filter, name=name, expires=expires
+            comment=comment, exception_id=exception_id, filter=filter, name=name, expires=expires
         )
 
 
@@ -530,6 +537,9 @@ def list_policy_exceptions(controller):
         [c.name for c in Control if c != Control.INVALID], case_sensitive=False
     ),
 )
+@click.option(
+    "-c", "--comment", help="exception comment", default=None, type=str
+)
 @click.option("-i", "--instance_id", required=True, help="instance ID of the partner")
 @click.option("-p", "--policy_id", required=True, help="ID of the policy to create")
 @click.option(
@@ -548,12 +558,13 @@ def list_policy_exceptions(controller):
 @click.pass_obj
 @pretty_print
 def create_policy_exception(
-    controller, partner, instance_id, policy_id, settings, expires
+    controller, partner, comment, instance_id, policy_id, settings, expires
 ):
     """Create policy exception"""
     with Spinner(description=f"Creating policy exception"):
         return controller.create_policy_exceptions(
             partner=Control[partner],
+            comment=comment,
             expires=expires,
             instance_id=instance_id,
             policy_id=policy_id,
@@ -567,6 +578,9 @@ def create_policy_exception(
     type=click.Choice(
         [c.name for c in Control if c != Control.INVALID], case_sensitive=False
     ),
+)
+@click.option(
+    "-c", "--comment", help="exception comment", default=None, type=str
 )
 @click.option("-i", "--instance_id", required=True, help="instance ID of the partner")
 @click.option("-p", "--policy_id", required=True, help="ID of the policy to update")
@@ -584,12 +598,13 @@ def create_policy_exception(
 @click.pass_obj
 @pretty_print
 def update_policy_exception(
-    controller, partner, instance_id, policy_id, expires, settings
+    controller, partner, comment, instance_id, policy_id, expires, settings
 ):
     """Update policy exception"""
     with Spinner(description=f"Updating Policy exception"):
         return controller.update_policy_exception(
             partner=Control[partner],
+            comment=comment,
             expires=expires,
             instance_id=instance_id,
             policy_id=policy_id,
