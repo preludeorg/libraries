@@ -525,7 +525,7 @@ def create_policy_exception(
 ):
     """Create policy exception"""
     with Spinner(description=f"Creating policy exception"):
-        return controller.create_policy_exceptions(
+        return controller.create_policy_exception(
             partner=Control[partner],
             comment=comment,
             expires=expires,
