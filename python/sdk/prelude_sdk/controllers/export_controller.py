@@ -17,15 +17,11 @@ class ExportController(HttpController):
         top: int = None,
     ):
         """Download partner data as a CSV"""
-        params = {
+        body = {
             "$filter": filter,
             "$orderby": orderby,
             "$top": top,
         }
-        res = self.post(
-            f"{self.account.hq}/export/scm/{export_type.name}",
-            params=params,
-            headers=self.account.headers,
-            timeout=10,
-        )
+
+        res = self.post(f"{self.account.hq}/export/scm/{export_type.name}", json=body)
         return res.json()

@@ -11,9 +11,7 @@ class IAMAccountController(HttpController):
     @verify_credentials
     def get_account(self):
         """Get account properties"""
-        res = self.get(
-            f"{self.account.hq}/iam/account", headers=self.account.headers, timeout=10
-        )
+        res = self.get(f"{self.account.hq}/iam/account")
         account = res.json()
         if self.account.resolve_enums:
             self.resolve_enums(
@@ -24,9 +22,7 @@ class IAMAccountController(HttpController):
     @verify_credentials
     def purge_account(self):
         """Delete an account and all things in it"""
-        res = self.delete(
-            f"{self.account.hq}/iam/account", headers=self.account.headers, timeout=10
-        )
+        res = self.delete(f"{self.account.hq}/iam/account")
         return res.json()
 
     @verify_credentials
@@ -48,12 +44,7 @@ class IAMAccountController(HttpController):
         if slug is not None:
             body["slug"] = slug
 
-        res = self.put(
-            f"{self.account.hq}/iam/account",
-            headers=self.account.headers,
-            json=body,
-            timeout=10,
-        )
+        res = self.put(f"{self.account.hq}/iam/account", json=body)
         return res.json()
 
     @verify_credentials
@@ -65,33 +56,21 @@ class IAMAccountController(HttpController):
         oidc_url: str,
     ):
         """Attach OIDC to an account"""
-        email_attr = "email"
-        if issuer == "azure":
-            email_attr = "upn"
         body = dict(
             client_id=client_id,
             client_secret=client_secret,
-            email_attr=email_attr,
+            email_attr="upn" if issuer == "azure" else "email",
             issuer=issuer,
             oidc_url=oidc_url,
         )
 
-        res = self.post(
-            f"{self.account.hq}/iam/account/oidc",
-            headers=self.account.headers,
-            json=body,
-            timeout=10,
-        )
+        res = self.post(f"{self.account.hq}/iam/account/oidc", json=body)
         return res.json()
 
     @verify_credentials
     def detach_oidc(self):
         """Detach OIDC to an account"""
-        res = self.delete(
-            f"{self.account.hq}/iam/account/oidc",
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.delete(f"{self.account.hq}/iam/account/oidc")
         return res.json()
 
     @verify_credentials
@@ -107,12 +86,7 @@ class IAMAccountController(HttpController):
         if name:
             body["name"] = name
 
-        res = self.post(
-            url=f"{self.account.hq}/iam/account/user",
-            json=body,
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.post(url=f"{self.account.hq}/iam/account/user", json=body)
         user = res.json()
         if self.account.resolve_enums:
             self.resolve_enums(user, [(Permission, "permission")])
@@ -123,12 +97,7 @@ class IAMAccountController(HttpController):
         """Create a service user"""
         body = dict(name=name)
 
-        res = self.post(
-            f"{self.account.hq}/iam/account/service_user",
-            json=body,
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.post(f"{self.account.hq}/iam/account/service_user", json=body)
         return res.json()
 
     @verify_credentials
@@ -136,12 +105,7 @@ class IAMAccountController(HttpController):
         """Delete service user"""
         body = dict(handle=handle)
 
-        res = self.delete(
-            f"{self.account.hq}/iam/account/service_user",
-            json=body,
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.delete(f"{self.account.hq}/iam/account/service_user", json=body)
         return res.json()
 
     @verify_credentials
@@ -156,12 +120,7 @@ class IAMAccountController(HttpController):
         if permission is not None:
             body["permission"] = permission.name
 
-        res = self.put(
-            f"{self.account.hq}/iam/account/user",
-            json=body,
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.put(f"{self.account.hq}/iam/account/user", json=body)
         return res.json()
 
     @verify_credentials
@@ -169,24 +128,15 @@ class IAMAccountController(HttpController):
         """Remove user from the account"""
         params = dict(handle=email, oidc=oidc)
 
-        res = self.delete(
-            f"{self.account.hq}/iam/account/user",
-            params=params,
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.delete(f"{self.account.hq}/iam/account/user", params=params)
         return res.json()
 
     @verify_credentials
     def audit_logs(self, days: int = 7, limit: int = 1000):
         """Get audit logs from the last X days"""
         params = dict(days=days, limit=limit)
-        res = self.get(
-            f"{self.account.hq}/iam/audit",
-            headers=self.account.headers,
-            params=params,
-            timeout=30,
-        )
+
+        res = self.get(f"{self.account.hq}/iam/audit", params=params, timeout=30)
         return res.json()
 
     def sign_up(self, company, email, name):
@@ -194,10 +144,7 @@ class IAMAccountController(HttpController):
         body = dict(company=company, email=email, name=name)
 
         res = self._session.post(
-            f"{self.account.hq}/iam/new_user_and_account",
-            headers=self.account.headers,
-            json=body,
-            timeout=20,
+            f"{self.account.hq}/iam/new_user_and_account", json=body, timeout=20
         )
         data = res.json()
         if self.account.profile:
@@ -218,19 +165,13 @@ class IAMUserController(HttpController):
     @verify_credentials
     def list_accounts(self):
         """List all accounts for your user"""
-        res = self.get(
-            f"{self.account.hq}/iam/user/account",
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.get(f"{self.account.hq}/iam/user/account")
         return res.json()
 
     @verify_credentials
     def purge_user(self):
         """Delete your user"""
-        res = self.delete(
-            f"{self.account.hq}/iam/user", headers=self.account.headers, timeout=10
-        )
+        res = self.delete(f"{self.account.hq}/iam/user")
         return res.json()
 
     @verify_credentials
@@ -243,24 +184,14 @@ class IAMUserController(HttpController):
         if name is not None:
             body["name"] = name
 
-        res = self.put(
-            f"{self.account.hq}/iam/user",
-            json=body,
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.put(f"{self.account.hq}/iam/user", json=body)
         return res.json()
 
     def forgot_password(self):
         """Send a forgot password email"""
         body = dict(handle=self.account.handle)
 
-        res = self.post(
-            f"{self.account.hq}/iam/user/forgot_password",
-            json=body,
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.post(f"{self.account.hq}/iam/user/forgot_password", json=body)
         return res.json()
 
     def confirm_forgot_password(self, confirmation_code: str, new_password: str):
@@ -271,12 +202,7 @@ class IAMUserController(HttpController):
             password=new_password,
         )
 
-        res = self.post(
-            f"{self.account.hq}/iam/user/forgot_password",
-            json=body,
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.post(f"{self.account.hq}/iam/user/forgot_password", json=body)
         return res.json()
 
     @verify_credentials
@@ -284,10 +210,5 @@ class IAMUserController(HttpController):
         """Change your password"""
         body = dict(current_password=current_password, new_password=new_password)
 
-        res = self.post(
-            f"{self.account.hq}/iam/user/change_password",
-            json=body,
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.post(f"{self.account.hq}/iam/user/change_password", json=body)
         return res.json()

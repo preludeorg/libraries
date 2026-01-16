@@ -23,7 +23,10 @@ def jobs(ctx):
     ),
 )
 @click.option(
-    "-l", "--limit", help="limit the number of jobs returned (per job type)", type=int
+    "-l",
+    "--limit",
+    help="limit the number of jobs returned (per job type), (max 20)",
+    type=int,
 )
 @click.pass_obj
 @pretty_print
@@ -40,7 +43,7 @@ def background_jobs(controller, job_type, limit):
 
 @jobs.command("background-job")
 @click.option(
-    "-j", "--job_id", required=True, help="background job ID to retrieve status for"
+    "-j", "--job_id", help="background job ID to retrieve status for", required=True
 )
 @click.pass_obj
 @pretty_print

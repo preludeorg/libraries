@@ -111,10 +111,10 @@ def partner_endpoints(controller, partner, platform, hostname, offset, limit):
 )
 @click.option(
     "--host_ids",
-    required=True,
+    default=[],
     help="a list of host IDs to deploy to",
     multiple=True,
-    default=[],
+    required=True,
 )
 @click.pass_obj
 @pretty_print
@@ -135,6 +135,7 @@ def partner_reports(controller, partner, test_id):
     """Get reports to a partner for a test"""
     with Spinner(description="Getting reports to partner"):
         return controller.list_reports(partner=Control[partner], test_id=test_id)
+
 
 @partner.command("observed-detected")
 @click.option("-t", "--test_id", help="test to get observed/detected stats for")
@@ -162,6 +163,7 @@ def partner_advisories(controller, partner, start, offset, limit):
         return controller.list_advisories(
             partner=Control[partner], start=start, offset=offset, limit=limit
         )
+
 
 @partner.command("groups")
 @click.argument(
