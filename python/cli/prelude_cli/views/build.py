@@ -41,11 +41,9 @@ def clone_test(controller, source_test_id):
 
 @build.command("create-test")
 @click.argument("name")
-@click.option("-u", "--unit", required=True, help="unit identifier", type=str)
-@click.option("-t", "--test", help="test identifier", default=None, type=str)
-@click.option(
-    "-q", "--technique", help="MITRE ATT&CK code [e.g. T1557]", default=None, type=str
-)
+@click.option("-u", "--unit", help="unit identifier", required=True)
+@click.option("-t", "--test", help="test identifier")
+@click.option("-q", "--technique", help="MITRE ATT&CK code [e.g. T1557]")
 @click.pass_obj
 @pretty_print
 def create_test(controller, name, unit, test, technique):
@@ -92,11 +90,9 @@ def create_test(controller, name, unit, test, technique):
         [c.name for c in EDRResponse if c != EDRResponse.INVALID], case_sensitive=False
     ),
 )
-@click.option("-n", "--name", help="test name", default=None, type=str)
-@click.option("-u", "--unit", help="unit identifier", default=None, type=str)
-@click.option(
-    "-q", "--technique", help="MITRE ATT&CK code [e.g. T1557]", default=None, type=str
-)
+@click.option("-n", "--name", help="test name")
+@click.option("-u", "--unit", help="unit identifier")
+@click.option("-q", "--technique", help="MITRE ATT&CK code [e.g. T1557]")
 @click.pass_obj
 @pretty_print
 def update_test(controller, test, crowdstrike_expected, name, unit, technique):
@@ -132,7 +128,6 @@ def delete_test(controller, test, purge):
 @pretty_print
 def compile_code_file(controller, path, source_test_id):
     """Test compile a go file, with test attachments if needed."""
-
     with Spinner(description="Compiling code test") as spinner:
         with open(path, "rb") as data:
             data = controller.compile_code_string(
@@ -163,7 +158,7 @@ def undelete_test(controller, test):
 
 @build.command("upload")
 @click.argument("path", type=click.Path(exists=True))
-@click.option("-t", "--test", help="test identifier", default=None, type=str)
+@click.option("-t", "--test", help="test identifier")
 @click.pass_obj
 @pretty_print
 def upload_attachment(controller, path, test):
@@ -215,28 +210,19 @@ def upload_attachment(controller, path, test):
 
 @build.command("create-threat")
 @click.argument("name")
-@click.option(
-    "-p", "--published", help="date the threat was published", required=True, type=str
-)
-@click.option("--id", help="identifier", type=str)
-@click.option(
-    "-s", "--source", help="source of threat (ex. www.cisa.gov)", default=None, type=str
-)
+@click.option("-p", "--published", help="date the threat was published", required=True)
+@click.option("--id", help="identifier")
+@click.option("-s", "--source", help="source of threat (ex. www.cisa.gov)")
 @click.option(
     "-i",
     "--source_id",
     help="ID of the threat, per the source (ex. aa23-075a)",
-    default=None,
-    type=str,
 )
-@click.option(
-    "-t", "--tests", help="comma-separated list of test IDs", default=None, type=str
-)
+@click.option("-t", "--tests", help="comma-separated list of test IDs")
 @click.option(
     "-d",
     "--directory",
     help="directory containing tests, detections, and hunt queries generated from threat_intel",
-    default=None,
     type=click.Path(exists=True, dir_okay=True, file_okay=False),
 )
 @click.pass_obj
@@ -314,23 +300,17 @@ def create_threat(controller, name, published, id, source_id, source, tests, dir
 
 @build.command("update-threat")
 @click.argument("threat")
-@click.option("-n", "--name", help="test name", default=None, type=str)
+@click.option("-n", "--name", help="test name")
 @click.option(
-    "-s", "--source", help="source of threat (ex. www.cisa.gov)", default=None, type=str
+    "-s",
+    "--source",
+    help="source of threat (ex. www.cisa.gov)",
 )
 @click.option(
-    "-i",
-    "--source_id",
-    help="ID of the threat, per the source (ex. aa23-075a)",
-    default=None,
-    type=str,
+    "-i", "--source_id", help="ID of the threat, per the source (ex. aa23-075a)"
 )
-@click.option(
-    "-p", "--published", help="date the threat was published", default=None, type=str
-)
-@click.option(
-    "-t", "--tests", help="comma-separated list of test IDs", default=None, type=str
-)
+@click.option("-p", "--published", help="date the threat was published")
+@click.option("-t", "--tests", help="comma-separated list of test IDs")
 @click.pass_obj
 @pretty_print
 def update_threat(controller, threat, name, source_id, source, published, tests):
@@ -371,10 +351,10 @@ def undelete_threat(controller, threat):
 @build.command("create-detection")
 @click.argument("sigma_rule_file", type=click.Path(exists=True, dir_okay=False))
 @click.option(
-    "-t", "--test", help="ID of the test this detection is for", required=True, type=str
+    "-t", "--test", help="ID of the test this detection is for", required=True
 )
-@click.option("--detection_id", help="detection ID", default=None, type=str)
-@click.option("--rule_id", help="rule ID", default=None, type=str)
+@click.option("--detection_id", help="detection ID")
+@click.option("--rule_id", help="rule ID")
 @click.pass_obj
 @pretty_print
 def create_detection(controller, sigma_rule_file, test, detection_id, rule_id):
@@ -392,12 +372,9 @@ def create_detection(controller, sigma_rule_file, test, detection_id, rule_id):
 @click.option(
     "--sigma_rule_file",
     help="Sigma rule, from a yaml file",
-    default=None,
     type=click.Path(exists=True, dir_okay=False),
 )
-@click.option(
-    "-t", "--test", help="ID of the test this detection is for", default=None, type=str
-)
+@click.option("-t", "--test", help="ID of the test this detection is for")
 @click.pass_obj
 @pretty_print
 def update_detection(controller, detection, sigma_rule_file, test):
@@ -428,21 +405,16 @@ def delete_detection(controller, detection):
 @click.option(
     "-c",
     "--control",
-    help="",
     required=True,
     type=click.Choice(
         [Control.CROWDSTRIKE.name, Control.DEFENDER.name], case_sensitive=False
     ),
 )
-@click.option("-q", "--query", help="Threat hunt query", required=True, type=str)
+@click.option("-q", "--query", help="Threat hunt query", required=True)
 @click.option(
-    "-t",
-    "--test",
-    help="ID of the test this threat hunt query is for",
-    required=True,
-    type=str,
+    "-t", "--test", help="ID of the test this threat hunt query is for", required=True
 )
-@click.option("--id", default=None, type=str)
+@click.option("--id", help="threat hunt ID")
 @click.pass_obj
 @pretty_print
 def create_threat_hunt(controller, name, control, query, test, id):
@@ -459,11 +431,9 @@ def create_threat_hunt(controller, name, control, query, test, id):
 
 @build.command("update-threat-hunt")
 @click.argument("threat_hunt")
-@click.option("-n", "--name", help="Name of this threat hunt query", type=str)
-@click.option("-q", "--query", help="Threat hunt query", type=str)
-@click.option(
-    "-t", "--test", help="ID of the test this threat hunt query is for", type=str
-)
+@click.option("-n", "--name", help="Name of this threat hunt query")
+@click.option("-q", "--query", help="Threat hunt query")
+@click.option("-t", "--test", help="ID of the test this threat hunt query is for")
 @click.pass_obj
 @pretty_print
 def update_threat_hunt(controller, threat_hunt, name, query, test):

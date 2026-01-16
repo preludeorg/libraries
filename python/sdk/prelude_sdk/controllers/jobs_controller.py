@@ -13,9 +13,7 @@ class JobsController(HttpController):
     @verify_credentials
     def job_statuses(self):
         """Get job statuses"""
-        res = self.get(
-            f"{self.account.hq}/jobs/statuses", headers=self.account.headers, timeout=30
-        )
+        res = self.get(f"{self.account.hq}/jobs/statuses", timeout=30)
         jobs = res.json()
         if self.account.resolve_enums:
             self.resolve_enums(jobs, [(Control, "control")])
@@ -24,11 +22,7 @@ class JobsController(HttpController):
     @verify_credentials
     def job_status(self, job_id: str):
         """Get job status given job ID"""
-        res = self.get(
-            f"{self.account.hq}/jobs/statuses/{job_id}",
-            headers=self.account.headers,
-            timeout=30,
-        )
+        res = self.get(f"{self.account.hq}/jobs/statuses/{job_id}", timeout=30)
         job = res.json()
         if self.account.resolve_enums:
             self.resolve_enums(

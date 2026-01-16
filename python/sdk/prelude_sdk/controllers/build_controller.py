@@ -14,10 +14,7 @@ class BuildController(HttpController):
     def clone_test(self, source_test_id):
         """Clone a test"""
         res = self.post(
-            f"{self.account.hq}/build/tests",
-            json=dict(source_test_id=source_test_id),
-            headers=self.account.headers,
-            timeout=10,
+            f"{self.account.hq}/build/tests", json=dict(source_test_id=source_test_id)
         )
         return res.json()
 
@@ -30,12 +27,7 @@ class BuildController(HttpController):
         if test_id:
             body["id"] = test_id
 
-        res = self.post(
-            f"{self.account.hq}/build/tests",
-            json=body,
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.post(f"{self.account.hq}/build/tests", json=body)
         return res.json()
 
     @verify_credentials
@@ -58,33 +50,21 @@ class BuildController(HttpController):
         if technique is not None:
             body["technique"] = technique
 
-        res = self.post(
-            f"{self.account.hq}/build/tests/{test_id}",
-            json=body,
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.post(f"{self.account.hq}/build/tests/{test_id}", json=body)
         return res.json()
 
     @verify_credentials
     def delete_test(self, test_id, purge):
         """Delete an existing test"""
         res = self.delete(
-            f"{self.account.hq}/build/tests/{test_id}",
-            json=dict(purge=purge),
-            headers=self.account.headers,
-            timeout=10,
+            f"{self.account.hq}/build/tests/{test_id}", json=dict(purge=purge)
         )
         return res.json()
 
     @verify_credentials
     def undelete_test(self, test_id):
         """Undelete a tombstoned test"""
-        res = self.post(
-            f"{self.account.hq}/build/tests/{test_id}/undelete",
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.post(f"{self.account.hq}/build/tests/{test_id}/undelete")
         return res.json()
 
     @verify_credentials
@@ -97,11 +77,11 @@ class BuildController(HttpController):
         query_params = ""
         if skip_compile:
             query_params = "?" + urllib.parse.urlencode(dict(skip_compile=True))
+
         res = self.post(
             f"{self.account.hq}/build/tests/{test_id}/{filename}{query_params}",
             data=data,
             headers=h,
-            timeout=10,
         )
         return res.json()
 
@@ -111,18 +91,12 @@ class BuildController(HttpController):
         res = self.post(
             f"{self.account.hq}/build/compile",
             json=dict(code=code, source_test_id=source_test_id),
-            headers=self.account.headers,
-            timeout=10,
         )
         return res.json()
 
     @verify_credentials
     def get_compile_status(self, job_id):
-        res = self.get(
-            f"{self.account.hq}/build/compile/{job_id}",
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.get(f"{self.account.hq}/build/compile/{job_id}")
         return res.json()
 
     @verify_credentials
@@ -140,12 +114,7 @@ class BuildController(HttpController):
         if tests:
             body["tests"] = tests
 
-        res = self.post(
-            f"{self.account.hq}/build/threats",
-            json=body,
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.post(f"{self.account.hq}/build/threats", json=body)
         return res.json()
 
     @verify_credentials
@@ -171,12 +140,7 @@ class BuildController(HttpController):
         if tests is not None:
             body["tests"] = tests
 
-        res = self.post(
-            f"{self.account.hq}/build/threats/{threat_id}",
-            json=body,
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.post(f"{self.account.hq}/build/threats/{threat_id}", json=body)
         return res.json()
 
     @verify_credentials
@@ -185,19 +149,13 @@ class BuildController(HttpController):
         res = self.delete(
             f"{self.account.hq}/build/threats/{threat_id}",
             json=dict(purge=purge),
-            headers=self.account.headers,
-            timeout=10,
         )
         return res.json()
 
     @verify_credentials
     def undelete_threat(self, threat_id):
         """Undelete a tombstoned threat"""
-        res = self.post(
-            f"{self.account.hq}/build/threats/{threat_id}/undelete",
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.post(f"{self.account.hq}/build/threats/{threat_id}/undelete")
         return res.json()
 
     @verify_credentials
@@ -211,12 +169,7 @@ class BuildController(HttpController):
         if rule_id:
             body["rule_id"] = rule_id
 
-        res = self.post(
-            f"{self.account.hq}/build/detections",
-            json=body,
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.post(f"{self.account.hq}/build/detections", json=body)
         return res.json()
 
     @verify_credentials
@@ -228,22 +181,13 @@ class BuildController(HttpController):
         if test_id:
             body["test_id"] = test_id
 
-        res = self.post(
-            f"{self.account.hq}/build/detections/{detection_id}",
-            json=body,
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.post(f"{self.account.hq}/build/detections/{detection_id}", json=body)
         return res.json()
 
     @verify_credentials
     def delete_detection(self, detection_id: str):
         """Delete an existing detection"""
-        res = self.delete(
-            f"{self.account.hq}/build/detections/{detection_id}",
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.delete(f"{self.account.hq}/build/detections/{detection_id}")
         return res.json()
 
     @verify_credentials
@@ -265,12 +209,7 @@ class BuildController(HttpController):
         if threat_hunt_id:
             body["id"] = threat_hunt_id
 
-        res = self.post(
-            f"{self.account.hq}/build/threat_hunts",
-            json=body,
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.post(f"{self.account.hq}/build/threat_hunts", json=body)
         threat_hunt = res.json()
         if self.account.resolve_enums:
             self.resolve_enums(threat_hunt, [(Control, "control")])
@@ -294,10 +233,7 @@ class BuildController(HttpController):
             body["test_id"] = test_id
 
         res = self.post(
-            f"{self.account.hq}/build/threat_hunts/{threat_hunt_id}",
-            json=body,
-            headers=self.account.headers,
-            timeout=10,
+            f"{self.account.hq}/build/threat_hunts/{threat_hunt_id}", json=body
         )
         threat_hunt = res.json()
         if self.account.resolve_enums:
@@ -307,9 +243,5 @@ class BuildController(HttpController):
     @verify_credentials
     def delete_threat_hunt(self, threat_hunt_id: str):
         """Delete an existing threat hunt"""
-        res = self.delete(
-            f"{self.account.hq}/build/threat_hunts/{threat_hunt_id}",
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.delete(f"{self.account.hq}/build/threat_hunts/{threat_hunt_id}")
         return res.json()

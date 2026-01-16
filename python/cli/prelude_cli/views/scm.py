@@ -28,8 +28,8 @@ def scm(ctx):
 @click.option(
     "--limit", default=100, help="maximum number of results to return", type=int
 )
-@click.option("--odata_filter", help="OData filter string", default=None)
-@click.option("--odata_orderby", help="OData orderby string", default=None)
+@click.option("--odata_filter", help="OData filter string")
+@click.option("--odata_orderby", help="OData orderby string")
 @click.pass_obj
 @pretty_print
 def endpoints(controller, limit, odata_filter, odata_orderby):
@@ -44,8 +44,8 @@ def endpoints(controller, limit, odata_filter, odata_orderby):
 @click.option(
     "--limit", default=100, help="maximum number of results to return", type=int
 )
-@click.option("--odata_filter", help="OData filter string", default=None)
-@click.option("--odata_orderby", help="OData orderby string", default=None)
+@click.option("--odata_filter", help="OData filter string")
+@click.option("--odata_orderby", help="OData orderby string")
 @click.pass_obj
 @pretty_print
 def inboxes(controller, limit, odata_filter, odata_orderby):
@@ -58,8 +58,8 @@ def inboxes(controller, limit, odata_filter, odata_orderby):
 @click.option(
     "--limit", default=100, help="maximum number of results to return", type=int
 )
-@click.option("--odata_filter", help="OData filter string", default=None)
-@click.option("--odata_orderby", help="OData orderby string", default=None)
+@click.option("--odata_filter", help="OData filter string")
+@click.option("--odata_orderby", help="OData orderby string")
 @click.pass_obj
 @pretty_print
 def network_devices(controller, limit, odata_filter, odata_orderby):
@@ -74,8 +74,8 @@ def network_devices(controller, limit, odata_filter, odata_orderby):
 @click.option(
     "--limit", default=100, help="maximum number of results to return", type=int
 )
-@click.option("--odata_filter", help="OData filter string", default=None)
-@click.option("--odata_orderby", help="OData orderby string", default=None)
+@click.option("--odata_filter", help="OData filter string")
+@click.option("--odata_orderby", help="OData orderby string")
 @click.pass_obj
 @pretty_print
 def users(controller, limit, odata_filter, odata_orderby):
@@ -89,7 +89,6 @@ def users(controller, limit, odata_filter, odata_orderby):
     "-q",
     "--techniques",
     help="comma-separated list of techniques to filter by",
-    type=str,
     required=True,
 )
 @click.pass_obj
@@ -102,18 +101,16 @@ def technique_summary(controller, techniques):
 
 @scm.command("evaluation-summary")
 @click.option(
-    "--endpoint_odata_filter", help="OData filter string for endpoints", default=None
+    "--endpoint_odata_filter",
+    help="OData filter string for endpoints",
 )
 @click.option(
-    "--inbox_odata_filter", help="OData filter string for inboxes", default=None
+    "--inbox_odata_filter",
+    help="OData filter string for inboxes",
 )
-@click.option("--user_odata_filter", help="OData filter string for users", default=None)
+@click.option("--user_odata_filter", help="OData filter string for users")
 @click.option(
-    "-q",
-    "--techniques",
-    help="comma-separated list of techniques to filter by",
-    type=str,
-    default=None,
+    "-q", "--techniques", help="comma-separated list of techniques to filter by"
 )
 @click.pass_obj
 @pretty_print
@@ -138,23 +135,19 @@ def evaluation_summary(
     ),
 )
 @click.option("--instance_id", required=True, help="instance ID of the partner")
-@click.option("--odata_filter", help="OData filter string", default=None)
+@click.option("--odata_filter", help="OData filter string")
 @click.option(
     "-p",
     "--policy_type",
+    default=[],
     help="Policy types to filter by",
     multiple=True,
-    default=[],
     type=click.Choice(
         [p.name for p in PolicyType if p != PolicyType.INVALID], case_sensitive=False
     ),
 )
 @click.option(
-    "-q",
-    "--techniques",
-    help="comma-separated list of techniques to filter by",
-    type=str,
-    default=None,
+    "-q", "--techniques", help="comma-separated list of techniques to filter by"
 )
 @click.pass_obj
 @pretty_print
@@ -207,11 +200,9 @@ def sync(controller, partner, instance_id):
     type=click.Path(writable=True),
     required=True,
 )
-@click.option(
-    "--limit", default=None, help="maximum number of results to return", type=int
-)
-@click.option("--odata_filter", help="OData filter string", default=None)
-@click.option("--odata_orderby", help="OData orderby string", default=None)
+@click.option("--limit", help="maximum number of results to return", type=int)
+@click.option("--odata_filter", help="OData filter string")
+@click.option("--odata_orderby", help="OData orderby string")
 @click.pass_obj
 @pretty_print
 def export(controller, type, output_file, limit, odata_filter, odata_orderby):
@@ -245,8 +236,8 @@ scm.add_command(group)
 
 
 @group.command("list")
-@click.option("--odata_filter", help="OData filter string", default=None)
-@click.option("--odata_orderby", help="OData orderby string", default=None)
+@click.option("--odata_filter", help="OData filter string")
+@click.option("--odata_orderby", help="OData orderby string")
 @click.pass_obj
 @pretty_print
 def list_partner_groups(controller, odata_filter, odata_orderby):
@@ -260,13 +251,13 @@ def list_partner_groups(controller, odata_filter, odata_orderby):
 @group.command("sync")
 @click.argument(
     "partner",
+    required=True,
     type=click.Choice(
         [c.name for c in Control if c != Control.INVALID], case_sensitive=False
     ),
-    required=True,
 )
-@click.option("--instance_id", required=True, help="instance ID of the partner")
-@click.option("--group_ids", required=True, help="comma-separated list of group IDs")
+@click.option("--instance_id", help="instance ID of the partner", required=True)
+@click.option("--group_ids", help="comma-separated list of group IDs", required=True)
 @click.pass_obj
 @pretty_print
 def sync_groups(controller, partner, instance_id, group_ids):
@@ -295,32 +286,18 @@ scm.add_command(threat)
 
 @threat.command("create")
 @click.argument("name")
+@click.option("-d", "--description", help="description of the threat")
+@click.option("--id", help="uuid for threat")
 @click.option(
-    "-d", "--description", help="description of the threat", default=None, type=str
+    "-g", "--generated", default=False, help="was the threat AI generated", type=bool
 )
-@click.option("--id", help="uuid for threat", default=None, type=str)
+@click.option("-p", "--published", help="date the threat was published")
+@click.option("-s", "--source", help="source of threat (ex. www.cisa.gov)")
 @click.option(
-    "-g", "--generated", help="was the threat AI generated", default=False, type=bool
-)
-@click.option(
-    "-p", "--published", help="date the threat was published", default=None, type=str
-)
-@click.option(
-    "-s", "--source", help="source of threat (ex. www.cisa.gov)", default=None, type=str
+    "-i", "--source_id", help="ID of the threat, per the source (ex. aa23-075a)"
 )
 @click.option(
-    "-i",
-    "--source_id",
-    help="ID of the threat, per the source (ex. aa23-075a)",
-    default=None,
-    type=str,
-)
-@click.option(
-    "-q",
-    "--techniques",
-    help="comma-separated list of techniques (MITRE ATT&CK IDs)",
-    default=None,
-    type=str,
+    "-q", "--techniques", help="comma-separated list of techniques (MITRE ATT&CK IDs)"
 )
 @click.pass_obj
 @pretty_print
@@ -395,9 +372,7 @@ def parse_threat_intel(controller, threat_pdf):
 @click.argument(
     "partner", type=click.Choice([Control.CROWDSTRIKE.name], case_sensitive=False)
 )
-@click.option(
-    "-a", "--advisory_id", required=True, type=str, help="Partner advisory ID"
-)
+@click.option("-a", "--advisory_id", help="Partner advisory ID", required=True)
 @click.pass_obj
 @pretty_print
 def parse_from_partner_advisory(controller, partner, advisory_id):
@@ -459,20 +434,14 @@ def list_object_exceptions(controller):
         case_sensitive=False,
     ),
 )
+@click.option("-f", "--filter", help="OData filter string", required=True)
+@click.option("-c", "--comment", help="exception comment")
+@click.option("-e", "--expires", help="expiry date (YYYY-MM-DD hh:mm:ss ([+-]hh:mm))")
 @click.option(
-    "-f", "--filter", help="OData filter string", default=None, required=True, type=str
+    "-n",
+    "--name",
+    help="exception name",
 )
-@click.option(
-    "-c", "--comment", help="exception comment", default=None, type=str
-)
-@click.option(
-    "-e",
-    "--expires",
-    help="expiry date (YYYY-MM-DD hh:mm:ss ([+-]hh:mm))",
-    default=None,
-    type=str,
-)
-@click.option("-n", "--name", help="exception name", default=None, type=str)
 @click.pass_obj
 @pretty_print
 def create_object_exception(controller, category, filter, comment, expires, name):
@@ -488,30 +457,32 @@ def create_object_exception(controller, category, filter, comment, expires, name
 
 
 @object.command("update")
-@click.argument("exception_id", type=str)
-@click.option(
-    "-c", "--comment", help="exception comment", default=None, type=str
-)
+@click.argument("exception_id")
+@click.option("-c", "--comment", help="exception comment", default=None, type=str)
 @click.option(
     "-e",
     "--expires",
-    help="Expiry Date (YYYY-MM-DD hh:mm:ss ([+-]hh:mm))",
     default=ScmController.default,
+    help="Expiry Date (YYYY-MM-DD hh:mm:ss ([+-]hh:mm))",
 )
-@click.option("-f", "--filter", help="OData filter string", default=None, type=str)
-@click.option("-n", "--name", help="Exception Name", default=None, type=str)
+@click.option("-f", "--filter", help="OData filter string")
+@click.option("-n", "--name", help="Exception Name")
 @click.pass_obj
 @pretty_print
 def update_object_exception(controller, exception_id, comment, expires, filter, name):
     """Update object exception"""
     with Spinner(description=f"Updating object exception"):
         return controller.update_object_exception(
-            comment=comment, exception_id=exception_id, filter=filter, name=name, expires=expires
+            comment=comment,
+            exception_id=exception_id,
+            filter=filter,
+            name=name,
+            expires=expires,
         )
 
 
 @object.command("delete")
-@click.argument("exception_id", type=str)
+@click.argument("exception_id")
 @click.confirmation_option(prompt="Are you sure?")
 @click.pass_obj
 @pretty_print
@@ -537,24 +508,16 @@ def list_policy_exceptions(controller):
         [c.name for c in Control if c != Control.INVALID], case_sensitive=False
     ),
 )
-@click.option(
-    "-c", "--comment", help="exception comment", default=None, type=str
-)
-@click.option("-i", "--instance_id", required=True, help="instance ID of the partner")
-@click.option("-p", "--policy_id", required=True, help="ID of the policy to create")
+@click.option("-c", "--comment", help="exception comment")
+@click.option("-i", "--instance_id", help="instance ID of the partner", required=True)
+@click.option("-p", "--policy_id", help="ID of the policy to create", required=True)
 @click.option(
     "-s",
     "--settings",
     required=True,
     help="Comma separated list of all setting names to be excluded",
 )
-@click.option(
-    "-e",
-    "--expires",
-    help="Expiry Date (YYYY-MM-DD hh:mm:ss ([+-]hh:mm))",
-    default=None,
-    type=str,
-)
+@click.option("-e", "--expires", help="Expiry Date (YYYY-MM-DD hh:mm:ss ([+-]hh:mm))")
 @click.pass_obj
 @pretty_print
 def create_policy_exception(
@@ -562,7 +525,7 @@ def create_policy_exception(
 ):
     """Create policy exception"""
     with Spinner(description=f"Creating policy exception"):
-        return controller.create_policy_exceptions(
+        return controller.create_policy_exception(
             partner=Control[partner],
             comment=comment,
             expires=expires,
@@ -579,21 +542,17 @@ def create_policy_exception(
         [c.name for c in Control if c != Control.INVALID], case_sensitive=False
     ),
 )
-@click.option(
-    "-c", "--comment", help="exception comment", default=None, type=str
-)
-@click.option("-i", "--instance_id", required=True, help="instance ID of the partner")
-@click.option("-p", "--policy_id", required=True, help="ID of the policy to update")
+@click.option("-c", "--comment", help="exception comment")
+@click.option("-i", "--instance_id", help="instance ID of the partner", required=True)
+@click.option("-p", "--policy_id", help="ID of the policy to update", required=True)
 @click.option(
     "-e",
     "--expires",
-    help="Expiry Date (YYYY-MM-DD hh:mm:ss ([+-]hh:mm))",
     default=ScmController.default,
+    help="Expiry Date (YYYY-MM-DD hh:mm:ss ([+-]hh:mm))",
 )
 @click.option(
-    "-s",
-    "--settings",
-    help="Comma separated list of all setting names to be excluded",
+    "-s", "--settings", help="Comma separated list of all setting names to be excluded"
 )
 @click.pass_obj
 @pretty_print
@@ -619,8 +578,8 @@ def update_policy_exception(
         [c.name for c in Control if c != Control.INVALID], case_sensitive=False
     ),
 )
-@click.option("-i", "--instance_id", required=True, help="instance ID of the partner")
-@click.option("-p", "--policy_id", required=True, help="ID of the policy to be deleted")
+@click.option("-i", "--instance_id", help="instance ID of the partner", required=True)
+@click.option("-p", "--policy_id", help="ID of the policy to be deleted", required=True)
 @click.confirmation_option(prompt="Are you sure?")
 @click.pass_obj
 @pretty_print
@@ -629,16 +588,6 @@ def delete_policy_exception(controller, partner, instance_id, policy_id):
     with Spinner(description=f"Deleting Policy exception"):
         return controller.delete_policy_exception(
             instance_id=instance_id, policy_id=policy_id
-        )
-
-    """Delete policy exception removes all exceptions in a policy"""
-    with Spinner(description=f"Deleting policy exception"):
-        return controller.put_policy_exceptions(
-            partner=Control[partner],
-            expires=None,
-            instance_id=instance_id,
-            policy_id=policy_id,
-            setting_names=[],
         )
 
 
@@ -661,7 +610,7 @@ def list_notifications(controller):
 
 
 @notification.command("delete")
-@click.argument("notification_id", type=str)
+@click.argument("notification_id")
 @click.confirmation_option(prompt="Are you sure?")
 @click.pass_obj
 @pretty_print
@@ -678,17 +627,11 @@ def delete_notification(controller, notification_id):
 @click.option(
     "-d",
     "--days_in_event",
-    help="filter for results that have been in the event state for at least this many days",
     default=0,
+    help="filter for results that have been in the event state for at least this many days",
     type=int,
 )
-@click.option(
-    "-e",
-    "--emails",
-    help="comma-separated list of emails to notify",
-    default=None,
-    type=str,
-)
+@click.option("-e", "--emails", help="comma-separated list of emails to notify")
 @click.option(
     "-v",
     "--event",
@@ -696,11 +639,9 @@ def delete_notification(controller, notification_id):
     type=click.Choice([e.name for e in PartnerEvents], case_sensitive=False),
     required=True,
 )
-@click.option("-f", "--filter", help="OData filter string", default=None, type=str)
-@click.option(
-    "-i", "--id", help="ID of the notification to update", default=None, type=str
-)
-@click.option("-m", "--message", help="notification message", default="", type=str)
+@click.option("-f", "--filter", help="OData filter string")
+@click.option("-i", "--id", help="ID of the notification to update")
+@click.option("-m", "--message", default="", help="notification message")
 @click.option(
     "-r",
     "--run_code",
@@ -716,10 +657,7 @@ def delete_notification(controller, notification_id):
     required=True,
 )
 @click.option(
-    "--slack_urls",
-    help="comma-separated list of Slack Webhook URLs to notify",
-    default=None,
-    type=str,
+    "--slack_urls", help="comma-separated list of Slack Webhook URLs to notify"
 )
 @click.option(
     "-p",
@@ -729,14 +667,9 @@ def delete_notification(controller, notification_id):
     type=bool,
 )
 @click.option(
-    "--teams_urls",
-    help="comma-separated list of Teams Webhook URLs to notify",
-    default=None,
-    type=str,
+    "--teams_urls", help="comma-separated list of Teams Webhook URLs to notify"
 )
-@click.option(
-    "-t", "--title", help="notification title", default="SCM Notification", type=str
-)
+@click.option("-t", "--title", default="SCM Notification", help="notification title")
 @click.pass_obj
 @pretty_print
 def upsert_notification(
@@ -784,9 +717,9 @@ def list_notations(controller):
 
 
 @scm.command("history")
-@click.option("--odata_filter", help="OData filter string", default=None)
-@click.option("--start", type=str, default=None, help="start date")
-@click.option("--end", type=str, default=None, help="end date")
+@click.option("--odata_filter", help="OData filter string")
+@click.option("--start", help="start date")
+@click.option("--end", help="end date")
 @click.pass_obj
 @pretty_print
 def list_history(controller, odata_filter, start, end):
@@ -806,7 +739,7 @@ scm.add_command(report)
 
 
 @report.command("get")
-@click.argument("report_id", type=str)
+@click.argument("report_id")
 @click.pass_obj
 @pretty_print
 def get_report(controller, report_id):
@@ -823,7 +756,7 @@ def list_reports(controller):
 
 
 @report.command("delete")
-@click.argument("report_id", type=str)
+@click.argument("report_id")
 @click.confirmation_option(prompt="Are you sure?")
 @click.pass_obj
 @pretty_print
@@ -834,18 +767,14 @@ def delete_report(controller, report_id):
 
 @report.command("put")
 @click.option(
-    "--report_data",
-    type=str,
-    help="report data in JSON format, cannot be used with report_file",
-    default=None,
+    "--report_data", help="report data in JSON format, cannot be used with report_file"
 )
 @click.option(
     "--report_file",
-    type=click.Path(exists=True, file_okay=True, dir_okay=False, readable=True),
     help="report data JSON file, will ignore report_data if provided",
-    default=None,
+    type=click.Path(exists=True, file_okay=True, dir_okay=False, readable=True),
 )
-@click.option("--report_id", type=str, help="report ID to update", default=None)
+@click.option("--report_id", help="report ID to update")
 @click.pass_obj
 @pretty_print
 def put_report(controller, report_data, report_file, report_id):
@@ -867,9 +796,9 @@ def put_report(controller, report_data, report_file, report_id):
         [c.name for c in SCMCategory if c.value > 0], case_sensitive=False
     ),
 )
-@click.option("--group_by", "-b", help="field to group by", required=True, type=str)
+@click.option("--group_by", "-b", help="field to group by", required=True)
 @click.option(
-    "--group_limit", "-l", help="max number of groups to return", type=int, default=100
+    "--group_limit", "-l", default=100, help="max number of groups to return", type=int
 )
 @click.option(
     "--sort_by",
@@ -878,23 +807,13 @@ def put_report(controller, report_data, report_file, report_id):
     type=click.Choice(["count_asc", "count_desc", "group_asc", "group_desc"]),
     default="9-0",
 )
+@click.option("--display_overrides", "-d", help="display overrides in JSON format")
 @click.option(
-    "--display_overrides",
-    "-d",
-    help="display overrides in JSON format",
-    default=None,
-    type=str,
+    "--odata_filter",
+    "-f",
+    help="OData filter string",
 )
-@click.option(
-    "--odata_filter", "-f", help="OData filter string", default=None, type=str
-)
-@click.option(
-    "--scopes",
-    "-c",
-    help="scope-value map in JSON format",
-    default=None,
-    type=str,
-)
+@click.option("--scopes", "-c", help="scope-value map in JSON format")
 @click.pass_obj
 @pretty_print
 def get_chart_data(

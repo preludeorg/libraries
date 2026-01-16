@@ -21,12 +21,8 @@ class ScmController(HttpController):
     def endpoints(self, filter: str = None, orderby: str = None, top: int = None):
         """List endpoints with SCM analysis"""
         params = {"$filter": filter, "$orderby": orderby, "$top": top}
-        res = self.get(
-            f"{self.account.hq}/scm/endpoints",
-            headers=self.account.headers,
-            params=params,
-            timeout=30,
-        )
+
+        res = self.get(f"{self.account.hq}/scm/endpoints", params=params, timeout=30)
         data = res.json()
         if self.account.resolve_enums:
             self.resolve_enums(
@@ -44,12 +40,8 @@ class ScmController(HttpController):
     def inboxes(self, filter: str = None, orderby: str = None, top: int = None):
         """List inboxes with SCM analysis"""
         params = {"$filter": filter, "$orderby": orderby, "$top": top}
-        res = self.get(
-            f"{self.account.hq}/scm/inboxes",
-            headers=self.account.headers,
-            params=params,
-            timeout=30,
-        )
+
+        res = self.get(f"{self.account.hq}/scm/inboxes", params=params, timeout=30)
         data = res.json()
         if self.account.resolve_enums:
             self.resolve_enums(
@@ -67,11 +59,9 @@ class ScmController(HttpController):
     def network_devices(self, filter: str = None, orderby: str = None, top: int = None):
         """List network_devices with SCM analysis"""
         params = {"$filter": filter, "$orderby": orderby, "$top": top}
+
         res = self.get(
-            f"{self.account.hq}/scm/network_devices",
-            headers=self.account.headers,
-            params=params,
-            timeout=30,
+            f"{self.account.hq}/scm/network_devices", params=params, timeout=30
         )
         data = res.json()
         if self.account.resolve_enums:
@@ -90,12 +80,8 @@ class ScmController(HttpController):
     def users(self, filter: str = None, orderby: str = None, top: int = None):
         """List users with SCM analysis"""
         params = {"$filter": filter, "$orderby": orderby, "$top": top}
-        res = self.get(
-            f"{self.account.hq}/scm/users",
-            headers=self.account.headers,
-            params=params,
-            timeout=30,
-        )
+
+        res = self.get(f"{self.account.hq}/scm/users", params=params, timeout=30)
         data = res.json()
         if self.account.resolve_enums:
             self.resolve_enums(
@@ -115,7 +101,6 @@ class ScmController(HttpController):
         res = self.get(
             f"{self.account.hq}/scm/technique_summary",
             params=dict(techniques=techniques),
-            headers=self.account.headers,
             timeout=30,
         )
         return res.json()
@@ -136,11 +121,9 @@ class ScmController(HttpController):
         )
         if techniques:
             params["techniques"] = techniques
+
         res = self.get(
-            f"{self.account.hq}/scm/evaluation_summary",
-            params=params,
-            headers=self.account.headers,
-            timeout=30,
+            f"{self.account.hq}/scm/evaluation_summary", params=params, timeout=30
         )
         data = res.json()
         if self.account.resolve_enums:
@@ -164,10 +147,10 @@ class ScmController(HttpController):
             params["policy_types"] = policy_types
         if techniques:
             params["techniques"] = techniques
+
         res = self.get(
             f"{self.account.hq}/scm/evaluations/{partner.name}/{instance_id}",
             params=params,
-            headers=self.account.headers,
             timeout=30,
         )
         data = res.json()
@@ -179,9 +162,7 @@ class ScmController(HttpController):
     def update_evaluation(self, partner: Control, instance_id: str):
         """Update policy evaluations for given partner"""
         res = self.post(
-            f"{self.account.hq}/scm/evaluations/{partner.name}/{instance_id}",
-            headers=self.account.headers,
-            timeout=60,
+            f"{self.account.hq}/scm/evaluations/{partner.name}/{instance_id}"
         )
         return res.json()
 
@@ -189,12 +170,8 @@ class ScmController(HttpController):
     def list_partner_groups(self, filter: str = None, orderby: str = None):
         """List groups"""
         params = {"$filter": filter, "$orderby": orderby}
-        res = self.get(
-            f"{self.account.hq}/scm/groups",
-            headers=self.account.headers,
-            params=params,
-            timeout=10,
-        )
+
+        res = self.get(f"{self.account.hq}/scm/groups", params=params)
         groups = res.json()
         if self.account.resolve_enums:
             self.resolve_enums(groups, [(Control, "control")])
@@ -206,22 +183,16 @@ class ScmController(HttpController):
     ):
         """Update groups"""
         body = dict(group_ids=group_ids)
+
         res = self.post(
-            f"{self.account.hq}/scm/groups/{partner.name}/{instance_id}",
-            headers=self.account.headers,
-            json=body,
-            timeout=10,
+            f"{self.account.hq}/scm/groups/{partner.name}/{instance_id}", json=body
         )
         return res.json()
 
     @verify_credentials
     def list_object_exceptions(self):
         """List object exceptions"""
-        res = self.get(
-            f"{self.account.hq}/scm/exceptions/objects",
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.get(f"{self.account.hq}/scm/exceptions/objects")
         exceptions = res.json()
         if self.account.resolve_enums:
             self.resolve_enums(exceptions, [(ControlCategory, "category")])
@@ -239,12 +210,8 @@ class ScmController(HttpController):
             body["name"] = name
         if expires:
             body["expires"] = expires
-        res = self.post(
-            f"{self.account.hq}/scm/exceptions/objects",
-            json=body,
-            headers=self.account.headers,
-            timeout=10,
-        )
+
+        res = self.post(f"{self.account.hq}/scm/exceptions/objects", json=body)
         return res.json()
 
     @verify_credentials
@@ -261,32 +228,22 @@ class ScmController(HttpController):
             body["filter"] = filter
         if name:
             body["name"] = name
+
         res = self.post(
-            f"{self.account.hq}/scm/exceptions/objects/{exception_id}",
-            json=body,
-            headers=self.account.headers,
-            timeout=10,
+            f"{self.account.hq}/scm/exceptions/objects/{exception_id}", json=body
         )
         return res.json()
 
     @verify_credentials
     def delete_object_exception(self, exception_id):
         """Delete an object exception"""
-        res = self.delete(
-            f"{self.account.hq}/scm/exceptions/objects/{exception_id}",
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.delete(f"{self.account.hq}/scm/exceptions/objects/{exception_id}")
         return res.json()
 
     @verify_credentials
     def list_policy_exceptions(self):
         """List policy exceptions"""
-        res = self.get(
-            f"{self.account.hq}/scm/exceptions/policies",
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.get(f"{self.account.hq}/scm/exceptions/policies")
         exceptions = res.json()
         if self.account.resolve_enums:
             self.resolve_enums(
@@ -307,12 +264,8 @@ class ScmController(HttpController):
             policy_id=policy_id,
             setting_names=setting_names,
         )
-        res = self.post(
-            f"{self.account.hq}/scm/exceptions/policies",
-            json=body,
-            headers=self.account.headers,
-            timeout=10,
-        )
+
+        res = self.post(f"{self.account.hq}/scm/exceptions/policies", json=body)
         return res.json()
 
     @verify_credentials
@@ -333,34 +286,22 @@ class ScmController(HttpController):
             body["expires"] = expires
         if setting_names:
             body["setting_names"] = setting_names
-        res = self.put(
-            f"{self.account.hq}/scm/exceptions/policies",
-            json=body,
-            headers=self.account.headers,
-            timeout=10,
-        )
+
+        res = self.put(f"{self.account.hq}/scm/exceptions/policies", json=body)
         return res.json()
 
     @verify_credentials
     def delete_policy_exception(self, instance_id: str, policy_id: str):
         """Delete policy exceptions"""
         body = dict(instance_id=instance_id, policy_id=policy_id)
-        res = self.delete(
-            f"{self.account.hq}/scm/exceptions/policies",
-            json=body,
-            headers=self.account.headers,
-            timeout=10,
-        )
+
+        res = self.delete(f"{self.account.hq}/scm/exceptions/policies", json=body)
         return res.json()
 
     @verify_credentials
     def list_views(self):
         """List views"""
-        res = self.get(
-            f"{self.account.hq}/scm/views",
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.get(f"{self.account.hq}/scm/views")
         views = res.json()
         if self.account.resolve_enums:
             self.resolve_enums(views, [(ControlCategory, "category")])
@@ -370,12 +311,8 @@ class ScmController(HttpController):
     def create_view(self, category: ControlCategory, filter: str, name: str):
         """Create a view"""
         body = dict(category=category.name, filter=filter, name=name)
-        res = self.post(
-            f"{self.account.hq}/scm/views",
-            json=body,
-            headers=self.account.headers,
-            timeout=10,
-        )
+
+        res = self.post(f"{self.account.hq}/scm/views", json=body)
         return res.json()
 
     @verify_credentials
@@ -390,22 +327,14 @@ class ScmController(HttpController):
             body["filter"] = filter
         if name:
             body["name"] = name
-        res = self.post(
-            f"{self.account.hq}/scm/views/{view_id}",
-            json=body,
-            headers=self.account.headers,
-            timeout=10,
-        )
+
+        res = self.post(f"{self.account.hq}/scm/views/{view_id}", json=body)
         return res.json()
 
     @verify_credentials
     def delete_view(self, view_id):
         """Delete a view"""
-        res = self.delete(
-            f"{self.account.hq}/scm/views/{view_id}",
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.delete(f"{self.account.hq}/scm/views/{view_id}")
         return res.json()
 
     @verify_credentials
@@ -437,46 +366,32 @@ class ScmController(HttpController):
         if techniques:
             body["techniques"] = techniques
 
-        res = self.post(
-            f"{self.account.hq}/scm/threats",
-            json=body,
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.post(f"{self.account.hq}/scm/threats", json=body)
         return res.json()
 
     @verify_credentials
     def delete_threat(self, id):
         """Delete an existing scm threat"""
-        res = self.delete(
-            f"{self.account.hq}/scm/threats/{id}",
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.delete(f"{self.account.hq}/scm/threats/{id}")
         return res.json()
 
     @verify_credentials
     def get_threat(self, id):
         """Get specific scm threat"""
-        res = self.get(
-            f"{self.account.hq}/scm/threats/{id}",
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.get(f"{self.account.hq}/scm/threats/{id}")
         return res.json()
 
     @verify_credentials
     def list_threats(self):
         """List all scm threats"""
-        res = self.get(
-            f"{self.account.hq}/scm/threats", headers=self.account.headers, timeout=10
-        )
+        res = self.get(f"{self.account.hq}/scm/threats")
         return res.json()
 
     @verify_credentials
     def parse_threat_intel(self, file: str):
         with open(file, "rb") as f:
             body = f.read()
+
         res = self.post(
             f"{self.account.hq}/scm/threat-intel",
             data=body,
@@ -488,9 +403,9 @@ class ScmController(HttpController):
     @verify_credentials
     def parse_from_partner_advisory(self, partner: Control, advisory_id: str):
         params = dict(advisory_id=advisory_id)
+
         res = self.post(
             f"{self.account.hq}/scm/partner-advisories/{partner.name}",
-            headers=self.account.headers,
             json=params,
             timeout=30,
         )
@@ -498,11 +413,7 @@ class ScmController(HttpController):
 
     @verify_credentials
     def list_notifications(self):
-        res = self.get(
-            f"{self.account.hq}/scm/notifications",
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.get(f"{self.account.hq}/scm/notifications")
         notifications = res.json()
         if self.account.resolve_enums:
             self.resolve_enums(
@@ -517,11 +428,7 @@ class ScmController(HttpController):
 
     @verify_credentials
     def delete_notification(self, notification_id: str):
-        res = self.delete(
-            f"{self.account.hq}/scm/notifications/{notification_id}",
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.delete(f"{self.account.hq}/scm/notifications/{notification_id}")
         return res.json()
 
     @verify_credentials
@@ -559,22 +466,14 @@ class ScmController(HttpController):
             body["slack"] = dict(hook_urls=slack_urls, message=message)
         if teams_urls:
             body["teams"] = dict(hook_urls=teams_urls, message=message)
-        res = self.put(
-            f"{self.account.hq}/scm/notifications",
-            json=body,
-            headers=self.account.headers,
-            timeout=10,
-        )
+
+        res = self.put(f"{self.account.hq}/scm/notifications", json=body)
         return res.json()
 
     @verify_credentials
     def list_notations(self):
         """List notations"""
-        res = self.get(
-            f"{self.account.hq}/scm/notations",
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.get(f"{self.account.hq}/scm/notations")
         notations = res.json()
         if self.account.resolve_enums:
             self.resolve_enums(notations, [(NotationType, "event")])
@@ -586,12 +485,8 @@ class ScmController(HttpController):
     ):
         """List history"""
         params = {"start_date": start_date, "end_date": end_date, "$filter": filter}
-        res = self.get(
-            f"{self.account.hq}/scm/history",
-            headers=self.account.headers,
-            params=params,
-            timeout=10,
-        )
+
+        res = self.get(f"{self.account.hq}/scm/history", params=params)
         history = res.json()
         if self.account.resolve_enums:
             self.resolve_enums(
@@ -607,42 +502,27 @@ class ScmController(HttpController):
     @verify_credentials
     def get_report(self, report_id: str):
         """Get SCM report by ID"""
-        res = self.get(
-            f"{self.account.hq}/scm/reports/{report_id}",
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.get(f"{self.account.hq}/scm/reports/{report_id}")
         return res.json()
 
     @verify_credentials
     def list_reports(self):
         """List SCM reports"""
-        res = self.get(
-            f"{self.account.hq}/scm/reports",
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.get(f"{self.account.hq}/scm/reports")
         return res.json()
 
     @verify_credentials
     def delete_report(self, report_id: str):
         """Delete SCM report by ID"""
-        res = self.delete(
-            f"{self.account.hq}/scm/reports/{report_id}",
-            headers=self.account.headers,
-            timeout=10,
-        )
+        res = self.delete(f"{self.account.hq}/scm/reports/{report_id}")
         return res.json()
 
     @verify_credentials
     def put_report(self, report_data: dict, report_id: str = None):
         """Put SCM report by ID"""
-        res = self.put(
-            f"{self.account.hq}/scm/reports",
-            headers=self.account.headers,
-            json=dict(report=report_data, id=report_id),
-            timeout=10,
-        )
+        body = dict(report=report_data, id=report_id)
+
+        res = self.put(f"{self.account.hq}/scm/reports", json=body)
         return res.json()
 
     @verify_credentials
@@ -667,10 +547,6 @@ class ScmController(HttpController):
         }
         if odata_filter:
             body["$filter"] = odata_filter
-        res = self.post(
-            f"{self.account.hq}/scm/reports/data",
-            headers=self.account.headers,
-            json=body,
-            timeout=30,
-        )
+
+        res = self.post(f"{self.account.hq}/scm/reports/data", json=body, timeout=30)
         return res.json()

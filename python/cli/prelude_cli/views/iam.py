@@ -35,37 +35,18 @@ def purge_account(controller):
 
 
 @iam.command("update-account")
+@click.option("-c", "--company", help="provide your associated company")
 @click.option(
-    "-c",
-    "--company",
-    default=None,
-    help="provide your associated company",
-    show_default=False,
-    type=str,
-)
-@click.option(
-    "-t",
-    "--inactivity_timeout",
-    default=None,
-    help="inactivity timeout in minutes",
-    show_default=False,
-    type=int,
+    "-t", "--inactivity_timeout", help="inactivity timeout in minutes", type=int
 )
 @click.option(
     "-m",
     "--mode",
-    default=None,
     help="provide a mode",
-    show_default=False,
     type=click.Choice([m.name for m in Mode], case_sensitive=False),
 )
 @click.option(
-    "-s",
-    "--slug",
-    default=None,
-    help="provide a unique human-readable identifier for your account",
-    show_default=False,
-    type=str,
+    "-s", "--slug", help="provide a unique human-readable identifier for your account"
 )
 @click.pass_obj
 @pretty_print
@@ -82,11 +63,13 @@ def update_account(controller, company, inactivity_timeout, mode, slug):
 
 @iam.command("attach-oidc")
 @click.argument(
-    "issuer", type=click.Choice(["google", "azure", "okta"], case_sensitive=False)
+    "issuer",
+    required=True,
+    type=click.Choice(["google", "azure", "okta"], case_sensitive=False),
 )
-@click.option("--client_id", required=True, help="Client ID")
-@click.option("--client_secret", required=True, help="Client secret")
-@click.option("--oidc_config_url", required=True, help="Configuration endpoint")
+@click.option("--client_id", help="Client ID", required=True)
+@click.option("--client_secret", help="Client secret", required=True)
+@click.option("--oidc_config_url", help="Configuration endpoint", required=True)
 @click.pass_obj
 @pretty_print
 def attach_oidc(controller, issuer, client_id, client_secret, oidc_config_url):
@@ -111,11 +94,13 @@ def detach_oidc(controller):
 
 
 @iam.command("invite-user")
+@click.argument("email")
 @click.option(
     "-p",
     "--permission",
-    help="user permission level",
     default=Permission.EXECUTIVE.name,
+    help="user permission level",
+    show_default=True,
     type=click.Choice(
         [
             p.name
@@ -124,22 +109,17 @@ def detach_oidc(controller):
         ],
         case_sensitive=False,
     ),
-    show_default=True,
 )
-@click.option(
-    "-n", "--name", help="name of user", default=None, show_default=False, type=str
-)
+@click.option("-n", "--name", help="name of user")
 @click.option(
     "-o",
     "--oidc",
     help="OIDC app name, or 'none' to login via a password",
     required=True,
-    type=str,
 )
-@click.argument("email")
 @click.pass_obj
 @pretty_print
-def invite_user(controller, permission, name, oidc, email):
+def invite_user(controller, email, permission, name, oidc):
     """Invite a new user to your account"""
     with Spinner(description="Inviting new user"):
         data = controller.invite_user(
@@ -173,11 +153,13 @@ def delete_service_user(controller, handle):
 
 
 @iam.command("update-account-user")
+@click.argument("email")
 @click.option(
     "-p",
     "--permission",
-    help="user permission level",
     default=Permission.EXECUTIVE.name,
+    help="user permission level",
+    show_default=True,
     type=click.Choice(
         [
             p.name
@@ -186,19 +168,13 @@ def delete_service_user(controller, handle):
         ],
         case_sensitive=False,
     ),
-    show_default=True,
 )
 @click.option(
-    "-o",
-    "--oidc",
-    help="OIDC app name, or 'none' for non-OIDC users",
-    required=True,
-    type=str,
+    "-o", "--oidc", help="OIDC app name, or 'none' for non-OIDC users", required=True
 )
-@click.argument("email")
 @click.pass_obj
 @pretty_print
-def update_account_user(controller, permission, oidc, email):
+def update_account_user(controller, email, permission, oidc):
     """Update a user in your account"""
     with Spinner(description="Updating account user"):
         return controller.update_account_user(
@@ -210,17 +186,13 @@ def update_account_user(controller, permission, oidc, email):
 
 @iam.command("remove-user")
 @click.confirmation_option(prompt="Are you sure?")
-@click.option(
-    "-o",
-    "--oidc",
-    help="OIDC app name, or 'none' for non-OIDC users",
-    required=True,
-    type=str,
-)
 @click.argument("email")
+@click.option(
+    "-o", "--oidc", help="OIDC app name, or 'none' for non-OIDC users", required=True
+)
 @click.pass_obj
 @pretty_print
-def remove_user(controller, oidc, email):
+def remove_user(controller, email, oidc):
     """Remove a user from your account"""
     with Spinner(description="Removing user"):
         return controller.remove_user(
@@ -230,10 +202,10 @@ def remove_user(controller, oidc, email):
 
 @iam.command("logs")
 @click.option(
-    "-d", "--days", help="days back to search from today", default=7, type=int
+    "-d", "--days", default=7, help="days back to search from today", type=int
 )
 @click.option(
-    "-l", "--limit", help="limit the number of results", default=1000, type=int
+    "-l", "--limit", default=1000, help="limit the number of results", type=int
 )
 @click.pass_obj
 @pretty_print
@@ -244,12 +216,12 @@ def logs(controller, days, limit):
 
 
 @iam.command("sign-up", hidden=True)
-@click.option("-c", "--company", type=str, required=True)
-@click.option("-n", "--name", type=str, required=True)
-@click.argument("email", type=str, required=True)
+@click.argument("email")
+@click.option("-c", "--company", required=True)
+@click.option("-n", "--name", required=True)
 @click.pass_obj
 @pretty_print
-def sign_up(controller, company, name, email):
+def sign_up(controller, email, company, name):
     """(NOT AVAIABLE IN PRODUCTION) Create a new user and account"""
     with Spinner(description="Creating new user and account"):
         return controller.sign_up(company=company, email=email, name=name)
@@ -309,17 +281,17 @@ def forgot_password(controller):
     "-n",
     "--new_password",
     help="new password",
-    required=True,
     hide_input=True,
     prompt=True,
+    required=True,
 )
 @click.option(
     "-r",
     "--confirm_new_password",
     help="confirm new password",
-    required=True,
     hide_input=True,
     prompt=True,
+    required=True,
 )
 @click.pass_obj
 @pretty_print
@@ -341,25 +313,25 @@ def confirm_forgot_password(controller, code, new_password, confirm_new_password
     "-c",
     "--current_password",
     help="current password",
-    required=True,
     hide_input=True,
     prompt=True,
+    required=True,
 )
 @click.option(
     "-n",
     "--new_password",
     help="new password",
-    required=True,
     hide_input=True,
     prompt=True,
+    required=True,
 )
 @click.option(
     "-r",
     "--confirm_new_password",
     help="confirm new password",
-    required=True,
     hide_input=True,
     prompt=True,
+    required=True,
 )
 @click.pass_obj
 @pretty_print
