@@ -100,9 +100,7 @@ def generate_threat_intel(
 @click.argument(
     "partner", type=click.Choice([Control.CROWDSTRIKE.name], case_sensitive=False)
 )
-@click.option(
-    "-a", "--advisory_id", required=True, type=str, help="Partner advisory ID"
-)
+@click.option("-a", "--advisory_id", required=True, help="Partner advisory ID")
 @click.option(
     "-o",
     "--output_dir",

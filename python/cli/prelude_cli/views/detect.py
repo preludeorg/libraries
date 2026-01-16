@@ -20,24 +20,15 @@ def detect(ctx):
 
 
 @detect.command("create-endpoint")
-@click.option("-h", "--host", help="hostname of this machine", type=str, required=True)
-@click.option(
-    "-s", "--serial_num", help="serial number of this machine", type=str, required=True
-)
+@click.option("-h", "--host", help="hostname of this machine", required=True)
+@click.option("-s", "--serial_num", help="serial number of this machine", required=True)
 @click.option(
     "-r",
     "--reg_string",
     help="registration string, in the format of <account_id>/<service_user_token>",
-    type=str,
     required=True,
 )
-@click.option(
-    "-t",
-    "--tags",
-    help="a comma-separated list of tags for this endpoint",
-    type=str,
-    default=None,
-)
+@click.option("-t", "--tags", help="a comma-separated list of tags for this endpoint")
 @click.pass_obj
 @pretty_print
 def register_endpoint(controller, host, serial_num, reg_string, tags):
@@ -51,13 +42,7 @@ def register_endpoint(controller, host, serial_num, reg_string, tags):
 
 @detect.command("update-endpoint")
 @click.argument("endpoint_id")
-@click.option(
-    "-t",
-    "--tags",
-    help="a comma-separated list of tags for this endpoint",
-    type=str,
-    default=None,
-)
+@click.option("-t", "--tags", help="a comma-separated list of tags for this endpoint")
 @click.pass_obj
 @pretty_print
 def update_endpoint(controller, endpoint_id, tags):
@@ -67,7 +52,7 @@ def update_endpoint(controller, endpoint_id, tags):
 
 
 @detect.command("tests")
-@click.option("--techniques", help="comma-separated list of techniques", type=str)
+@click.option("--techniques", help="comma-separated list of techniques")
 @click.pass_obj
 @pretty_print
 def list_tests(controller, techniques):
@@ -147,7 +132,7 @@ def get_detection(controller, detection_id, output_file):
 
 
 @detect.command("threat-hunts")
-@click.option("--tests", help="comma-separated list of tests", type=str)
+@click.option("--tests", help="comma-separated list of tests")
 @click.pass_obj
 @pretty_print
 def list_threat_hunts(controller, tests):
@@ -206,15 +191,14 @@ def download(controller, test):
 )
 @click.option(
     "--tags",
-    help="only enable for these tags (comma-separated list)",
-    type=str,
     default="",
+    help="only enable for these tags (comma-separated list)",
 )
 @click.option(
     "-r",
     "--run_code",
-    help="provide a run_code",
     default=RunCode.DAILY.name,
+    help="provide a run_code",
     show_default=True,
     type=click.Choice(
         [r.name for r in RunCode if r != RunCode.INVALID], case_sensitive=False
@@ -243,10 +227,7 @@ def schedule(controller, id, type, run_code, tags):
     type=click.Choice(["TEST", "THREAT"], case_sensitive=False),
 )
 @click.option(
-    "--tags",
-    help="only disable for these tags (comma-separated list)",
-    type=str,
-    default="",
+    "--tags", default="", help="only disable for these tags (comma-separated list)"
 )
 @click.confirmation_option(prompt="Are you sure?")
 @click.pass_obj
@@ -340,21 +321,21 @@ def clone(controller):
 @click.option(
     "--control", type=click.Choice([c.name for c in Control], case_sensitive=False)
 )
-@click.option("--dos", help="comma-separated list of DOS", type=str)
-@click.option("--endpoints", help="comma-separated list of endpoint IDs", type=str)
-@click.option("--finish", help="end date of activity (end of day)", type=str)
-@click.option("--os", help="comma-separated list of OS", type=str)
-@click.option("--policy", help="comma-separated list of policies", type=str)
+@click.option("--dos", help="comma-separated list of DOS")
+@click.option("--endpoints", help="comma-separated list of endpoint IDs")
+@click.option("--finish", help="end date of activity (end of day)")
+@click.option("--os", help="comma-separated list of OS")
+@click.option("--policy", help="comma-separated list of policies")
 @click.option(
     "--social",
     help="whether to fetch account-specific or social stats. Applicable to the following views: protected",
     is_flag=True,
 )
-@click.option("--start", help="start date of activity (beginning of day)", type=str)
-@click.option("--statuses", help="comma-separated list of statuses", type=str)
-@click.option("--techniques", help="comma-separated list of techniques", type=str)
-@click.option("--tests", help="comma-separated list of test IDs", type=str)
-@click.option("--threats", help="comma-separated list of threat IDs", type=str)
+@click.option("--start", help="start date of activity (beginning of day)")
+@click.option("--statuses", help="comma-separated list of statuses")
+@click.option("--techniques", help="comma-separated list of techniques")
+@click.option("--tests", help="comma-separated list of test IDs")
+@click.option("--threats", help="comma-separated list of threat IDs")
 @click.pass_obj
 @pretty_print
 def describe_activity(
@@ -428,8 +409,8 @@ def threat_hunt_activity(controller, id, type):
 
 
 @detect.command("accept-terms", hidden=True)
-@click.argument("name", type=str, required=True)
-@click.option("-v", "--version", type=str, required=True)
+@click.argument("name", required=True)
+@click.option("-v", "--version", required=True)
 @click.pass_obj
 @pretty_print
 def accept_terms(controller, name, version):

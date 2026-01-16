@@ -42,42 +42,58 @@ class HttpController(object):
                 elif isinstance(v, dict) or isinstance(v, list):
                     self._resolve_enum(v, enum_class, key)
 
-    def get(self, url, retry=True, **kwargs):
-        res = self._session.get(url, **kwargs)
+    def get(self, url, retry=True, timeout=10, headers=None, **kwargs):
+        res = self._session.get(
+            url, timeout=timeout, headers=headers or self.account.headers, **kwargs
+        )
         if res.status_code == 200:
             return res
         if res.status_code == 401 and retry and self.account.token_location:
             self.account.refresh_tokens()
             self.account.update_auth_header()
-            return self.get(url, retry=False, **kwargs)
+            return self.get(
+                url, retry=False, timeout=timeout, headers=headers, **kwargs
+            )
         raise Exception(res.text)
 
-    def post(self, url, retry=True, **kwargs):
-        res = self._session.post(url, **kwargs)
+    def post(self, url, retry=True, timeout=10, headers=None, **kwargs):
+        res = self._session.post(
+            url, timeout=timeout, headers=headers or self.account.headers, **kwargs
+        )
         if res.status_code == 200:
             return res
         if res.status_code == 401 and retry and self.account.token_location:
             self.account.refresh_tokens()
             self.account.update_auth_header()
-            return self.post(url, retry=False, **kwargs)
+            return self.post(
+                url, retry=False, timeout=timeout, headers=headers, **kwargs
+            )
         raise Exception(res.text)
 
-    def delete(self, url, retry=True, **kwargs):
-        res = self._session.delete(url, **kwargs)
+    def delete(self, url, retry=True, timeout=10, headers=None, **kwargs):
+        res = self._session.delete(
+            url, timeout=timeout, headers=headers or self.account.headers, **kwargs
+        )
         if res.status_code == 200:
             return res
         if res.status_code == 401 and retry and self.account.token_location:
             self.account.refresh_tokens()
             self.account.update_auth_header()
-            return self.delete(url, retry=False, **kwargs)
+            return self.delete(
+                url, retry=False, timeout=timeout, headers=headers, **kwargs
+            )
         raise Exception(res.text)
 
-    def put(self, url, retry=True, **kwargs):
-        res = self._session.put(url, **kwargs)
+    def put(self, url, retry=True, timeout=10, headers=None, **kwargs):
+        res = self._session.put(
+            url, timeout=timeout, headers=headers or self.account.headers, **kwargs
+        )
         if res.status_code == 200:
             return res
         if res.status_code == 401 and retry and self.account.token_location:
             self.account.refresh_tokens()
             self.account.update_auth_header()
-            return self.put(url, retry=False, **kwargs)
+            return self.put(
+                url, retry=False, timeout=timeout, headers=headers, **kwargs
+            )
         raise Exception(res.text)
