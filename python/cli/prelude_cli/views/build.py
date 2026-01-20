@@ -41,12 +41,18 @@ def clone_test(controller, source_test_id):
 
 @build.command("create-test")
 @click.argument("name")
-@click.option("-u", "--unit", help="unit identifier", required=True)
+@click.option(
+    "-s",
+    "--schedulable",
+    help="available to be scheduled by SCHEDULER users",
+    is_flag=True,
+)
 @click.option("-t", "--test", help="test identifier")
 @click.option("-q", "--technique", help="MITRE ATT&CK code [e.g. T1557]")
+@click.option("-u", "--unit", help="unit identifier", required=True)
 @click.pass_obj
 @pretty_print
-def create_test(controller, name, unit, test, technique):
+def create_test(controller, name, schedulable, test, technique, unit):
     """Create a security test"""
 
     def create_template(template, name):
@@ -70,7 +76,11 @@ def create_test(controller, name, unit, test, technique):
 
     with Spinner(description="Creating new test"):
         res = controller.create_test(
-            name=name, unit=unit, test_id=test, technique=technique
+            name=name,
+            schedulable=schedulable,
+            test_id=test,
+            technique=technique,
+            unit=unit,
         )
 
     if not test:
@@ -91,21 +101,30 @@ def create_test(controller, name, unit, test, technique):
     ),
 )
 @click.option("-n", "--name", help="test name")
-@click.option("-u", "--unit", help="unit identifier")
+@click.option(
+    "-s",
+    "--schedulable",
+    help="available to be scheduled by SCHEDULER users",
+    is_flag=True,
+)
 @click.option("-q", "--technique", help="MITRE ATT&CK code [e.g. T1557]")
+@click.option("-u", "--unit", help="unit identifier")
 @click.pass_obj
 @pretty_print
-def update_test(controller, test, crowdstrike_expected, name, unit, technique):
+def update_test(
+    controller, test, crowdstrike_expected, name, schedulable, technique, unit
+):
     """Update a security test"""
     with Spinner(description="Updating test"):
         return controller.update_test(
-            test_id=test,
             crowdstrike_expected_outcome=(
                 EDRResponse[crowdstrike_expected] if crowdstrike_expected else None
             ),
             name=name,
-            unit=unit,
+            schedulable=schedulable,
             technique=technique,
+            test_id=test,
+            unit=unit,
         )
 
 
@@ -210,25 +229,39 @@ def upload_attachment(controller, path, test):
 
 @build.command("create-threat")
 @click.argument("name")
-@click.option("-p", "--published", help="date the threat was published", required=True)
-@click.option("--id", help="identifier")
-@click.option("-s", "--source", help="source of threat (ex. www.cisa.gov)")
 @click.option(
-    "-i",
-    "--source_id",
-    help="ID of the threat, per the source (ex. aa23-075a)",
+    "-c",
+    "--schedulable",
+    help="available to be scheduled by SCHEDULER users",
+    is_flag=True,
 )
-@click.option("-t", "--tests", help="comma-separated list of test IDs")
 @click.option(
     "-d",
     "--directory",
     help="directory containing tests, detections, and hunt queries generated from threat_intel",
     type=click.Path(exists=True, dir_okay=True, file_okay=False),
 )
+@click.option(
+    "-i",
+    "--source_id",
+    help="ID of the threat, per the source (ex. aa23-075a)",
+)
+@click.option("--id", help="identifier")
+@click.option("-p", "--published", help="date the threat was published", required=True)
+@click.option("-s", "--source", help="source of threat (ex. www.cisa.gov)")
+@click.option("-t", "--tests", help="comma-separated list of test IDs")
 @click.pass_obj
 @pretty_print
-def create_threat(controller, name, published, id, source_id, source, tests, directory):
+def create_threat(
+    controller, name, schedulable, directory, source_id, id, published, source, tests
+):
     """Create a security threat"""
+    if schedulable:
+        click.confirm(
+            "Marking a threat as schedulable will also set its associated tests as schedulable, are you sure you want to continue?",
+            abort=True,
+        )
+
     with Spinner(description="Creating new threat"):
         try:
             created_tests = []
@@ -280,11 +313,12 @@ def create_threat(controller, name, published, id, source_id, source, tests, dir
                 tests = ",".join([t["id"] for t in created_tests])
             threat = controller.create_threat(
                 name=name,
-                threat_id=id,
+                published=published,
+                schedulable=schedulable,
                 source_id=source_id,
                 source=source,
-                published=published,
                 tests=tests,
+                threat_id=id,
             )
         except FileNotFoundError as e:
             raise Exception(e)
@@ -300,29 +334,44 @@ def create_threat(controller, name, published, id, source_id, source, tests, dir
 
 @build.command("update-threat")
 @click.argument("threat")
+@click.option(
+    "-c",
+    "--schedulable",
+    help="available to be scheduled by SCHEDULER users",
+    is_flag=True,
+)
+@click.option(
+    "-i", "--source_id", help="ID of the threat, per the source (ex. aa23-075a)"
+)
 @click.option("-n", "--name", help="test name")
+@click.option("-p", "--published", help="date the threat was published")
 @click.option(
     "-s",
     "--source",
     help="source of threat (ex. www.cisa.gov)",
 )
-@click.option(
-    "-i", "--source_id", help="ID of the threat, per the source (ex. aa23-075a)"
-)
-@click.option("-p", "--published", help="date the threat was published")
 @click.option("-t", "--tests", help="comma-separated list of test IDs")
 @click.pass_obj
 @pretty_print
-def update_threat(controller, threat, name, source_id, source, published, tests):
+def update_threat(
+    controller, threat, schedulable, source_id, name, published, source, tests
+):
     """Create or update a security threat"""
+    if schedulable:
+        click.confirm(
+            "Marking a threat as schedulable will also set its associated tests as schedulable, are you sure you want to continue?",
+            abort=True,
+        )
+
     with Spinner(description="Updating threat"):
         return controller.update_threat(
-            threat_id=threat,
-            source_id=source_id,
             name=name,
-            source=source,
             published=published,
+            schedulable=schedulable,
+            source_id=source_id,
+            source=source,
             tests=tests,
+            threat_id=threat,
         )
 
 
