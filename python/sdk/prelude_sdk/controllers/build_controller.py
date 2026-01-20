@@ -19,9 +19,11 @@ class BuildController(HttpController):
         return res.json()
 
     @verify_credentials
-    def create_test(self, name, unit, technique=None, test_id=None):
+    def create_test(self, name, unit, schedulable=None, technique=None, test_id=None):
         """Create or update a test"""
         body = dict(name=name, unit=unit)
+        if schedulable is not None:
+            body["schedulable"] = schedulable
         if technique:
             body["technique"] = technique
         if test_id:
@@ -34,10 +36,11 @@ class BuildController(HttpController):
     def update_test(
         self,
         test_id,
-        name=None,
-        unit=None,
-        technique=None,
         crowdstrike_expected_outcome: EDRResponse = None,
+        name=None,
+        schedulable=None,
+        technique=None,
+        unit=None,
     ):
         """Update a test"""
         body = dict()
@@ -45,10 +48,12 @@ class BuildController(HttpController):
             body["expected"] = dict(crowdstrike=crowdstrike_expected_outcome.value)
         if name:
             body["name"] = name
-        if unit:
-            body["unit"] = unit
+        if schedulable is not None:
+            body["schedulable"] = schedulable
         if technique is not None:
             body["technique"] = technique
+        if unit:
+            body["unit"] = unit
 
         res = self.post(f"{self.account.hq}/build/tests/{test_id}", json=body)
         return res.json()
@@ -101,18 +106,27 @@ class BuildController(HttpController):
 
     @verify_credentials
     def create_threat(
-        self, name, published, threat_id=None, source_id=None, source=None, tests=None
+        self,
+        name,
+        published,
+        schedulable=None,
+        source=None,
+        source_id=None,
+        tests=None,
+        threat_id=None,
     ):
         """Create a threat"""
         body = dict(name=name, published=published)
-        if threat_id:
-            body["id"] = threat_id
-        if source_id:
-            body["source_id"] = source_id
+        if schedulable is not None:
+            body["schedulable"] = schedulable
         if source:
             body["source"] = source
+        if source_id:
+            body["source_id"] = source_id
         if tests:
             body["tests"] = tests
+        if threat_id:
+            body["id"] = threat_id
 
         res = self.post(f"{self.account.hq}/build/threats", json=body)
         return res.json()
@@ -122,21 +136,24 @@ class BuildController(HttpController):
         self,
         threat_id,
         name=None,
-        source_id=None,
-        source=None,
         published=None,
+        schedulable=None,
+        source=None,
+        source_id=None,
         tests=None,
     ):
         """Update a threat"""
         body = dict()
         if name:
             body["name"] = name
-        if source_id is not None:
-            body["source_id"] = source_id
-        if source is not None:
-            body["source"] = source
         if published is not None:
             body["published"] = published
+        if schedulable is not None:
+            body["schedulable"] = schedulable
+        if source is not None:
+            body["source"] = source
+        if source_id is not None:
+            body["source_id"] = source_id
         if tests is not None:
             body["tests"] = tests
 
