@@ -190,6 +190,7 @@ class Control(Enum, metaclass=MissingItem):
     CISCO_MERAKI_IDENTITY = 30
     CROWDSTRIKE_VULN = 31
     DEFENDER_VULN = 32
+    NETSKOPE = 33
 
     @classmethod
     def _missing_(cls, value):
@@ -302,6 +303,8 @@ class Control(Enum, metaclass=MissingItem):
                 return "CrowdStrike Vulnerability Management"
             case Control.DEFENDER_VULN:
                 return "Microsoft Defender Vulnerability Management"
+            case Control.NETSKOPE:
+                return "Netskope"
             case _:
                 return "Unknown Control"
 
@@ -320,6 +323,7 @@ class ControlCategory(Enum, metaclass=MissingItem):
     SIEM = 9
     PRIVATE_REPO = 10
     HARDWARE = 11
+    SASE = 12
 
     @classmethod
     def _missing_(cls, value):
@@ -343,13 +347,8 @@ class ControlCategory(Enum, metaclass=MissingItem):
                 Control.SERVICENOW,
                 Control.TENABLE_DISCOVERY,
             ],
-            ControlCategory.EMAIL: [
-                Control.GMAIL,
-                Control.M365,
-            ],
-            ControlCategory.HARDWARE: [
-                Control.INTEL_INTUNE,
-            ],
+            ControlCategory.EMAIL: [Control.GMAIL, Control.M365],
+            ControlCategory.HARDWARE: [Control.INTEL_INTUNE],
             ControlCategory.IDENTITY: [
                 Control.CISCO_MERAKI_IDENTITY,
                 Control.ENTRA,
@@ -357,14 +356,9 @@ class ControlCategory(Enum, metaclass=MissingItem):
                 Control.OKTA,
             ],
             ControlCategory.NETWORK: [Control.CISCO_MERAKI],
-            ControlCategory.PRIVATE_REPO: [
-                Control.GITHUB,
-            ],
-            ControlCategory.SIEM: [
-                Control.S3,
-                Control.SPLUNK,
-                Control.VECTR,
-            ],
+            ControlCategory.PRIVATE_REPO: [Control.GITHUB],
+            ControlCategory.SASE: [Control.NETSKOPE],
+            ControlCategory.SIEM: [Control.S3, Control.SPLUNK, Control.VECTR],
             ControlCategory.VULN_MANAGER: [
                 Control.CROWDSTRIKE_VULN,
                 Control.DEFENDER_VULN,
@@ -404,6 +398,8 @@ class ControlCategory(Enum, metaclass=MissingItem):
                 return "Private Repository"
             case ControlCategory.HARDWARE:
                 return "Client Hardware Security"
+            case ControlCategory.SASE:
+                return "Secure Access Service Edge"
             case _:
                 return "Unknown Control Category"
 
@@ -435,6 +431,7 @@ class SCMCategory(Enum, metaclass=MissingItem):
                 Control.INTEL_INTUNE,
                 Control.INTUNE,
                 Control.JAMF,
+                Control.NETSKOPE,
                 Control.QUALYS,
                 Control.QUALYS_DISCOVERY,
                 Control.RAPID7,
@@ -466,6 +463,7 @@ class SCMCategory(Enum, metaclass=MissingItem):
                 ControlCategory.ASSET_MANAGER,
                 ControlCategory.DISCOVERED_DEVICES,
                 ControlCategory.HARDWARE,
+                ControlCategory.SASE,
                 ControlCategory.VULN_MANAGER,
                 ControlCategory.XDR,
             ],
@@ -524,6 +522,8 @@ class PartnerEvents(Enum, metaclass=MissingItem):
     NO_DEVICE_COMPLIANCE_POLICY = 22
     NONCOMPLIANT = 23
     NO_ASR_POLICY = 24
+    MISSING_SASE = 25
+    OUT_OF_DATE_SASE_AGENT = 26
 
     @classmethod
     def _missing_(cls, value):
@@ -541,6 +541,7 @@ class PartnerEvents(Enum, metaclass=MissingItem):
             PartnerEvents.MISSING_ASSET_MANAGER: [ControlCategory.ASSET_MANAGER],
             PartnerEvents.MISSING_EDR: [ControlCategory.XDR],
             PartnerEvents.MISSING_MFA: [ControlCategory.IDENTITY],
+            PartnerEvents.MISSING_SASE: [ControlCategory.SASE],
             PartnerEvents.MISSING_SERVER_MANAGER: [ControlCategory.ASSET_MANAGER],
             PartnerEvents.MISSING_VULN_MANAGER: [ControlCategory.VULN_MANAGER],
             PartnerEvents.MISSING_VULN_SCAN: [ControlCategory.VULN_MANAGER],
@@ -563,6 +564,7 @@ class PartnerEvents(Enum, metaclass=MissingItem):
             PartnerEvents.NO_REGISTERED_DEVICES: [ControlCategory.IDENTITY],
             PartnerEvents.NONCOMPLIANT: [ControlCategory.ASSET_MANAGER],
             PartnerEvents.OUT_OF_DATE_FIRMWARE: [ControlCategory.NETWORK],
+            PartnerEvents.OUT_OF_DATE_SASE_AGENT: [ControlCategory.SASE],
             PartnerEvents.OUT_OF_DATE_SCAN: [ControlCategory.VULN_MANAGER],
             PartnerEvents.REDUCED_FUNCTIONALITY_MODE: [ControlCategory.XDR],
             PartnerEvents.USER_MISSING_ASSET_MANAGER: [ControlCategory.IDENTITY],
@@ -596,6 +598,8 @@ class AlertTypes(Enum, metaclass=MissingItem):
     NEW_NO_DEVICE_COMPLIANCE_POLICY_ENDPOINTS = 23
     NEW_NONCOMPLIANT_ENDPOINTS = 24
     NEW_NO_ASR_POLICY_ENDPOINTS = 25
+    NEW_MISSING_SASE_ENDPOINTS = 26
+    NEW_OUT_OF_DATE_SASE_AGENT_ENDPOINTS = 27
 
     @classmethod
     def _missing_(cls, value):
@@ -624,6 +628,7 @@ class PolicyType(Enum, metaclass=MissingItem):
     INTEL_CHIP = 19
     DISK_ENCRYPTION = 20
     ASR = 21
+    SASE_CLIENT = 22
 
     @classmethod
     def _missing_(cls, value):
