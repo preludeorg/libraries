@@ -523,7 +523,7 @@ class PartnerEvents(Enum, metaclass=MissingItem):
     NONCOMPLIANT = 23
     NO_ASR_POLICY = 24
     MISSING_SASE = 25
-    OUT_OF_DATE_SASE_AGENT = 26
+    OUT_OF_DATE_VERSION = 26
 
     @classmethod
     def _missing_(cls, value):
@@ -564,7 +564,7 @@ class PartnerEvents(Enum, metaclass=MissingItem):
             PartnerEvents.NO_REGISTERED_DEVICES: [ControlCategory.IDENTITY],
             PartnerEvents.NONCOMPLIANT: [ControlCategory.ASSET_MANAGER],
             PartnerEvents.OUT_OF_DATE_FIRMWARE: [ControlCategory.NETWORK],
-            PartnerEvents.OUT_OF_DATE_SASE_AGENT: [ControlCategory.SASE],
+            PartnerEvents.OUT_OF_DATE_VERSION: [ControlCategory.SASE],
             PartnerEvents.OUT_OF_DATE_SCAN: [ControlCategory.VULN_MANAGER],
             PartnerEvents.REDUCED_FUNCTIONALITY_MODE: [ControlCategory.XDR],
             PartnerEvents.USER_MISSING_ASSET_MANAGER: [ControlCategory.IDENTITY],
@@ -599,7 +599,7 @@ class AlertTypes(Enum, metaclass=MissingItem):
     NEW_NONCOMPLIANT_ENDPOINTS = 24
     NEW_NO_ASR_POLICY_ENDPOINTS = 25
     NEW_MISSING_SASE_ENDPOINTS = 26
-    NEW_OUT_OF_DATE_SASE_AGENT_ENDPOINTS = 27
+    NEW_OUT_OF_DATE_VERSION_ENDPOINTS = 27
 
     @classmethod
     def _missing_(cls, value):
