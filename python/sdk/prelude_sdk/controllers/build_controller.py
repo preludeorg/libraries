@@ -75,8 +75,8 @@ class BuildController(HttpController):
     @verify_credentials
     def upload(self, test_id, filename, data, skip_compile=False):
         """Upload a test or attachment"""
-        if len(data) > 1000000:
-            raise ValueError(f"File size must be under 1MB ({filename})")
+        if len(data) > 3145728:
+            raise ValueError(f"File size must be under 3MB ({filename})")
 
         h = self.account.headers | {"Content-Type": "application/octet-stream"}
         query_params = ""
