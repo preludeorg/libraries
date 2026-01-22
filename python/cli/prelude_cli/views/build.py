@@ -322,14 +322,13 @@ def create_threat(
             )
         except FileNotFoundError as e:
             raise Exception(e)
-        finally:
-            return dict(
-                threat=threat,
-                created_tests=created_tests,
-                test_uploads=test_uploads,
-                created_detections=created_detections,
-                created_threat_hunt_queries=created_queries,
-            )
+    return dict(
+        created_detections=created_detections,
+        created_tests=created_tests,
+        created_threat_hunt_queries=created_queries,
+        test_uploads=test_uploads,
+        threat=threat,
+    )
 
 
 @build.command("update-threat")
