@@ -191,6 +191,7 @@ class Control(Enum, metaclass=MissingItem):
     CROWDSTRIKE_VULN = 31
     DEFENDER_VULN = 32
     NETSKOPE = 33
+    CUSTOM = 34
 
     @classmethod
     def _missing_(cls, value):
