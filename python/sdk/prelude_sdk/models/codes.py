@@ -330,6 +330,13 @@ class ControlCategory(Enum, metaclass=MissingItem):
     def _missing_(cls, value):
         return ControlCategory.INVALID
 
+    @property
+    def scm_category(self):
+        for k, v in SCMCategory.category_mapping().items():
+            if self in v:
+                return k
+        return SCMCategory.NONE
+
     @classmethod
     def mapping(cls):
         return {
