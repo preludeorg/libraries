@@ -1,3 +1,7 @@
+import hashlib
+import json
+import os
+
 from prelude_sdk.controllers.http_controller import HttpController
 from prelude_sdk.models.account import verify_credentials
 from prelude_sdk.models.codes import Control, Mode, Permission
@@ -141,10 +145,18 @@ class IAMAccountController(HttpController):
 
     def sign_up(self, company, email, name):
         """(NOT AVAIABLE IN PRODUCTION) Create a new user and account"""
+        SDKTOKEN = os.getenv("SDKTOKEN", "testing")
+
         body = dict(company=company, email=email, name=name)
+        sig = hashlib.sha256(
+            f"{SDKTOKEN}{json.dumps(body)}".encode("utf-8")
+        ).hexdigest()
 
         res = self._session.post(
-            f"{self.account.hq}/iam/new_user_and_account", json=body, timeout=20
+            f"{self.account.hq}/iam/new_user_and_account",
+            headers={"x-sdk-sig": sig},
+            json=body,
+            timeout=20,
         )
         data = res.json()
         if self.account.profile:
