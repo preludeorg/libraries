@@ -145,19 +145,23 @@ class IAMAccountController(HttpController):
 
     def sign_up(self, company, email, name):
         """(NOT AVAIABLE IN PRODUCTION) Create a new user and account"""
-        SDKTOKEN = os.getenv("SDKTOKEN", "testing")
-
         body = dict(company=company, email=email, name=name)
-        sig = hashlib.sha256(
-            f"{SDKTOKEN}{json.dumps(body)}".encode("utf-8")
-        ).hexdigest()
+        headers = dict(_product="py-sdk")
+        if token := os.getenv("SDKTOKEN"):
+            sig = hashlib.sha256(
+                f"{token}{json.dumps(body)}".encode("utf-8")
+            ).hexdigest()
+            headers["x-sdk-sig"] = sig
 
         res = self._session.post(
             f"{self.account.hq}/iam/new_user_and_account",
-            headers={"x-sdk-sig": sig},
+            headers=headers,
             json=body,
             timeout=20,
         )
+        if not res.ok:
+            raise Exception(res.text)
+
         data = res.json()
         if self.account.profile:
             self.account.keychain.configure_keychain(

@@ -1,3 +1,4 @@
+import os
 import pytest
 import uuid
 
@@ -56,6 +57,11 @@ def pytest_addoption(parser):
     parser.addoption(
         "--manual", action="store_true", default=False, help="Enable manual tests"
     )
+    parser.addoption(
+        "--sdk_token",
+        action="store",
+        help="SDK token to validate test account creation",
+    )
 
 
 @pytest.fixture(scope="session")
@@ -66,6 +72,11 @@ def api(pytestconfig):
 @pytest.fixture(scope="session")
 def email(pytestconfig):
     return pytestconfig.getoption("email")
+
+
+@pytest.fixture(scope="session")
+def sdk_token(pytestconfig):
+    return pytestconfig.getoption("sdk_token") or "testing"
 
 
 class Keychain:
@@ -91,7 +102,7 @@ def existing_account(pytestconfig):
 
 
 @pytest.fixture(scope="session")
-def setup_account(unwrap, email, api, existing_account):
+def setup_account(unwrap, email, api, existing_account, sdk_token):
     if hasattr(pytest, "expected_account"):
         return
 
@@ -104,6 +115,7 @@ def setup_account(unwrap, email, api, existing_account):
         pytest.account.headers["authorization"] = f"Bearer {pytest.account.token}"
         print(f"[account_id: {existing_account['account_id']}]", end=" ")
     else:
+        os.environ["SDKTOKEN"] = sdk_token
         res = iam.sign_up(company="pysdk-tests", email=email, name="Bob")
         password = "PySdkTests123!"
         pytest.account.headers["account"] = res["account_id"]
