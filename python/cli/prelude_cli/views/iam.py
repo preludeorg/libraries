@@ -222,7 +222,7 @@ def logs(controller, days, limit):
 @click.pass_obj
 @pretty_print
 def sign_up(controller, email, company, name):
-    """(NOT AVAIABLE IN PRODUCTION) Create a new user and account"""
+    """(NOT AVAILABLE IN PRODUCTION) Create a new user and account"""
     with Spinner(description="Creating new user and account"):
         return controller.sign_up(company=company, email=email, name=name)
 

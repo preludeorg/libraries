@@ -8,5 +8,8 @@ class ProbeController(HttpController):
 
     def download(self, name: str, dos: str):
         """Download a probe executable"""
-        res = self.get(f"{self.account.hq}/download/{name}", headers=dict(dos=dos))
+        res = self.get(
+            f"{self.account.hq}/download/{name}",
+            headers=dict(dos=dos, _product="py-sdk"),
+        )
         return res.text
