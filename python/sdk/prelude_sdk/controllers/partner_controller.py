@@ -160,7 +160,7 @@ class PartnerController(HttpController):
             body["secret"] = secret
         extra = f"/{instance_id}" if instance_id else ""
 
-        res = self.post(f"{self.account.hq}/partner/custom{extra}", json=body)
+        res = self.post(f"{self.account.hq}/partner-custom{extra}", json=body)
         return res.json()
 
     @verify_credentials
@@ -170,5 +170,5 @@ class PartnerController(HttpController):
         if secret:
             body["secret"] = secret
 
-        res = self.post(f"{self.account.hq}/partner/custom/data", json=body)
+        res = self.post(f"{self.account.hq}/partner-custom/data", json=body)
         return res.json()
