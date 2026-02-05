@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 
 from prelude_sdk.controllers.http_controller import HttpController
 from prelude_sdk.models.account import verify_credentials
-from prelude_sdk.models.codes import Control
+from prelude_sdk.models.codes import Control, ControlCategory
 
 
 class PartnerController(HttpController):
@@ -134,4 +134,41 @@ class PartnerController(HttpController):
         res = self.get(
             f"{self.account.hq}/partner/groups/{partner.name}/{instance_id}", timeout=30
         )
+        return res.json()
+
+    @verify_credentials
+    def attach_custom(
+        self,
+        config: dict,
+        control_category: ControlCategory,
+        control_name: str,
+        secret: str,
+        name: str | None = None,
+        instance_id: str | None = None,
+    ):
+        """Attach a custom partner to your account"""
+        body = dict()
+        if config:
+            body["config"] = config
+        if control_category:
+            body["control_category"] = control_category.value
+        if control_name:
+            body["control_name"] = control_name
+        if name:
+            body["name"] = name
+        if secret:
+            body["secret"] = secret
+        extra = f"/{instance_id}" if instance_id else ""
+
+        res = self.post(f"{self.account.hq}/partner/custom{extra}", json=body)
+        return res.json()
+
+    @verify_credentials
+    def get_custom_partner_data(self, request_config: dict, secret: str):
+        """Get data from a custom partner"""
+        body = dict(request_config=request_config)
+        if secret:
+            body["secret"] = secret
+
+        res = self.post(f"{self.account.hq}/partner/custom/data", json=body)
         return res.json()
