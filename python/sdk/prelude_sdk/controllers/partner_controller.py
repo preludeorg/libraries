@@ -170,5 +170,5 @@ class PartnerController(HttpController):
         if secret:
             body["secret"] = secret
 
-        res = self.post(f"{self.account.hq}/partner-custom/data", json=body)
+        res = self.post(f"{self.account.hq}/partner-custom/data", json=body, timeout=30)
         return res.json()
