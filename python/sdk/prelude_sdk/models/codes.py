@@ -191,6 +191,7 @@ class Control(Enum, metaclass=MissingItem):
     CROWDSTRIKE_VULN = 31
     DEFENDER_VULN = 32
     NETSKOPE = 33
+    CUSTOM = 34
 
     @classmethod
     def _missing_(cls, value):
@@ -328,6 +329,13 @@ class ControlCategory(Enum, metaclass=MissingItem):
     @classmethod
     def _missing_(cls, value):
         return ControlCategory.INVALID
+
+    @property
+    def scm_category(self):
+        for k, v in SCMCategory.category_mapping().items():
+            if self in v:
+                return k
+        return SCMCategory.NONE
 
     @classmethod
     def mapping(cls):
