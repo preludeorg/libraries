@@ -164,11 +164,15 @@ class PartnerController(HttpController):
         return res.json()
 
     @verify_credentials
-    def get_custom_partner_data(self, request_config: dict, secret: str):
+    def get_custom_partner_data(
+        self, request_config: dict, secret: str, save_data_as: str | None = None
+    ):
         """Get data from a custom partner"""
         body = dict(request_config=request_config)
         if secret:
             body["secret"] = secret
+        if save_data_as:
+            body["save_data_as"] = save_data_as
 
         res = self.post(f"{self.account.hq}/partner-custom/data", json=body, timeout=30)
         return res.json()
