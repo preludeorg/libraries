@@ -34,15 +34,19 @@ def scm(ctx):
 )
 @click.option("--odata_filter", help="OData filter string")
 @click.option("--odata_orderby", help="OData orderby string")
+@click.option("--odata_expand", help="OData expand string")
 @click.pass_obj
 @pretty_print
-def endpoints(controller, limit, offset, odata_select, odata_filter, odata_orderby):
+def endpoints(
+    controller, limit, offset, odata_select, odata_filter, odata_orderby, odata_expand
+):
     """List endpoints with SCM data"""
     with Spinner(description="Fetching endpoints from partner"):
         return controller.endpoints(
             select=odata_select,
             filter=odata_filter,
             orderby=odata_orderby,
+            expand=odata_expand,
             top=limit,
             skip=offset,
         )
@@ -58,15 +62,19 @@ def endpoints(controller, limit, offset, odata_select, odata_filter, odata_order
 )
 @click.option("--odata_filter", help="OData filter string")
 @click.option("--odata_orderby", help="OData orderby string")
+@click.option("--odata_expand", help="OData expand string")
 @click.pass_obj
 @pretty_print
-def inboxes(controller, limit, offset, odata_select, odata_filter, odata_orderby):
+def inboxes(
+    controller, limit, offset, odata_select, odata_filter, odata_orderby, odata_expand
+):
     """List inboxes with SCM data"""
     with Spinner(description="Fetching inboxes from partner"):
         return controller.inboxes(
             select=odata_select,
             filter=odata_filter,
             orderby=odata_orderby,
+            expand=odata_expand,
             top=limit,
             skip=offset,
         )
@@ -82,10 +90,11 @@ def inboxes(controller, limit, offset, odata_select, odata_filter, odata_orderby
 )
 @click.option("--odata_filter", help="OData filter string")
 @click.option("--odata_orderby", help="OData orderby string")
+@click.option("--odata_expand", help="OData expand string")
 @click.pass_obj
 @pretty_print
 def network_devices(
-    controller, limit, offset, odata_select, odata_filter, odata_orderby
+    controller, limit, offset, odata_select, odata_filter, odata_orderby, odata_expand
 ):
     """List network devices with SCM data"""
     with Spinner(description="Fetching network devices from partner"):
@@ -93,6 +102,7 @@ def network_devices(
             select=odata_select,
             filter=odata_filter,
             orderby=odata_orderby,
+            expand=odata_expand,
             top=limit,
             skip=offset,
         )
@@ -108,15 +118,19 @@ def network_devices(
 )
 @click.option("--odata_filter", help="OData filter string")
 @click.option("--odata_orderby", help="OData orderby string")
+@click.option("--odata_expand", help="OData expand string")
 @click.pass_obj
 @pretty_print
-def users(controller, limit, offset, odata_select, odata_filter, odata_orderby):
+def users(
+    controller, limit, offset, odata_select, odata_filter, odata_orderby, odata_expand
+):
     """List users with SCM data"""
     with Spinner(description="Fetching users from partner"):
         return controller.users(
             select=odata_select,
             filter=odata_filter,
             orderby=odata_orderby,
+            expand=odata_expand,
             top=limit,
             skip=offset,
         )
