@@ -23,6 +23,7 @@ class ScmController(HttpController):
         select: str = None,
         filter: str = None,
         orderby: str = None,
+        expand: str = None,
         top: int = None,
         skip: int = None,
     ):
@@ -31,6 +32,7 @@ class ScmController(HttpController):
             "$select": select,
             "$filter": filter,
             "$orderby": orderby,
+            "$expand": expand,
             "$top": top,
             "$skip": skip,
         }
@@ -55,6 +57,7 @@ class ScmController(HttpController):
         select: str = None,
         filter: str = None,
         orderby: str = None,
+        expand: str = None,
         top: int = None,
         skip: int = None,
     ):
@@ -63,6 +66,7 @@ class ScmController(HttpController):
             "$select": select,
             "$filter": filter,
             "$orderby": orderby,
+            "$expand": expand,
             "$top": top,
             "$skip": skip,
         }
@@ -87,6 +91,7 @@ class ScmController(HttpController):
         select: str = None,
         filter: str = None,
         orderby: str = None,
+        expand: str = None,
         top: int = None,
         skip: int = None,
     ):
@@ -95,6 +100,7 @@ class ScmController(HttpController):
             "$select": select,
             "$filter": filter,
             "$orderby": orderby,
+            "$expand": expand,
             "$top": top,
             "$skip": skip,
         }
@@ -121,6 +127,7 @@ class ScmController(HttpController):
         select: str = None,
         filter: str = None,
         orderby: str = None,
+        expand: str = None,
         top: int = None,
         skip: int = None,
     ):
@@ -129,6 +136,7 @@ class ScmController(HttpController):
             "$select": select,
             "$filter": filter,
             "$orderby": orderby,
+            "$expand": expand,
             "$top": top,
             "$skip": skip,
         }
