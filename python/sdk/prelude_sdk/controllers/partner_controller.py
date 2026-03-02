@@ -164,6 +164,12 @@ class PartnerController(HttpController):
         return res.json()
 
     @verify_credentials
+    def get_custom_partner(self, instance_id: str):
+        """Get a custom partner from your account"""
+        res = self.get(f"{self.account.hq}/partner-custom/{instance_id}")
+        return res.json()
+
+    @verify_credentials
     def get_custom_partner_data(
         self, request_config: dict, secret: str, save_data_as: str | None = None
     ):
