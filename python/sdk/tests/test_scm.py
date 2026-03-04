@@ -32,10 +32,10 @@ class TestScmAcrossControls:
     def test_create_notification(self, unwrap):
         unwrap(self.scm.upsert_notification)(
             self.scm,
-            ControlCategory.XDR,
-            PartnerEvents.MISSING_EDR,
-            RunCode.DAILY,
-            0,
+            control_category=ControlCategory.XDR,
+            event=PartnerEvents.MISSING_EDR,
+            run_code=RunCode.DAILY,
+            scheduled_hour=0,
             emails=["test@email.com"],
             id=self.notification_id,
         )
@@ -44,14 +44,21 @@ class TestScmAcrossControls:
             if notification["id"] == self.notification_id:
                 assert notification["scheduled_hour"] == 0
                 assert notification["event"] == PartnerEvents.MISSING_EDR.value
+                assert notification["notification_type"] == "summary"
+
+    def test_list_notifications_filter(self, unwrap):
+        summary = unwrap(self.scm.list_notifications)(self.scm, notification_type="summary")
+        assert any(n["id"] == self.notification_id for n in summary)
+        report = unwrap(self.scm.list_notifications)(self.scm, notification_type="report")
+        assert all(n["id"] != self.notification_id for n in report)
 
     def test_update_notification(self, unwrap):
         unwrap(self.scm.upsert_notification)(
             self.scm,
-            ControlCategory.XDR,
-            PartnerEvents.REDUCED_FUNCTIONALITY_MODE,
-            RunCode.DAILY,
-            1,
+            control_category=ControlCategory.XDR,
+            event=PartnerEvents.REDUCED_FUNCTIONALITY_MODE,
+            run_code=RunCode.DAILY,
+            scheduled_hour=1,
             emails=["test@email.com"],
             id=self.notification_id,
         )
@@ -63,6 +70,7 @@ class TestScmAcrossControls:
                     notification["event"]
                     == PartnerEvents.REDUCED_FUNCTIONALITY_MODE.value
                 )
+                assert notification["notification_type"] == "summary"
 
     def test_delete_notification(self, unwrap):
         unwrap(self.scm.delete_notification)(self.scm, self.notification_id)
