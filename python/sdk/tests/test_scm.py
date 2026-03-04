@@ -47,12 +47,6 @@ class TestScmAcrossControls:
                 assert notification["event"] == PartnerEvents.MISSING_EDR.value
                 assert notification["notification_type"] == "summary"
 
-    def test_list_notifications_filter(self, unwrap):
-        summary = unwrap(self.scm.list_notifications)(self.scm, notification_type="summary")
-        assert any(n["id"] == self.notification_id for n in summary)
-        report = unwrap(self.scm.list_notifications)(self.scm, notification_type="report")
-        assert all(n["id"] != self.notification_id for n in report)
-
     def test_update_notification(self, unwrap):
         unwrap(self.scm.upsert_notification)(
             self.scm,

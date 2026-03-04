@@ -602,17 +602,11 @@ scm.add_command(notification)
 
 
 @notification.command("list")
-@click.option(
-    "-n",
-    "--notification_type",
-    help="filter by notification type",
-    type=click.Choice(["summary", "report"], case_sensitive=False),
-)
 @click.pass_obj
 @pretty_print
-def list_notifications(controller, notification_type):
+def list_notifications(controller):
     with Spinner("Fetching notifications"):
-        return controller.list_notifications(notification_type=notification_type)
+        return controller.list_notifications()
 
 
 @notification.command("delete")
@@ -654,7 +648,7 @@ def delete_notification(controller, notification_id):
     "--notification_type",
     help="notification type",
     required=True,
-    type=click.Choice(["summary", "report"], case_sensitive=False),
+    type=click.Choice(["summary", "report"], case_sensitive=True),
 )
 @click.option(
     "--report_id",
@@ -670,7 +664,8 @@ def delete_notification(controller, notification_id):
 @click.option(
     "-s",
     "--scheduled_hour",
-    help="scheduled UTC hour to receive notifications",
+    help="scheduled UTC hour to receive notifications (0-23)",
+    required=True,
     type=int,
 )
 @click.option(

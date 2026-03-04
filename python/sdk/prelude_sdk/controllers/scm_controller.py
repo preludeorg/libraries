@@ -412,9 +412,8 @@ class ScmController(HttpController):
         return res.json()
 
     @verify_credentials
-    def list_notifications(self, notification_type: str = None):
-        params = {"notification_type": notification_type}
-        res = self.get(f"{self.account.hq}/scm/notifications", params=params)
+    def list_notifications(self):
+        res = self.get(f"{self.account.hq}/scm/notifications")
         notifications = res.json()
         if self.account.resolve_enums:
             self.resolve_enums(
@@ -435,38 +434,35 @@ class ScmController(HttpController):
     @verify_credentials
     def upsert_notification(
         self,
+        notification_type: str,
+        run_code: RunCode,
+        scheduled_hour: int,
         control_category: ControlCategory = None,
         event: PartnerEvents = None,
-        run_code: RunCode = None,
-        scheduled_hour: int = None,
         days_in_event: int = 0,
         emails: list[str] = None,
         filter: str = None,
         id: str = None,
         message: str = "",
-        notification_type: str,
         report_id: str = None,
         slack_urls: list[str] = None,
         suppress_empty: bool = True,
         teams_urls: list[str] = None,
         title: str = "SCM Notification",
     ):
-        body = dict(notification_type=notification_type)
-        if run_code:
-            body["run_code"] = run_code.name
+        body = dict(
+            notification_type=notification_type,
+            run_code=run_code.name,
+            scheduled_hour=scheduled_hour,
+        )
         if id:
             body["id"] = id
-        if scheduled_hour is not None:
-            body["scheduled_hour"] = scheduled_hour
 
-        if notification_type == "report":
-            if report_id:
-                body["report_id"] = report_id
-        else:
-            if control_category:
-                body["control_category"] = control_category.name
-            if event:
-                body["event"] = event.name
+        body["report_id"] = report_id
+
+        if notification_type == "summary":
+            body["control_category"] = control_category.name if control_category else None
+            body["event"] = event.name if event else None
             body["days_in_event"] = days_in_event
             body["suppress_empty"] = suppress_empty
             if filter:
