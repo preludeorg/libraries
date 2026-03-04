@@ -30,7 +30,7 @@ class TestScmAcrossControls:
         self.notification_id = str(uuid.uuid4())
 
     def test_create_notification(self, unwrap):
-        unwrap(self.scm.upsert_notification)(
+        res = unwrap(self.scm.create_notification)(
             self.scm,
             control_category=ControlCategory.XDR,
             event=PartnerEvents.MISSING_EDR,
@@ -38,8 +38,8 @@ class TestScmAcrossControls:
             run_code=RunCode.DAILY,
             scheduled_hour=0,
             emails=["test@email.com"],
-            id=self.notification_id,
         )
+        self.notification_id = res["id"]
         notifications = unwrap(self.scm.list_notifications)(self.scm)
         for notification in notifications:
             if notification["id"] == self.notification_id:
@@ -48,15 +48,14 @@ class TestScmAcrossControls:
                 assert notification["notification_type"] == "summary"
 
     def test_update_notification(self, unwrap):
-        unwrap(self.scm.upsert_notification)(
+        unwrap(self.scm.update_notification)(
             self.scm,
+            notification_id=self.notification_id,
             control_category=ControlCategory.XDR,
             event=PartnerEvents.REDUCED_FUNCTIONALITY_MODE,
-            notification_type="summary",
             run_code=RunCode.DAILY,
             scheduled_hour=1,
             emails=["test@email.com"],
-            id=self.notification_id,
         )
         notifications = unwrap(self.scm.list_notifications)(self.scm)
         for notification in notifications:

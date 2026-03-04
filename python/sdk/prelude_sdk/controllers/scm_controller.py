@@ -432,7 +432,7 @@ class ScmController(HttpController):
         return res.json()
 
     @verify_credentials
-    def upsert_notification(
+    def create_notification(
         self,
         notification_type: str,
         run_code: RunCode,
@@ -442,7 +442,6 @@ class ScmController(HttpController):
         days_in_event: int = 0,
         emails: list[str] = None,
         filter: str = None,
-        id: str = None,
         message: str = "",
         report_id: str = None,
         slack_urls: list[str] = None,
@@ -455,9 +454,6 @@ class ScmController(HttpController):
             run_code=run_code.name,
             scheduled_hour=scheduled_hour,
         )
-        if id:
-            body["id"] = id
-
         body["report_id"] = report_id
 
         if notification_type == "summary":
@@ -475,7 +471,47 @@ class ScmController(HttpController):
         if teams_urls:
             body["teams"] = dict(hook_urls=teams_urls, message=message)
 
-        res = self.put(f"{self.account.hq}/scm/notifications", json=body)
+        res = self.post(f"{self.account.hq}/scm/notifications", json=body)
+        return res.json()
+
+    @verify_credentials
+    def update_notification(
+        self,
+        notification_id: str,
+        run_code: RunCode,
+        scheduled_hour: int,
+        control_category: ControlCategory = None,
+        event: PartnerEvents = None,
+        days_in_event: int = 0,
+        emails: list[str] = None,
+        filter: str = None,
+        message: str = "",
+        report_id: str = None,
+        slack_urls: list[str] = None,
+        suppress_empty: bool = True,
+        teams_urls: list[str] = None,
+        title: str = "SCM Notification",
+    ):
+        body = dict(
+            run_code=run_code.name,
+            scheduled_hour=scheduled_hour,
+        )
+        body["report_id"] = report_id
+        body["control_category"] = control_category.name if control_category else None
+        body["event"] = event.name if event else None
+        body["days_in_event"] = days_in_event
+        body["suppress_empty"] = suppress_empty
+        if filter:
+            body["filter"] = filter
+
+        if emails:
+            body["email"] = dict(emails=emails, message=message, subject=title)
+        if slack_urls:
+            body["slack"] = dict(hook_urls=slack_urls, message=message)
+        if teams_urls:
+            body["teams"] = dict(hook_urls=teams_urls, message=message)
+
+        res = self.post(f"{self.account.hq}/scm/notifications/{notification_id}", json=body)
         return res.json()
 
     @verify_credentials
