@@ -444,7 +444,7 @@ class ScmController(HttpController):
         filter: str = None,
         id: str = None,
         message: str = "",
-        notification_type: str = "summary",
+        notification_type: str,
         report_id: str = None,
         slack_urls: list[str] = None,
         suppress_empty: bool = True,
