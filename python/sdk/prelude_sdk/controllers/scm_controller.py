@@ -493,15 +493,15 @@ class ScmController(HttpController):
         title: str = "SCM Notification",
     ):
         body = dict(
+            control_category=control_category.name if control_category else None,
             days_in_event=days_in_event,
+            event=event.name if event else None,
             report_id=report_id,
             scheduled_hour=scheduled_hour,
             suppress_empty=suppress_empty,
         )
         if run_code:
             body["run_code"] = run_code.name
-        body["control_category"] = control_category.name if control_category else None
-        body["event"] = event.name if event else None
         if filter:
             body["filter"] = filter
 
