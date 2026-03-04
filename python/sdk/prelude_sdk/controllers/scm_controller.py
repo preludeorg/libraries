@@ -478,8 +478,8 @@ class ScmController(HttpController):
     def update_notification(
         self,
         notification_id: str,
-        run_code: RunCode,
         scheduled_hour: int,
+        run_code: RunCode = None,
         control_category: ControlCategory = None,
         event: PartnerEvents = None,
         days_in_event: int = 0,
@@ -495,10 +495,11 @@ class ScmController(HttpController):
         body = dict(
             days_in_event=days_in_event,
             report_id=report_id,
-            run_code=run_code.name,
             scheduled_hour=scheduled_hour,
             suppress_empty=suppress_empty,
         )
+        if run_code:
+            body["run_code"] = run_code.name
         body["control_category"] = control_category.name if control_category else None
         body["event"] = event.name if event else None
         if filter:

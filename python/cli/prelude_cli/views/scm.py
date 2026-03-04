@@ -752,7 +752,6 @@ def create_notification(
     "-r",
     "--run_code",
     help="notification frequency",
-    required=True,
     type=click.Choice([r.name for r in RunCode], case_sensitive=False),
 )
 @click.option(
@@ -806,7 +805,7 @@ def update_notification(
             filter=filter,
             message=message,
             report_id=report_id,
-            run_code=RunCode[run_code],
+            run_code=RunCode[run_code] if run_code else None,
             scheduled_hour=scheduled_hour,
             slack_urls=slack_urls.split(",") if slack_urls else None,
             suppress_empty=suppress_empty,
