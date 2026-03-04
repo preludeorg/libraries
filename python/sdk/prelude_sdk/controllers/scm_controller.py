@@ -451,10 +451,10 @@ class ScmController(HttpController):
     ):
         body = dict(
             notification_type=notification_type,
+            report_id=report_id,
             run_code=run_code.name,
             scheduled_hour=scheduled_hour,
         )
-        body["report_id"] = report_id
 
         if notification_type == "summary":
             body["control_category"] = control_category.name if control_category else None
@@ -493,14 +493,14 @@ class ScmController(HttpController):
         title: str = "SCM Notification",
     ):
         body = dict(
+            days_in_event=days_in_event,
+            report_id=report_id,
             run_code=run_code.name,
             scheduled_hour=scheduled_hour,
+            suppress_empty=suppress_empty,
         )
-        body["report_id"] = report_id
         body["control_category"] = control_category.name if control_category else None
         body["event"] = event.name if event else None
-        body["days_in_event"] = days_in_event
-        body["suppress_empty"] = suppress_empty
         if filter:
             body["filter"] = filter
 

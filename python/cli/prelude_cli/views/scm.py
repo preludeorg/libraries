@@ -647,7 +647,7 @@ def delete_notification(controller, notification_id):
     "--notification_type",
     help="notification type",
     required=True,
-    type=click.Choice(["summary", "report"], case_sensitive=True),
+    type=click.Choice(["summary", "report"]),
 )
 @click.option(
     "--report_id",
