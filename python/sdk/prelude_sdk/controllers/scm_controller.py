@@ -451,14 +451,17 @@ class ScmController(HttpController):
     ):
         body = dict(
             notification_type=notification_type,
-            report_id=report_id,
             run_code=run_code.name,
             scheduled_hour=scheduled_hour,
         )
+        if report_id:
+            body["report_id"] = report_id
 
         if notification_type == "summary":
-            body["control_category"] = control_category.name if control_category else None
-            body["event"] = event.name if event else None
+            if control_category:
+                body["control_category"] = control_category.name
+            if event:
+                body["event"] = event.name
             body["days_in_event"] = days_in_event
             body["suppress_empty"] = suppress_empty
             if filter:
@@ -478,32 +481,37 @@ class ScmController(HttpController):
     def update_notification(
         self,
         notification_id: str,
-        scheduled_hour: int,
-        run_code: RunCode = None,
         control_category: ControlCategory = None,
-        event: PartnerEvents = None,
-        days_in_event: int = 0,
+        days_in_event: int = None,
         emails: list[str] = None,
+        event: PartnerEvents = None,
         filter: str = None,
         message: str = "",
         report_id: str = None,
+        run_code: RunCode = None,
+        scheduled_hour: int = None,
         slack_urls: list[str] = None,
-        suppress_empty: bool = True,
+        suppress_empty: bool = None,
         teams_urls: list[str] = None,
         title: str = "SCM Notification",
     ):
-        body = dict(
-            control_category=control_category.name if control_category else None,
-            days_in_event=days_in_event,
-            event=event.name if event else None,
-            report_id=report_id,
-            scheduled_hour=scheduled_hour,
-            suppress_empty=suppress_empty,
-        )
-        if run_code:
-            body["run_code"] = run_code.name
+        body = dict()
+        if control_category:
+            body["control_category"] = control_category.name
+        if days_in_event is not None:
+            body["days_in_event"] = days_in_event
+        if event:
+            body["event"] = event.name
         if filter:
             body["filter"] = filter
+        if report_id:
+            body["report_id"] = report_id
+        if run_code:
+            body["run_code"] = run_code.name
+        if scheduled_hour is not None:
+            body["scheduled_hour"] = scheduled_hour
+        if suppress_empty is not None:
+            body["suppress_empty"] = suppress_empty
 
         if emails:
             body["email"] = dict(emails=emails, message=message, subject=title)

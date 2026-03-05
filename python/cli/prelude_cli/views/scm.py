@@ -758,7 +758,6 @@ def create_notification(
     "-s",
     "--scheduled_hour",
     help="scheduled UTC hour to receive notifications (0-23)",
-    required=True,
     type=int,
 )
 @click.option(
