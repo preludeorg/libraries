@@ -657,9 +657,11 @@ def delete_notification(controller, notification_id):
         return controller.delete_notification(notification_id)
 
 
-@notification.command("upsert")
-@click.argument(
-    "control_category",
+@notification.command("create")
+@click.option(
+    "-c",
+    "--control_category",
+    help="control category for the notification (required for summary type)",
     type=click.Choice([c.name for c in ControlCategory], case_sensitive=False),
 )
 @click.option(
@@ -673,13 +675,22 @@ def delete_notification(controller, notification_id):
 @click.option(
     "-v",
     "--event",
-    help="event to trigger notification for",
+    help="event to trigger notification for (required for summary type)",
     type=click.Choice([e.name for e in PartnerEvents], case_sensitive=False),
-    required=True,
 )
 @click.option("-f", "--filter", help="OData filter string")
-@click.option("-i", "--id", help="ID of the notification to update")
 @click.option("-m", "--message", default="", help="notification message")
+@click.option(
+    "-n",
+    "--notification_type",
+    help="notification type",
+    required=True,
+    type=click.Choice(["summary", "report"]),
+)
+@click.option(
+    "--report_id",
+    help="report ID (required for report notifications)",
+)
 @click.option(
     "-r",
     "--run_code",
@@ -690,9 +701,9 @@ def delete_notification(controller, notification_id):
 @click.option(
     "-s",
     "--scheduled_hour",
-    help="scheduled UTC hour to receive notifications",
-    type=int,
+    help="scheduled UTC hour to receive notifications (0-23)",
     required=True,
+    type=int,
 )
 @click.option(
     "--slack_urls", help="comma-separated list of Slack Webhook URLs to notify"
@@ -710,15 +721,16 @@ def delete_notification(controller, notification_id):
 @click.option("-t", "--title", default="SCM Notification", help="notification title")
 @click.pass_obj
 @pretty_print
-def upsert_notification(
+def create_notification(
     controller,
     control_category,
     days_in_event,
     emails,
     event,
     filter,
-    id,
     message,
+    notification_type,
+    report_id,
     run_code,
     scheduled_hour,
     slack_urls,
@@ -726,17 +738,111 @@ def upsert_notification(
     teams_urls,
     title,
 ):
-    """Upsert an SCM notification"""
-    with Spinner("Upserting notification"):
-        return controller.upsert_notification(
-            control_category=ControlCategory[control_category],
+    """Create an SCM notification"""
+    with Spinner("Creating notification"):
+        return controller.create_notification(
+            control_category=ControlCategory[control_category] if control_category else None,
             days_in_event=days_in_event,
             emails=emails.split(",") if emails else None,
-            event=PartnerEvents[event],
+            event=PartnerEvents[event] if event else None,
             filter=filter,
-            id=id,
             message=message,
+            notification_type=notification_type,
+            report_id=report_id,
             run_code=RunCode[run_code],
+            scheduled_hour=scheduled_hour,
+            slack_urls=slack_urls.split(",") if slack_urls else None,
+            suppress_empty=suppress_empty,
+            teams_urls=teams_urls.split(",") if teams_urls else None,
+            title=title,
+        )
+
+
+@notification.command("update")
+@click.argument("notification_id")
+@click.option(
+    "-c",
+    "--control_category",
+    help="control category for the notification",
+    type=click.Choice([c.name for c in ControlCategory], case_sensitive=False),
+)
+@click.option(
+    "-d",
+    "--days_in_event",
+    default=0,
+    help="filter for results that have been in the event state for at least this many days",
+    type=int,
+)
+@click.option("-e", "--emails", help="comma-separated list of emails to notify")
+@click.option(
+    "-v",
+    "--event",
+    help="event to trigger notification for",
+    type=click.Choice([e.name for e in PartnerEvents], case_sensitive=False),
+)
+@click.option("-f", "--filter", help="OData filter string")
+@click.option("-m", "--message", default="", help="notification message")
+@click.option(
+    "--report_id",
+    help="report ID",
+)
+@click.option(
+    "-r",
+    "--run_code",
+    help="notification frequency",
+    type=click.Choice([r.name for r in RunCode], case_sensitive=False),
+)
+@click.option(
+    "-s",
+    "--scheduled_hour",
+    help="scheduled UTC hour to receive notifications (0-23)",
+    type=int,
+)
+@click.option(
+    "--slack_urls", help="comma-separated list of Slack Webhook URLs to notify"
+)
+@click.option(
+    "-p",
+    "--suppress_empty",
+    default=True,
+    help="suppress notifications with no results",
+    type=bool,
+)
+@click.option(
+    "--teams_urls", help="comma-separated list of Teams Webhook URLs to notify"
+)
+@click.option("-t", "--title", default="SCM Notification", help="notification title")
+@click.pass_obj
+@pretty_print
+def update_notification(
+    controller,
+    notification_id,
+    control_category,
+    days_in_event,
+    emails,
+    event,
+    filter,
+    message,
+    report_id,
+    run_code,
+    scheduled_hour,
+    slack_urls,
+    suppress_empty,
+    teams_urls,
+    title,
+):
+    """Update an SCM notification"""
+    with Spinner("Updating notification"):
+        return controller.update_notification(
+            notification_id=notification_id,
+            control_category=ControlCategory[control_category] if control_category else None,
+            days_in_event=days_in_event,
+            emails=emails.split(",") if emails else None,
+            event=PartnerEvents[event] if event else None,
+            filter=filter,
+            message=message,
+            report_id=report_id,
+            run_code=RunCode[run_code] if run_code else None,
             scheduled_hour=scheduled_hour,
             slack_urls=slack_urls.split(",") if slack_urls else None,
             suppress_empty=suppress_empty,
