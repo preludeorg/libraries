@@ -192,6 +192,7 @@ class Control(Enum, metaclass=MissingItem):
     DEFENDER_VULN = 32
     NETSKOPE = 33
     CUSTOM = 34
+    ANTHROPIC_ENTERPRISE = 35
 
     @classmethod
     def _missing_(cls, value):
@@ -306,6 +307,8 @@ class Control(Enum, metaclass=MissingItem):
                 return "Microsoft Defender Vulnerability Management"
             case Control.NETSKOPE:
                 return "Netskope"
+            case Control.ANTHROPIC_ENTERPRISE:
+                return "Anthropic Enterprise"
             case _:
                 return "Unknown Control"
 
@@ -325,6 +328,7 @@ class ControlCategory(Enum, metaclass=MissingItem):
     PRIVATE_REPO = 10
     HARDWARE = 11
     SASE = 12
+    AI_PROVIDER = 13
 
     @classmethod
     def _missing_(cls, value):
@@ -379,6 +383,7 @@ class ControlCategory(Enum, metaclass=MissingItem):
                 Control.DEFENDER,
                 Control.SENTINELONE,
             ],
+            ControlCategory.AI_PROVIDER: [Control.ANTHROPIC_ENTERPRISE],
         }
 
     @property
@@ -408,6 +413,8 @@ class ControlCategory(Enum, metaclass=MissingItem):
                 return "Client Hardware Security"
             case ControlCategory.SASE:
                 return "Secure Access Service Edge"
+            case ControlCategory.AI_PROVIDER:
+                return "AI Provider"
             case _:
                 return "Unknown Control Category"
 
@@ -457,6 +464,7 @@ class SCMCategory(Enum, metaclass=MissingItem):
                 Control.CISCO_MERAKI,
             ],
             SCMCategory.USER: [
+                Control.ANTHROPIC_ENTERPRISE,
                 Control.CISCO_MERAKI_IDENTITY,
                 Control.ENTRA,
                 Control.GOOGLE_IDENTITY,
@@ -477,7 +485,7 @@ class SCMCategory(Enum, metaclass=MissingItem):
             ],
             SCMCategory.INBOX: [ControlCategory.EMAIL],
             SCMCategory.NETWORK_DEVICE: [ControlCategory.NETWORK],
-            SCMCategory.USER: [ControlCategory.IDENTITY],
+            SCMCategory.USER: [ControlCategory.IDENTITY, ControlCategory.AI_PROVIDER],
         }
 
 
