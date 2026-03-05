@@ -1,8 +1,9 @@
 import click
+import json
 
 from prelude_cli.views.shared import Spinner, pretty_print
 from prelude_sdk.controllers.partner_controller import PartnerController
-from prelude_sdk.models.codes import Control
+from prelude_sdk.models.codes import Control, ControlCategory, SCMCategory
 
 
 @click.group()
@@ -20,7 +21,7 @@ def partner(ctx):
     ),
 )
 @click.option("--instance_id", help="instance ID of the partner")
-@click.option("--name", help="Friendly name of the partner instance")
+@click.option("--name", help="friendly name of the partner instance")
 @click.option("--api", help="API endpoint of the partner")
 @click.option("--user", help="user identifier")
 @click.option("--secret", help="secret for OAUTH use cases")
@@ -180,4 +181,54 @@ def partner_groups(controller, partner, instance_id):
     with Spinner(description="Fetching groups from partner"):
         return controller.partner_groups(
             partner=Control[partner], instance_id=instance_id
+        )
+
+
+@partner.command("attach-custom")
+@click.option(
+    "--control_category",
+    help="control category the custom partner belongs to",
+    type=click.Choice(
+        [c.name for c in ControlCategory if c.scm_category != SCMCategory.NONE],
+        case_sensitive=False,
+    ),
+)
+@click.option(
+    "--config_data", help="config data in JSON format, cannot be used with config_file"
+)
+@click.option(
+    "--config_file",
+    help="config data JSON file, will ignore config_data if provided",
+    type=click.Path(exists=True, file_okay=True, dir_okay=False, readable=True),
+)
+@click.option("--control_name", help="control name, i.e. CrowdStrike, Tanium, etc.")
+@click.option("--instance_id", help="instance ID of the partner")
+@click.option("--name", help="friendly name of the partner instance")
+@click.option("--secret", help="authentication secret JSON string")
+@click.pass_obj
+@pretty_print
+def attach_custom_partner(
+    controller,
+    control_category,
+    config_data,
+    config_file,
+    control_name,
+    instance_id,
+    name,
+    secret,
+):
+    if not config_data and not config_file:
+        raise ValueError("Either config_data or config_file must be provided")
+
+    with Spinner("Attaching custom partner"):
+        if config_file:
+            with open(config_file, "r") as f:
+                config_data = json.load(f)
+        return controller.attach_custom(
+            config=config_data,
+            control_category=ControlCategory[control_category],
+            control_name=control_name,
+            secret=secret,
+            name=name,
+            instance_id=instance_id,
         )

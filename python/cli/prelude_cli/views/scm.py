@@ -822,8 +822,7 @@ def put_report(controller, report_data, report_file, report_id):
     with Spinner("Updating report"):
         if report_file:
             with open(report_file, "r") as f:
-                report_data = f.read()
-        report_data = json.loads(report_data)
+                report_data = json.load(f)
         return controller.put_report(report_data, report_id)
 
 
