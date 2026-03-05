@@ -18,9 +18,22 @@ class ScmController(HttpController):
         super().__init__(account)
 
     @verify_credentials
-    def endpoints(self, filter: str = None, orderby: str = None, top: int = None):
+    def endpoints(
+        self,
+        select: str = None,
+        filter: str = None,
+        orderby: str = None,
+        top: int = None,
+        skip: int = None,
+    ):
         """List endpoints with SCM analysis"""
-        params = {"$filter": filter, "$orderby": orderby, "$top": top}
+        params = {
+            "$select": select,
+            "$filter": filter,
+            "$orderby": orderby,
+            "$top": top,
+            "$skip": skip,
+        }
 
         res = self.get(f"{self.account.hq}/scm/endpoints", params=params, timeout=30)
         data = res.json()
@@ -37,9 +50,22 @@ class ScmController(HttpController):
         return data
 
     @verify_credentials
-    def inboxes(self, filter: str = None, orderby: str = None, top: int = None):
+    def inboxes(
+        self,
+        select: str = None,
+        filter: str = None,
+        orderby: str = None,
+        top: int = None,
+        skip: int = None,
+    ):
         """List inboxes with SCM analysis"""
-        params = {"$filter": filter, "$orderby": orderby, "$top": top}
+        params = {
+            "$select": select,
+            "$filter": filter,
+            "$orderby": orderby,
+            "$top": top,
+            "$skip": skip,
+        }
 
         res = self.get(f"{self.account.hq}/scm/inboxes", params=params, timeout=30)
         data = res.json()
@@ -56,9 +82,22 @@ class ScmController(HttpController):
         return data
 
     @verify_credentials
-    def network_devices(self, filter: str = None, orderby: str = None, top: int = None):
+    def network_devices(
+        self,
+        select: str = None,
+        filter: str = None,
+        orderby: str = None,
+        top: int = None,
+        skip: int = None,
+    ):
         """List network_devices with SCM analysis"""
-        params = {"$filter": filter, "$orderby": orderby, "$top": top}
+        params = {
+            "$select": select,
+            "$filter": filter,
+            "$orderby": orderby,
+            "$top": top,
+            "$skip": skip,
+        }
 
         res = self.get(
             f"{self.account.hq}/scm/network_devices", params=params, timeout=30
@@ -77,9 +116,22 @@ class ScmController(HttpController):
         return data
 
     @verify_credentials
-    def users(self, filter: str = None, orderby: str = None, top: int = None):
+    def users(
+        self,
+        select: str = None,
+        filter: str = None,
+        orderby: str = None,
+        top: int = None,
+        skip: int = None,
+    ):
         """List users with SCM analysis"""
-        params = {"$filter": filter, "$orderby": orderby, "$top": top}
+        params = {
+            "$select": select,
+            "$filter": filter,
+            "$orderby": orderby,
+            "$top": top,
+            "$skip": skip,
+        }
 
         res = self.get(f"{self.account.hq}/scm/users", params=params, timeout=30)
         data = res.json()
@@ -200,7 +252,12 @@ class ScmController(HttpController):
 
     @verify_credentials
     def create_object_exception(
-        self, category: ControlCategory, filter, comment=None, name=None, expires: str = None
+        self,
+        category: ControlCategory,
+        filter,
+        comment=None,
+        name=None,
+        expires: str = None,
     ):
         """Create an object exception"""
         body = dict(category=category.name, filter=filter)
@@ -253,7 +310,13 @@ class ScmController(HttpController):
 
     @verify_credentials
     def create_policy_exception(
-        self, partner: Control, instance_id: str, policy_id, setting_names, comment=None, expires=None
+        self,
+        partner: Control,
+        instance_id: str,
+        policy_id,
+        setting_names,
+        comment=None,
+        expires=None,
     ):
         """Create policy exceptions"""
         body = dict(

@@ -28,15 +28,23 @@ def scm(ctx):
 @click.option(
     "--limit", default=100, help="maximum number of results to return", type=int
 )
+@click.option("--offset", default=0, help="number of results to skip", type=int)
+@click.option(
+    "--odata_select", help="OData select string to specify which fields to return"
+)
 @click.option("--odata_filter", help="OData filter string")
 @click.option("--odata_orderby", help="OData orderby string")
 @click.pass_obj
 @pretty_print
-def endpoints(controller, limit, odata_filter, odata_orderby):
+def endpoints(controller, limit, offset, odata_select, odata_filter, odata_orderby):
     """List endpoints with SCM data"""
     with Spinner(description="Fetching endpoints from partner"):
         return controller.endpoints(
-            filter=odata_filter, orderby=odata_orderby, top=limit
+            select=odata_select,
+            filter=odata_filter,
+            orderby=odata_orderby,
+            top=limit,
+            skip=offset,
         )
 
 
@@ -44,29 +52,49 @@ def endpoints(controller, limit, odata_filter, odata_orderby):
 @click.option(
     "--limit", default=100, help="maximum number of results to return", type=int
 )
+@click.option("--offset", default=0, help="number of results to skip", type=int)
+@click.option(
+    "--odata_select", help="OData select string to specify which fields to return"
+)
 @click.option("--odata_filter", help="OData filter string")
 @click.option("--odata_orderby", help="OData orderby string")
 @click.pass_obj
 @pretty_print
-def inboxes(controller, limit, odata_filter, odata_orderby):
+def inboxes(controller, limit, offset, odata_select, odata_filter, odata_orderby):
     """List inboxes with SCM data"""
     with Spinner(description="Fetching inboxes from partner"):
-        return controller.inboxes(filter=odata_filter, orderby=odata_orderby, top=limit)
+        return controller.inboxes(
+            select=odata_select,
+            filter=odata_filter,
+            orderby=odata_orderby,
+            top=limit,
+            skip=offset,
+        )
 
 
 @scm.command("network_devices")
 @click.option(
     "--limit", default=100, help="maximum number of results to return", type=int
 )
+@click.option("--offset", default=0, help="number of results to skip", type=int)
+@click.option(
+    "--odata_select", help="OData select string to specify which fields to return"
+)
 @click.option("--odata_filter", help="OData filter string")
 @click.option("--odata_orderby", help="OData orderby string")
 @click.pass_obj
 @pretty_print
-def network_devices(controller, limit, odata_filter, odata_orderby):
+def network_devices(
+    controller, limit, offset, odata_select, odata_filter, odata_orderby
+):
     """List network devices with SCM data"""
     with Spinner(description="Fetching network devices from partner"):
         return controller.network_devices(
-            filter=odata_filter, orderby=odata_orderby, top=limit
+            select=odata_select,
+            filter=odata_filter,
+            orderby=odata_orderby,
+            top=limit,
+            skip=offset,
         )
 
 
@@ -74,14 +102,24 @@ def network_devices(controller, limit, odata_filter, odata_orderby):
 @click.option(
     "--limit", default=100, help="maximum number of results to return", type=int
 )
+@click.option("--offset", default=0, help="number of results to skip", type=int)
+@click.option(
+    "--odata_select", help="OData select string to specify which fields to return"
+)
 @click.option("--odata_filter", help="OData filter string")
 @click.option("--odata_orderby", help="OData orderby string")
 @click.pass_obj
 @pretty_print
-def users(controller, limit, odata_filter, odata_orderby):
+def users(controller, limit, offset, odata_select, odata_filter, odata_orderby):
     """List users with SCM data"""
     with Spinner(description="Fetching users from partner"):
-        return controller.users(filter=odata_filter, orderby=odata_orderby, top=limit)
+        return controller.users(
+            select=odata_select,
+            filter=odata_filter,
+            orderby=odata_orderby,
+            top=limit,
+            skip=offset,
+        )
 
 
 @scm.command("technique-summary")
