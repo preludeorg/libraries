@@ -645,6 +645,7 @@ class PolicyType(Enum, metaclass=MissingItem):
     DISK_ENCRYPTION = 20
     ASR = 21
     SASE_CLIENT = 22
+    AI_PROVIDER = 23
 
     @classmethod
     def _missing_(cls, value):
