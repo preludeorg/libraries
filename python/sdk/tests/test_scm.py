@@ -30,30 +30,32 @@ class TestScmAcrossControls:
         self.notification_id = str(uuid.uuid4())
 
     def test_create_notification(self, unwrap):
-        unwrap(self.scm.upsert_notification)(
+        res = unwrap(self.scm.create_notification)(
             self.scm,
-            ControlCategory.XDR,
-            PartnerEvents.MISSING_EDR,
-            RunCode.DAILY,
-            0,
+            control_category=ControlCategory.XDR,
+            event=PartnerEvents.MISSING_EDR,
+            notification_type="summary",
+            run_code=RunCode.DAILY,
+            scheduled_hour=0,
             emails=["test@email.com"],
-            id=self.notification_id,
         )
+        self.notification_id = res["id"]
         notifications = unwrap(self.scm.list_notifications)(self.scm)
         for notification in notifications:
             if notification["id"] == self.notification_id:
                 assert notification["scheduled_hour"] == 0
                 assert notification["event"] == PartnerEvents.MISSING_EDR.value
+                assert notification["notification_type"] == "summary"
 
     def test_update_notification(self, unwrap):
-        unwrap(self.scm.upsert_notification)(
+        unwrap(self.scm.update_notification)(
             self.scm,
-            ControlCategory.XDR,
-            PartnerEvents.REDUCED_FUNCTIONALITY_MODE,
-            RunCode.DAILY,
-            1,
+            notification_id=self.notification_id,
+            control_category=ControlCategory.XDR,
+            event=PartnerEvents.REDUCED_FUNCTIONALITY_MODE,
+            run_code=RunCode.DAILY,
+            scheduled_hour=1,
             emails=["test@email.com"],
-            id=self.notification_id,
         )
         notifications = unwrap(self.scm.list_notifications)(self.scm)
         for notification in notifications:
@@ -63,6 +65,7 @@ class TestScmAcrossControls:
                     notification["event"]
                     == PartnerEvents.REDUCED_FUNCTIONALITY_MODE.value
                 )
+                assert notification["notification_type"] == "summary"
 
     def test_delete_notification(self, unwrap):
         unwrap(self.scm.delete_notification)(self.scm, self.notification_id)
