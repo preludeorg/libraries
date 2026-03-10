@@ -489,6 +489,7 @@ class BackgroundJobTypes(Enum, metaclass=MissingItem):
     PRELUDE_ENDPOINT_SYNC = 4
     EXPORT_SCM = 5
     PARTNER_GROUPS = 6
+    UPDATE_SCM_SOFTWARE = 7
 
     @classmethod
     def _missing_(cls, value):
