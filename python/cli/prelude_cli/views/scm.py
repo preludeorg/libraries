@@ -29,26 +29,26 @@ def scm(ctx):
     "--limit", default=100, help="maximum number of results to return", type=int
 )
 @click.option("--offset", default=0, help="number of results to skip", type=int)
+@click.option("--odata_expand", help="OData expand string")
+@click.option("--odata_filter", help="OData filter string")
+@click.option("--odata_orderby", help="OData orderby string")
 @click.option(
     "--odata_select", help="OData select string to specify which fields to return"
 )
-@click.option("--odata_filter", help="OData filter string")
-@click.option("--odata_orderby", help="OData orderby string")
-@click.option("--odata_expand", help="OData expand string")
 @click.pass_obj
 @pretty_print
 def endpoints(
-    controller, limit, offset, odata_select, odata_filter, odata_orderby, odata_expand
+    controller, limit, offset, odata_expand, odata_filter, odata_orderby, odata_select
 ):
     """List endpoints with SCM data"""
     with Spinner(description="Fetching endpoints from partner"):
         return controller.endpoints(
-            select=odata_select,
+            expand=odata_expand,
             filter=odata_filter,
             orderby=odata_orderby,
-            expand=odata_expand,
-            top=limit,
+            select=odata_select,
             skip=offset,
+            top=limit,
         )
 
 
@@ -57,26 +57,26 @@ def endpoints(
     "--limit", default=100, help="maximum number of results to return", type=int
 )
 @click.option("--offset", default=0, help="number of results to skip", type=int)
+@click.option("--odata_expand", help="OData expand string")
+@click.option("--odata_filter", help="OData filter string")
+@click.option("--odata_orderby", help="OData orderby string")
 @click.option(
     "--odata_select", help="OData select string to specify which fields to return"
 )
-@click.option("--odata_filter", help="OData filter string")
-@click.option("--odata_orderby", help="OData orderby string")
-@click.option("--odata_expand", help="OData expand string")
 @click.pass_obj
 @pretty_print
 def inboxes(
-    controller, limit, offset, odata_select, odata_filter, odata_orderby, odata_expand
+    controller, limit, offset, odata_expand, odata_filter, odata_orderby, odata_select
 ):
     """List inboxes with SCM data"""
     with Spinner(description="Fetching inboxes from partner"):
         return controller.inboxes(
-            select=odata_select,
+            expand=odata_expand,
             filter=odata_filter,
             orderby=odata_orderby,
-            expand=odata_expand,
-            top=limit,
+            select=odata_select,
             skip=offset,
+            top=limit,
         )
 
 
@@ -85,26 +85,26 @@ def inboxes(
     "--limit", default=100, help="maximum number of results to return", type=int
 )
 @click.option("--offset", default=0, help="number of results to skip", type=int)
+@click.option("--odata_expand", help="OData expand string")
+@click.option("--odata_filter", help="OData filter string")
+@click.option("--odata_orderby", help="OData orderby string")
 @click.option(
     "--odata_select", help="OData select string to specify which fields to return"
 )
-@click.option("--odata_filter", help="OData filter string")
-@click.option("--odata_orderby", help="OData orderby string")
-@click.option("--odata_expand", help="OData expand string")
 @click.pass_obj
 @pretty_print
 def network_devices(
-    controller, limit, offset, odata_select, odata_filter, odata_orderby, odata_expand
+    controller, limit, offset, odata_expand, odata_filter, odata_orderby, odata_select
 ):
     """List network devices with SCM data"""
     with Spinner(description="Fetching network devices from partner"):
         return controller.network_devices(
-            select=odata_select,
+            expand=odata_expand,
             filter=odata_filter,
             orderby=odata_orderby,
-            expand=odata_expand,
-            top=limit,
+            select=odata_select,
             skip=offset,
+            top=limit,
         )
 
 
@@ -113,26 +113,26 @@ def network_devices(
     "--limit", default=100, help="maximum number of results to return", type=int
 )
 @click.option("--offset", default=0, help="number of results to skip", type=int)
+@click.option("--odata_expand", help="OData expand string")
+@click.option("--odata_filter", help="OData filter string")
+@click.option("--odata_orderby", help="OData orderby string")
 @click.option(
     "--odata_select", help="OData select string to specify which fields to return"
 )
-@click.option("--odata_filter", help="OData filter string")
-@click.option("--odata_orderby", help="OData orderby string")
-@click.option("--odata_expand", help="OData expand string")
 @click.pass_obj
 @pretty_print
 def users(
-    controller, limit, offset, odata_select, odata_filter, odata_orderby, odata_expand
+    controller, limit, offset, odata_expand, odata_filter, odata_orderby, odata_select
 ):
     """List users with SCM data"""
     with Spinner(description="Fetching users from partner"):
         return controller.users(
-            select=odata_select,
+            expand=odata_expand,
             filter=odata_filter,
             orderby=odata_orderby,
-            expand=odata_expand,
-            top=limit,
+            select=odata_select,
             skip=offset,
+            top=limit,
         )
 
 
@@ -755,7 +755,9 @@ def create_notification(
     """Create an SCM notification"""
     with Spinner("Creating notification"):
         return controller.create_notification(
-            control_category=ControlCategory[control_category] if control_category else None,
+            control_category=(
+                ControlCategory[control_category] if control_category else None
+            ),
             days_in_event=days_in_event,
             emails=emails.split(",") if emails else None,
             event=PartnerEvents[event] if event else None,
@@ -849,7 +851,9 @@ def update_notification(
     with Spinner("Updating notification"):
         return controller.update_notification(
             notification_id=notification_id,
-            control_category=ControlCategory[control_category] if control_category else None,
+            control_category=(
+                ControlCategory[control_category] if control_category else None
+            ),
             days_in_event=days_in_event,
             emails=emails.split(",") if emails else None,
             event=PartnerEvents[event] if event else None,
