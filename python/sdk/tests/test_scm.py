@@ -1,19 +1,12 @@
 import pytest
 import requests
 import time
-import uuid
 
 from prelude_sdk.controllers.export_controller import ExportController
 from prelude_sdk.controllers.jobs_controller import JobsController
 from prelude_sdk.controllers.partner_controller import PartnerController
 from prelude_sdk.controllers.scm_controller import ScmController
-from prelude_sdk.models.codes import (
-    Control,
-    ControlCategory,
-    PartnerEvents,
-    RunCode,
-    SCMCategory,
-)
+from prelude_sdk.models.codes import Control, ControlCategory, SCMCategory
 
 
 @pytest.mark.order(8)
@@ -27,51 +20,6 @@ class TestScmAcrossControls:
         self.export = ExportController(pytest.account)
         self.jobs = JobsController(pytest.account)
         self.scm = ScmController(pytest.account)
-        self.notification_id = str(uuid.uuid4())
-
-    def test_create_notification(self, unwrap):
-        res = unwrap(self.scm.create_notification)(
-            self.scm,
-            control_category=ControlCategory.XDR,
-            event=PartnerEvents.MISSING_EDR,
-            notification_type="summary",
-            run_code=RunCode.DAILY,
-            scheduled_hour=0,
-            emails=["test@email.com"],
-        )
-        self.notification_id = res["notification_id"]
-        notifications = unwrap(self.scm.list_notifications)(self.scm)
-        for notification in notifications:
-            if notification["id"] == self.notification_id:
-                assert notification["scheduled_hour"] == 0
-                assert notification["event"] == PartnerEvents.MISSING_EDR.value
-                assert notification["notification_type"] == "summary"
-
-    def test_update_notification(self, unwrap):
-        unwrap(self.scm.update_notification)(
-            self.scm,
-            notification_id=self.notification_id,
-            control_category=ControlCategory.XDR,
-            event=PartnerEvents.REDUCED_FUNCTIONALITY_MODE,
-            run_code=RunCode.DAILY,
-            scheduled_hour=1,
-            emails=["test@email.com"],
-        )
-        notifications = unwrap(self.scm.list_notifications)(self.scm)
-        for notification in notifications:
-            if notification["id"] == self.notification_id:
-                assert notification["scheduled_hour"] == 1
-                assert (
-                    notification["event"]
-                    == PartnerEvents.REDUCED_FUNCTIONALITY_MODE.value
-                )
-                assert notification["notification_type"] == "summary"
-
-    def test_delete_notification(self, unwrap):
-        unwrap(self.scm.delete_notification)(self.scm, self.notification_id)
-        notifications = unwrap(self.scm.list_notifications)(self.scm)
-        for notification in notifications:
-            assert notification["id"] != self.notification_id
 
     def test_evaluation_summary(self, unwrap):
         def _compare_keys(expected, actual):

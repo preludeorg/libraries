@@ -30,6 +30,7 @@ class TestScmBuild:
                 assert notification["scheduled_hour"] == 0
                 assert notification["event"] == PartnerEvents.MISSING_EDR.value
                 assert notification["notification_type"] == "summary"
+                assert notification["excepted"] == True
 
     def test_update_notification(self, unwrap):
         unwrap(self.scm.update_notification)(
@@ -37,6 +38,7 @@ class TestScmBuild:
             notification_id=pytest.notification_id,
             control_category=ControlCategory.XDR,
             event=PartnerEvents.REDUCED_FUNCTIONALITY_MODE,
+            excepted=False,
             run_code=RunCode.DAILY,
             scheduled_hour=1,
             emails=["test@email.com"],
@@ -50,6 +52,7 @@ class TestScmBuild:
                     == PartnerEvents.REDUCED_FUNCTIONALITY_MODE.value
                 )
                 assert notification["notification_type"] == "summary"
+                assert notification["excepted"] == False
 
     def test_delete_notification(self, unwrap):
         unwrap(self.scm.delete_notification)(self.scm, pytest.notification_id)
