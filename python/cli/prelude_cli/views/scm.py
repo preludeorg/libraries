@@ -709,6 +709,13 @@ def delete_notification(controller, notification_id):
     "--slack_urls", help="comma-separated list of Slack Webhook URLs to notify"
 )
 @click.option(
+    "-x",
+    "--excepted",
+    default=True,
+    help="include exceptions for report snapshots",
+    type=bool,
+)
+@click.option(
     "-p",
     "--suppress_empty",
     help="suppress notifications with no results",
@@ -727,6 +734,7 @@ def create_notification(
     days_in_event,
     emails,
     event,
+    excepted,
     filter,
     message,
     notification_type,
@@ -745,6 +753,7 @@ def create_notification(
             days_in_event=days_in_event,
             emails=emails.split(",") if emails else None,
             event=PartnerEvents[event] if event else None,
+            excepted=excepted,
             filter=filter,
             message=message,
             notification_type=notification_type,
@@ -802,6 +811,13 @@ def create_notification(
     "--slack_urls", help="comma-separated list of Slack Webhook URLs to notify"
 )
 @click.option(
+    "-x",
+    "--excepted",
+    default=None,
+    help="include exceptions for report snapshots",
+    type=bool,
+)
+@click.option(
     "-p",
     "--suppress_empty",
     default=True,
@@ -821,6 +837,7 @@ def update_notification(
     days_in_event,
     emails,
     event,
+    excepted,
     filter,
     message,
     report_id,
@@ -839,6 +856,7 @@ def update_notification(
             days_in_event=days_in_event,
             emails=emails.split(",") if emails else None,
             event=PartnerEvents[event] if event else None,
+            excepted=excepted,
             filter=filter,
             message=message,
             report_id=report_id,

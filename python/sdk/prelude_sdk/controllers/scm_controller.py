@@ -508,11 +508,13 @@ class ScmController(HttpController):
         message: str = "",
         report_id: str = None,
         slack_urls: list[str] = None,
+        excepted: bool = True,
         suppress_empty: bool = True,
         teams_urls: list[str] = None,
         title: str = "SCM Notification",
     ):
         body = dict(
+            excepted=excepted,
             notification_type=notification_type,
             run_code=run_code.name,
             scheduled_hour=scheduled_hour,
@@ -548,6 +550,7 @@ class ScmController(HttpController):
         days_in_event: int = None,
         emails: list[str] = None,
         event: PartnerEvents = None,
+        excepted: bool = None,
         filter: str = None,
         message: str = "",
         report_id: str = None,
@@ -565,6 +568,8 @@ class ScmController(HttpController):
             body["days_in_event"] = days_in_event
         if event:
             body["event"] = event.name
+        if excepted is not None:
+            body["excepted"] = excepted
         if filter:
             body["filter"] = filter
         if report_id:
