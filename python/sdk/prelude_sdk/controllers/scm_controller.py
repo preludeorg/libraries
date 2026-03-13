@@ -517,7 +517,7 @@ class ScmController(HttpController):
             excepted=excepted,
             notification_type=notification_type,
             run_code=run_code.name,
-            scheduled_hour=scheduled_hour
+            scheduled_hour=scheduled_hour,
         )
         if report_id:
             body["report_id"] = report_id
