@@ -39,7 +39,7 @@ class TestScmAcrossControls:
             scheduled_hour=0,
             emails=["test@email.com"],
         )
-        self.notification_id = res["id"]
+        self.notification_id = res["notification_id"]
         notifications = unwrap(self.scm.list_notifications)(self.scm)
         for notification in notifications:
             if notification["id"] == self.notification_id:
