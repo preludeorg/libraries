@@ -171,10 +171,10 @@ class PartnerController(HttpController):
 
     @verify_credentials
     def get_custom_partner_data(
-        self, request_config: dict, secret: str, save_data_as: str | None = None
+        self, config: dict, secret: str, save_data_as: str | None = None
     ):
         """Get data from a custom partner"""
-        body = dict(request_config=request_config)
+        body = dict(config=config)
         if secret:
             body["secret"] = secret
         if save_data_as:
