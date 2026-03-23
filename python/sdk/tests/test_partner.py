@@ -134,6 +134,7 @@ class TestPartnerAttach:
         unwrap(self.partner.detach)(
             self.partner, partner=control, instance_id=pytest.controls[control.value]
         )
+        time.sleep(10)
         res = unwrap(self.iam.get_account)(self.iam)
         for c in res["controls"]:
             assert c["id"] != control.value
