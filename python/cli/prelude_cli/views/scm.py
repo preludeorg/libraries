@@ -136,6 +136,30 @@ def users(
         )
 
 
+@scm.command("software")
+@click.option(
+    "--limit", default=100, help="maximum number of results to return", type=int
+)
+@click.option("--offset", default=0, help="number of results to skip", type=int)
+@click.option("--odata_filter", help="OData filter string")
+@click.option("--odata_orderby", help="OData orderby string")
+@click.option(
+    "--odata_select", help="OData select string to specify which fields to return"
+)
+@click.pass_obj
+@pretty_print
+def software(controller, limit, offset, odata_filter, odata_orderby, odata_select):
+    """List software with SCM data"""
+    with Spinner(description="Fetching software from partner"):
+        return controller.software(
+            filter=odata_filter,
+            orderby=odata_orderby,
+            select=odata_select,
+            skip=offset,
+            top=limit,
+        )
+
+
 @scm.command("technique-summary")
 @click.option(
     "-q",
