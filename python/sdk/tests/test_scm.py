@@ -54,6 +54,8 @@ class TestScmAcrossControls:
         ) and time.time() < timeout:
             time.sleep(3)
 
+    @pytest.mark.order(-9)
+    def test_detach_custom_partner(self, unwrap):
         account = unwrap(self.iam_account.get_account)(self.iam_account)
         control = next(
             c for c in account["controls"] if c["id"] == Control.CUSTOM.value
