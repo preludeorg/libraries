@@ -192,6 +192,7 @@ class Control(Enum, metaclass=MissingItem):
     DEFENDER_VULN = 32
     NETSKOPE = 33
     CUSTOM = 34
+    ANTHROPIC = 35
 
     @classmethod
     def _missing_(cls, value):
@@ -306,6 +307,10 @@ class Control(Enum, metaclass=MissingItem):
                 return "Microsoft Defender Vulnerability Management"
             case Control.NETSKOPE:
                 return "Netskope"
+            case Control.CUSTOM:
+                return "Custom"
+            case Control.ANTHROPIC:
+                return "Anthropic"
             case _:
                 return "Unknown Control"
 
@@ -325,6 +330,7 @@ class ControlCategory(Enum, metaclass=MissingItem):
     PRIVATE_REPO = 10
     HARDWARE = 11
     SASE = 12
+    AI_PROVIDER = 13
 
     @classmethod
     def _missing_(cls, value):
@@ -340,6 +346,7 @@ class ControlCategory(Enum, metaclass=MissingItem):
     @classmethod
     def mapping(cls):
         return {
+            ControlCategory.AI_PROVIDER: [Control.ANTHROPIC],
             ControlCategory.ASSET_MANAGER: [
                 Control.AWS_SSM,
                 Control.INTUNE,
@@ -408,6 +415,8 @@ class ControlCategory(Enum, metaclass=MissingItem):
                 return "Client Hardware Security"
             case ControlCategory.SASE:
                 return "Secure Access Service Edge"
+            case ControlCategory.AI_PROVIDER:
+                return "AI Provider"
             case _:
                 return "Unknown Control Category"
 
