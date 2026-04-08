@@ -156,6 +156,27 @@ class ScmController(HttpController):
         return data
 
     @verify_credentials
+    def software(
+        self,
+        select: str = None,
+        filter: str = None,
+        orderby: str = None,
+        top: str = None,
+        skip: str = None,
+    ):
+        """List software with SCM analysis"""
+        params = {
+            "$select": select,
+            "$filter": filter,
+            "$orderby": orderby,
+            "$top": top,
+            "$skip": skip,
+        }
+
+        res = self.get(f"{self.account.hq}/scm/software", params=params, timeout=30)
+        return res.json()
+
+    @verify_credentials
     def technique_summary(self, techniques: str):
         """Get policy evaluation summary by technique"""
         res = self.get(
@@ -596,7 +617,9 @@ class ScmController(HttpController):
         if teams_urls:
             body["teams"] = dict(hook_urls=teams_urls, message=message)
 
-        res = self.post(f"{self.account.hq}/scm/notifications/{notification_id}", json=body)
+        res = self.post(
+            f"{self.account.hq}/scm/notifications/{notification_id}", json=body
+        )
         return res.json()
 
     @verify_credentials
