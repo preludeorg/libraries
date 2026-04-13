@@ -137,14 +137,12 @@ class TestVST:
         pytest.expected_test["expected"]["crowdstrike"] = EDRResponse.PREVENT.value
         pytest.expected_test["name"] = updated_name
         pytest.expected_test["technique"] = "T1234.001"
+
+        assert res["updated"] > pytest.expected_test["updated"]
         pytest.expected_test["updated"] = res["updated"]
 
         diffs = check_dict_items(pytest.expected_test, res)
         assert not diffs, json.dumps(diffs, indent=2)
-
-        assert parse(res["updated"]).replace(tzinfo=timezone.utc) <= datetime.now(
-            timezone.utc
-        ) + timedelta(minutes=1)
 
     def test_download(self, unwrap):
         filename = f"{pytest.test_id}.go"
