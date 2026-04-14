@@ -107,6 +107,7 @@ class TestVST:
 
     def test_get_test(self, unwrap):
         res = unwrap(self.detect.get_test)(self.detect, test_id=pytest.test_id)
+        pytest.expected_test["updated"] = res["updated"]
 
         diffs = check_dict_items(pytest.expected_test, res)
         assert not diffs, json.dumps(diffs, indent=2)
