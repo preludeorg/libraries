@@ -95,12 +95,13 @@ class TestScmBuild:
         del exception["author"]
         del exception["created"]
         assert exception == {
-            "category": ControlCategory.ASSET_MANAGER.value,
+            "control_category": ControlCategory.ASSET_MANAGER.value,
             "comment": "test comment",
             "expires": None,
             "filter": "hostname eq 'host2'",
             "id": pytest.exception_id,
             "name": "filter me",
+            "scm_category": SCMCategory.ENDPOINT.value,
         }
 
     def test_delete_object_exception(self, unwrap):

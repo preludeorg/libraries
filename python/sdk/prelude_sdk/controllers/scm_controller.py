@@ -276,7 +276,10 @@ class ScmController(HttpController):
         res = self.get(f"{self.account.hq}/scm/exceptions/objects")
         exceptions = res.json()
         if self.account.resolve_enums:
-            self.resolve_enums(exceptions, [(ControlCategory, "category")])
+            self.resolve_enums(
+                exceptions,
+                [(ControlCategory, "control_category"), (SCMCategory, "scm_category")],
+            )
         return exceptions
 
     @verify_credentials
