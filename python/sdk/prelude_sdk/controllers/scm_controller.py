@@ -291,7 +291,7 @@ class ScmController(HttpController):
     ):
         """Create an object exception"""
         body = dict(
-            category=control_category.name,
+            control_category=control_category.name,
             filter=filter,
             scm_category=scm_category.name,
         )
