@@ -282,14 +282,19 @@ class ScmController(HttpController):
     @verify_credentials
     def create_object_exception(
         self,
-        category: ControlCategory,
+        control_category: ControlCategory,
         filter,
+        scm_category: SCMCategory,
         comment=None,
         name=None,
         expires: str = None,
     ):
         """Create an object exception"""
-        body = dict(category=category.name, filter=filter)
+        body = dict(
+            category=control_category.name,
+            filter=filter,
+            scm_category=scm_category.name,
+        )
         if comment:
             body["comment"] = comment
         if name:

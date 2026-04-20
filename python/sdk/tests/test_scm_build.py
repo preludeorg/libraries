@@ -1,7 +1,12 @@
 import pytest
 
 from prelude_sdk.controllers.scm_controller import ScmController
-from prelude_sdk.models.codes import ControlCategory, PartnerEvents, RunCode
+from prelude_sdk.models.codes import (
+    ControlCategory,
+    PartnerEvents,
+    RunCode,
+    SCMCategory,
+)
 
 
 @pytest.mark.order(8)
@@ -63,11 +68,12 @@ class TestScmBuild:
     def test_create_object_exception(self, unwrap):
         res = unwrap(self.scm.create_object_exception)(
             self.scm,
-            ControlCategory.ASSET_MANAGER,
+            control_category=ControlCategory.ASSET_MANAGER,
             comment="test comment",
             expires="5555-05-05",
             filter="hostname eq 'host1'",
             name="filter me",
+            scm_category=SCMCategory.ENDPOINT,
         )
         assert res["exception_id"]
         pytest.exception_id = res["exception_id"]
