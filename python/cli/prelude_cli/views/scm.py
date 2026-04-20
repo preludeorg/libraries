@@ -504,10 +504,11 @@ def list_object_exceptions(controller):
             for c in ControlCategory
             if c
             not in [
+                ControlCategory.AI_PROVIDER,
+                ControlCategory.CLOUD,
                 ControlCategory.INVALID,
                 ControlCategory.PRIVATE_REPO,
                 ControlCategory.SIEM,
-                ControlCategory.AI_PROVIDER,
             ]
         ],
         case_sensitive=False,
