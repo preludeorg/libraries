@@ -683,7 +683,7 @@ def delete_policy_exception(controller, partner, instance_id, policy_id):
     """Delete policy exception"""
     with Spinner(description=f"Deleting Policy exception"):
         return controller.delete_policy_exception(
-            partner=partner, instance_id=instance_id, policy_id=policy_id
+            partner=Control[partner], instance_id=instance_id, policy_id=policy_id
         )
 
 
