@@ -42,7 +42,12 @@ def register_endpoint(controller, host, serial_num, reg_string, tags):
 
 @detect.command("update-endpoint")
 @click.argument("endpoint_id")
-@click.option("-t", "--tags", help="a comma-separated list of tags for this endpoint")
+@click.option(
+    "-t",
+    "--tags",
+    help="a comma-separated list of tags for this endpoint",
+    required=True,
+)
 @click.pass_obj
 @pretty_print
 def update_endpoint(controller, endpoint_id, tags):

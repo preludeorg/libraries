@@ -13,7 +13,6 @@ from prelude_cli.views.shared import Spinner, pretty_print
 from prelude_sdk.controllers.build_controller import BuildController
 from prelude_sdk.models.codes import Control, EDRResponse
 
-
 UUID = re.compile(
     "[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}"
 )
@@ -428,8 +427,10 @@ def create_detection(controller, sigma_rule_file, test, detection_id, rule_id):
 def update_detection(controller, detection, sigma_rule_file, test):
     """Update a detection"""
     with Spinner(description="Updating detection"):
-        with open(sigma_rule_file, "r") as f:
-            rule = f.read()
+        rule = None
+        if sigma_rule_file:
+            with open(sigma_rule_file, "r") as f:
+                rule = f.read()
         return controller.update_detection(
             rule=rule,
             test_id=test,

@@ -391,9 +391,11 @@ class ScmController(HttpController):
         return res.json()
 
     @verify_credentials
-    def delete_policy_exception(self, instance_id: str, policy_id: str):
+    def delete_policy_exception(
+        self, partner: Control, instance_id: str, policy_id: str
+    ):
         """Delete policy exceptions"""
-        body = dict(instance_id=instance_id, policy_id=policy_id)
+        body = dict(control=partner.name, instance_id=instance_id, policy_id=policy_id)
 
         res = self.delete(f"{self.account.hq}/scm/exceptions/policies", json=body)
         return res.json()

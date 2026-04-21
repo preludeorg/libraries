@@ -23,11 +23,9 @@ class DetectController(HttpController):
         return res.text
 
     @verify_credentials
-    def update_endpoint(self, endpoint_id, tags=None):
+    def update_endpoint(self, endpoint_id, tags):
         """Update an endpoint in your account"""
-        body = dict()
-        if tags is not None:
-            body["tags"] = tags
+        body = dict(tags=tags)
 
         res = self.post(f"{self.account.hq}/detect/endpoint/{endpoint_id}", json=body)
         return res.json()
