@@ -264,6 +264,23 @@ func Remove(path string) bool {
 	return e == nil
 }
 
+func RunAsPrivilege(level string) {
+    var satisfied bool
+    switch level {
+		case "privileged":
+			satisfied = CheckAdmin()
+		case "unprivileged":
+			satisfied = !CheckAdmin()
+		default:
+			// Unknown level — signal for re-route and let orchestrator decide
+			satisfied = false
+    }
+    if !satisfied {
+        fmt.Fprintf(os.Stderr, "PRIVILEGE_REQUESTED:%s", level)
+        Stop(InsufficientPrivileges)  // exit 109
+    }
+}
+
 func Say(print string, ifc ...interface{}) {
 	filename := filepath.Base(os.Args[0])
 	name := strings.TrimSuffix(filename, filepath.Ext(filename))
