@@ -2,6 +2,8 @@ from prelude_sdk.controllers.http_controller import HttpController
 from prelude_sdk.models.account import verify_credentials
 from prelude_sdk.models.codes import Control, RunCode
 
+_TESTS_PAGE_SIZE = 500
+
 
 class DetectController(HttpController):
 
@@ -70,12 +72,38 @@ class DetectController(HttpController):
         return res.json()
 
     @verify_credentials
-    def list_tests(self, filters: dict = None):
-        """List all tests available to an account"""
-        res = self.get(
-            f"{self.account.hq}/detect/tests", params=filters if filters else {}
-        )
-        return res.json()
+    def list_tests(self, filters: dict = None, limit: int = None, offset: int = None):
+        """List tests available to an account.
+
+        - When `limit` and/or `offset` are supplied, returns a single page as
+          `{"data": [...], "total_count": N}`.
+        - Otherwise, loops internally with a 500-row page size and returns a
+          flat `list[dict]` (backwards compatible with the pre-pagination API).
+        """
+        base_params = dict(filters or {})
+
+        if limit is not None or offset is not None:
+            params = base_params | {"limit": limit, "offset": offset}
+            params = {k: v for k, v in params.items() if v is not None}
+            return self.get(
+                f"{self.account.hq}/detect/tests", params=params
+            ).json()
+
+        results: list = []
+        cursor = 0
+        while True:
+            page = self.get(
+                f"{self.account.hq}/detect/tests",
+                params=base_params
+                | {"limit": _TESTS_PAGE_SIZE, "offset": cursor},
+            ).json()
+            data = page["data"]
+            results.extend(data)
+            if len(data) < _TESTS_PAGE_SIZE or len(results) >= page.get(
+                "total_count", len(results)
+            ):
+                return results
+            cursor += _TESTS_PAGE_SIZE
 
     @verify_credentials
     def get_test(self, test_id):

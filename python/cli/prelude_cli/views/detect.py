@@ -52,16 +52,18 @@ def update_endpoint(controller, endpoint_id, tags):
 
 
 @detect.command("tests")
+@click.option("--limit", type=int, help="max tests to return in a single page (1-500)")
+@click.option("--offset", type=int, help="number of tests to skip before returning")
 @click.option("--techniques", help="comma-separated list of techniques")
 @click.pass_obj
 @pretty_print
-def list_tests(controller, techniques):
+def list_tests(controller, limit, offset, techniques):
     """List all security tests"""
     with Spinner(description="Fetching all security tests"):
         filters = dict()
         if techniques:
             filters["techniques"] = techniques
-        return controller.list_tests(filters=filters)
+        return controller.list_tests(filters=filters, limit=limit, offset=offset)
 
 
 @detect.command("test")
