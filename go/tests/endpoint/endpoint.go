@@ -36,6 +36,7 @@ const (
 	FileQuarantinedOnExtraction int = 105
 	NetworkConnectionBlocked    int = 106
 	HostNotVulnerabile          int = 107
+	HostNotVulnerable          int = 107
 	ExecutionPrevented          int = 126
 	FileQuarantinedOnExecution  int = 127
 
