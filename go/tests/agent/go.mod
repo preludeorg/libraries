@@ -1,4 +1,4 @@
-module github.com/preludeorg/libraries/go/tests/vst
+module github.com/preludeorg/libraries/go/tests/agent
 
 go 1.21
 
