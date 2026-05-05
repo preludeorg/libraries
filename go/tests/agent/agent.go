@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
@@ -114,3 +115,22 @@ func RunAsPrivilege(level string) {
     }
 }
 
+// TolerateImpactOrExit stops execution with InsufficientPrivileges if the
+// given impact level exceeds PRELUDE_TOLERANCE (defaults to 0 if unset or invalid).
+func TolerateImpactOrExit(impact int) {
+	tolStr := os.Getenv("PRELUDE_TOLERANCE")
+	var tolerance int
+	if tolStr == "" {
+		tolerance = 0
+	} else {
+		var err error
+		tolerance, err = strconv.Atoi(tolStr)
+		if err != nil {
+			tolerance = 0
+		}
+	}
+	if impact > tolerance {
+		// consider Endpoint.ImpactExceedsTolerance later
+		Endpoint.Stop(Endpoint.InsufficientPrivileges)
+	}
+}
