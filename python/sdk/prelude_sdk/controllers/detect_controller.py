@@ -70,12 +70,17 @@ class DetectController(HttpController):
         return res.json()
 
     @verify_credentials
-    def list_tests(self, filters: dict = None):
-        """List all tests available to an account"""
-        res = self.get(
-            f"{self.account.hq}/detect/tests", params=filters if filters else {}
-        )
-        return res.json()
+    def list_tests(self, filters: dict = None, limit: int = None, offset: int = None):
+        """List a page of tests available to an account.
+
+        Returns `{"data": [...], "total_count": N}`.
+        """
+        params = dict(filters or {})
+        if limit is not None:
+            params["limit"] = limit
+        if offset is not None:
+            params["offset"] = offset
+        return self.get(f"{self.account.hq}/detect/tests", params=params).json()
 
     @verify_credentials
     def get_test(self, test_id):
