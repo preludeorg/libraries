@@ -295,7 +295,15 @@ def clone(controller):
                 f.write(code)
 
     async def start_cloning():
-        await asyncio.gather(*[fetch(test) for test in controller.list_tests()])
+        tests = []
+        offset = 0
+        while True:
+            page = controller.list_tests(limit=500, offset=offset)
+            tests.extend(page["data"])
+            if len(tests) >= page["total_count"]:
+                break
+            offset += 500
+        await asyncio.gather(*[fetch(test) for test in tests])
 
     with Spinner(description="Downloading all tests"):
         asyncio.run(start_cloning())

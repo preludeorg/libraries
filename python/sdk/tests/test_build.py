@@ -114,10 +114,11 @@ class TestVST:
 
     def test_list_tests(self, unwrap):
         res = unwrap(self.detect.list_tests)(self.detect)
-        owners = set([r["account_id"] for r in res])
+        assert "total_count" in res
+        owners = set([r["account_id"] for r in res["data"]])
         assert {"prelude", pytest.account.headers["account"]} >= owners
 
-        mine = [r for r in res if r["id"] == pytest.expected_test["id"]]
+        mine = [r for r in res["data"] if r["id"] == pytest.expected_test["id"]]
         assert 1 == len(mine)
         del pytest.expected_test["attachments"]
         diffs = check_dict_items(
