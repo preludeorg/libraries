@@ -1,3 +1,5 @@
+// Package Agent provides utility functions for Prelude Detect agent control,
+// primarily for v3 agents and above with safe defaults for previous versions.
 package Agent
 
 import (
@@ -16,6 +18,9 @@ import (
 var cwd, _ = os.Getwd()
 var bin, _ = os.Executable()
 
+// parseInputVariables parses JSON-encoded test input into a key-value map.
+// It accepts two formats: a wrapped object {"Variables": {...}} or a flat {"key": "value"} map.
+// Returns an empty map on blank input or parse failure.
 func parseInputVariables(data []byte) map[string]string {
 	if len(bytes.TrimSpace(data)) == 0 {
 		return map[string]string{}
