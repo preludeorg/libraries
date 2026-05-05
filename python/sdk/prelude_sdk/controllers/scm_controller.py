@@ -23,6 +23,7 @@ class ScmController(HttpController):
         select: str = None,
         filter: str = None,
         orderby: str = None,
+        expand: str = None,
         top: int = None,
         skip: int = None,
     ):
@@ -31,6 +32,7 @@ class ScmController(HttpController):
             "$select": select,
             "$filter": filter,
             "$orderby": orderby,
+            "$expand": expand,
             "$top": top,
             "$skip": skip,
         }
@@ -55,6 +57,7 @@ class ScmController(HttpController):
         select: str = None,
         filter: str = None,
         orderby: str = None,
+        expand: str = None,
         top: int = None,
         skip: int = None,
     ):
@@ -63,6 +66,7 @@ class ScmController(HttpController):
             "$select": select,
             "$filter": filter,
             "$orderby": orderby,
+            "$expand": expand,
             "$top": top,
             "$skip": skip,
         }
@@ -87,6 +91,7 @@ class ScmController(HttpController):
         select: str = None,
         filter: str = None,
         orderby: str = None,
+        expand: str = None,
         top: int = None,
         skip: int = None,
     ):
@@ -95,6 +100,7 @@ class ScmController(HttpController):
             "$select": select,
             "$filter": filter,
             "$orderby": orderby,
+            "$expand": expand,
             "$top": top,
             "$skip": skip,
         }
@@ -121,6 +127,7 @@ class ScmController(HttpController):
         select: str = None,
         filter: str = None,
         orderby: str = None,
+        expand: str = None,
         top: int = None,
         skip: int = None,
     ):
@@ -129,6 +136,7 @@ class ScmController(HttpController):
             "$select": select,
             "$filter": filter,
             "$orderby": orderby,
+            "$expand": expand,
             "$top": top,
             "$skip": skip,
         }
@@ -146,6 +154,27 @@ class ScmController(HttpController):
                 ],
             )
         return data
+
+    @verify_credentials
+    def software(
+        self,
+        select: str = None,
+        filter: str = None,
+        orderby: str = None,
+        top: str = None,
+        skip: str = None,
+    ):
+        """List software with SCM analysis"""
+        params = {
+            "$select": select,
+            "$filter": filter,
+            "$orderby": orderby,
+            "$top": top,
+            "$skip": skip,
+        }
+
+        res = self.get(f"{self.account.hq}/scm/software", params=params, timeout=30)
+        return res.json()
 
     @verify_credentials
     def technique_summary(self, techniques: str):
@@ -588,7 +617,9 @@ class ScmController(HttpController):
         if teams_urls:
             body["teams"] = dict(hook_urls=teams_urls, message=message)
 
-        res = self.post(f"{self.account.hq}/scm/notifications/{notification_id}", json=body)
+        res = self.post(
+            f"{self.account.hq}/scm/notifications/{notification_id}", json=body
+        )
         return res.json()
 
     @verify_credentials

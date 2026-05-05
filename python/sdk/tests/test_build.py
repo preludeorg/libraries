@@ -40,6 +40,7 @@ class TestVST:
 
         diffs = check_dict_items(expected, pytest.expected_test)
         assert not diffs, json.dumps(diffs, indent=2)
+        assert pytest.expected_test["updated"] == pytest.expected_test["created"]
 
     def test_upload(self, unwrap):
         def wait_for_compile(job_id):
@@ -106,6 +107,7 @@ class TestVST:
 
     def test_get_test(self, unwrap):
         res = unwrap(self.detect.get_test)(self.detect, test_id=pytest.test_id)
+        pytest.expected_test["updated"] = res["updated"]
 
         diffs = check_dict_items(pytest.expected_test, res)
         assert not diffs, json.dumps(diffs, indent=2)
@@ -136,6 +138,9 @@ class TestVST:
         pytest.expected_test["expected"]["crowdstrike"] = EDRResponse.PREVENT.value
         pytest.expected_test["name"] = updated_name
         pytest.expected_test["technique"] = "T1234.001"
+
+        assert res["updated"] > pytest.expected_test["updated"]
+        pytest.expected_test["updated"] = res["updated"]
 
         diffs = check_dict_items(pytest.expected_test, res)
         assert not diffs, json.dumps(diffs, indent=2)

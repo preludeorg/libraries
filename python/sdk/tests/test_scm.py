@@ -1,8 +1,11 @@
+import json
+import os
 import pytest
 import requests
 import time
 
 from prelude_sdk.controllers.export_controller import ExportController
+from prelude_sdk.controllers.iam_controller import IAMAccountController
 from prelude_sdk.controllers.jobs_controller import JobsController
 from prelude_sdk.controllers.partner_controller import PartnerController
 from prelude_sdk.controllers.scm_controller import ScmController
@@ -18,8 +21,48 @@ class TestScmAcrossControls:
         if not pytest.controls:
             pytest.skip("Partners not attached")
         self.export = ExportController(pytest.account)
+        self.iam_account = IAMAccountController(pytest.account)
         self.jobs = JobsController(pytest.account)
+        self.partner = PartnerController(pytest.account)
         self.scm = ScmController(pytest.account)
+
+    def test_custom_partner(self, unwrap):
+        CONFIG_FILE = os.getenv("CUSTOM_PARTNER_CONFIG")
+        SECRET_FILE = os.getenv("CUSTOM_PARTNER_SECRET")
+        if not CONFIG_FILE or not SECRET_FILE:
+            pytest.skip(
+                "Custom partner config or secret not provided in environment variables"
+            )
+
+        with open(CONFIG_FILE, "r") as f:
+            config = json.load(f)
+        with open(SECRET_FILE, "r") as f:
+            secret = json.load(f)
+        assert unwrap(self.partner.attach_custom)(
+            self.partner,
+            config=config,
+            control_category=ControlCategory.IDENTITY,
+            control_name="bob's control",
+            name="custom",
+            secret=json.dumps(secret),
+        )["connected"]
+
+        timeout = time.time() + 300
+        while (
+            unwrap(self.jobs.job_statuses)(self.jobs)["UPDATE_SCM"][0]["end_time"]
+            is None
+        ) and time.time() < timeout:
+            time.sleep(3)
+
+    @pytest.mark.order(-9)
+    def test_detach_custom_partner(self, unwrap):
+        account = unwrap(self.iam_account.get_account)(self.iam_account)
+        control = next(
+            c for c in account["controls"] if c["id"] == Control.CUSTOM.value
+        )
+        assert unwrap(self.partner.detach)(
+            self.partner, partner=Control.CUSTOM, instance_id=control["instance_id"]
+        )["status"]
 
     def test_evaluation_summary(self, unwrap):
         def _compare_keys(expected, actual):

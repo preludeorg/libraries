@@ -115,12 +115,13 @@ class TestPartnerAttach:
         expected = dict(api=partner_api, connected=True)
         assert expected == res
 
-    def test_get_account(self, unwrap, control, partner_api, user, secret):
+    def test_get_account(self, unwrap, email, control, partner_api, user, secret):
         res = unwrap(self.iam.get_account)(self.iam)
         [r.pop("created") for r in res["controls"]]
         pytest.controls = {c["id"]: c["instance_id"] for c in res["controls"]}
         expected = dict(
             api=partner_api,
+            created_by=email,
             id=control.value,
             instance_id=pytest.controls[control.value],
             max_groups=30,
@@ -134,6 +135,7 @@ class TestPartnerAttach:
         unwrap(self.partner.detach)(
             self.partner, partner=control, instance_id=pytest.controls[control.value]
         )
+        time.sleep(10)
         res = unwrap(self.iam.get_account)(self.iam)
         for c in res["controls"]:
             assert c["id"] != control.value
