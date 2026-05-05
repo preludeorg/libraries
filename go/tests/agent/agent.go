@@ -41,6 +41,31 @@ func parseInputVariables(data []byte) map[string]string {
 	return result
 }
 
+// GetPreludeEnvironmentVariable retrieves a PRELUDE_-prefixed environment variable,
+// returning defaultValue if the variable is unset or empty.
+func GetPreludeEnvironmentVariable(key string, defaultValue string) string {
+	key = "PRELUDE_" + strings.ToUpper(key)
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	return defaultValue
+}
+
+// GetPreludeVersion retrieves the PRELUDE_VERSION environment variable, defaulting to "0.0.0.0" if unset or empty.
+// An optional numParts argument truncates the result to that many components (e.g. numParts=2 returns "1.2" from "1.2.3.4").
+// If omitted, zero, or greater than the number of components, the full version string is returned.
+func GetPreludeVersion(numParts ...int) string {
+	ver := GetPreludeEnvironmentVariable("VERSION", "0.0.0.0")
+	if len(numParts) > 0 && numParts[0] > 0 {
+		parts := strings.Split(ver, ".")
+		if n := numParts[0]; n < len(parts) {
+			parts = parts[:n]
+		}
+		return strings.Join(parts, ".")
+	}
+	return ver
+}
+
 // VstId derives the VST ID from the executable name, stripping any suffix after an underscore and the file extension.
 func VstId() string {
     name := filepath.Base(bin)
@@ -139,3 +164,4 @@ func TolerateImpactOrExit(impact int) {
 		Endpoint.Stop(Endpoint.InsufficientPrivileges)
 	}
 }
+
