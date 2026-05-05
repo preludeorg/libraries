@@ -1,6 +1,6 @@
-// Package Agent provides utility functions for Prelude Detect agent control,
+// Package agent provides utility functions for Prelude Detect agent control,
 // primarily for v3 agents and above with safe defaults for previous versions.
-package Agent
+package agent
 
 import (
 	"bytes"
@@ -15,6 +15,7 @@ import (
 
 	Endpoint "github.com/preludeorg/libraries/go/tests/endpoint"
 )
+
 var cwd, _ = os.Getwd()
 var bin, _ = os.Executable()
 
@@ -41,9 +42,9 @@ func parseInputVariables(data []byte) map[string]string {
 	return result
 }
 
-// GetPreludeEnvironmentVariable retrieves a PRELUDE_-prefixed environment variable,
+// PreludeEnvironmentVariable retrieves a PRELUDE_-prefixed environment variable,
 // returning defaultValue if the variable is unset or empty.
-func GetPreludeEnvironmentVariable(key string, defaultValue string) string {
+func PreludeEnvironmentVariable(key string, defaultValue string) string {
 	key = "PRELUDE_" + strings.ToUpper(key)
 	if value := os.Getenv(key); value != "" {
 		return value
@@ -51,11 +52,11 @@ func GetPreludeEnvironmentVariable(key string, defaultValue string) string {
 	return defaultValue
 }
 
-// GetPreludeVersion retrieves the PRELUDE_VERSION environment variable, defaulting to "0.0.0.0" if unset or empty.
-// An optional numParts argument truncates the result to that many components (e.g. numParts=2 returns "1.2" from "1.2.3.4").
+// PreludeVersion retrieves the PRELUDE_VERSION environment variable, defaulting to "0.0.0" if unset or empty.
+// An optional numParts argument truncates the result to that many components (e.g. numParts=2 returns "1.2" from "1.2.3").
 // If omitted, zero, or greater than the number of components, the full version string is returned.
-func GetPreludeVersion(numParts ...int) string {
-	ver := GetPreludeEnvironmentVariable("VERSION", "0.0.0.0")
+func PreludeVersion(numParts ...int) string {
+	ver := PreludeEnvironmentVariable("VERSION", "0.0.0")
 	if len(numParts) > 0 && numParts[0] > 0 {
 		parts := strings.Split(ver, ".")
 		if n := numParts[0]; n < len(parts) {
@@ -66,28 +67,28 @@ func GetPreludeVersion(numParts ...int) string {
 	return ver
 }
 
-// VstId derives the VST ID from the executable name, stripping any suffix after an underscore and the file extension.
-func VstId() string {
-    name := filepath.Base(bin)
-    name = strings.TrimSuffix(name, filepath.Ext(name)) // strip .exe on Windows if present
-    if idx := strings.Index(name, "_"); idx != -1 {
-        return name[:idx]
-    }
-    return name
+// VstID derives the VST ID from the executable name, stripping any suffix after an underscore and the file extension.
+func VstID() string {
+	name := filepath.Base(bin)
+	name = strings.TrimSuffix(name, filepath.Ext(name)) // strip .exe on Windows if present
+	if before, _, found := strings.Cut(name, "_"); found {
+		return before
+	}
+	return name
 }
 
 // PrivilegeLabel derives the privilege label from the current working directory name, expecting a format like "PreludeHelper_Label".
 func PrivilegeLabel() string {
-    label, found := strings.CutPrefix(filepath.Base(cwd), "PreludeHelper_")
-    if !found {
-        return ""
-    }
-    return strings.ToLower(label)
+	label, found := strings.CutPrefix(filepath.Base(cwd), "PreludeHelper_")
+	if !found {
+		return ""
+	}
+	return strings.ToLower(label)
 }
 
-// ReadInputs reads JSON from stdin with a 5s timeout.
-// Expects {"Variables": {"key": "val"}} or a flat {"key": "val"} map.
-// on Pre 3.x systems will simply delay 5s then continue.
+// ReadInputs reads JSON from stdin when it is a pipe (v3+ agents pipe test inputs at spawn).
+// Returns an empty map immediately if stdin is a terminal or /dev/null (pre-3.x behaviour — no delay).
+// The 5s timeout is a safety net for a stalled pipe; the helper should deliver data well within that window.
 func ReadInputs() map[string]string {
 	const timeout = 5 * time.Second
 
@@ -127,27 +128,27 @@ func ReadInputs() map[string]string {
 	}
 }
 
-// RunAsPrivilege checks if the current process meets the specified privilege level ("privileged", "unprivileged", or a custom label).
-func RunAsPrivilege(level string) {
-    var satisfied bool
-	var lowerlevel = strings.ToLower(level)
-    switch lowerlevel {
-		case "privileged":
-			satisfied = Endpoint.CheckAdmin()
-		case "unprivileged":
-			satisfied = !Endpoint.CheckAdmin()
-		default:
-			satisfied = lowerlevel == PrivilegeLabel()
-    }
-    if !satisfied {
-        fmt.Fprintf(os.Stderr, "PRIVILEGE_REQUESTED:%s", lowerlevel)
-        Endpoint.Stop(Endpoint.InsufficientPrivileges)  // exit 109
-    }
+// RequirePrivilege checks if the current process meets the specified privilege level ("privileged", "unprivileged", or a custom label).
+func RequirePrivilege(level string) {
+	var satisfied bool
+	var lowerLevel = strings.ToLower(level)
+	switch lowerLevel {
+	case "privileged":
+		satisfied = Endpoint.CheckAdmin()
+	case "unprivileged":
+		satisfied = !Endpoint.CheckAdmin()
+	default:
+		satisfied = lowerLevel == PrivilegeLabel()
+	}
+	if !satisfied {
+		fmt.Fprintf(os.Stderr, "PRIVILEGE_REQUESTED: %s", lowerLevel)
+		Endpoint.Stop(Endpoint.InsufficientPrivileges) // exit 109
+	}
 }
 
-// TolerateImpactOrExit stops execution with InsufficientPrivileges if the
+// TolerateImpact stops execution with InsufficientPrivileges if the
 // given impact level exceeds PRELUDE_TOLERANCE (defaults to 0 if unset or invalid).
-func TolerateImpactOrExit(impact int) {
+func TolerateImpact(impact int) {
 	tolStr := os.Getenv("PRELUDE_TOLERANCE")
 	var tolerance int
 	if tolStr == "" {
@@ -164,4 +165,3 @@ func TolerateImpactOrExit(impact int) {
 		Endpoint.Stop(Endpoint.InsufficientPrivileges)
 	}
 }
-
