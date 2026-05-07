@@ -494,41 +494,61 @@ def list_object_exceptions(controller):
 
 
 @object.command("create")
-@click.argument(
-    "category",
+@click.option(
+    "--control_category",
+    help="control category for the exception",
+    required=True,
     type=click.Choice(
         [
             c.name
             for c in ControlCategory
             if c
             not in [
-                ControlCategory.NONE,
+                ControlCategory.AI_PROVIDER,
+                ControlCategory.CLOUD,
                 ControlCategory.INVALID,
                 ControlCategory.PRIVATE_REPO,
+                ControlCategory.SIEM,
             ]
         ],
         case_sensitive=False,
     ),
 )
-@click.option("-f", "--filter", help="OData filter string", required=True)
 @click.option("-c", "--comment", help="exception comment")
 @click.option("-e", "--expires", help="expiry date (YYYY-MM-DD hh:mm:ss ([+-]hh:mm))")
+@click.option("-f", "--filter", help="OData filter string", required=True)
 @click.option(
     "-n",
     "--name",
     help="exception name",
 )
+@click.option(
+    "--scm_category",
+    help="SCM category for the exception",
+    required=True,
+    type=click.Choice(
+        [
+            c.name
+            for c in SCMCategory
+            if c not in [SCMCategory.INVALID, SCMCategory.NONE]
+        ],
+        case_sensitive=False,
+    ),
+)
 @click.pass_obj
 @pretty_print
-def create_object_exception(controller, category, filter, comment, expires, name):
+def create_object_exception(
+    controller, control_category, comment, expires, filter, name, scm_category
+):
     """Create object exception"""
     with Spinner(description=f"Creating object exception"):
         return controller.create_object_exception(
-            category=ControlCategory[category],
+            control_category=ControlCategory[control_category],
             comment=comment,
+            expires=expires,
             filter=filter,
             name=name,
-            expires=expires,
+            scm_category=SCMCategory[scm_category],
         )
 
 
@@ -663,7 +683,7 @@ def delete_policy_exception(controller, partner, instance_id, policy_id):
     """Delete policy exception"""
     with Spinner(description=f"Deleting Policy exception"):
         return controller.delete_policy_exception(
-            instance_id=instance_id, policy_id=policy_id
+            partner=Control[partner], instance_id=instance_id, policy_id=policy_id
         )
 
 

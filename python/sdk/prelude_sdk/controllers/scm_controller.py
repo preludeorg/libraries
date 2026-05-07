@@ -276,20 +276,28 @@ class ScmController(HttpController):
         res = self.get(f"{self.account.hq}/scm/exceptions/objects")
         exceptions = res.json()
         if self.account.resolve_enums:
-            self.resolve_enums(exceptions, [(ControlCategory, "category")])
+            self.resolve_enums(
+                exceptions,
+                [(ControlCategory, "control_category"), (SCMCategory, "scm_category")],
+            )
         return exceptions
 
     @verify_credentials
     def create_object_exception(
         self,
-        category: ControlCategory,
+        control_category: ControlCategory,
         filter,
+        scm_category: SCMCategory,
         comment=None,
         name=None,
         expires: str = None,
     ):
         """Create an object exception"""
-        body = dict(category=category.name, filter=filter)
+        body = dict(
+            control_category=control_category.name,
+            filter=filter,
+            scm_category=scm_category.name,
+        )
         if comment:
             body["comment"] = comment
         if name:
@@ -383,9 +391,11 @@ class ScmController(HttpController):
         return res.json()
 
     @verify_credentials
-    def delete_policy_exception(self, instance_id: str, policy_id: str):
+    def delete_policy_exception(
+        self, partner: Control, instance_id: str, policy_id: str
+    ):
         """Delete policy exceptions"""
-        body = dict(instance_id=instance_id, policy_id=policy_id)
+        body = dict(control=partner.name, instance_id=instance_id, policy_id=policy_id)
 
         res = self.delete(f"{self.account.hq}/scm/exceptions/policies", json=body)
         return res.json()

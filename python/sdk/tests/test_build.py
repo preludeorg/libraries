@@ -79,8 +79,8 @@ class TestVST:
 
         assert res.get("compile_job_id") is not None
         res = wait_for_compile(res["compile_job_id"])
-        per_platform_res = res["results"]
         assert "COMPLETE" == res["status"]
+        per_platform_res = res["results"]
         assert 5 == len(per_platform_res)
         for platform in per_platform_res:
             assert "SUCCEEDED" == platform["status"]
