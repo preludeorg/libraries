@@ -28,16 +28,18 @@ const (
 	UnexpectedExecutionError int = 256
 
 	// Not Relevant
-	NotRelevant       	int = 104
-	InsufficientPrivileges 	int = 109
+	NotRelevant            int = 104
+	InsufficientPrivileges int = 109
 
 	// Protected
 	TestCompletedNormally       int = 100
 	FileQuarantinedOnExtraction int = 105
 	NetworkConnectionBlocked    int = 106
-	HostNotVulnerabile          int = 107
-	ExecutionPrevented          int = 126
-	FileQuarantinedOnExecution  int = 127
+	// Deprecated: use HostNotVulnerable instead.
+	HostNotVulnerabile         int = 107
+	HostNotVulnerable          int = 107
+	ExecutionPrevented         int = 126
+	FileQuarantinedOnExecution int = 127
 
 	// Unprotected
 	Unprotected            int = 101
