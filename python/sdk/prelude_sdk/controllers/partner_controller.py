@@ -83,12 +83,14 @@ class PartnerController(HttpController):
         return res.json()
 
     @verify_credentials
-    def list_reports(self, partner: Control, test_id: str | None):
+    def list_reports(self, partner: Control, test_id: str | None = None):
         """Get reports to a partner for a test"""
         params = dict(test_id=test_id) if test_id else dict()
 
         res = self.get(
-            f"{self.account.hq}/partner/reports/{partner.name}", json=params, timeout=30
+            f"{self.account.hq}/partner/reports/{partner.name}",
+            params=params,
+            timeout=30,
         )
         return res.json()
 
@@ -104,7 +106,7 @@ class PartnerController(HttpController):
             ) * 1000
 
         res = self.get(
-            f"{self.account.hq}/partner/observed_detected", json=params, timeout=30
+            f"{self.account.hq}/partner/observed_detected", params=params, timeout=30
         )
         return res.json()
 

@@ -499,7 +499,7 @@ class TestPartner:
         assert res["pagination"]["limit"] == 5
         assert res["pagination"]["offset"] == 0
         assert res["pagination"]["total"] > 0
-        pytest.crowdstrike_advisory_id = res["advisories"][0]["id"]
+        pytest.crowdstrike_advisory_id = str(res["advisories"][0]["id"])
 
     def test_delete_endpoint(
         self,
