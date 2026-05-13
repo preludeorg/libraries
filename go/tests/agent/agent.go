@@ -77,9 +77,9 @@ func VstID() string {
 	return name
 }
 
-// PrivilegeLabel derives the privilege label from the current working directory name, expecting a format like "PreludeHelper_Label".
+// PrivilegeLabel derives the privilege label from the current working directory name, expecting a format like "prelude-helper-Label".
 func PrivilegeLabel() string {
-	label, found := strings.CutPrefix(filepath.Base(cwd), "PreludeHelper_")
+	label, found := strings.CutPrefix(filepath.Base(cwd), "prelude-helper-")
 	if !found {
 		return ""
 	}
