@@ -168,6 +168,23 @@ def setup_threat(unwrap):
 
 
 @pytest.fixture(scope="session")
+def setup_profile(unwrap):
+    if hasattr(pytest, "expected_profile"):
+        return
+
+    build = BuildController(pytest.account)
+    pytest.profile_id = str(uuid.uuid4())
+    pytest.expected_profile = unwrap(build.create_profile)(
+        build,
+        name="test_profile",
+        privilege="privileged",
+        timeout=300,
+        variables={"KEY": "VALUE"},
+        profile_id=pytest.profile_id,
+    )
+
+
+@pytest.fixture(scope="session")
 def setup_detection(unwrap):
     if not pytest.expected_account["features"]["detections"]:
         return

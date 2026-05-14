@@ -148,11 +148,20 @@ class DetectController(HttpController):
         return res.content
 
     @verify_credentials
+    def list_profiles(self, privileges=None):
+        """List all runtime profiles available to an account"""
+        params = dict()
+        if privileges:
+            params["privileges"] = privileges
+        res = self.get(f"{self.account.hq}/detect/profiles", params=params)
+        return res.json()
+
+    @verify_credentials
     def schedule(self, items: list):
         """
         Schedule tests and threats so endpoints will start running them
 
-        Example: items=[dict(run_code='DAILY', tags='grp-1,grp2', test_id='123-123-123'),
+        Example: items=[dict(run_code='DAILY', tags='grp-1,grp2', test_id='123-123-123', profile_id='456-456-456'),
                         dict(run_code='DAILY', tags='grp-1', threat_id='abc-def-ghi')]
         """
         body = dict(items=items)

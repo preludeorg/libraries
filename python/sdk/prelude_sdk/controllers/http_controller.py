@@ -3,7 +3,6 @@ import requests
 
 from requests.adapters import HTTPAdapter, Retry
 
-
 PRELUDE_BACKOFF_FACTOR = int(os.getenv("PRELUDE_BACKOFF_FACTOR", 30))
 PRELUDE_BACKOFF_TOTAL = int(os.getenv("PRELUDE_BACKOFF_TOTAL", 0))
 

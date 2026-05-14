@@ -19,11 +19,30 @@ class BuildController(HttpController):
         return res.json()
 
     @verify_credentials
-    def create_test(self, name, unit, schedulable=None, technique=None, test_id=None):
+    def create_test(
+        self,
+        name,
+        unit,
+        attack_stage=None,
+        frameworks=None,
+        impact=None,
+        schedulable=None,
+        tags=None,
+        technique=None,
+        test_id=None,
+    ):
         """Create or update a test"""
         body = dict(name=name, unit=unit)
+        if attack_stage:
+            body["attack_stage"] = attack_stage
+        if frameworks is not None:
+            body["frameworks"] = frameworks
+        if impact is not None:
+            body["impact"] = impact
         if schedulable is not None:
             body["schedulable"] = schedulable
+        if tags is not None:
+            body["tags"] = tags
         if technique:
             body["technique"] = technique
         if test_id:
@@ -36,20 +55,32 @@ class BuildController(HttpController):
     def update_test(
         self,
         test_id,
+        attack_stage=None,
         crowdstrike_expected_outcome: EDRResponse = None,
+        frameworks=None,
+        impact=None,
         name=None,
         schedulable=None,
+        tags=None,
         technique=None,
         unit=None,
     ):
         """Update a test"""
         body = dict()
+        if attack_stage is not None:
+            body["attack_stage"] = attack_stage
         if crowdstrike_expected_outcome:
             body["expected"] = dict(crowdstrike=crowdstrike_expected_outcome.value)
+        if frameworks is not None:
+            body["frameworks"] = frameworks
+        if impact is not None:
+            body["impact"] = impact
         if name:
             body["name"] = name
         if schedulable is not None:
             body["schedulable"] = schedulable
+        if tags is not None:
+            body["tags"] = tags
         if technique is not None:
             body["technique"] = technique
         if unit:
@@ -261,4 +292,16 @@ class BuildController(HttpController):
     def delete_threat_hunt(self, threat_hunt_id: str):
         """Delete an existing threat hunt"""
         res = self.delete(f"{self.account.hq}/build/threat_hunts/{threat_hunt_id}")
+        return res.json()
+
+    @verify_credentials
+    def create_profile(self, name, privilege, timeout, variables=None, profile_id=None):
+        """Create a runtime profile for VST execution"""
+        body = dict(name=name, privilege=privilege, timeout=timeout)
+        if variables is not None:
+            body["variables"] = variables
+        if profile_id:
+            body["id"] = profile_id
+
+        res = self.post(f"{self.account.hq}/build/profiles", json=body)
         return res.json()

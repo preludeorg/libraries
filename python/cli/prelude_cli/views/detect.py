@@ -185,6 +185,18 @@ def download(controller, test):
                 f.write(code)
 
 
+@detect.command("profiles")
+@click.option(
+    "--privileges", help="comma-separated list of privilege levels to filter by"
+)
+@click.pass_obj
+@pretty_print
+def list_profiles(controller, privileges):
+    """List all runtime profiles"""
+    with Spinner(description="Fetching profiles"):
+        return controller.list_profiles(privileges=privileges)
+
+
 @detect.command("schedule")
 @click.argument("id")
 @click.option(
@@ -209,17 +221,25 @@ def download(controller, test):
         [r.name for r in RunCode if r != RunCode.INVALID], case_sensitive=False
     ),
 )
+@click.option(
+    "-p",
+    "--profile_id",
+    default=None,
+    help="runtime profile ID to use for execution",
+)
 @click.pass_obj
 @pretty_print
-def schedule(controller, id, type, run_code, tags):
+def schedule(controller, id, type, run_code, tags, profile_id):
     """Add test or threat to your queue"""
     with Spinner(description=f"Scheduling {type.lower()}"):
+        item = dict(run_code=run_code, tags=tags)
+        if profile_id:
+            item["profile_id"] = profile_id
         if type == "TEST":
-            return controller.schedule([dict(test_id=id, run_code=run_code, tags=tags)])
+            item["test_id"] = id
         else:
-            return controller.schedule(
-                [dict(threat_id=id, run_code=run_code, tags=tags)]
-            )
+            item["threat_id"] = id
+        return controller.schedule([item])
 
 
 @detect.command("unschedule")
@@ -234,16 +254,26 @@ def schedule(controller, id, type, run_code, tags):
 @click.option(
     "--tags", default="", help="only disable for these tags (comma-separated list)"
 )
+@click.option(
+    "-p",
+    "--profile_id",
+    default=None,
+    help="runtime profile ID",
+)
 @click.confirmation_option(prompt="Are you sure?")
 @click.pass_obj
 @pretty_print
-def unschedule(controller, id, type, tags):
+def unschedule(controller, id, type, tags, profile_id):
     """Remove test or threat from your queue"""
     with Spinner(description=f"Unscheduling {type.lower()}"):
+        item = dict(tags=tags)
+        if profile_id:
+            item["profile_id"] = profile_id
         if type == "TEST":
-            return controller.unschedule([dict(test_id=id, tags=tags)])
+            item["test_id"] = id
         else:
-            return controller.unschedule([dict(threat_id=id, tags=tags)])
+            item["threat_id"] = id
+        return controller.unschedule([item])
 
 
 @detect.command("delete-endpoint")
