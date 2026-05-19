@@ -146,7 +146,7 @@ func RequirePrivilege(level string) {
 	}
 }
 
-// TolerateImpact stops execution with InsufficientPrivileges if the
+// TolerateImpact stops execution with ImpactExceedsTolerance if the
 // given impact level exceeds PRELUDE_TOLERANCE (defaults to 0 if unset or invalid).
 func TolerateImpact(impact int) {
 	tolStr := os.Getenv("PRELUDE_TOLERANCE")
@@ -161,7 +161,6 @@ func TolerateImpact(impact int) {
 		}
 	}
 	if impact > tolerance {
-		// consider Endpoint.ImpactExceedsTolerance later
-		Endpoint.Stop(Endpoint.InsufficientPrivileges)
+		Endpoint.Stop(Endpoint.ImpactExceedsTolerance)
 	}
 }
