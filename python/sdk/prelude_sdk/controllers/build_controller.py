@@ -295,13 +295,13 @@ class BuildController(HttpController):
         return res.json()
 
     @verify_credentials
-    def create_profile(self, name, privilege, timeout, variables=None, profile_id=None):
-        """Create a runtime profile for VST execution"""
+    def create_runtime(self, name, privilege, timeout, variables=None, runtime_id=None):
+        """Create a runtime for VST execution"""
         body = dict(name=name, privilege=privilege, timeout=timeout)
         if variables is not None:
             body["variables"] = variables
-        if profile_id:
-            body["id"] = profile_id
+        if runtime_id:
+            body["id"] = runtime_id
 
-        res = self.post(f"{self.account.hq}/build/profiles", json=body)
+        res = self.post(f"{self.account.hq}/build/runtimes", json=body)
         return res.json()

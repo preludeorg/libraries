@@ -164,7 +164,7 @@ def update_test(
         )
 
 
-@build.command("create-profile")
+@build.command("create-runtime")
 @click.argument("name")
 @click.option(
     "--privilege",
@@ -178,19 +178,19 @@ def update_test(
     type=int,
 )
 @click.option("--variables", help="JSON string of environment variables")
-@click.option("--profile_id", help="profile identifier")
+@click.option("--runtime_id", help="runtime identifier")
 @click.pass_obj
 @pretty_print
-def create_profile(controller, name, privilege, timeout, variables, profile_id):
-    """Create a runtime profile for VST execution"""
-    with Spinner(description="Creating profile"):
+def create_runtime(controller, name, privilege, timeout, variables, runtime_id):
+    """Create a runtime for VST execution"""
+    with Spinner(description="Creating runtime"):
         vars_dict = json.loads(variables) if variables else None
-        return controller.create_profile(
+        return controller.create_runtime(
             name=name,
             privilege=privilege,
             timeout=timeout,
             variables=vars_dict,
-            profile_id=profile_id,
+            runtime_id=runtime_id,
         )
 
 

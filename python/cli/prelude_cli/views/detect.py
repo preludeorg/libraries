@@ -185,16 +185,16 @@ def download(controller, test):
                 f.write(code)
 
 
-@detect.command("profiles")
+@detect.command("runtimes")
 @click.option(
     "--privileges", help="comma-separated list of privilege levels to filter by"
 )
 @click.pass_obj
 @pretty_print
-def list_profiles(controller, privileges):
-    """List all runtime profiles"""
-    with Spinner(description="Fetching profiles"):
-        return controller.list_profiles(privileges=privileges)
+def list_runtimes(controller, privileges):
+    """List all runtimes"""
+    with Spinner(description="Fetching runtimes"):
+        return controller.list_runtimes(privileges=privileges)
 
 
 @detect.command("schedule")
@@ -223,18 +223,18 @@ def list_profiles(controller, privileges):
 )
 @click.option(
     "-p",
-    "--profile_id",
+    "--runtime_id",
     default=None,
-    help="runtime profile ID to use for execution",
+    help="runtime ID to use for execution",
 )
 @click.pass_obj
 @pretty_print
-def schedule(controller, id, type, run_code, tags, profile_id):
+def schedule(controller, id, type, run_code, tags, runtime_id):
     """Add test or threat to your queue"""
     with Spinner(description=f"Scheduling {type.lower()}"):
         item = dict(run_code=run_code, tags=tags)
-        if profile_id:
-            item["profile_id"] = profile_id
+        if runtime_id:
+            item["runtime_id"] = runtime_id
         if type == "TEST":
             item["test_id"] = id
         else:
@@ -256,19 +256,19 @@ def schedule(controller, id, type, run_code, tags, profile_id):
 )
 @click.option(
     "-p",
-    "--profile_id",
+    "--runtime_id",
     default=None,
-    help="runtime profile ID",
+    help="runtime ID",
 )
 @click.confirmation_option(prompt="Are you sure?")
 @click.pass_obj
 @pretty_print
-def unschedule(controller, id, type, tags, profile_id):
+def unschedule(controller, id, type, tags, runtime_id):
     """Remove test or threat from your queue"""
     with Spinner(description=f"Unscheduling {type.lower()}"):
         item = dict(tags=tags)
-        if profile_id:
-            item["profile_id"] = profile_id
+        if runtime_id:
+            item["runtime_id"] = runtime_id
         if type == "TEST":
             item["test_id"] = id
         else:
