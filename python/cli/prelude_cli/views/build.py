@@ -41,7 +41,7 @@ def clone_test(controller, source_test_id):
 @build.command("create-test")
 @click.argument("name")
 @click.option("-a", "--attack_stage", help="attack stage")
-@click.option("--frameworks", help="comma-separated list of frameworks", multiple=True)
+@click.option("--frameworks", help="framework (can be specified multiple times)", multiple=True)
 @click.option("-i", "--impact", help="impact level", type=int)
 @click.option(
     "-s",
@@ -49,7 +49,7 @@ def clone_test(controller, source_test_id):
     help="available to be scheduled by SCHEDULER users",
     is_flag=True,
 )
-@click.option("--tags", help="comma-separated list of tags", multiple=True)
+@click.option("--tags", help="tag (can be specified multiple times)", multiple=True)
 @click.option("-t", "--test", help="test identifier")
 @click.option("-q", "--technique", help="MITRE ATT&CK code [e.g. T1557]")
 @click.option("-u", "--unit", help="unit identifier", required=True)
@@ -119,7 +119,7 @@ def create_test(
         [c.name for c in EDRResponse if c != EDRResponse.INVALID], case_sensitive=False
     ),
 )
-@click.option("--frameworks", help="comma-separated list of frameworks", multiple=True)
+@click.option("--frameworks", help="framework (can be specified multiple times)", multiple=True)
 @click.option("-i", "--impact", help="impact level", type=int)
 @click.option("-n", "--name", help="test name")
 @click.option(
@@ -128,7 +128,7 @@ def create_test(
     help="available to be scheduled by SCHEDULER users",
     is_flag=True,
 )
-@click.option("--tags", help="comma-separated list of tags", multiple=True)
+@click.option("--tags", help="tag (can be specified multiple times)", multiple=True)
 @click.option("-q", "--technique", help="MITRE ATT&CK code [e.g. T1557]")
 @click.option("-u", "--unit", help="unit identifier")
 @click.pass_obj

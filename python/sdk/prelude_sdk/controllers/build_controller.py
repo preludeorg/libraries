@@ -33,7 +33,7 @@ class BuildController(HttpController):
     ):
         """Create or update a test"""
         body = dict(name=name, unit=unit)
-        if attack_stage:
+        if attack_stage is not None:
             body["attack_stage"] = attack_stage
         if frameworks is not None:
             body["frameworks"] = frameworks

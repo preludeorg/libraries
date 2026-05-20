@@ -177,7 +177,7 @@ class DetectController(HttpController):
         """
         Unschedule tests and threats so endpoints will stop running them
 
-        Example: items=[dict(tags='grp-1,grp2', test_id='123-123-123'),
+        Example: items=[dict(tags='grp-1,grp2', test_id='123-123-123', profile_id='456-456-456'),
                         dict(tags='grp-1', threat_id='abc-def-ghi')]
         """
         body = dict(items=items)
