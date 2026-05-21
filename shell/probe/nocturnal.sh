@@ -20,10 +20,10 @@ do
         chmod +x "$vst/$uuid"
         echo "Invoking $uuid"
         cd "$vst" || exit 1
-        ./"$uuid" & test_pid=$!
+        PRELUDE_TIMEOUT=60 ./"$uuid" & test_pid=$!
         elapsed_time=0
         while kill -0 $test_pid 2> /dev/null; do
-          if [ $elapsed_time -ge 45 ]; then
+          if [ $elapsed_time -ge 75 ]; then
             disown $test_pid
             kill -9 $test_pid 2> /dev/null
             echo "TIMEOUT: Killed long running test ${uuid} (${test_pid})"
