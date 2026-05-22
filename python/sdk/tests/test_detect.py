@@ -12,7 +12,7 @@ from prelude_sdk.models.codes import RunCode
 
 
 @pytest.mark.order(5)
-@pytest.mark.usefixtures("setup_account", "setup_test", "setup_threat")
+@pytest.mark.usefixtures("setup_account", "setup_test", "setup_threat", "setup_runtime")
 class TestDetect:
 
     def setup_class(self):
@@ -173,6 +173,65 @@ class TestDetect:
         )
         pytest.expected_account["queue"] = [
             q for q in pytest.expected_account["queue"] if q["test"] != pytest.test_id
+        ]
+        queue = unwrap(self.iam.get_account)(self.iam)["queue"]
+        assert queue_length - 1 == len(queue), json.dumps(queue, indent=2)
+
+    def test_schedule_test_with_runtime(self, unwrap):
+        if not pytest.expected_account["features"]["detect"]:
+            pytest.skip("DETECT feature not enabled")
+
+        queue_length = len(pytest.expected_account["queue"])
+
+        res = unwrap(self.detect.schedule)(
+            self.detect,
+            [
+                dict(
+                    test_id=pytest.test_id,
+                    run_code=RunCode.DEBUG.name,
+                    tags=self.updated_tags,
+                    runtime_id=pytest.runtime_id,
+                )
+            ],
+        )
+        pytest.expected_account["queue"].append(res[0])
+        assert 1 == len(res), json.dumps(res, indent=2)
+        diffs = check_dict_items(
+            dict(
+                test=pytest.test_id,
+                run_code=RunCode.DEBUG.value,
+                tag=self.updated_tags,
+                runtime=pytest.runtime_id,
+            ),
+            res[0],
+        )
+        assert not diffs, json.dumps(diffs, indent=2)
+
+        queue = unwrap(self.iam.get_account)(self.iam)["queue"]
+        assert queue_length + 1 == len(queue), json.dumps(queue, indent=2)
+
+    def test_unschedule_test_with_runtime(self, unwrap):
+        if not pytest.expected_account["features"]["detect"]:
+            pytest.skip("DETECT feature not enabled")
+
+        queue_length = len(pytest.expected_account["queue"])
+
+        unwrap(self.detect.unschedule)(
+            self.detect,
+            [
+                dict(
+                    test_id=pytest.test_id,
+                    tags=self.updated_tags,
+                    runtime_id=pytest.runtime_id,
+                )
+            ],
+        )
+        pytest.expected_account["queue"] = [
+            q
+            for q in pytest.expected_account["queue"]
+            if not (
+                q["test"] == pytest.test_id and q.get("runtime") == pytest.runtime_id
+            )
         ]
         queue = unwrap(self.iam.get_account)(self.iam)["queue"]
         assert queue_length - 1 == len(queue), json.dumps(queue, indent=2)
