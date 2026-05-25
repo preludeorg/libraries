@@ -234,7 +234,12 @@ def update_test(
         }
         params.update(overrides)
 
-    crwd = params.get("crowdstrike_expected", crowdstrike_expected)
+    expected = params.get("expected") or {}
+    crwd = (
+        params.get("crowdstrike_expected")
+        or expected.get("crowdstrike")
+        or crowdstrike_expected
+    )
     with Spinner(description="Updating test"):
         return controller.update_test(
             attack_stage=params.get("attack_stage", attack_stage),
