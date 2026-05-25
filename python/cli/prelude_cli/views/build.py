@@ -59,7 +59,7 @@ def clone_test(controller, source_test_id):
     "-s",
     "--schedulable",
     help="available to be scheduled by SCHEDULER users",
-    is_flag=True,
+    flag_value=True,
 )
 @click.option("--tags", help="tag (can be specified multiple times)", multiple=True)
 @click.option("-t", "--test", help="test identifier")
@@ -103,41 +103,47 @@ def create_test(
         with open(dir, "w", encoding="utf8") as code:
             code.write(template_body)
 
+    metadata = json.loads(metadata) if metadata else None
+    frameworks = list(frameworks) if frameworks else None
+    tags = list(tags) if tags else None
+
+    params = {}
     if config and os.path.exists(config):
         with open(config, "r") as f:
-            config_data = json.load(f)
-        name = config_data.get("name") or name
-        attack_stage = config_data.get("attack_stage") or attack_stage
-        frameworks = config_data.get("frameworks") or (
-            list(frameworks) if frameworks else None
-        )
-        impact = config_data.get("impact") or impact
-        metadata = config_data.get("metadata") or (
-            json.loads(metadata) if metadata else None
-        )
-        privilege = config_data.get("privilege") or privilege
-        schedulable = (
-            config_data.get("schedulable") if schedulable is None else schedulable
-        )
-        tags = config_data.get("tags") or (list(tags) if tags else None)
-        technique = config_data.get("technique") or technique
-        unit = config_data.get("unit") or unit
-    if not unit:
+            params = json.load(f)
+        overrides = {
+            k: v
+            for k, v in dict(
+                attack_stage=attack_stage,
+                frameworks=frameworks,
+                impact=impact,
+                metadata=metadata,
+                privilege=privilege,
+                schedulable=schedulable,
+                tags=tags,
+                technique=technique,
+                unit=unit,
+            ).items()
+            if v is not None
+        }
+        params.update(overrides)
+
+    if not params.get("unit", unit):
         raise ValueError("Unit is required to create a test")
 
     with Spinner(description="Creating new test"):
         res = controller.create_test(
             name=name,
-            attack_stage=attack_stage,
-            frameworks=frameworks,
-            impact=impact,
-            metadata=metadata,
-            privilege=privilege,
-            schedulable=schedulable,
-            tags=tags,
+            attack_stage=params.get("attack_stage", attack_stage),
+            frameworks=params.get("frameworks", frameworks),
+            impact=params.get("impact", impact),
+            metadata=params.get("metadata", metadata),
+            privilege=params.get("privilege", privilege),
+            schedulable=params.get("schedulable", schedulable),
+            tags=params.get("tags", tags),
             test_id=test,
-            technique=technique,
-            unit=unit,
+            technique=params.get("technique", technique),
+            unit=params.get("unit", unit),
         )
 
     if not test:
@@ -177,7 +183,7 @@ def create_test(
     "-s",
     "--schedulable",
     help="available to be scheduled by SCHEDULER users",
-    is_flag=True,
+    flag_value=True,
 )
 @click.option("--tags", help="tag (can be specified multiple times)", multiple=True)
 @click.option("-q", "--technique", help="MITRE ATT&CK code [e.g. T1557]")
@@ -201,45 +207,48 @@ def update_test(
     unit,
 ):
     """Update a security test"""
+    metadata = json.loads(metadata) if metadata else None
+    frameworks = list(frameworks) if frameworks else None
+    tags = list(tags) if tags else None
+
+    params = {}
     if config and os.path.exists(config):
         with open(config, "r") as f:
-            config_data = json.load(f)
-        name = config_data.get("name") or name
-        attack_stage = config_data.get("attack_stage") or attack_stage
-        crowdstrike_expected = (
-            config_data.get("crowdstrike_expected") or crowdstrike_expected
-        )
-        frameworks = config_data.get("frameworks") or (
-            list(frameworks) if frameworks else None
-        )
-        impact = config_data.get("impact") or impact
-        metadata = config_data.get("metadata") or (
-            json.loads(metadata) if metadata else None
-        )
-        privilege = config_data.get("privilege") or privilege
-        schedulable = (
-            config_data.get("schedulable") if schedulable is None else schedulable
-        )
-        tags = config_data.get("tags") or (list(tags) if tags else None)
-        technique = config_data.get("technique") or technique
-        unit = config_data.get("unit") or unit
+            params = json.load(f)
+        overrides = {
+            k: v
+            for k, v in dict(
+                attack_stage=attack_stage,
+                crowdstrike_expected=crowdstrike_expected,
+                frameworks=frameworks,
+                impact=impact,
+                metadata=metadata,
+                name=name,
+                privilege=privilege,
+                schedulable=schedulable,
+                tags=tags,
+                technique=technique,
+                unit=unit,
+            ).items()
+            if v is not None
+        }
+        params.update(overrides)
 
+    crwd = params.get("crowdstrike_expected", crowdstrike_expected)
     with Spinner(description="Updating test"):
         return controller.update_test(
-            attack_stage=attack_stage,
-            crowdstrike_expected_outcome=(
-                EDRResponse[crowdstrike_expected] if crowdstrike_expected else None
-            ),
-            frameworks=frameworks,
-            impact=impact,
-            metadata=metadata,
-            name=name,
-            privilege=privilege,
-            schedulable=schedulable,
-            tags=tags,
-            technique=technique,
+            attack_stage=params.get("attack_stage", attack_stage),
+            crowdstrike_expected_outcome=(EDRResponse[crwd] if crwd else None),
+            frameworks=params.get("frameworks", frameworks),
+            impact=params.get("impact", impact),
+            metadata=params.get("metadata", metadata),
+            name=params.get("name", name),
+            privilege=params.get("privilege", privilege),
+            schedulable=params.get("schedulable", schedulable),
+            tags=params.get("tags", tags),
+            technique=params.get("technique", technique),
             test_id=test,
-            unit=unit,
+            unit=params.get("unit", unit),
         )
 
 

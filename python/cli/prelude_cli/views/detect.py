@@ -178,12 +178,11 @@ def download(controller, test):
     """Download a test to your local environment"""
     Path(test).mkdir(parents=True, exist_ok=True)
     with Spinner(description="Downloading test"):
-        test = controller.get_test(test_id=test)
+        test_data = controller.get_test(test_id=test)
         with open(PurePath(test, "config.json"), "w") as f:
-            json.dump(test, f, indent=4)
+            json.dump(test_data, f, indent=4)
 
-        attachments = controller.get_test(test_id=test).get("attachments")
-        for attach in attachments:
+        for attach in test_data.get("attachments", []):
             code = controller.download(test_id=test, filename=attach)
             with open(PurePath(test, attach), "wb") as f:
                 f.write(code)
