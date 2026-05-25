@@ -26,6 +26,8 @@ class BuildController(HttpController):
         attack_stage=None,
         frameworks=None,
         impact=None,
+        metadata=None,
+        privilege=None,
         schedulable=None,
         tags=None,
         technique=None,
@@ -39,6 +41,10 @@ class BuildController(HttpController):
             body["frameworks"] = frameworks
         if impact is not None:
             body["impact"] = impact
+        if metadata is not None:
+            body["metadata"] = metadata
+        if privilege is not None:
+            body["privilege"] = privilege
         if schedulable is not None:
             body["schedulable"] = schedulable
         if tags is not None:
@@ -59,7 +65,9 @@ class BuildController(HttpController):
         crowdstrike_expected_outcome: EDRResponse = None,
         frameworks=None,
         impact=None,
+        metadata=None,
         name=None,
+        privilege=None,
         schedulable=None,
         tags=None,
         technique=None,
@@ -75,8 +83,12 @@ class BuildController(HttpController):
             body["frameworks"] = frameworks
         if impact is not None:
             body["impact"] = impact
+        if metadata is not None:
+            body["metadata"] = metadata
         if name:
             body["name"] = name
+        if privilege is not None:
+            body["privilege"] = privilege
         if schedulable is not None:
             body["schedulable"] = schedulable
         if tags is not None:

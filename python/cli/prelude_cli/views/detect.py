@@ -1,5 +1,6 @@
 import asyncio
 import click
+import json
 import yaml
 
 from datetime import datetime, time, timedelta, timezone
@@ -177,8 +178,11 @@ def download(controller, test):
     """Download a test to your local environment"""
     Path(test).mkdir(parents=True, exist_ok=True)
     with Spinner(description="Downloading test"):
-        attachments = controller.get_test(test_id=test).get("attachments")
+        test = controller.get_test(test_id=test)
+        with open(PurePath(test, "config.json"), "w") as f:
+            json.dump(test, f, indent=4)
 
+        attachments = controller.get_test(test_id=test).get("attachments")
         for attach in attachments:
             code = controller.download(test_id=test, filename=attach)
             with open(PurePath(test, attach), "wb") as f:

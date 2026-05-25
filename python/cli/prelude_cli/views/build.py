@@ -41,8 +41,20 @@ def clone_test(controller, source_test_id):
 @build.command("create-test")
 @click.argument("name")
 @click.option("-a", "--attack_stage", help="attack stage")
-@click.option("--frameworks", help="framework (can be specified multiple times)", multiple=True)
+@click.option(
+    "--config",
+    help="filepath to JSON config file with test parameters (will be overridden by any CLI flags provided)",
+)
+@click.option(
+    "--frameworks", help="framework (can be specified multiple times)", multiple=True
+)
 @click.option("-i", "--impact", help="impact level", type=int)
+@click.option("-m", "--metadata", help="JSON string of additional test metadata")
+@click.option(
+    "-p",
+    "--privilege",
+    help="privilege level (e.g. privileged, unprivileged, or custom label)",
+)
 @click.option(
     "-s",
     "--schedulable",
@@ -52,15 +64,18 @@ def clone_test(controller, source_test_id):
 @click.option("--tags", help="tag (can be specified multiple times)", multiple=True)
 @click.option("-t", "--test", help="test identifier")
 @click.option("-q", "--technique", help="MITRE ATT&CK code [e.g. T1557]")
-@click.option("-u", "--unit", help="unit identifier", required=True)
+@click.option("-u", "--unit", help="unit identifier")
 @click.pass_obj
 @pretty_print
 def create_test(
     controller,
     name,
     attack_stage,
+    config,
     frameworks,
     impact,
+    metadata,
+    privilege,
     schedulable,
     tags,
     test,
@@ -88,14 +103,38 @@ def create_test(
         with open(dir, "w", encoding="utf8") as code:
             code.write(template_body)
 
+    if config and os.path.exists(config):
+        with open(config, "r") as f:
+            config_data = json.load(f)
+        name = config_data.get("name") or name
+        attack_stage = config_data.get("attack_stage") or attack_stage
+        frameworks = config_data.get("frameworks") or (
+            list(frameworks) if frameworks else None
+        )
+        impact = config_data.get("impact") or impact
+        metadata = config_data.get("metadata") or (
+            json.loads(metadata) if metadata else None
+        )
+        privilege = config_data.get("privilege") or privilege
+        schedulable = (
+            config_data.get("schedulable") if schedulable is None else schedulable
+        )
+        tags = config_data.get("tags") or (list(tags) if tags else None)
+        technique = config_data.get("technique") or technique
+        unit = config_data.get("unit") or unit
+    if not unit:
+        raise ValueError("Unit is required to create a test")
+
     with Spinner(description="Creating new test"):
         res = controller.create_test(
             name=name,
             attack_stage=attack_stage,
-            frameworks=list(frameworks) if frameworks else None,
+            frameworks=frameworks,
             impact=impact,
+            metadata=metadata,
+            privilege=privilege,
             schedulable=schedulable,
-            tags=list(tags) if tags else None,
+            tags=tags,
             test_id=test,
             technique=technique,
             unit=unit,
@@ -112,6 +151,10 @@ def create_test(
 @click.argument("test")
 @click.option("-a", "--attack_stage", help="attack stage")
 @click.option(
+    "--config",
+    help="filepath to JSON config file with test parameters (will be overridden by any CLI flags provided)",
+)
+@click.option(
     "-c",
     "--crowdstrike_expected",
     help="Crowdstrike expected outcome",
@@ -119,9 +162,17 @@ def create_test(
         [c.name for c in EDRResponse if c != EDRResponse.INVALID], case_sensitive=False
     ),
 )
-@click.option("--frameworks", help="framework (can be specified multiple times)", multiple=True)
+@click.option(
+    "--frameworks", help="framework (can be specified multiple times)", multiple=True
+)
 @click.option("-i", "--impact", help="impact level", type=int)
+@click.option("-m", "--metadata", help="JSON string of additional test metadata")
 @click.option("-n", "--name", help="test name")
+@click.option(
+    "-p",
+    "--privilege",
+    help="privilege level (e.g. privileged, unprivileged, or custom label)",
+)
 @click.option(
     "-s",
     "--schedulable",
@@ -137,27 +188,55 @@ def update_test(
     controller,
     test,
     attack_stage,
+    config,
     crowdstrike_expected,
     frameworks,
     impact,
+    metadata,
     name,
+    privilege,
     schedulable,
     tags,
     technique,
     unit,
 ):
     """Update a security test"""
+    if config and os.path.exists(config):
+        with open(config, "r") as f:
+            config_data = json.load(f)
+        name = config_data.get("name") or name
+        attack_stage = config_data.get("attack_stage") or attack_stage
+        crowdstrike_expected = (
+            config_data.get("crowdstrike_expected") or crowdstrike_expected
+        )
+        frameworks = config_data.get("frameworks") or (
+            list(frameworks) if frameworks else None
+        )
+        impact = config_data.get("impact") or impact
+        metadata = config_data.get("metadata") or (
+            json.loads(metadata) if metadata else None
+        )
+        privilege = config_data.get("privilege") or privilege
+        schedulable = (
+            config_data.get("schedulable") if schedulable is None else schedulable
+        )
+        tags = config_data.get("tags") or (list(tags) if tags else None)
+        technique = config_data.get("technique") or technique
+        unit = config_data.get("unit") or unit
+
     with Spinner(description="Updating test"):
         return controller.update_test(
             attack_stage=attack_stage,
             crowdstrike_expected_outcome=(
                 EDRResponse[crowdstrike_expected] if crowdstrike_expected else None
             ),
-            frameworks=list(frameworks) if frameworks else None,
+            frameworks=frameworks,
             impact=impact,
+            metadata=metadata,
             name=name,
+            privilege=privilege,
             schedulable=schedulable,
-            tags=list(tags) if tags else None,
+            tags=tags,
             technique=technique,
             test_id=test,
             unit=unit,
