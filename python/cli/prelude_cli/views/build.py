@@ -41,31 +41,56 @@ def clone_test(controller, source_test_id):
 @build.command("create-test")
 @click.argument("name")
 @click.option("-a", "--attack_stage", help="attack stage")
-@click.option("--frameworks", help="framework (can be specified multiple times)", multiple=True)
+@click.option(
+    "--config",
+    help="filepath to JSON config file with test parameters (will be overridden by any CLI flags provided)",
+)
+@click.option(
+    "--frameworks", help="framework (can be specified multiple times)", multiple=True
+)
 @click.option("-i", "--impact", help="impact level", type=int)
+@click.option("-m", "--metadata", help="JSON string of additional test metadata")
+@click.option(
+    "-p",
+    "--privilege",
+    help="privilege level (e.g. privileged, unprivileged, or custom label)",
+)
+@click.option(
+    "--requires_runtime/--no-requires_runtime",
+    help="test requires a runtime profile",
+    default=None,
+)
 @click.option(
     "-s",
-    "--schedulable",
+    "--schedulable/--no-schedulable",
     help="available to be scheduled by SCHEDULER users",
-    is_flag=True,
+    default=None,
 )
 @click.option("--tags", help="tag (can be specified multiple times)", multiple=True)
 @click.option("-t", "--test", help="test identifier")
 @click.option("-q", "--technique", help="MITRE ATT&CK code [e.g. T1557]")
-@click.option("-u", "--unit", help="unit identifier", required=True)
+@click.option("--timeout", help="execution timeout in seconds", type=int)
+@click.option("-u", "--unit", help="unit identifier")
+@click.option("--variables", help="JSON string of runtime variables")
 @click.pass_obj
 @pretty_print
 def create_test(
     controller,
     name,
     attack_stage,
+    config,
     frameworks,
     impact,
+    metadata,
+    privilege,
+    requires_runtime,
     schedulable,
     tags,
     test,
     technique,
+    timeout,
     unit,
+    variables,
 ):
     """Create a security test"""
 
@@ -88,17 +113,54 @@ def create_test(
         with open(dir, "w", encoding="utf8") as code:
             code.write(template_body)
 
+    metadata = json.loads(metadata) if metadata else None
+    frameworks = list(frameworks) if frameworks else None
+    tags = list(tags) if tags else None
+    variables = json.loads(variables) if variables else None
+
+    params = {}
+    if config and os.path.exists(config):
+        with open(config, "r") as f:
+            params = json.load(f)
+        overrides = {
+            k: v
+            for k, v in dict(
+                attack_stage=attack_stage,
+                frameworks=frameworks,
+                impact=impact,
+                metadata=metadata,
+                privilege=privilege,
+                requires_runtime=requires_runtime,
+                schedulable=schedulable,
+                tags=tags,
+                technique=technique,
+                timeout=timeout,
+                unit=unit,
+                variables=variables,
+            ).items()
+            if v is not None
+        }
+        params.update(overrides)
+
+    if not params.get("unit", unit):
+        raise ValueError("Unit is required to create a test")
+
     with Spinner(description="Creating new test"):
         res = controller.create_test(
             name=name,
-            attack_stage=attack_stage,
-            frameworks=list(frameworks) if frameworks else None,
-            impact=impact,
-            schedulable=schedulable,
-            tags=list(tags) if tags else None,
+            attack_stage=params.get("attack_stage", attack_stage),
+            frameworks=params.get("frameworks", frameworks),
+            impact=params.get("impact", impact),
+            metadata=params.get("metadata", metadata),
+            privilege=params.get("privilege", privilege),
+            requires_runtime=params.get("requires_runtime", requires_runtime),
+            schedulable=params.get("schedulable", schedulable),
+            tags=params.get("tags", tags),
             test_id=test,
-            technique=technique,
-            unit=unit,
+            technique=params.get("technique", technique),
+            timeout=params.get("timeout", timeout),
+            unit=params.get("unit", unit),
+            variables=params.get("variables", variables),
         )
 
     if not test:
@@ -112,6 +174,10 @@ def create_test(
 @click.argument("test")
 @click.option("-a", "--attack_stage", help="attack stage")
 @click.option(
+    "--config",
+    help="filepath to JSON config file with test parameters (will be overridden by any CLI flags provided)",
+)
+@click.option(
     "-c",
     "--crowdstrike_expected",
     help="Crowdstrike expected outcome",
@@ -119,48 +185,109 @@ def create_test(
         [c.name for c in EDRResponse if c != EDRResponse.INVALID], case_sensitive=False
     ),
 )
-@click.option("--frameworks", help="framework (can be specified multiple times)", multiple=True)
+@click.option(
+    "--frameworks", help="framework (can be specified multiple times)", multiple=True
+)
 @click.option("-i", "--impact", help="impact level", type=int)
+@click.option("-m", "--metadata", help="JSON string of additional test metadata")
 @click.option("-n", "--name", help="test name")
 @click.option(
+    "-p",
+    "--privilege",
+    help="privilege level (e.g. privileged, unprivileged, or custom label)",
+)
+@click.option(
+    "--requires_runtime/--no-requires_runtime",
+    help="test requires a runtime profile",
+    default=None,
+)
+@click.option(
     "-s",
-    "--schedulable",
+    "--schedulable/--no-schedulable",
     help="available to be scheduled by SCHEDULER users",
-    is_flag=True,
+    default=None,
 )
 @click.option("--tags", help="tag (can be specified multiple times)", multiple=True)
 @click.option("-q", "--technique", help="MITRE ATT&CK code [e.g. T1557]")
+@click.option("--timeout", help="execution timeout in seconds", type=int)
 @click.option("-u", "--unit", help="unit identifier")
+@click.option("--variables", help="JSON string of runtime variables")
 @click.pass_obj
 @pretty_print
 def update_test(
     controller,
     test,
     attack_stage,
+    config,
     crowdstrike_expected,
     frameworks,
     impact,
+    metadata,
     name,
+    privilege,
+    requires_runtime,
     schedulable,
     tags,
     technique,
+    timeout,
     unit,
+    variables,
 ):
     """Update a security test"""
+    metadata = json.loads(metadata) if metadata else None
+    frameworks = list(frameworks) if frameworks else None
+    tags = list(tags) if tags else None
+    variables = json.loads(variables) if variables else None
+
+    params = {}
+    if config and os.path.exists(config):
+        with open(config, "r") as f:
+            params = json.load(f)
+        overrides = {
+            k: v
+            for k, v in dict(
+                attack_stage=attack_stage,
+                crowdstrike_expected=crowdstrike_expected,
+                frameworks=frameworks,
+                impact=impact,
+                metadata=metadata,
+                name=name,
+                privilege=privilege,
+                requires_runtime=requires_runtime,
+                schedulable=schedulable,
+                tags=tags,
+                technique=technique,
+                timeout=timeout,
+                unit=unit,
+                variables=variables,
+            ).items()
+            if v is not None
+        }
+        params.update(overrides)
+
+    expected = params.get("expected") or {}
+    crwd = (
+        params.get("crowdstrike_expected")
+        or expected.get("crowdstrike")
+        or crowdstrike_expected
+    )
     with Spinner(description="Updating test"):
         return controller.update_test(
-            attack_stage=attack_stage,
-            crowdstrike_expected_outcome=(
-                EDRResponse[crowdstrike_expected] if crowdstrike_expected else None
-            ),
-            frameworks=list(frameworks) if frameworks else None,
-            impact=impact,
-            name=name,
-            schedulable=schedulable,
-            tags=list(tags) if tags else None,
-            technique=technique,
+            attack_stage=params.get("attack_stage", attack_stage),
+            crowdstrike_expected_outcome=(EDRResponse[crwd] if crwd else None),
+            frameworks=params.get("frameworks", frameworks),
+            impact=params.get("impact", impact),
+            metadata=params.get("metadata", metadata),
+            name=params.get("name", name),
+            privilege=params.get("privilege", privilege),
+            requires_runtime=params.get("requires_runtime", requires_runtime),
+            schedulable=params.get("schedulable", schedulable),
+            tags=params.get("tags", tags),
+            technique=params.get("technique", technique),
             test_id=test,
-            unit=unit,
+            timeout=params.get("timeout", timeout),
+            unit=params.get("unit", unit),
+            variables=params.get("variables", variables),
         )
 
 
