@@ -28,10 +28,13 @@ class BuildController(HttpController):
         impact=None,
         metadata=None,
         privilege=None,
+        requires_runtime=None,
         schedulable=None,
         tags=None,
         technique=None,
         test_id=None,
+        timeout=None,
+        variables=None,
     ):
         """Create or update a test"""
         body = dict(name=name, unit=unit)
@@ -45,6 +48,8 @@ class BuildController(HttpController):
             body["metadata"] = metadata
         if privilege is not None:
             body["privilege"] = privilege
+        if requires_runtime is not None:
+            body["requires_runtime"] = requires_runtime
         if schedulable is not None:
             body["schedulable"] = schedulable
         if tags is not None:
@@ -53,6 +58,10 @@ class BuildController(HttpController):
             body["technique"] = technique
         if test_id:
             body["id"] = test_id
+        if timeout is not None:
+            body["timeout"] = timeout
+        if variables is not None:
+            body["variables"] = variables
 
         res = self.post(f"{self.account.hq}/build/tests", json=body)
         return res.json()
@@ -68,10 +77,13 @@ class BuildController(HttpController):
         metadata=None,
         name=None,
         privilege=None,
+        requires_runtime=None,
         schedulable=None,
         tags=None,
         technique=None,
+        timeout=None,
         unit=None,
+        variables=None,
     ):
         """Update a test"""
         body = dict()
@@ -89,14 +101,20 @@ class BuildController(HttpController):
             body["name"] = name
         if privilege is not None:
             body["privilege"] = privilege
+        if requires_runtime is not None:
+            body["requires_runtime"] = requires_runtime
         if schedulable is not None:
             body["schedulable"] = schedulable
         if tags is not None:
             body["tags"] = tags
         if technique is not None:
             body["technique"] = technique
+        if timeout is not None:
+            body["timeout"] = timeout
         if unit:
             body["unit"] = unit
+        if variables is not None:
+            body["variables"] = variables
 
         res = self.post(f"{self.account.hq}/build/tests/{test_id}", json=body)
         return res.json()

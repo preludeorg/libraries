@@ -56,6 +56,11 @@ def clone_test(controller, source_test_id):
     help="privilege level (e.g. privileged, unprivileged, or custom label)",
 )
 @click.option(
+    "--requires_runtime",
+    help="test requires a runtime profile",
+    flag_value=True,
+)
+@click.option(
     "-s",
     "--schedulable",
     help="available to be scheduled by SCHEDULER users",
@@ -64,7 +69,9 @@ def clone_test(controller, source_test_id):
 @click.option("--tags", help="tag (can be specified multiple times)", multiple=True)
 @click.option("-t", "--test", help="test identifier")
 @click.option("-q", "--technique", help="MITRE ATT&CK code [e.g. T1557]")
+@click.option("--timeout", help="execution timeout in seconds", type=int)
 @click.option("-u", "--unit", help="unit identifier")
+@click.option("--variables", help="JSON string of runtime variables")
 @click.pass_obj
 @pretty_print
 def create_test(
@@ -76,11 +83,14 @@ def create_test(
     impact,
     metadata,
     privilege,
+    requires_runtime,
     schedulable,
     tags,
     test,
     technique,
+    timeout,
     unit,
+    variables,
 ):
     """Create a security test"""
 
@@ -106,6 +116,7 @@ def create_test(
     metadata = json.loads(metadata) if metadata else None
     frameworks = list(frameworks) if frameworks else None
     tags = list(tags) if tags else None
+    variables = json.loads(variables) if variables else None
 
     params = {}
     if config and os.path.exists(config):
@@ -119,10 +130,13 @@ def create_test(
                 impact=impact,
                 metadata=metadata,
                 privilege=privilege,
+                requires_runtime=requires_runtime,
                 schedulable=schedulable,
                 tags=tags,
                 technique=technique,
+                timeout=timeout,
                 unit=unit,
+                variables=variables,
             ).items()
             if v is not None
         }
@@ -139,11 +153,14 @@ def create_test(
             impact=params.get("impact", impact),
             metadata=params.get("metadata", metadata),
             privilege=params.get("privilege", privilege),
+            requires_runtime=params.get("requires_runtime", requires_runtime),
             schedulable=params.get("schedulable", schedulable),
             tags=params.get("tags", tags),
             test_id=test,
             technique=params.get("technique", technique),
+            timeout=params.get("timeout", timeout),
             unit=params.get("unit", unit),
+            variables=params.get("variables", variables),
         )
 
     if not test:
@@ -180,6 +197,11 @@ def create_test(
     help="privilege level (e.g. privileged, unprivileged, or custom label)",
 )
 @click.option(
+    "--requires_runtime",
+    help="test requires a runtime profile",
+    flag_value=True,
+)
+@click.option(
     "-s",
     "--schedulable",
     help="available to be scheduled by SCHEDULER users",
@@ -187,7 +209,9 @@ def create_test(
 )
 @click.option("--tags", help="tag (can be specified multiple times)", multiple=True)
 @click.option("-q", "--technique", help="MITRE ATT&CK code [e.g. T1557]")
+@click.option("--timeout", help="execution timeout in seconds", type=int)
 @click.option("-u", "--unit", help="unit identifier")
+@click.option("--variables", help="JSON string of runtime variables")
 @click.pass_obj
 @pretty_print
 def update_test(
@@ -201,15 +225,19 @@ def update_test(
     metadata,
     name,
     privilege,
+    requires_runtime,
     schedulable,
     tags,
     technique,
+    timeout,
     unit,
+    variables,
 ):
     """Update a security test"""
     metadata = json.loads(metadata) if metadata else None
     frameworks = list(frameworks) if frameworks else None
     tags = list(tags) if tags else None
+    variables = json.loads(variables) if variables else None
 
     params = {}
     if config and os.path.exists(config):
@@ -225,10 +253,13 @@ def update_test(
                 metadata=metadata,
                 name=name,
                 privilege=privilege,
+                requires_runtime=requires_runtime,
                 schedulable=schedulable,
                 tags=tags,
                 technique=technique,
+                timeout=timeout,
                 unit=unit,
+                variables=variables,
             ).items()
             if v is not None
         }
@@ -249,11 +280,14 @@ def update_test(
             metadata=params.get("metadata", metadata),
             name=params.get("name", name),
             privilege=params.get("privilege", privilege),
+            requires_runtime=params.get("requires_runtime", requires_runtime),
             schedulable=params.get("schedulable", schedulable),
             tags=params.get("tags", tags),
             technique=params.get("technique", technique),
             test_id=test,
+            timeout=params.get("timeout", timeout),
             unit=params.get("unit", unit),
+            variables=params.get("variables", variables),
         )
 
 
