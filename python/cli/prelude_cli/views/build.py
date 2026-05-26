@@ -56,15 +56,15 @@ def clone_test(controller, source_test_id):
     help="privilege level (e.g. privileged, unprivileged, or custom label)",
 )
 @click.option(
-    "--requires_runtime",
+    "--requires_runtime/--no-requires_runtime",
     help="test requires a runtime profile",
-    flag_value=True,
+    default=None,
 )
 @click.option(
     "-s",
-    "--schedulable",
+    "--schedulable/--no-schedulable",
     help="available to be scheduled by SCHEDULER users",
-    flag_value=True,
+    default=None,
 )
 @click.option("--tags", help="tag (can be specified multiple times)", multiple=True)
 @click.option("-t", "--test", help="test identifier")
@@ -197,15 +197,15 @@ def create_test(
     help="privilege level (e.g. privileged, unprivileged, or custom label)",
 )
 @click.option(
-    "--requires_runtime",
+    "--requires_runtime/--no-requires_runtime",
     help="test requires a runtime profile",
-    flag_value=True,
+    default=None,
 )
 @click.option(
     "-s",
-    "--schedulable",
+    "--schedulable/--no-schedulable",
     help="available to be scheduled by SCHEDULER users",
-    flag_value=True,
+    default=None,
 )
 @click.option("--tags", help="tag (can be specified multiple times)", multiple=True)
 @click.option("-q", "--technique", help="MITRE ATT&CK code [e.g. T1557]")
