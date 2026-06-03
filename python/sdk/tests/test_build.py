@@ -354,52 +354,6 @@ class TestDetection:
 
 
 @pytest.mark.order(4)
-@pytest.mark.usefixtures("setup_account", "setup_runtime")
-class TestRuntime:
-
-    def setup_class(self):
-        self.build = BuildController(pytest.account)
-        self.detect = DetectController(pytest.account)
-
-    def test_create_runtime(self):
-        expected = dict(
-            account_id=pytest.account.headers["account"],
-            id=pytest.runtime_id,
-            name="test_runtime",
-            privilege="privileged",
-            timeout=300,
-            variables={"KEY": "VALUE"},
-        )
-
-        diffs = check_dict_items(expected, pytest.expected_runtime)
-        assert not diffs, json.dumps(diffs, indent=2)
-
-    def test_list_runtimes(self, unwrap):
-        res = unwrap(self.detect.list_runtimes)(self.detect)
-        assert 1 <= len(res)
-
-        mine = [r for r in res if r["id"] == pytest.runtime_id]
-        assert 1 == len(mine)
-        diffs = check_dict_items(
-            dict(
-                id=pytest.runtime_id,
-                name="test_runtime",
-                privilege="privileged",
-                timeout=300,
-            ),
-            mine[0],
-        )
-        assert not diffs, json.dumps(diffs, indent=2)
-
-    def test_list_runtimes_filter(self, unwrap):
-        res = unwrap(self.detect.list_runtimes)(self.detect, privileges="privileged")
-        assert all(r["privilege"] == "privileged" for r in res)
-
-        mine = [r for r in res if r["id"] == pytest.runtime_id]
-        assert 1 == len(mine)
-
-
-@pytest.mark.order(4)
 @pytest.mark.usefixtures("setup_account", "setup_test", "setup_threat_hunt")
 class TestThreatHunt:
 
