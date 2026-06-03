@@ -40,33 +40,18 @@ def clone_test(controller, source_test_id):
 
 @build.command("create-test")
 @click.argument("name")
-@click.option("-a", "--attack_stage", help="attack stage")
-@click.option("--frameworks", help="framework (can be specified multiple times)", multiple=True)
-@click.option("-i", "--impact", help="impact level", type=int)
 @click.option(
     "-s",
     "--schedulable",
     help="available to be scheduled by SCHEDULER users",
     is_flag=True,
 )
-@click.option("--tags", help="tag (can be specified multiple times)", multiple=True)
 @click.option("-t", "--test", help="test identifier")
 @click.option("-q", "--technique", help="MITRE ATT&CK code [e.g. T1557]")
 @click.option("-u", "--unit", help="unit identifier", required=True)
 @click.pass_obj
 @pretty_print
-def create_test(
-    controller,
-    name,
-    attack_stage,
-    frameworks,
-    impact,
-    schedulable,
-    tags,
-    test,
-    technique,
-    unit,
-):
+def create_test(controller, name, schedulable, test, technique, unit):
     """Create a security test"""
 
     def create_template(template, name):
@@ -91,11 +76,7 @@ def create_test(
     with Spinner(description="Creating new test"):
         res = controller.create_test(
             name=name,
-            attack_stage=attack_stage,
-            frameworks=list(frameworks) if frameworks else None,
-            impact=impact,
             schedulable=schedulable,
-            tags=list(tags) if tags else None,
             test_id=test,
             technique=technique,
             unit=unit,
@@ -110,7 +91,6 @@ def create_test(
 
 @build.command("update-test")
 @click.argument("test")
-@click.option("-a", "--attack_stage", help="attack stage")
 @click.option(
     "-c",
     "--crowdstrike_expected",
@@ -119,8 +99,6 @@ def create_test(
         [c.name for c in EDRResponse if c != EDRResponse.INVALID], case_sensitive=False
     ),
 )
-@click.option("--frameworks", help="framework (can be specified multiple times)", multiple=True)
-@click.option("-i", "--impact", help="impact level", type=int)
 @click.option("-n", "--name", help="test name")
 @click.option(
     "-s",
@@ -128,69 +106,24 @@ def create_test(
     help="available to be scheduled by SCHEDULER users",
     is_flag=True,
 )
-@click.option("--tags", help="tag (can be specified multiple times)", multiple=True)
 @click.option("-q", "--technique", help="MITRE ATT&CK code [e.g. T1557]")
 @click.option("-u", "--unit", help="unit identifier")
 @click.pass_obj
 @pretty_print
 def update_test(
-    controller,
-    test,
-    attack_stage,
-    crowdstrike_expected,
-    frameworks,
-    impact,
-    name,
-    schedulable,
-    tags,
-    technique,
-    unit,
+    controller, test, crowdstrike_expected, name, schedulable, technique, unit
 ):
     """Update a security test"""
     with Spinner(description="Updating test"):
         return controller.update_test(
-            attack_stage=attack_stage,
             crowdstrike_expected_outcome=(
                 EDRResponse[crowdstrike_expected] if crowdstrike_expected else None
             ),
-            frameworks=list(frameworks) if frameworks else None,
-            impact=impact,
             name=name,
             schedulable=schedulable,
-            tags=list(tags) if tags else None,
             technique=technique,
             test_id=test,
             unit=unit,
-        )
-
-
-@build.command("create-runtime")
-@click.argument("name")
-@click.option(
-    "--privilege",
-    help="privilege level (e.g. privileged, unprivileged, or custom label)",
-    required=True,
-)
-@click.option(
-    "--timeout",
-    help="execution timeout in seconds",
-    required=True,
-    type=int,
-)
-@click.option("--variables", help="JSON string of environment variables")
-@click.option("--runtime_id", help="runtime identifier")
-@click.pass_obj
-@pretty_print
-def create_runtime(controller, name, privilege, timeout, variables, runtime_id):
-    """Create a runtime for VST execution"""
-    with Spinner(description="Creating runtime"):
-        vars_dict = json.loads(variables) if variables else None
-        return controller.create_runtime(
-            name=name,
-            privilege=privilege,
-            timeout=timeout,
-            variables=vars_dict,
-            runtime_id=runtime_id,
         )
 
 
