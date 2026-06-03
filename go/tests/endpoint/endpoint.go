@@ -30,7 +30,6 @@ const (
 	// Not Relevant
 	NotRelevant            int = 104
 	InsufficientPrivileges int = 109
-	ImpactExceedsTolerance  int = 131
 
 	// Protected
 	TestCompletedNormally       int = 100

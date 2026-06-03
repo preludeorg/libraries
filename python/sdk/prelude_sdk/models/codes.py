@@ -80,7 +80,6 @@ class ExitCode(Enum):
     INCORRECTLY_BLOCKED = 110
     PREVENTED_EXECUTION = 126
     STATIC_QUARANTINE = 127
-    IMPACT_EXCEEDS_TOLERANCE = 131
     BLOCKED = 137
     UNEXPECTED_ERROR = 256
 
@@ -122,7 +121,6 @@ class State(Enum):
             State.NOT_RELEVANT: [
                 ExitCode.ENDPOINT_NOT_RELEVANT,
                 ExitCode.INSUFFICIENT_PRIVILEGES,
-                ExitCode.IMPACT_EXCEEDS_TOLERANCE,
                 ExitCode.TEST_NOT_RELEVANT,
             ],
             State.PROTECTED: [
