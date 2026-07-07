@@ -16,6 +16,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"strconv"
 	"time"
 )
 
@@ -301,13 +302,20 @@ func Start(test fn, clean ...fn) {
 
 	Say(fmt.Sprintf("Starting test at: %s", time.Now().Format("2006-01-02T15:04:05")))
 
+	timeout := 60 * time.Second
+    if val := os.Getenv("PRELUDE_TIMEOUT"); val != "" {
+        if secs, err := strconv.Atoi(val); err == nil && secs > 0 {
+            timeout = time.Duration(secs) * time.Second
+        }
+    }
+
 	go func() {
 		test()
 	}()
 
 	select {
-	case <-time.After(30 * time.Second):
-		Say("Test timed out after 30 seconds")
+	case <-time.After(timeout):
+		Say("Test timed out after %v", timeout)
 		Stop(TimeoutExceeded)
 	}
 }

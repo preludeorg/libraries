@@ -6,9 +6,10 @@ function Execute {
     try {
         $stdoutTempFile = New-Item -path "$dir\stdout.log" -Force
         $stderrTempFile = New-Item -path "$dir\stderr.log" -Force
+        $env:PRELUDE_TIMEOUT = 60
         $proc = Start-Process -WorkingDirectory "$dir" -FilePath $File -NoNewWindow -PassThru -RedirectStandardOutput $stdoutTempFile -RedirectStandardError $stderrTempFile
 
-        $proc | Wait-Process -Timeout 45 -ErrorAction SilentlyContinue -ErrorVariable timeoutVar
+        $proc | Wait-Process -Timeout 75 -ErrorAction SilentlyContinue -ErrorVariable timeoutVar
 
         if ($timeoutVar) {
             $proc | kill
